@@ -15,6 +15,7 @@ import Pharmacy from "./pages/Pharmacy";
 import PharmacyCart from "./pages/PharmacyCart";
 import PharmacyCheckout from "./pages/PharmacyCheckout";
 import PharmacyTracking from "./pages/PharmacyTracking";
+import DamMarket from "./pages/DamMarket";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/pharmacy/cart" element={<PharmacyCart />} />
           <Route path="/pharmacy/checkout" element={<PharmacyCheckout />} />
           <Route path="/pharmacy/tracking" element={<PharmacyTracking />} />
+          <Route path="/market" element={<DamMarket />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
