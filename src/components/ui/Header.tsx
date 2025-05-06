@@ -8,10 +8,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Header: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
+  
   // Mock data - in a real app, this would come from an API
   const [address, setAddress] = useState('شارع الملك فهد');
   const [savedAddresses, setSavedAddresses] = useState([
@@ -19,6 +21,10 @@ const Header: React.FC = () => {
     'حي النزهة، الرياض',
     'برج المملكة، الرياض'
   ]);
+
+  const navigateToProfile = () => {
+    navigate('/profile');
+  };
 
   return (
     <div className="px-4 pt-6 pb-2 animate-fade-in">
@@ -57,11 +63,14 @@ const Header: React.FC = () => {
           </PopoverContent>
         </Popover>
         
-        <Link to="/profile" className="ml-auto">
-          <Button size="icon" variant="ghost" className="rounded-full h-9 w-9">
-            <User className="h-5 w-5" />
-          </Button>
-        </Link>
+        <Button 
+          size="icon" 
+          variant="ghost" 
+          className="rounded-full h-9 w-9 ml-auto"
+          onClick={navigateToProfile}
+        >
+          <User className="h-5 w-5" />
+        </Button>
       </div>
       
       {/* Search Bar */}

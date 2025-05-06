@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Star } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
 type Place = {
@@ -15,6 +15,8 @@ type Place = {
 };
 
 const PopularPlaces: React.FC = () => {
+  const navigate = useNavigate();
+  
   // Mock data - in a real app, this would come from an API
   const places: Place[] = [
     {
@@ -64,12 +66,20 @@ const PopularPlaces: React.FC = () => {
     }
   ];
 
+  const navigateToRestaurant = (id: number) => {
+    navigate(`/restaurant/${id}`);
+  };
+
   return (
     <div className="px-4 mb-8 animate-fade-in animate-delay-2">
       <h2 className="text-xl font-bold mb-4 text-right">يلا اكتشف الأماكن الرائجة</h2>
       <div className="scroll-container">
         {places.map((place) => (
-          <Link to={`/restaurant/${place.id}`} key={place.id} className="place-card w-64">
+          <div 
+            key={place.id} 
+            onClick={() => navigateToRestaurant(place.id)}
+            className="place-card w-64 cursor-pointer"
+          >
             <div className="relative h-40">
               <img 
                 src={place.image} 
@@ -98,11 +108,15 @@ const PopularPlaces: React.FC = () => {
               <Button 
                 className="w-full mt-3 bg-primary hover:bg-primary/90 text-white"
                 size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigateToRestaurant(place.id);
+                }}
               >
                 اطلب الآن
               </Button>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
     </div>

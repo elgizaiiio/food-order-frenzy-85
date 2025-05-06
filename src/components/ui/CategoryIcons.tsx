@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { UtensilsCrossed, ShoppingCart, Pill, Brush, Shirt, Dumbbell, Coffee, User } from 'lucide-react';
 
 type Category = {
@@ -12,6 +12,8 @@ type Category = {
 };
 
 const CategoryIcons: React.FC = () => {
+  const navigate = useNavigate();
+  
   const categories: Category[] = [
     { 
       name: "مطاعم", 
@@ -71,16 +73,24 @@ const CategoryIcons: React.FC = () => {
     },
   ];
 
+  const handleCategoryClick = (path: string) => {
+    navigate(path);
+  };
+
   return (
     <div className="px-4 mb-7 animate-fade-in animate-delay-1">
       <div className="scroll-container">
         {categories.map((category, index) => (
-          <Link to={category.link} key={index} className="category-icon flex-shrink-0">
+          <div 
+            key={index} 
+            onClick={() => handleCategoryClick(category.link)} 
+            className="category-icon flex-shrink-0 cursor-pointer"
+          >
             <div className={`category-icon-circle ${category.bgColor} ${category.color}`}>
               {category.icon}
             </div>
             <span className="text-xs font-medium text-gray-700 mt-1">{category.name}</span>
-          </Link>
+          </div>
         ))}
       </div>
     </div>

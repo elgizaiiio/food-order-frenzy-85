@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Home, Dumbbell, Brush } from 'lucide-react';
 
 type Promo = {
@@ -13,6 +13,9 @@ type Promo = {
 };
 
 const Promos: React.FC = () => {
+  // Use navigate instead of direct Link if there are routing issues
+  const navigate = useNavigate();
+  
   const promos: Promo[] = [
     {
       id: 1,
@@ -40,14 +43,18 @@ const Promos: React.FC = () => {
     }
   ];
 
+  const handleNavigate = (path: string) => {
+    navigate(path);
+  };
+
   return (
     <div className="px-4 mb-12 animate-fade-in animate-delay-3">
       <div className="space-y-3">
         {promos.map(promo => (
-          <Link
+          <div
             key={promo.id}
-            to={promo.link}
-            className="block"
+            onClick={() => handleNavigate(promo.link)}
+            className="block cursor-pointer"
           >
             <div className={`promo-card bg-gradient-to-br ${promo.gradient} flex items-center justify-end`}>
               <div className="flex items-center gap-3 text-right">
@@ -57,7 +64,7 @@ const Promos: React.FC = () => {
                 </div>
               </div>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
     </div>
