@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Minus, Plus, X, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -15,7 +15,8 @@ const PersonalCareCart: React.FC = () => {
     increaseQuantity, 
     decreaseQuantity,
     itemCount,
-    totalPrice 
+    totalPrice,
+    addToCart 
   } = usePersonalCareCart();
   
   // معلومات التوصيل والضريبة
@@ -44,8 +45,8 @@ const PersonalCareCart: React.FC = () => {
     }
   ];
 
+  // تعديل الدالة لإضافة المنتج مباشرة
   const handleAddSuggested = (product: any) => {
-    const { addToCart } = usePersonalCareCart();
     addToCart(product);
   };
 
