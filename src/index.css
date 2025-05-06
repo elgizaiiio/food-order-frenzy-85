@@ -1,5 +1,5 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,7 +7,7 @@
 
 @layer base {
   :root {
-    --background: 30 50% 98%;
+    --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -16,7 +16,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 24 100% 50%;
+    --primary: 24 100% 50%;  /* Orange-based brand color */
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -37,141 +37,90 @@
 
     --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-    
-    /* Brand color for Personal Care Section */
-    --brand-50: 280 100% 97%;
-    --brand-100: 280 100% 94%;
-    --brand-200: 280 96% 87%;
-    --brand-300: 280 91% 78%;
-    --brand-400: 280 95% 68%;
-    --brand-500: 280 91% 59%; /* Primary brand color */
-    --brand-600: 280 85% 52%;
-    --brand-700: 280 90% 45%;
-    --brand-800: 280 95% 38%;
-    --brand-900: 280 100% 32%;
+    /* Brand colors for various categories */
+    --restaurant-color: 0 85% 65%;
+    --market-color: 142 70% 45%;
+    --pharmacy-color: 231 70% 65%;
+    --beauty-color: 330 82% 65%;
+    --clothes-color: 210 90% 55%;
+    --gym-color: 45 90% 50%;
+    --coffee-color: 25 75% 40%;
+    --profile-color: 280 70% 60%;
   }
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 24 100% 50%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-}
-
-@layer base {
   * {
     @apply border-border;
   }
 
   html {
     font-family: 'Tajawal', sans-serif;
+    direction: rtl;
   }
 
   body {
     @apply bg-background text-foreground;
   }
   
+  /* Custom styling for category icons */
   .category-icon {
-    @apply flex flex-col items-center justify-center;
+    @apply flex flex-col items-center gap-1;
   }
   
   .category-icon-circle {
-    @apply w-16 h-16 rounded-full flex items-center justify-center mb-2 bg-white shadow-md border border-gray-100;
+    @apply w-16 h-16 rounded-full flex items-center justify-center bg-white shadow-md border border-gray-100 transition-transform hover:scale-105;
   }
   
-  .offers-container {
-    @apply flex overflow-x-auto gap-4 no-scrollbar;
-  }
-
-  .offer-card {
-    @apply min-w-[280px] rounded-2xl overflow-hidden shadow-md;
-  }
-
-  .promo-card {
-    @apply p-6 rounded-2xl shadow-md bg-gradient-to-br;
-  }
-  
-  /* Hide scrollbar but maintain functionality */
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  
-  .no-scrollbar {
+  /* Horizontal scrolling containers */
+  .scroll-container {
+    @apply flex overflow-x-auto gap-4 pb-2 snap-x snap-mandatory;
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
   
-  .popular-places-scroll {
-    @apply flex overflow-x-auto gap-4 p-1 no-scrollbar;
+  .scroll-container::-webkit-scrollbar {
+    display: none;
   }
   
+  /* Card styling */
   .place-card {
-    @apply min-w-[200px] bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100;
+    @apply bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 snap-start flex-shrink-0 transition-all hover:shadow-md;
   }
   
-  /* Hide scrollbar for image carousels */
-  .hide-scrollbar {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+  /* Offer cards */
+  .offer-card {
+    @apply relative rounded-2xl overflow-hidden shadow-md snap-start flex-shrink-0 transition-transform hover:scale-[1.02];
   }
   
-  .hide-scrollbar::-webkit-scrollbar {
-    display: none;
+  /* Promo cards */
+  .promo-card {
+    @apply p-6 rounded-2xl shadow-md transition-transform hover:scale-[1.02];
   }
   
   /* Animations */
-  @keyframes fade-in {
-    0% {
+  @keyframes fadeIn {
+    from {
       opacity: 0;
       transform: translateY(10px);
     }
-    100% {
+    to {
       opacity: 1;
       transform: translateY(0);
     }
   }
   
   .animate-fade-in {
-    animation: fade-in 0.3s ease-out;
+    animation: fadeIn 0.4s ease-out forwards;
+  }
+  
+  .animate-delay-1 {
+    animation-delay: 0.1s;
+  }
+  
+  .animate-delay-2 {
+    animation-delay: 0.2s;
+  }
+  
+  .animate-delay-3 {
+    animation-delay: 0.3s;
   }
 }
