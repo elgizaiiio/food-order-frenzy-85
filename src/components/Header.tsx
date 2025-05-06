@@ -13,7 +13,7 @@ const Header: React.FC = () => {
           <span className="font-medium">التوصيل لـ</span>
         </div>
         <div className="flex items-center gap-1 mx-1">
-          <span className="font-medium text-brand-700">شارع مصطفى النحاس</span>
+          <span className="font-medium text-brand-700">شارع التحرير، القاهرة</span>
           <ChevronDown className="w-4 h-4 text-brand-500" />
         </div>
       </div>

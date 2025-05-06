@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, ClipboardList, UserRound, Info } from 'lucide-react';
+import { Home, ClipboardList, UserRound } from 'lucide-react';
 
 const BottomNav: React.FC = () => {
   const location = useLocation();
@@ -25,12 +25,6 @@ const BottomNav: React.FC = () => {
       icon: <UserRound className="w-6 h-6" />,
       path: '/profile',
       active: path === '/profile',
-    },
-    {
-      name: 'عن الموقع',
-      icon: <Info className="w-6 h-6" />,
-      path: '/about',
-      active: path === '/about',
     },
   ];
 
