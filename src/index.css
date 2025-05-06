@@ -16,7 +16,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 24 100% 50%;  /* Orange-based brand color */
+    --primary: 24 100% 50%;  /* Brand Orange */
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -122,5 +122,63 @@
   
   .animate-delay-3 {
     animation-delay: 0.3s;
+  }
+
+  /* لمسات إضافية لمكونات الدفع */
+  .payment-card {
+    @apply bg-white rounded-xl border border-gray-200 p-4 transition-all;
+  }
+  
+  .payment-card:hover {
+    @apply shadow-md border-brand-200;
+  }
+  
+  .payment-card.selected {
+    @apply border-brand-500 bg-brand-50;
+  }
+  
+  .address-card {
+    @apply bg-white rounded-xl border border-gray-200 p-4 transition-all;
+  }
+  
+  .address-card:hover {
+    @apply shadow-md border-brand-200;
+  }
+  
+  .address-card.selected {
+    @apply border-brand-500 bg-brand-50;
+  }
+
+  /* تحسين الإدخالات */
+  input:focus {
+    @apply outline-none ring-2 ring-brand-200 border-brand-300;
+  }
+
+  /* تحسين الأزرار */
+  .btn-brand {
+    @apply bg-brand-500 hover:bg-brand-600 text-white font-medium py-2 px-4 rounded-lg transition-colors;
+  }
+
+  .btn-outline {
+    @apply border border-gray-300 hover:border-brand-400 hover:bg-brand-50 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors;
+  }
+
+  /* تحسين القوائم */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* تأثيرات التظليل */
+  .hover-shadow {
+    @apply transition-shadow duration-300;
+  }
+
+  .hover-shadow:hover {
+    @apply shadow-md;
   }
 }
