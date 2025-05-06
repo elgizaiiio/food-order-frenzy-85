@@ -28,7 +28,7 @@ const Categories: React.FC = () => {
       name: "هدوم", 
       icon: <Shirt className="w-6 h-6" />, 
       color: "bg-blue-50 text-blue-500",
-      link: "/" 
+      link: "/clothes" 
     },
     { 
       name: "صيدليات", 
