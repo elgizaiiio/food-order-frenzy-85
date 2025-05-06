@@ -43,6 +43,7 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Addresses from "./pages/Addresses";
 import PaymentMethods from "./pages/PaymentMethods";
+import AddPaymentMethod from "./pages/AddPaymentMethod";
 import Orders from "./pages/Orders";
 import Coupons from "./pages/Coupons";
 
@@ -93,6 +94,7 @@ const App = () => (
           <Route path="/settings" element={<Settings />} />
           <Route path="/addresses" element={<Addresses />} />
           <Route path="/payment-methods" element={<PaymentMethods />} />
+          <Route path="/add-payment-method" element={<AddPaymentMethod />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/coupons" element={<Coupons />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
