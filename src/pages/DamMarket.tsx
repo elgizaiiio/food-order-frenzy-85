@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Search, Share, ShoppingCart, MapPin, ChevronDown, Package, Clock } from 'lucide-react';
@@ -8,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useCategories, useOffers, usePopularProducts } from '@/hooks/useMarketData';
 import { MarketCartProvider, useMarketCart } from '@/context/MarketCartContext';
+
 const DamMarketContent: React.FC = () => {
   const {
     data: categories,
@@ -138,7 +140,7 @@ const DamMarketContent: React.FC = () => {
                     <h4 className="font-medium text-sm mb-1">{product.name}</h4>
                     <p className="text-xs text-gray-500 mb-2">{product.quantity}</p>
                     <div className="flex justify-between items-center">
-                      <span className="font-bold text-brand-700">{product.price} ريال</span>
+                      <span className="font-bold text-brand-700">{product.price} جنيه</span>
                       <Button onClick={() => product.inStock && addToCart(product)} disabled={!product.inStock} size="sm" className={`rounded-full h-9 w-9 p-0 ${product.inStock ? 'bg-brand-500 hover:bg-brand-600' : 'bg-gray-300'}`}>
                         <ShoppingCart className="h-4 w-4" />
                       </Button>
@@ -149,17 +151,31 @@ const DamMarketContent: React.FC = () => {
         </div>
 
         {/* Cart Floating Button */}
-        {itemCount > 0 && <Link to="/market/cart" className="fixed bottom-5 left-0 right-0 mx-auto w-11/12 max-w-md z-30">
-            <div className="bg-brand-500 text-white rounded-full py-3 px-5 flex items-center justify-between shadow-lg">
-              <div className="flex items-center gap-2">
-                <ShoppingCart className="h-6 w-6" />
-                <span className="font-bold">{itemCount} منتج</span>
+        {itemCount > 0 && <div className="fixed bottom-5 left-0 right-0 mx-auto w-11/12 max-w-md z-30">
+            <div className="bg-brand-500 text-white rounded-lg shadow-lg p-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <ShoppingCart className="h-5 w-5" />
+                  <span className="font-bold">{itemCount} منتج</span>
+                </div>
+                <span className="font-bold">
+                  {totalPrice.toFixed(2)} جنيه
+                </span>
               </div>
-              <span className="font-bold">
-                {totalPrice.toFixed(2)} ريال
-              </span>
+              <div className="grid grid-cols-2 gap-3">
+                <Link to="/market" className="w-full">
+                  <Button variant="outline" className="w-full bg-white text-brand-500 border-0 hover:bg-gray-100">
+                    إضافة المزيد
+                  </Button>
+                </Link>
+                <Link to="/market/cart" className="w-full">
+                  <Button className="w-full bg-green-600 hover:bg-green-700 text-white border-0">
+                    إتمام الطلب
+                  </Button>
+                </Link>
+              </div>
             </div>
-          </Link>}
+          </div>}
       </div>
     </div>;
 };

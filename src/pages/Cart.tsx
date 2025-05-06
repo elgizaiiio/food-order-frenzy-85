@@ -108,7 +108,7 @@ const Cart: React.FC = () => {
                     />
                     <div>
                       <h3 className="font-bold text-gray-800">{item.name}</h3>
-                      <p className="text-orange-600 font-medium">{item.price} ريال</p>
+                      <p className="text-orange-600 font-medium">{item.price} جنيه</p>
                       <div className="flex items-center gap-3 mt-2 bg-white rounded-full border shadow-sm p-1">
                         <button 
                           onClick={() => updateQuantity(item.id, -1)}
@@ -171,7 +171,7 @@ const Cart: React.FC = () => {
                       <div className="p-3">
                         <h3 className="font-medium text-gray-800">{item.name}</h3>
                         <div className="flex items-center justify-between mt-2">
-                          <span className="text-orange-600 font-bold">{item.price} ريال</span>
+                          <span className="text-orange-600 font-bold">{item.price} جنيه</span>
                           <Button 
                             size="sm" 
                             onClick={() => addSuggested(item)}
@@ -192,15 +192,15 @@ const Cart: React.FC = () => {
                 <div className="space-y-3 mb-4">
                   <div className="flex justify-between">
                     <span className="text-gray-600">المجموع الفرعي</span>
-                    <span className="font-medium">{subtotal} ريال</span>
+                    <span className="font-medium">{subtotal} جنيه</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">رسوم التوصيل</span>
-                    <span className="font-medium">{deliveryFee} ريال</span>
+                    <span className="font-medium">{deliveryFee} جنيه</span>
                   </div>
                   <div className="flex justify-between font-bold pt-3 border-t text-lg">
                     <span>المبلغ الإجمالي</span>
-                    <span className="text-orange-600">{total} ريال</span>
+                    <span className="text-orange-600">{total} جنيه</span>
                   </div>
                 </div>
               </div>
@@ -219,7 +219,7 @@ const Cart: React.FC = () => {
               </Link>
               <Link to="/checkout" className="flex-1">
                 <Button className="w-full py-6 bg-gradient-to-l from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white shadow-md">
-                  تابع الدفع
+                  إتمام الطلب
                 </Button>
               </Link>
             </div>

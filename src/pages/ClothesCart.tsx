@@ -129,9 +129,9 @@ const ClothesCart: React.FC = () => {
                       </div>
                       <div className="flex justify-between items-center mt-3">
                         <div className="flex flex-col">
-                          <span className="font-bold text-gray-800">{item.price * item.quantity} ريال</span>
+                          <span className="font-bold text-gray-800">{item.price * item.quantity} جنيه</span>
                           {item.quantity > 1 && (
-                            <span className="text-xs text-gray-500">{item.quantity} × {item.price} ريال</span>
+                            <span className="text-xs text-gray-500">{item.quantity} × {item.price} جنيه</span>
                           )}
                         </div>
                         <div className="flex items-center gap-2">
@@ -167,15 +167,15 @@ const ClothesCart: React.FC = () => {
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-600">المجموع الفرعي</span>
-                    <span className="font-medium">{subtotal} ريال</span>
+                    <span className="font-medium">{subtotal} جنيه</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">رسوم التوصيل</span>
-                    <span className="font-medium">{deliveryFee} ريال</span>
+                    <span className="font-medium">{deliveryFee} جنيه</span>
                   </div>
                   <div className="border-t pt-3 mt-2 flex justify-between font-bold">
                     <span>الإجمالي</span>
-                    <span className="text-blue-600">{total} ريال</span>
+                    <span className="text-blue-600">{total} جنيه</span>
                   </div>
                 </div>
               </Card>
@@ -189,7 +189,7 @@ const ClothesCart: React.FC = () => {
                 </Link>
                 <Link to="/clothes/checkout" className="flex-1">
                   <Button className="w-full bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white shadow-md font-medium">
-                    متابعة الدفع
+                    إتمام الطلب
                   </Button>
                 </Link>
               </div>
@@ -212,7 +212,7 @@ const ClothesCart: React.FC = () => {
                   <div className="p-3">
                     <h4 className="font-medium text-sm text-gray-800">{product.name}</h4>
                     <div className="flex items-center justify-between mt-2">
-                      <span className="font-bold text-blue-600 text-sm">{product.price} ريال</span>
+                      <span className="font-bold text-blue-600 text-sm">{product.price} جنيه</span>
                       <Button 
                         size="sm" 
                         onClick={() => addSuggested(product)}
@@ -233,7 +233,7 @@ const ClothesCart: React.FC = () => {
           <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 max-w-md mx-auto shadow-lg">
             <Link to="/clothes/checkout">
               <Button className="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white text-lg font-medium shadow-md">
-                متابعة الدفع ({total} ريال)
+                إتمام الطلب ({total} جنيه)
               </Button>
             </Link>
           </div>

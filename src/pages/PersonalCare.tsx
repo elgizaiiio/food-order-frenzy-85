@@ -163,7 +163,7 @@ const PersonalCare: React.FC = () => {
                     <span className="text-xs">{(4 + Math.random()).toFixed(1)}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="font-bold">{product.price} ريال</span>
+                    <span className="font-bold">{product.price} جنيه</span>
                     <Button 
                       size="sm" 
                       className="rounded-full h-7 w-7 p-0 bg-gradient-to-r from-purple-500 to-pink-500"
@@ -196,7 +196,7 @@ const PersonalCare: React.FC = () => {
                     <h3 className="font-medium text-sm">{product.name}</h3>
                   </Link>
                   <div className="flex justify-between items-center mt-2">
-                    <span className="font-bold text-sm">{product.price} ريال</span>
+                    <span className="font-bold text-sm">{product.price} جنيه</span>
                     <Button 
                       size="sm" 
                       className="rounded-full h-6 w-6 p-0 bg-gradient-to-r from-purple-500 to-pink-500"
@@ -213,17 +213,31 @@ const PersonalCare: React.FC = () => {
 
         {/* Cart Floating Button */}
         {itemCount > 0 && (
-          <Link to="/personal-care/cart">
-            <div className="fixed bottom-5 left-0 right-0 mx-auto w-4/5 max-w-md bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full py-3 px-5 flex items-center justify-between shadow-lg">
-              <div className="flex items-center gap-2">
-                <ShoppingCart className="h-6 w-6" />
-                <span className="font-bold">{itemCount} منتج</span>
+          <div className="fixed bottom-5 left-0 right-0 mx-auto w-11/12 max-w-md z-30">
+            <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg shadow-lg p-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <ShoppingCart className="h-5 w-5" />
+                  <span className="font-bold">{itemCount} منتج</span>
+                </div>
+                <span className="font-bold">
+                  {totalPrice} جنيه
+                </span>
               </div>
-              <span className="font-bold">
-                {totalPrice} ريال
-              </span>
+              <div className="grid grid-cols-2 gap-3">
+                <Link to="/personal-care" className="w-full">
+                  <Button variant="outline" className="w-full bg-white text-purple-500 border-0 hover:bg-gray-100">
+                    إضافة المزيد
+                  </Button>
+                </Link>
+                <Link to="/personal-care/cart" className="w-full">
+                  <Button className="w-full bg-green-600 hover:bg-green-700 text-white border-0">
+                    إتمام الطلب
+                  </Button>
+                </Link>
+              </div>
             </div>
-          </Link>
+          </div>
         )}
       </div>
     </div>

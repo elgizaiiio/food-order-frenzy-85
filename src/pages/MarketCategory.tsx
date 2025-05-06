@@ -100,7 +100,7 @@ const MarketCategoryContent: React.FC = () => {
             <MapPin className="w-4 h-4 text-brand-500" />
             <span>التوصيل إلى:</span>
             <div className="flex items-center">
-              <span className="font-medium">شارع الملك فهد</span>
+              <span className="font-medium">شارع التحرير، القاهرة</span>
               <ChevronDown className="w-4 h-4 text-brand-500 mr-1" />
             </div>
           </div>
@@ -208,7 +208,7 @@ const MarketCategoryContent: React.FC = () => {
                     <h4 className="font-medium text-sm mb-1">{product.name}</h4>
                     <p className="text-xs text-gray-500 mb-2">{product.quantity}</p>
                     <div className="flex justify-between items-center">
-                      <span className="font-bold text-brand-700">{product.price} ريال</span>
+                      <span className="font-bold text-brand-700">{product.price} جنيه</span>
                       
                       {getCartItemQuantity(product.id) > 0 ? (
                         <div className="flex items-center gap-2">
@@ -251,17 +251,31 @@ const MarketCategoryContent: React.FC = () => {
 
         {/* Cart Floating Button */}
         {itemCount > 0 && (
-          <Link to="/market/cart" className="fixed bottom-5 left-0 right-0 mx-auto w-11/12 max-w-md z-30">
-            <div className="bg-brand-500 text-white rounded-full py-3 px-5 flex items-center justify-between shadow-lg">
-              <div className="flex items-center gap-2">
-                <ShoppingCart className="h-6 w-6" />
-                <span className="font-bold">{itemCount} منتج</span>
+          <div className="fixed bottom-5 left-0 right-0 mx-auto w-11/12 max-w-md z-30">
+            <div className="bg-brand-500 text-white rounded-lg shadow-lg p-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <ShoppingCart className="h-5 w-5" />
+                  <span className="font-bold">{itemCount} منتج</span>
+                </div>
+                <span className="font-bold">
+                  {totalPrice.toFixed(2)} جنيه
+                </span>
               </div>
-              <span className="font-bold">
-                {totalPrice.toFixed(2)} ريال
-              </span>
+              <div className="grid grid-cols-2 gap-3">
+                <Link to="/market" className="w-full">
+                  <Button variant="outline" className="w-full bg-white text-brand-500 border-0 hover:bg-gray-100">
+                    إضافة المزيد
+                  </Button>
+                </Link>
+                <Link to="/market/cart" className="w-full">
+                  <Button className="w-full bg-green-600 hover:bg-green-700 text-white border-0">
+                    إتمام الطلب
+                  </Button>
+                </Link>
+              </div>
             </div>
-          </Link>
+          </div>
         )}
       </div>
     </div>
