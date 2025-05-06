@@ -10,10 +10,10 @@ const Header: React.FC = () => {
       <div className="flex items-center justify-start mb-4 text-sm">
         <div className="flex items-center gap-1 text-gray-700">
           <MapPin className="w-4 h-4 text-brand-500" />
-          <span className="font-medium">التوصيل إلى</span>
+          <span className="font-medium">التوصيل لـ</span>
         </div>
         <div className="flex items-center gap-1 mx-1">
-          <span className="font-medium text-brand-700">شارع الملك فهد</span>
+          <span className="font-medium text-brand-700">شارع مصطفى النحاس</span>
           <ChevronDown className="w-4 h-4 text-brand-500" />
         </div>
       </div>
@@ -22,7 +22,7 @@ const Header: React.FC = () => {
       <div className="relative mb-6">
         <Input 
           type="search"
-          placeholder="دور على المطاعم والي انت عايزه"
+          placeholder="دور على المطاعم واللي نفسك فيه"
           className="w-full py-6 pl-4 pr-10 rounded-full bg-gray-100 border-none text-right"
         />
         <div className="absolute inset-y-0 right-3 flex items-center">

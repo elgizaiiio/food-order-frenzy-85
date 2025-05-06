@@ -6,21 +6,21 @@ const Promos: React.FC = () => {
   const promos = [
     {
       id: 1,
-      title: "محتاج تشتري حاجات البيت؟",
+      title: "محتاج تجيب حاجات البيت؟",
       icon: <Home className="h-8 w-8" />,
       color: "from-blue-50 to-blue-100",
       textColor: "text-blue-700"
     },
     {
       id: 2,
-      title: "محتاج تروح الجيم؟",
+      title: "عاوز تروح الجيم؟",
       icon: <Dumbbell className="h-8 w-8" />,
       color: "from-yellow-50 to-yellow-100",
       textColor: "text-yellow-700"
     },
     {
       id: 3,
-      title: "محتاجه تجيبي ميكب؟",
+      title: "عايزة تجيبي ميكب؟",
       icon: <Brush className="h-8 w-8" />,
       color: "from-pink-50 to-pink-100",
       textColor: "text-pink-700"

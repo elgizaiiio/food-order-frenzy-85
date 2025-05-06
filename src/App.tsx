@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { MarketCartProvider } from "@/context/MarketCartContext";
 import { PharmacyCartProvider } from "@/context/PharmacyCartContext";
 import { PersonalCareCartProvider } from "@/context/PersonalCareCartContext";
+import BottomNav from "./components/BottomNav";
 import Index from "./pages/Index";
 import Restaurants from "./pages/Restaurants";
 import RestaurantMenu from "./pages/RestaurantMenu";
@@ -49,6 +50,7 @@ import PaymentMethods from "./pages/PaymentMethods";
 import AddPaymentMethod from "./pages/AddPaymentMethod";
 import Orders from "./pages/Orders";
 import Coupons from "./pages/Coupons";
+import About from "./pages/About";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -102,45 +104,49 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/restaurants" element={<Restaurants />} />
-          <Route path="/restaurant/:id" element={<RestaurantMenu />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/tracking" element={<OrderTracking />} />
-          
-          {/* Pharmacy routes with PharmacyCartProvider */}
-          <Route path="/pharmacy/*" element={<PharmacyCartRoutes />} />
-          
-          {/* Market routes with MarketCartProvider */}
-          <Route path="/market/*" element={<MarketCartRoutes />} />
-          
-          {/* Personal Care Routes with PersonalCareCartProvider */}
-          <Route path="/personal-care/*" element={<PersonalCareRoutes />} />
-          
-          {/* Clothes Routes */}
-          <Route path="/clothes" element={<Clothes />} />
-          <Route path="/clothes/category/:categoryId" element={<ClothesCategory />} />
-          <Route path="/clothes/cart" element={<ClothesCart />} />
-          <Route path="/clothes/checkout" element={<ClothesCheckout />} />
-          {/* Gym Routes */}
-          <Route path="/gym" element={<Gym />} />
-          <Route path="/gym/:id/subscribe" element={<GymSubscription />} />
-          <Route path="/gym/payment" element={<GymPayment />} />
-          <Route path="/gym/success" element={<GymSuccess />} />
-          <Route path="/gym/subscriptions" element={<GymSubscriptions />} />
-          {/* Profile Routes */}
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/addresses" element={<Addresses />} />
-          <Route path="/payment-methods" element={<PaymentMethods />} />
-          <Route path="/add-payment-method" element={<AddPaymentMethod />} />
-          <Route path="/orders" element={<Orders />} />
-          <Route path="/coupons" element={<Coupons />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <div className="pb-16"> {/* Add padding to the bottom to prevent content from being hidden by the navigation bar */}
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/restaurants" element={<Restaurants />} />
+            <Route path="/restaurant/:id" element={<RestaurantMenu />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/tracking" element={<OrderTracking />} />
+            <Route path="/about" element={<About />} />
+            
+            {/* Pharmacy routes with PharmacyCartProvider */}
+            <Route path="/pharmacy/*" element={<PharmacyCartRoutes />} />
+            
+            {/* Market routes with MarketCartProvider */}
+            <Route path="/market/*" element={<MarketCartRoutes />} />
+            
+            {/* Personal Care Routes with PersonalCareCartProvider */}
+            <Route path="/personal-care/*" element={<PersonalCareRoutes />} />
+            
+            {/* Clothes Routes */}
+            <Route path="/clothes" element={<Clothes />} />
+            <Route path="/clothes/category/:categoryId" element={<ClothesCategory />} />
+            <Route path="/clothes/cart" element={<ClothesCart />} />
+            <Route path="/clothes/checkout" element={<ClothesCheckout />} />
+            {/* Gym Routes */}
+            <Route path="/gym" element={<Gym />} />
+            <Route path="/gym/:id/subscribe" element={<GymSubscription />} />
+            <Route path="/gym/payment" element={<GymPayment />} />
+            <Route path="/gym/success" element={<GymSuccess />} />
+            <Route path="/gym/subscriptions" element={<GymSubscriptions />} />
+            {/* Profile Routes */}
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/addresses" element={<Addresses />} />
+            <Route path="/payment-methods" element={<PaymentMethods />} />
+            <Route path="/add-payment-method" element={<AddPaymentMethod />} />
+            <Route path="/orders" element={<Orders />} />
+            <Route path="/coupons" element={<Coupons />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
+        <BottomNav />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

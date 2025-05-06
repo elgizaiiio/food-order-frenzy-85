@@ -13,19 +13,19 @@ const PaymentMethods: React.FC = () => {
       id: 'cash', 
       name: 'الدفع عند الاستلام', 
       icon: <DollarSign className="h-5 w-5 text-green-600" />,
-      description: 'ادفع نقدًا عند استلام طلبك'
+      description: 'ادفع كاش عند استلام طلبك'
     },
     { 
       id: 'card', 
-      name: 'بطاقة ائتمان / مدى', 
+      name: 'بطاقة ائتمان / فيزا', 
       icon: <CreditCard className="h-5 w-5 text-blue-600" />,
-      description: 'فيزا، ماستركارد، مدى'
+      description: 'فيزا، ماستركارد'
     },
     { 
       id: 'wallet', 
       name: 'المحافظ الإلكترونية', 
       icon: <Wallet className="h-5 w-5 text-purple-600" />,
-      description: 'STC Pay، Apple Pay، وغيرها'
+      description: 'فودافون كاش، محفظة مصر الرقمية، وغيرها'
     },
     { 
       id: 'applepay', 
@@ -84,7 +84,6 @@ const PaymentMethods: React.FC = () => {
           <div className="flex gap-2">
             <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-6" />
             <img src="https://upload.wikimedia.org/wikipedia/commons/b/b7/MasterCard_Logo.svg" alt="MasterCard" className="h-6" />
-            <img src="https://upload.wikimedia.org/wikipedia/ar/b/bd/Mada_Logo.svg" alt="Mada" className="h-6" />
           </div>
           <span className="text-xs text-gray-500">معاملات آمنة 100%</span>
         </div>

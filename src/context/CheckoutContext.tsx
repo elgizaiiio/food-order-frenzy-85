@@ -47,16 +47,16 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
   const [addresses, setAddresses] = useState<Address[]>([
     { 
       id: '1', 
-      title: 'المنزل',
-      fullAddress: 'شارع الملك فهد، حي الورود، الرياض',
-      phone: '05xxxxxxxx',
+      title: 'البيت',
+      fullAddress: 'شارع مصطفى النحاس، مدينة نصر، القاهرة',
+      phone: '01xxxxxxxx',
       isDefault: true
     },
     { 
       id: '2', 
-      title: 'العمل',
-      fullAddress: 'برج المملكة، طريق الملك فهد، الرياض',
-      phone: '05xxxxxxxx',
+      title: 'الشغل',
+      fullAddress: 'برج القاهرة، وسط البلد، القاهرة',
+      phone: '01xxxxxxxx',
       isDefault: false
     }
   ]);
@@ -66,7 +66,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
   const [isAddingNewAddress, setIsAddingNewAddress] = useState(false);
   
   const subtotal = initialSubtotal;
-  const deliveryFee = 10;
+  const deliveryFee = 15;
   const orderTotal = subtotal + deliveryFee;
 
   const addAddress = (address: Omit<Address, 'id'>) => {
