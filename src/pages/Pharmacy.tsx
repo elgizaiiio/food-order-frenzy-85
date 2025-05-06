@@ -1,12 +1,13 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, ChevronDown, Search, MessageCircle, PlusCircle, ShoppingCart } from 'lucide-react';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { 
+  ChevronDown, Search, MessageCircle, 
+  PlusCircle, ShoppingCart, Pill
+} from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 
 // Mock data for products
@@ -78,7 +79,7 @@ const products = {
     {
       id: 5,
       name: 'مضاد هستامين',
-      description: 'لعلاج الحساسية والزكام',
+      description: 'ل��لاج الحساسية والزكام',
       price: 25,
       image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80'
     }

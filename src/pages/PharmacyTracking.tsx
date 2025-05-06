@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, Clock, MapPin, CheckCircle } from 'lucide-react';
+import { ChevronLeft, Clock, MapPin, CheckCircle, Pill } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const PharmacyTracking: React.FC = () => {
