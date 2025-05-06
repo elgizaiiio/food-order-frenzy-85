@@ -1,10 +1,13 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 30 50% 98%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -13,7 +16,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 24 100% 50%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -30,24 +33,17 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 24 100% 50%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -61,7 +57,7 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
+    --primary: 24 100% 50%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -95,7 +91,49 @@
     @apply border-border;
   }
 
+  html {
+    font-family: 'Tajawal', sans-serif;
+  }
+
   body {
     @apply bg-background text-foreground;
+  }
+  
+  .category-icon {
+    @apply flex flex-col items-center justify-center;
+  }
+  
+  .category-icon-circle {
+    @apply w-16 h-16 rounded-full flex items-center justify-center mb-2 bg-white shadow-md border border-gray-100;
+  }
+  
+  .offers-container {
+    @apply flex overflow-x-auto gap-4 no-scrollbar;
+  }
+
+  .offer-card {
+    @apply min-w-[280px] rounded-2xl overflow-hidden shadow-md;
+  }
+
+  .promo-card {
+    @apply p-6 rounded-2xl shadow-md bg-gradient-to-br;
+  }
+  
+  /* Hide scrollbar but maintain functionality */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .popular-places-scroll {
+    @apply flex overflow-x-auto gap-4 p-1 no-scrollbar;
+  }
+  
+  .place-card {
+    @apply min-w-[200px] bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100;
   }
 }
