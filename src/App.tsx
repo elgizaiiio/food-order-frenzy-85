@@ -32,6 +32,12 @@ import Clothes from "./pages/Clothes";
 import ClothesCategory from "./pages/ClothesCategory";
 import ClothesCart from "./pages/ClothesCart";
 import ClothesCheckout from "./pages/ClothesCheckout";
+// Gym Section
+import Gym from "./pages/Gym";
+import GymSubscription from "./pages/GymSubscription";
+import GymPayment from "./pages/GymPayment";
+import GymSuccess from "./pages/GymSuccess";
+import GymSubscriptions from "./pages/GymSubscriptions";
 
 const queryClient = new QueryClient();
 
@@ -69,6 +75,12 @@ const App = () => (
           <Route path="/clothes/category/:categoryId" element={<ClothesCategory />} />
           <Route path="/clothes/cart" element={<ClothesCart />} />
           <Route path="/clothes/checkout" element={<ClothesCheckout />} />
+          {/* Gym Routes */}
+          <Route path="/gym" element={<Gym />} />
+          <Route path="/gym/:id/subscribe" element={<GymSubscription />} />
+          <Route path="/gym/payment" element={<GymPayment />} />
+          <Route path="/gym/success" element={<GymSuccess />} />
+          <Route path="/gym/subscriptions" element={<GymSubscriptions />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

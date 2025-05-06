@@ -46,7 +46,7 @@ const Categories: React.FC = () => {
       name: "جيم", 
       icon: <Dumbbell className="w-6 h-6" />, 
       color: "bg-yellow-50 text-yellow-600",
-      link: "/" 
+      link: "/gym" 
     },
     { 
       name: "قهوة", 
