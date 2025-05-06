@@ -70,6 +70,31 @@ const config = {
           800: "#663300",
           900: "#331900",
         },
+        // إضافة المزيد من الألوان للعناصر المختلفة
+        success: {
+          50: "#edfcf2",
+          100: "#d3f8e0",
+          200: "#aaf0c7",
+          300: "#74e4a8",
+          400: "#3fd485",
+          500: "#21bd6c",
+          600: "#17a45a",
+          700: "#128341",
+          800: "#116b37",
+          900: "#10582f",
+        },
+        warning: {
+          50: "#fefcec",
+          100: "#fdf5cd",
+          200: "#faeb9d",
+          300: "#f7dc69",
+          400: "#f5cd45",
+          500: "#f0b722",
+          600: "#d99212",
+          700: "#b36d10",
+          800: "#925713",
+          900: "#784815",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -107,13 +132,22 @@ const config = {
             transform: "scale(1)",
             opacity: "1"
           }
+        },
+        "pulse-gentle": {
+          "0%, 100%": {
+            opacity: "1"
+          },
+          "50%": {
+            opacity: "0.8"
+          }
         }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.3s ease-out",
-        "bounce-in": "bounce-in 0.4s ease-out"
+        "bounce-in": "bounce-in 0.4s ease-out",
+        "pulse-gentle": "pulse-gentle 2s ease-in-out infinite"
       },
     },
   },

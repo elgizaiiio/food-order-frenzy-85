@@ -3,8 +3,14 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Product } from '@/api/market';
 import { useToast } from '@/hooks/use-toast';
 
-interface CartItem extends Product {
-  quantity: number;
+interface CartItem {
+  id: number;
+  name: string;
+  price: number;
+  image: string;
+  description: string;
+  category_id: number;
+  quantity: number; // هنا الكمية هي رقم وليست نصاً
 }
 
 interface MarketCartContextType {
@@ -74,7 +80,12 @@ export const MarketCartProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           title: "تمت الإضافة",
           description: `تمت إضافة ${product.name} إلى سلة التسوق`,
         });
-        return [...prevItems, { ...product, quantity: 1 }];
+        return [...prevItems, { 
+          ...product, 
+          quantity: 1,
+          // تحويل أي حقول غير متوافقة إلى النوع الصحيح
+          price: typeof product.price === 'string' ? parseFloat(product.price) : product.price
+        }];
       }
     });
   };
@@ -147,3 +158,4 @@ export const MarketCartProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     </MarketCartContext.Provider>
   );
 };
+
