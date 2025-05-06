@@ -1,9 +1,10 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Minus, Plus, X } from 'lucide-react';
+import { ArrowLeft, Minus, Plus, Trash2, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { toast } from 'sonner';
 
 interface CartItem {
   id: number;
@@ -51,6 +52,7 @@ const ClothesCart: React.FC = () => {
         item.id === id ? { ...item, quantity: item.quantity + 1 } : item
       )
     );
+    toast.success("تم تحديث الكمية");
   };
 
   const decreaseQuantity = (id: number) => {
@@ -61,10 +63,20 @@ const ClothesCart: React.FC = () => {
           : item
       )
     );
+    toast.success("تم تحديث الكمية");
   };
 
   const removeItem = (id: number) => {
-    setCartItems(items => items.filter(item => item.id !== id));
+    const itemToRemove = cartItems.find(item => item.id === id);
+    if (itemToRemove) {
+      setCartItems(items => items.filter(item => item.id !== id));
+      toast.success(`تم إزالة ${itemToRemove.name} من السلة`);
+    }
+  };
+
+  const addSuggested = (product: any) => {
+    setCartItems(prev => [...prev, { ...product, quantity: 1, type: 'ملابس', size: 'M' }]);
+    toast.success(`تمت إضافة ${product.name} إلى السلة`);
   };
 
   // Calculate totals
@@ -74,94 +86,110 @@ const ClothesCart: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50" dir="rtl">
-      <div className="max-w-md mx-auto bg-white pb-20">
+      <div className="max-w-md mx-auto bg-white pb-24">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 bg-white shadow-sm sticky top-0 z-10">
-          <Link to="/clothes" className="text-gray-700">
+        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-600 to-cyan-500 text-white sticky top-0 z-10 shadow-md">
+          <Link to="/clothes" className="text-white">
             <ArrowLeft className="w-6 h-6" />
           </Link>
-          <h1 className="text-xl font-bold">سلة الطلبات</h1>
+          <h1 className="text-xl font-bold">سلة المشتريات</h1>
           <div className="w-6"></div> {/* Empty div for flex spacing */}
         </div>
 
         {/* Cart Items */}
         <div className="p-4">
           {cartItems.length === 0 ? (
-            <div className="text-center py-10">
+            <div className="text-center py-10 mt-10">
+              <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <ShoppingCart className="w-10 h-10 text-blue-500" />
+              </div>
               <p className="text-gray-500 mb-4">السلة فارغة</p>
               <Link to="/clothes">
-                <Button className="bg-blue-500">تسوق الآن</Button>
+                <Button className="bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-md">
+                  تسوق الآن
+                </Button>
               </Link>
             </div>
           ) : (
             <div className="space-y-4">
               {cartItems.map((item) => (
-                <div key={item.id} className="flex items-center border rounded-lg p-3 relative">
-                  <img 
-                    src={item.image} 
-                    alt={item.name}
-                    className="w-20 h-20 object-cover rounded-md"
-                  />
-                  <div className="ml-4 flex-1">
-                    <h3 className="font-medium">{item.name}</h3>
-                    <p className="text-sm text-gray-500">{item.type} - {item.size}</p>
-                    <div className="flex justify-between items-center mt-2">
-                      <p className="font-bold">{item.price * item.quantity} ريال</p>
-                      <div className="flex items-center gap-3">
-                        <button 
-                          onClick={() => decreaseQuantity(item.id)}
-                          className="w-7 h-7 flex items-center justify-center bg-gray-100 rounded-full"
-                        >
-                          <Minus className="w-3 h-3" />
-                        </button>
-                        <span>{item.quantity}</span>
-                        <button 
-                          onClick={() => increaseQuantity(item.id)}
-                          className="w-7 h-7 flex items-center justify-center bg-gray-100 rounded-full"
-                        >
-                          <Plus className="w-3 h-3" />
-                        </button>
+                <Card key={item.id} className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex p-3 relative">
+                    <img 
+                      src={item.image} 
+                      alt={item.name}
+                      className="w-24 h-24 object-cover rounded-md"
+                    />
+                    <div className="ml-4 flex-1">
+                      <h3 className="font-medium text-gray-800">{item.name}</h3>
+                      <div className="flex text-xs text-gray-500 space-x-2 space-x-reverse mt-1">
+                        <span>{item.type}</span>
+                        <span>•</span>
+                        <span>المقاس: {item.size}</span>
+                      </div>
+                      <div className="flex justify-between items-center mt-3">
+                        <div className="flex flex-col">
+                          <span className="font-bold text-gray-800">{item.price * item.quantity} ريال</span>
+                          {item.quantity > 1 && (
+                            <span className="text-xs text-gray-500">{item.quantity} × {item.price} ريال</span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button 
+                            onClick={() => decreaseQuantity(item.id)}
+                            className="w-7 h-7 flex items-center justify-center bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"
+                          >
+                            <Minus className="w-3 h-3" />
+                          </button>
+                          <span className="w-5 text-center font-medium">{item.quantity}</span>
+                          <button 
+                            onClick={() => increaseQuantity(item.id)}
+                            className="w-7 h-7 flex items-center justify-center bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200 transition-colors"
+                          >
+                            <Plus className="w-3 h-3" />
+                          </button>
+                        </div>
                       </div>
                     </div>
+                    <button 
+                      onClick={() => removeItem(item.id)}
+                      className="absolute top-2 right-2 text-gray-400 hover:text-red-500 transition-colors"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
                   </div>
-                  <button 
-                    onClick={() => removeItem(item.id)}
-                    className="absolute top-2 right-2 text-gray-400 hover:text-gray-700"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
+                </Card>
               ))}
 
               {/* Order Summary */}
-              <Card className="p-4 mt-6">
-                <h3 className="font-bold mb-4">ملخص الطلب</h3>
-                <div className="space-y-2 text-sm">
+              <Card className="p-4 mt-6 border-none shadow-sm">
+                <h3 className="font-bold mb-4 text-gray-800">ملخص الطلب</h3>
+                <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
-                    <span>المجموع الفرعي</span>
-                    <span>{subtotal} ريال</span>
+                    <span className="text-gray-600">المجموع الفرعي</span>
+                    <span className="font-medium">{subtotal} ريال</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>رسوم التوصيل</span>
-                    <span>{deliveryFee} ريال</span>
+                    <span className="text-gray-600">رسوم التوصيل</span>
+                    <span className="font-medium">{deliveryFee} ريال</span>
                   </div>
-                  <div className="border-t pt-2 mt-2 flex justify-between font-bold">
+                  <div className="border-t pt-3 mt-2 flex justify-between font-bold">
                     <span>الإجمالي</span>
-                    <span>{total} ريال</span>
+                    <span className="text-blue-600">{total} ريال</span>
                   </div>
                 </div>
               </Card>
 
               {/* Buttons */}
-              <div className="flex gap-4 mt-6">
+              <div className="flex gap-3 mt-6">
                 <Link to="/clothes" className="flex-1">
-                  <Button variant="outline" className="w-full border-blue-500 text-blue-500">
-                    أضف المزيد
+                  <Button variant="outline" className="w-full border-blue-500 text-blue-600 hover:bg-blue-50 font-medium">
+                    إضافة المزيد
                   </Button>
                 </Link>
                 <Link to="/clothes/checkout" className="flex-1">
-                  <Button className="w-full bg-blue-500">
-                    تابع الدفع
+                  <Button className="w-full bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white shadow-md font-medium">
+                    متابعة الدفع
                   </Button>
                 </Link>
               </div>
@@ -172,28 +200,42 @@ const ClothesCart: React.FC = () => {
         {/* Suggested Products */}
         {cartItems.length > 0 && (
           <div className="px-4 mt-8">
-            <h3 className="font-bold mb-4">منتجات ممكن تعجبك</h3>
+            <h3 className="font-bold text-lg mb-4 text-gray-800 border-r-4 border-blue-500 pr-3">منتجات قد تعجبك</h3>
             <div className="flex overflow-x-auto gap-4 pb-4 no-scrollbar">
               {suggestedProducts.map((product) => (
-                <div key={product.id} className="min-w-[150px] border rounded-lg overflow-hidden">
+                <div key={product.id} className="min-w-[150px] rounded-lg overflow-hidden shadow-sm border border-gray-100 bg-white">
                   <img 
                     src={product.image} 
                     alt={product.name}
                     className="w-full h-32 object-cover"
                   />
-                  <div className="p-2">
-                    <h4 className="font-medium text-sm">{product.name}</h4>
-                    <p className="text-sm font-bold mt-1">{product.price} ريال</p>
-                    <Button 
-                      size="sm" 
-                      className="w-full mt-2 text-xs py-1 bg-blue-500"
-                    >
-                      أضف إلى السلة
-                    </Button>
+                  <div className="p-3">
+                    <h4 className="font-medium text-sm text-gray-800">{product.name}</h4>
+                    <div className="flex items-center justify-between mt-2">
+                      <span className="font-bold text-blue-600 text-sm">{product.price} ريال</span>
+                      <Button 
+                        size="sm" 
+                        onClick={() => addSuggested(product)}
+                        className="rounded-full h-7 w-7 p-0 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white shadow-sm"
+                      >
+                        <Plus className="w-3 h-3" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
+          </div>
+        )}
+        
+        {/* Bottom Buttons - Fixed at bottom */}
+        {cartItems.length > 0 && (
+          <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 max-w-md mx-auto shadow-lg">
+            <Link to="/clothes/checkout">
+              <Button className="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white text-lg font-medium shadow-md">
+                متابعة الدفع ({total} ريال)
+              </Button>
+            </Link>
           </div>
         )}
       </div>

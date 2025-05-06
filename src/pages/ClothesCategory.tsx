@@ -1,80 +1,154 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, Share, Search, ShoppingCart } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { ArrowLeft, Search, ShoppingCart, Star, Plus, Filter, ChevronDown } from 'lucide-react';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
-type SizeOption = 'S' | 'M' | 'L' | 'XL';
-
-interface Product {
+interface ClothesProduct {
   id: number;
   name: string;
   type: string;
   price: number;
-  sizes: SizeOption[];
   image: string;
+  rating: number;
+  salesCount: number;
+  discount?: number;
 }
+
+// Mock API function
+const fetchCategoryProducts = (categoryId: string) => {
+  // This would be replaced with a real API call
+  return new Promise<ClothesProduct[]>((resolve) => {
+    setTimeout(() => {
+      const products: ClothesProduct[] = [];
+      const count = 8;
+
+      const categoryImages: Record<string, string[]> = {
+        'girls': [
+          'https://images.unsplash.com/photo-1613995887374-3c9e8d49320b?auto=format&fit=crop&q=80&w=240',
+          'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?auto=format&fit=crop&q=80&w=240',
+          'https://images.unsplash.com/photo-1473283297141-90144560e010?auto=format&fit=crop&q=80&w=240',
+          'https://images.unsplash.com/photo-1541580621-39f717ce77cd?auto=format&fit=crop&q=80&w=240',
+        ],
+        'boys': [
+          'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&q=80&w=240',
+          'https://images.unsplash.com/photo-1565084888279-aca607ecce0c?auto=format&fit=crop&q=80&w=240',
+          'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?auto=format&fit=crop&q=80&w=240',
+          'https://images.unsplash.com/photo-1502810217690-b2aa88e35100?auto=format&fit=crop&q=80&w=240',
+        ],
+        'kids': [
+          'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?auto=format&fit=crop&q=80&w=240',
+          'https://images.unsplash.com/photo-1565084888279-aca607ecce0c?auto=format&fit=crop&q=80&w=240',
+          'https://images.unsplash.com/photo-1607603750909-408e193868a7?auto=format&fit=crop&q=80&w=240',
+          'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&q=80&w=240',
+        ],
+        'sportswear': [
+          'https://images.unsplash.com/photo-1483721310020-03333e577078?auto=format&fit=crop&q=80&w=240',
+          'https://images.unsplash.com/photo-1519058082700-08a0b56da9b4?auto=format&fit=crop&q=80&w=240',
+          'https://images.unsplash.com/photo-1598346762291-aee88549193f?auto=format&fit=crop&q=80&w=240',
+          'https://images.unsplash.com/photo-1567013127542-490d757e6aa4?auto=format&fit=crop&q=80&w=240',
+        ],
+      };
+
+      // Default images if specific category not found
+      const defaultImages = [
+        'https://images.unsplash.com/photo-1619451683204-a4bcd6ad008a?auto=format&fit=crop&q=80&w=240',
+        'https://images.unsplash.com/photo-1585652757173-57de5e9fab26?auto=format&fit=crop&q=80&w=240',
+        'https://images.unsplash.com/photo-1571781418606-70265b9cce90?auto=format&fit=crop&q=80&w=240',
+        'https://images.unsplash.com/photo-1571646750134-1632716adbe6?auto=format&fit=crop&q=80&w=240',
+      ];
+
+      // Get images for the category or use default
+      const categoryImagesList = categoryImages[categoryId] || defaultImages;
+
+      // Product types by category
+      const productTypes: Record<string, string[]> = {
+        'girls': ['فساتين', 'بلوزات', 'بناطيل', 'جواكيت'],
+        'boys': ['قمصان', 'بناطيل', 'تيشيرتات', 'جواكيت'],
+        'kids': ['ملابس أطفال', 'أحذية', 'اكسسوارات', 'بيجامات'],
+        'sportswear': ['تيشيرتات رياضية', 'بناطيل رياضية', 'أحذية رياضية', 'جواكيت رياضية']
+      };
+
+      const types = productTypes[categoryId] || ['قمصان', 'بناطيل', 'تيشيرتات'];
+
+      for (let i = 1; i <= count; i++) {
+        const imageIndex = (i - 1) % categoryImagesList.length;
+        const typeIndex = (i - 1) % types.length;
+        const hasDiscount = Math.random() > 0.7;
+
+        const product: ClothesProduct = {
+          id: i,
+          name: `${types[typeIndex]} ${i}`,
+          type: types[typeIndex],
+          price: 80 + (i * 20),
+          image: categoryImagesList[imageIndex],
+          rating: 3.5 + Math.random() * 1.5,
+          salesCount: Math.floor(Math.random() * 200),
+          ...(hasDiscount && { discount: 15 + Math.floor(Math.random() * 20) })
+        };
+        products.push(product);
+      }
+      resolve(products);
+    }, 500);
+  });
+};
 
 const ClothesCategory: React.FC = () => {
   const { categoryId } = useParams<{ categoryId: string }>();
-  const [selectedSizes, setSelectedSizes] = useState<Record<number, SizeOption>>({});
-
-  // Mock products data for each category
-  const productsByCategory: Record<string, { title: string; products: Product[] }> = {
-    'girls': {
-      title: 'ملابس بناتي',
-      products: [
-        { id: 1, name: 'قميص أنيق', type: 'قميص', price: 150, sizes: ['S', 'M', 'L'], image: 'https://images.unsplash.com/photo-1583744946564-b52d01c96e19?auto=format&fit=crop&q=80&w=300&h=400' },
-        { id: 2, name: 'فستان صيفي', type: 'فستان', price: 250, sizes: ['S', 'M', 'L', 'XL'], image: 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&q=80&w=300&h=400' },
-        { id: 3, name: 'بلوزة كاجوال', type: 'بلوزة', price: 120, sizes: ['M', 'L'], image: 'https://images.unsplash.com/photo-1560829244-984447ed7985?auto=format&fit=crop&q=80&w=300&h=400' },
-        { id: 4, name: 'بنطلون جينز', type: 'بنطلون', price: 200, sizes: ['S', 'M', 'L', 'XL'], image: 'https://images.unsplash.com/photo-1584370848010-d7fe6bc767ec?auto=format&fit=crop&q=80&w=300&h=400' },
-      ]
-    },
-    'boys': {
-      title: 'ملابس ولادي',
-      products: [
-        { id: 5, name: 'قميص كاجوال', type: 'قميص', price: 140, sizes: ['M', 'L', 'XL'], image: 'https://images.unsplash.com/photo-1603252109303-2751441dd157?auto=format&fit=crop&q=80&w=300&h=400' },
-        { id: 6, name: 'تيشيرت قطني', type: 'تيشيرت', price: 90, sizes: ['S', 'M', 'L', 'XL'], image: 'https://images.unsplash.com/photo-1586363104862-3a5e2ab60d99?auto=format&fit=crop&q=80&w=300&h=400' },
-        { id: 7, name: 'بنطلون رياضي', type: 'بنطلون', price: 180, sizes: ['M', 'L'], image: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&q=80&w=300&h=400' },
-        { id: 8, name: 'جاكيت خفيف', type: 'جاكيت', price: 280, sizes: ['M', 'L', 'XL'], image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=300&h=400' },
-      ]
-    },
-    'kids': {
-      title: 'ملابس أطفال',
-      products: [
-        { id: 9, name: 'بيجامة أطفال', type: 'بيجامة', price: 120, sizes: ['S', 'M', 'L'], image: 'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?auto=format&fit=crop&q=80&w=300&h=400' },
-        { id: 10, name: 'فستان بناتي', type: 'فستان', price: 150, sizes: ['S', 'M'], image: 'https://images.unsplash.com/photo-1602250698774-469b27ce339c?auto=format&fit=crop&q=80&w=300&h=400' },
-        { id: 11, name: 'تيشيرت مطبوع', type: 'تيشيرت', price: 85, sizes: ['S', 'M'], image: 'https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?auto=format&fit=crop&q=80&w=300&h=400' },
-        { id: 12, name: 'شورت رياضي', type: 'شورت', price: 95, sizes: ['S', 'M', 'L'], image: 'https://images.unsplash.com/photo-1619182597083-17bda72c5d1c?auto=format&fit=crop&q=80&w=300&h=400' },
-      ]
-    },
-    'sportswear': {
-      title: 'ملابس رياضية',
-      products: [
-        { id: 13, name: 'بنطلون رياضي', type: 'بنطلون', price: 200, sizes: ['S', 'M', 'L', 'XL'], image: 'https://images.unsplash.com/photo-1556633640-8c0989d74fe6?auto=format&fit=crop&q=80&w=300&h=400' },
-        { id: 14, name: 'تيشيرت رياضي', type: 'تيشيرت', price: 120, sizes: ['M', 'L', 'XL'], image: 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&q=80&w=300&h=400' },
-        { id: 15, name: 'سويت شيرت', type: 'سترة', price: 230, sizes: ['S', 'M', 'L'], image: 'https://images.unsplash.com/photo-1565317058474-8ef05f4ebe97?auto=format&fit=crop&q=80&w=300&h=400' },
-        { id: 16, name: 'شورت رياضي', type: 'شورت', price: 140, sizes: ['S', 'M', 'L', 'XL'], image: 'https://images.unsplash.com/photo-1565019011521-b0d5ce115424?auto=format&fit=crop&q=80&w=300&h=400' },
-      ]
-    }
-  };
-
-  const categoryData = categoryId ? productsByCategory[categoryId] : null;
+  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<ClothesProduct[]>([]);
+  const [showFilters, setShowFilters] = useState(false);
   
-  const handleSizeSelect = (productId: number, size: SizeOption) => {
-    setSelectedSizes(prev => ({ ...prev, [productId]: size }));
+  // Category mapping
+  const categoryMap: Record<string, { name: string, color: string, bgImage: string }> = {
+    'girls': { 
+      name: 'ملابس بناتي', 
+      color: 'from-pink-400 to-purple-500', 
+      bgImage: 'https://images.unsplash.com/photo-1613995887374-3c9e8d49320b?auto=format&fit=crop&q=80&w=600'
+    },
+    'boys': { 
+      name: 'ملابس ولادي', 
+      color: 'from-blue-500 to-cyan-400', 
+      bgImage: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&q=80&w=600'
+    },
+    'kids': { 
+      name: 'ملابس أطفال', 
+      color: 'from-yellow-400 to-orange-400', 
+      bgImage: 'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?auto=format&fit=crop&q=80&w=600'
+    },
+    'sportswear': { 
+      name: 'ملابس رياضية', 
+      color: 'from-green-400 to-teal-500', 
+      bgImage: 'https://images.unsplash.com/photo-1483721310020-03333e577078?auto=format&fit=crop&q=80&w=600'
+    },
   };
 
-  const addToCart = (product: Product) => {
-    // In a real app, you would dispatch to a cart context/store
-    // For now, we'll just navigate to the cart page
-    console.log(`Added product ${product.id} with size ${selectedSizes[product.id]} to cart`);
+  const currentCategory = categoryMap[categoryId || ''] || { 
+    name: 'الملابس', 
+    color: 'from-blue-500 to-teal-500',
+    bgImage: 'https://images.unsplash.com/photo-1618518507212-8dd17705afd8?auto=format&fit=crop&q=80&w=600' 
   };
 
-  if (!categoryData) {
-    return <div>Category not found</div>;
-  }
+  useEffect(() => {
+    setLoading(true);
+    fetchCategoryProducts(categoryId || '')
+      .then(data => {
+        setProducts(data);
+        setLoading(false);
+      });
+  }, [categoryId]);
+
+  const handleAddToCart = (product: ClothesProduct) => {
+    // This would integrate with a cart context in a real app
+    toast(`تمت إضافة ${product.name} إلى السلة بنجاح.`, {
+      action: {
+        label: "عرض السلة",
+        onClick: () => window.location.href = '/clothes/cart'
+      }
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gray-50" dir="rtl">
@@ -84,68 +158,147 @@ const ClothesCategory: React.FC = () => {
           <Link to="/clothes" className="text-gray-700">
             <ArrowLeft className="w-6 h-6" />
           </Link>
-          <h1 className="text-xl font-bold">{categoryData.title}</h1>
+          <h1 className="text-xl font-bold">{currentCategory.name}</h1>
           <div className="flex items-center gap-4">
             <button className="text-gray-700">
               <Search className="w-5 h-5" />
             </button>
-            <button className="text-gray-700">
-              <Share className="w-5 h-5" />
-            </button>
+            <Link to="/clothes/cart" className="text-gray-700 relative">
+              <ShoppingCart className="w-5 h-5" />
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                2
+              </span>
+            </Link>
           </div>
+        </div>
+
+        {/* Category Banner */}
+        <div className="relative h-40 overflow-hidden">
+          <div className={`absolute inset-0 bg-gradient-to-r ${currentCategory.color} opacity-80`}></div>
+          <img 
+            src={currentCategory.bgImage} 
+            alt={currentCategory.name}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 flex flex-col justify-center p-6">
+            <h2 className="text-2xl font-bold text-white mb-1">{currentCategory.name}</h2>
+            <p className="text-sm text-white opacity-90">تسوق أحدث صيحات الموضة من {currentCategory.name}</p>
+          </div>
+        </div>
+
+        {/* Search and Filters */}
+        <div className="p-4 space-y-4">
+          {/* Search bar */}
+          <div className="relative">
+            <input 
+              type="text" 
+              placeholder={`ابحث في ${currentCategory.name}...`}
+              className="w-full p-3 pl-10 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <Search className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
+          </div>
+          
+          {/* Filter button */}
+          <div className="flex justify-between items-center">
+            <Button 
+              variant="outline" 
+              className="border-gray-300 flex items-center gap-2"
+              onClick={() => setShowFilters(!showFilters)}
+            >
+              <Filter className="w-4 h-4" />
+              <span>تصفية</span>
+              <ChevronDown className={`w-4 h-4 transform transition-transform ${showFilters ? 'rotate-180' : ''}`} />
+            </Button>
+            
+            <span className="text-sm text-gray-500">{products.length} منتج</span>
+          </div>
+          
+          {/* Filter options */}
+          {showFilters && (
+            <div className="bg-gray-50 p-4 rounded-lg space-y-3 animate-fade-in">
+              <div>
+                <h3 className="font-medium mb-2">السعر</h3>
+                <div className="flex flex-wrap gap-2">
+                  <Button variant="outline" size="sm" className="bg-white">أقل من 100 ريال</Button>
+                  <Button variant="outline" size="sm" className="bg-white">100 - 200 ريال</Button>
+                  <Button variant="outline" size="sm" className="bg-white">200+ ريال</Button>
+                </div>
+              </div>
+              
+              <div>
+                <h3 className="font-medium mb-2">الترتيب حسب</h3>
+                <div className="flex flex-wrap gap-2">
+                  <Button variant="outline" size="sm" className="bg-white">الأكثر مبيعاً</Button>
+                  <Button variant="outline" size="sm" className="bg-white">الأحدث</Button>
+                  <Button variant="outline" size="sm" className="bg-white">السعر: من الأقل للأعلى</Button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Products Grid */}
         <div className="p-4">
-          <div className="grid grid-cols-2 gap-4">
-            {categoryData.products.map((product) => (
-              <Card key={product.id} className="overflow-hidden">
-                <img 
-                  src={product.image} 
-                  alt={product.name}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-3">
-                  <h3 className="font-medium text-lg">{product.name}</h3>
-                  <p className="text-sm text-gray-500 mb-2">{product.type}</p>
-                  <div className="flex gap-2 mb-3">
-                    {product.sizes.map(size => (
-                      <button
-                        key={size}
-                        className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium
-                          ${selectedSizes[product.id] === size 
-                            ? 'bg-blue-500 text-white' 
-                            : 'bg-gray-100 text-gray-800'}`}
-                        onClick={() => handleSizeSelect(product.id, size)}
-                      >
-                        {size}
-                      </button>
-                    ))}
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="font-bold text-lg">{product.price} ريال</span>
-                    <Button 
-                      size="sm" 
-                      className="text-xs py-1 px-3 bg-blue-500"
-                      onClick={() => addToCart(product)}
-                      disabled={!selectedSizes[product.id]}
-                    >
-                      أضف إلى السلة
-                    </Button>
-                  </div>
+          {loading ? (
+            <div className="grid grid-cols-2 gap-4">
+              {[1, 2, 3, 4].map(i => (
+                <div key={i} className="animate-pulse">
+                  <div className="bg-gray-200 h-40 rounded-lg mb-2"></div>
+                  <div className="bg-gray-200 h-4 w-3/4 rounded mb-2"></div>
+                  <div className="bg-gray-200 h-4 w-1/2 rounded"></div>
                 </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-
-        {/* Cart Floating Button */}
-        <div className="fixed bottom-6 left-4 z-20">
-          <Link to="/clothes/cart">
-            <Button className="rounded-full w-14 h-14 bg-blue-500 hover:bg-blue-600 shadow-lg flex items-center justify-center">
-              <ShoppingCart className="w-6 h-6" />
-            </Button>
-          </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-4">
+              {products.map((product) => (
+                <Card key={product.id} className="overflow-hidden border border-gray-100 hover:shadow-md transition-shadow">
+                  <Link to={`/clothes/product/${product.id}`} className="block relative">
+                    <img 
+                      src={product.image} 
+                      alt={product.name}
+                      className="w-full h-40 object-cover"
+                    />
+                    {product.discount && (
+                      <div className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                        خصم {product.discount}%
+                      </div>
+                    )}
+                  </Link>
+                  <div className="p-3">
+                    <Link to={`/clothes/product/${product.id}`}>
+                      <h3 className="font-medium text-gray-800">{product.name}</h3>
+                      <p className="text-xs text-gray-500">{product.type}</p>
+                    </Link>
+                    <div className="flex items-center gap-1 mt-1">
+                      <Star className="h-3 w-3 fill-yellow-400 stroke-yellow-400" />
+                      <span className="text-xs text-gray-600">{product.rating.toFixed(1)}</span>
+                      <span className="text-xs text-gray-400 mr-1">({product.salesCount})</span>
+                    </div>
+                    <div className="flex justify-between items-center mt-2">
+                      <div>
+                        {product.discount ? (
+                          <div className="flex flex-col">
+                            <span className="font-bold text-red-600">{Math.round(product.price * (1 - product.discount/100))} ريال</span>
+                            <span className="text-xs text-gray-500 line-through">{product.price} ريال</span>
+                          </div>
+                        ) : (
+                          <span className="font-bold text-gray-800">{product.price} ريال</span>
+                        )}
+                      </div>
+                      <Button 
+                        size="sm" 
+                        className="rounded-full h-7 w-7 p-0 bg-gradient-to-r from-blue-500 to-cyan-400"
+                        onClick={() => handleAddToCart(product)}
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, Search, ShoppingCart, Star, Plus } from 'lucide-react';
+import { ArrowLeft, Search, ShoppingCart, Star, Plus, Filter, ChevronDown } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { usePersonalCareCart } from '@/context/PersonalCareCartContext';
@@ -11,28 +11,101 @@ import { PersonalCareProduct } from '@/context/PersonalCareCartContext';
 const PersonalCareCategory: React.FC = () => {
   const { categoryId } = useParams<{ categoryId: string }>();
   const { addToCart, itemCount, totalPrice } = usePersonalCareCart();
+  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<PersonalCareProduct[]>([]);
+  const [showFilters, setShowFilters] = useState(false);
+  const [activeFilter, setActiveFilter] = useState('all');
   
   // Category mapping
-  const categoryMap: Record<string, { name: string, gender: 'women' | 'men', color: string }> = {
-    'makeup': { name: 'الميكب', gender: 'women', color: 'from-pink-50 to-purple-50' },
-    'skincare': { name: 'سكين كير', gender: 'women', color: 'from-pink-50 to-purple-50' },
-    'accessories': { name: 'اكسسوارات', gender: 'women', color: 'from-pink-50 to-purple-50' },
-    'perfumes': { name: 'عطور', gender: 'women', color: 'from-pink-50 to-purple-50' },
-    'bodycare': { name: 'بادي كير', gender: 'women', color: 'from-pink-50 to-purple-50' },
-    'nailcare': { name: 'نيل كير', gender: 'women', color: 'from-pink-50 to-purple-50' },
-    'menperfumes': { name: 'عطور', gender: 'men', color: 'from-blue-50 to-cyan-50' },
-    'menaccessories': { name: 'اكسسوارات', gender: 'men', color: 'from-blue-50 to-cyan-50' },
-    'shaving': { name: 'الحلاقة والعناية باللحية', gender: 'men', color: 'from-blue-50 to-cyan-50' },
-    'menskincare': { name: 'سكين كير رجالي', gender: 'men', color: 'from-blue-50 to-cyan-50' },
-    'deodorants': { name: 'ديودرنت', gender: 'men', color: 'from-blue-50 to-cyan-50' },
+  const categoryMap: Record<string, { name: string, gender: 'women' | 'men', color: string, image: string }> = {
+    'makeup': { 
+      name: 'الميكب', 
+      gender: 'women', 
+      color: 'from-pink-400 to-purple-500',
+      image: 'https://images.unsplash.com/photo-1631214540553-ff044a3ff1d4?q=80&w=400&auto=format&fit=crop'
+    },
+    'skincare': { 
+      name: 'سكين كير', 
+      gender: 'women', 
+      color: 'from-pink-400 to-purple-500',
+      image: 'https://images.unsplash.com/photo-1570194065650-d99fb4ee271b?q=80&w=400&auto=format&fit=crop'
+    },
+    'accessories': { 
+      name: 'اكسسوارات', 
+      gender: 'women', 
+      color: 'from-pink-400 to-purple-500',
+      image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=400&auto=format&fit=crop'
+    },
+    'perfumes': { 
+      name: 'عطور', 
+      gender: 'women', 
+      color: 'from-pink-400 to-purple-500',
+      image: 'https://images.unsplash.com/photo-1615634260167-c8cdede054de?q=80&w=400&auto=format&fit=crop'
+    },
+    'bodycare': { 
+      name: 'بادي كير', 
+      gender: 'women', 
+      color: 'from-pink-400 to-purple-500',
+      image: 'https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?q=80&w=400&auto=format&fit=crop'
+    },
+    'nailcare': { 
+      name: 'نيل كير', 
+      gender: 'women', 
+      color: 'from-pink-400 to-purple-500',
+      image: 'https://images.unsplash.com/photo-1631213177572-fd7818a37d85?q=80&w=400&auto=format&fit=crop'
+    },
+    'menperfumes': { 
+      name: 'عطور', 
+      gender: 'men', 
+      color: 'from-blue-500 to-cyan-400',
+      image: 'https://images.unsplash.com/photo-1600612253971-422e7f7faeb6?q=80&w=400&auto=format&fit=crop'
+    },
+    'menaccessories': { 
+      name: 'اكسسوارات', 
+      gender: 'men', 
+      color: 'from-blue-500 to-cyan-400',
+      image: 'https://images.unsplash.com/photo-1527719327859-c6ce80353573?q=80&w=400&auto=format&fit=crop'
+    },
+    'shaving': { 
+      name: 'الحلاقة والعناية باللحية', 
+      gender: 'men', 
+      color: 'from-blue-500 to-cyan-400',
+      image: 'https://images.unsplash.com/photo-1621607514922-i9eba47788c5?q=80&w=400&auto=format&fit=crop'
+    },
+    'menskincare': { 
+      name: 'سكين كير رجالي', 
+      gender: 'men', 
+      color: 'from-blue-500 to-cyan-400',
+      image: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=400&auto=format&fit=crop'
+    },
+    'deodorants': { 
+      name: 'ديودرنت', 
+      gender: 'men', 
+      color: 'from-blue-500 to-cyan-400',
+      image: 'https://images.unsplash.com/photo-1626818590338-bed90abab6fe?q=80&w=400&auto=format&fit=crop'
+    },
   };
 
-  const currentCategory = categoryMap[categoryId || ''] || { name: 'القسم', gender: 'women', color: 'from-pink-50 to-purple-50' };
+  const currentCategory = categoryMap[categoryId || ''] || { 
+    name: 'القسم', 
+    gender: 'women', 
+    color: 'from-pink-400 to-purple-500',
+    image: 'https://images.unsplash.com/photo-1619451683204-a4bcd6ad008a?q=80&w=400&auto=format&fit=crop'
+  };
+
+  useEffect(() => {
+    // Simulate API call to fetch products
+    setLoading(true);
+    setTimeout(() => {
+      setProducts(generateProducts());
+      setLoading(false);
+    }, 800);
+  }, [categoryId]);
   
   // Generate mock products based on category
   const generateProducts = () => {
     // This would come from the database in a real app
-    const products = [];
+    const products: PersonalCareProduct[] = [];
     const count = 8; // Number of products to generate
     
     // Sample images by category
@@ -60,13 +133,24 @@ const PersonalCareCategory: React.FC = () => {
     
     // Get images for the category or use default
     const categoryImages = imageMap[categoryId || ''] || imageMap['default'];
+
+    // Product names by category
+    const nameMap: Record<string, string[]> = {
+      'makeup': ['أحمر شفاه', 'ماسكارا', 'كريم أساس', 'آيلاينر'],
+      'skincare': ['كريم مرطب', 'سيروم فيتامين سي', 'ماسك للوجه', 'غسول للبشرة'],
+      'menperfumes': ['عطر رجالي فاخر', 'عطر كلاسيكي', 'عطر رياضي', 'عطر خشبي'],
+      'default': [`${currentCategory.name} منتج`],
+    };
+
+    const names = nameMap[categoryId || ''] || nameMap['default'];
     
     for (let i = 1; i <= count; i++) {
       const imageIndex = (i - 1) % categoryImages.length;
+      const nameIndex = (i - 1) % names.length;
       
       const product: PersonalCareProduct = {
         id: i,
-        name: `${currentCategory.name} ${i}`,
+        name: `${names[nameIndex]} ${i}`,
         price: 30 + (i * 15),
         image: categoryImages[imageIndex],
       };
@@ -75,13 +159,19 @@ const PersonalCareCategory: React.FC = () => {
     
     return products;
   };
-  
-  const products = generateProducts();
 
   const handleAddToCart = (product: PersonalCareProduct) => {
     addToCart(product);
-    toast(`تمت إضافة ${product.name} إلى السلة بنجاح.`);
+    toast.success(`تمت إضافة ${product.name} إلى السلة`);
   };
+
+  const filterOptions = [
+    { id: 'all', name: 'الكل' },
+    { id: 'best-seller', name: 'الأكثر مبيعًا' },
+    { id: 'top-rated', name: 'الأعلى تقييمًا' },
+    { id: 'price-low', name: 'الأقل سعرًا' },
+    { id: 'price-high', name: 'الأعلى سعرًا' },
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50" dir="rtl">
@@ -96,70 +186,151 @@ const PersonalCareCategory: React.FC = () => {
             <button className="text-gray-700">
               <Search className="w-5 h-5" />
             </button>
+            <Link to="/personal-care/cart" className="relative text-gray-700">
+              <ShoppingCart className="w-5 h-5" />
+              {itemCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                  {itemCount}
+                </span>
+              )}
+            </Link>
           </div>
         </div>
 
         {/* Category Banner */}
-        <div className={`p-4 bg-gradient-to-r ${currentCategory.color} mb-4`}>
-          <h2 className="text-xl font-bold">{currentCategory.name}</h2>
-          <p className="text-sm text-gray-600">اختر من بين أفضل منتجات {currentCategory.name} المتوفرة</p>
+        <div className="relative h-40 overflow-hidden">
+          <div className={`absolute inset-0 bg-gradient-to-r ${currentCategory.color} opacity-80`}></div>
+          <img 
+            src={currentCategory.image} 
+            alt={currentCategory.name}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 flex flex-col justify-center p-6">
+            <h2 className="text-2xl font-bold text-white mb-1">{currentCategory.name}</h2>
+            <p className="text-sm text-white opacity-90">اختر من بين أفضل منتجات {currentCategory.name} المتوفرة</p>
+          </div>
         </div>
 
-        {/* Product Filters */}
-        <div className="px-4 mb-4">
-          <div className="flex overflow-x-auto gap-2 pb-2 no-scrollbar">
-            <Button variant="outline" size="sm" className="whitespace-nowrap">
-              الكل
+        {/* Search and Filters */}
+        <div className="p-4 space-y-4">
+          {/* Search bar */}
+          <div className="relative">
+            <input 
+              type="text" 
+              placeholder={`ابحث في ${currentCategory.name}...`}
+              className="w-full p-3 pl-10 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+            />
+            <Search className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
+          </div>
+          
+          {/* Filter button */}
+          <div className="flex justify-between items-center">
+            <Button 
+              variant="outline" 
+              className="border-gray-300 flex items-center gap-2"
+              onClick={() => setShowFilters(!showFilters)}
+            >
+              <Filter className="w-4 h-4" />
+              <span>تصفية</span>
+              <ChevronDown className={`w-4 h-4 transform transition-transform ${showFilters ? 'rotate-180' : ''}`} />
             </Button>
-            <Button variant="outline" size="sm" className="whitespace-nowrap">
-              الأكثر مبيعًا
-            </Button>
-            <Button variant="outline" size="sm" className="whitespace-nowrap">
-              الأعلى تقييمًا
-            </Button>
-            <Button variant="outline" size="sm" className="whitespace-nowrap">
-              أقل سعر
-            </Button>
-            <Button variant="outline" size="sm" className="whitespace-nowrap">
-              أعلى سعر
-            </Button>
+            
+            <span className="text-sm text-gray-500">{products.length} منتج</span>
+          </div>
+
+          {/* Filter options */}
+          {showFilters && (
+            <div className="bg-gray-50 p-4 rounded-lg animate-fade-in">
+              <h3 className="font-medium mb-3">ترتيب حسب:</h3>
+              <div className="flex flex-wrap gap-2">
+                {filterOptions.map(option => (
+                  <Button 
+                    key={option.id}
+                    variant={activeFilter === option.id ? "default" : "outline"} 
+                    size="sm"
+                    onClick={() => setActiveFilter(option.id)}
+                    className={activeFilter === option.id ? "bg-gradient-to-r from-purple-500 to-pink-500" : "bg-white"}
+                  >
+                    {option.name}
+                  </Button>
+                ))}
+              </div>
+              
+              <h3 className="font-medium mb-3 mt-4">السعر:</h3>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="outline" size="sm" className="bg-white">أقل من 50 ريال</Button>
+                <Button variant="outline" size="sm" className="bg-white">50 - 100 ريال</Button>
+                <Button variant="outline" size="sm" className="bg-white">100+ ريال</Button>
+              </div>
+            </div>
+          )}
+          
+          {/* Horizontal Filter Tabs */}
+          <div className="flex overflow-x-auto gap-2 pb-2 no-scrollbar -mx-1 px-1">
+            {filterOptions.map((option) => (
+              <Button 
+                key={option.id}
+                variant={activeFilter === option.id ? "default" : "outline"} 
+                size="sm" 
+                className={`whitespace-nowrap ${
+                  activeFilter === option.id 
+                  ? "bg-gradient-to-r from-purple-500 to-pink-500" 
+                  : "border-gray-200"
+                }`}
+                onClick={() => setActiveFilter(option.id)}
+              >
+                {option.name}
+              </Button>
+            ))}
           </div>
         </div>
 
         {/* Products Grid */}
         <div className="p-4">
-          <div className="grid grid-cols-2 gap-4">
-            {products.map((product) => (
-              <Card key={product.id} className="overflow-hidden">
-                <Link to={`/personal-care/product/${product.id}`}>
-                  <img 
-                    src={product.image} 
-                    alt={product.name}
-                    className="w-full h-36 object-cover"
-                  />
-                </Link>
-                <div className="p-3">
-                  <Link to={`/personal-care/product/${product.id}`}>
-                    <h3 className="font-medium">{product.name}</h3>
-                  </Link>
-                  <div className="flex items-center gap-1 mb-2">
-                    <Star className="h-3 w-3 fill-yellow-400 stroke-yellow-400" />
-                    <span className="text-xs">{(4 + Math.random()).toFixed(1)}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="font-bold">{product.price} ريال</span>
-                    <Button 
-                      size="sm" 
-                      className="rounded-full h-7 w-7 p-0 bg-gradient-to-r from-purple-500 to-pink-500"
-                      onClick={() => handleAddToCart(product)}
-                    >
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  </div>
+          {loading ? (
+            <div className="grid grid-cols-2 gap-4">
+              {[1, 2, 3, 4].map(i => (
+                <div key={i} className="animate-pulse">
+                  <div className="bg-gray-200 h-40 rounded-lg mb-2"></div>
+                  <div className="bg-gray-200 h-4 w-3/4 rounded mb-2"></div>
+                  <div className="bg-gray-200 h-4 w-1/2 rounded"></div>
                 </div>
-              </Card>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-4">
+              {products.map((product) => (
+                <Card key={product.id} className="overflow-hidden border border-gray-100 hover:shadow-md transition-shadow">
+                  <Link to={`/personal-care/product/${product.id}`}>
+                    <img 
+                      src={product.image} 
+                      alt={product.name}
+                      className="w-full h-36 object-cover"
+                    />
+                  </Link>
+                  <div className="p-3">
+                    <Link to={`/personal-care/product/${product.id}`}>
+                      <h3 className="font-medium text-gray-800">{product.name}</h3>
+                    </Link>
+                    <div className="flex items-center gap-1 mb-2">
+                      <Star className="h-3 w-3 fill-yellow-400 stroke-yellow-400" />
+                      <span className="text-xs text-gray-600">{(4 + Math.random()).toFixed(1)}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="font-bold text-gray-800">{product.price} ريال</span>
+                      <Button 
+                        size="sm" 
+                        className="rounded-full h-7 w-7 p-0 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-sm"
+                        onClick={() => handleAddToCart(product)}
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Cart Floating Button */}
