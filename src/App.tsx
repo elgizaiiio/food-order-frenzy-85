@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { MarketCartProvider } from "@/context/MarketCartContext";
 import Index from "./pages/Index";
 import Restaurants from "./pages/Restaurants";
 import RestaurantMenu from "./pages/RestaurantMenu";
@@ -46,7 +47,14 @@ import AddPaymentMethod from "./pages/AddPaymentMethod";
 import Orders from "./pages/Orders";
 import Coupons from "./pages/Coupons";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -65,11 +73,14 @@ const App = () => (
           <Route path="/pharmacy/cart" element={<PharmacyCart />} />
           <Route path="/pharmacy/checkout" element={<PharmacyCheckout />} />
           <Route path="/pharmacy/tracking" element={<PharmacyTracking />} />
+          
+          {/* Market routes with MarketCartProvider */}
           <Route path="/market" element={<DamMarket />} />
           <Route path="/market/category/:id" element={<MarketCategory />} />
           <Route path="/market/cart" element={<MarketCart />} />
           <Route path="/market/checkout" element={<MarketCheckout />} />
           <Route path="/market/tracking" element={<MarketTracking />} />
+          
           {/* Personal Care Routes */}
           <Route path="/personal-care" element={<PersonalCare />} />
           <Route path="/personal-care/category/:categoryId" element={<PersonalCareCategory />} />

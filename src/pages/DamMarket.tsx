@@ -1,138 +1,230 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Search, Share, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, Search, Share, ShoppingCart, MapPin, ChevronDown, Package, Clock } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { useCategories, useOffers, usePopularProducts } from '@/hooks/useMarketData';
+import { MarketCartProvider, useMarketCart } from '@/context/MarketCartContext';
 
-const DamMarket: React.FC = () => {
-  // Mock categories data - in a real app, this would come from a database
-  const categories = [
-    { id: 1, name: 'المشروبات', description: 'Beverages', image: 'https://images.unsplash.com/photo-1596803244535-925769f389fc?auto=format&fit=crop&q=80&w=200&h=200' },
-    { id: 2, name: 'القهوة والشاي', description: 'Coffee & Tea', image: 'https://images.unsplash.com/photo-1511537190424-bbbab87ac5eb?auto=format&fit=crop&q=80&w=200&h=200' },
-    { id: 3, name: 'الحليب', description: 'Milk', image: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&q=80&w=200&h=200' },
-    { id: 4, name: 'منتجات الألبان', description: 'Dairy Products', image: 'https://images.unsplash.com/photo-1628689469838-524a4a973b8e?auto=format&fit=crop&q=80&w=200&h=200' },
-    { id: 5, name: 'إضافات الطعام', description: 'Food Additives', image: 'https://images.unsplash.com/photo-1610554675846-2618e40bd49d?auto=format&fit=crop&q=80&w=200&h=200' },
-    { id: 6, name: 'الجبن', description: 'Cheese', image: 'https://images.unsplash.com/photo-1589881133595-a3c085cb731d?auto=format&fit=crop&q=80&w=200&h=200' },
-    { id: 7, name: 'اللحوم', description: 'Meat', image: 'https://images.unsplash.com/photo-1613454320174-7862ab285a97?auto=format&fit=crop&q=80&w=200&h=200' },
-    { id: 8, name: 'منتجات الطبخ', description: 'Cooking Products', image: 'https://images.unsplash.com/photo-1620574387735-3921fa6376a8?auto=format&fit=crop&q=80&w=200&h=200' },
-    { id: 9, name: 'دجاج، بيض، لحوم باردة', description: 'Chicken, Eggs, Cold Cuts', image: 'https://images.unsplash.com/photo-1569288063643-5d29ad6874f0?auto=format&fit=crop&q=80&w=200&h=200' },
-    { id: 10, name: 'الماء', description: 'Water', image: 'https://images.unsplash.com/photo-1523362628745-0c100150b504?auto=format&fit=crop&q=80&w=200&h=200' },
-    { id: 11, name: 'منتجات الخبز', description: 'Bread Products', image: 'https://images.unsplash.com/photo-1605280263929-1c42c62ef169?auto=format&fit=crop&q=80&w=200&h=200' },
-    { id: 12, name: 'الأطعمة المجمدة', description: 'Frozen Foods', image: 'https://images.unsplash.com/photo-1621858170710-2e684fb6bb6e?auto=format&fit=crop&q=80&w=200&h=200' },
-    { id: 13, name: 'الآيس كريم', description: 'Ice Cream', image: 'https://images.unsplash.com/photo-1565237324415-e40db5510042?auto=format&fit=crop&q=80&w=200&h=200' },
-    { id: 14, name: 'منتجات الإفطار', description: 'Breakfast Items', image: 'https://images.unsplash.com/photo-1550037303-03da09fbde16?auto=format&fit=crop&q=80&w=200&h=200' },
-    { id: 15, name: 'شوكولاتة وبسكويت', description: 'Chocolate & Biscuits', image: 'https://images.unsplash.com/photo-1587495153142-a9c4480d4be5?auto=format&fit=crop&q=80&w=200&h=200' },
-  ];
+const DamMarketContent: React.FC = () => {
+  const { data: categories, isLoading: categoriesLoading } = useCategories();
+  const { data: offers, isLoading: offersLoading } = useOffers();
+  const { data: popularProducts, isLoading: productsLoading } = usePopularProducts();
+  const { addToCart, itemCount, totalPrice } = useMarketCart();
 
   return (
     <div className="min-h-screen bg-gray-50" dir="rtl">
-      <div className="max-w-md mx-auto bg-white">
+      <div className="max-w-md mx-auto bg-white pb-20">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 bg-white shadow-sm sticky top-0 z-10">
-          <Link to="/" className="text-gray-700">
-            <ArrowLeft className="w-6 h-6" />
-          </Link>
-          <h1 className="text-xl font-bold">dam ماركت</h1>
-          <div className="flex items-center gap-4">
-            <button className="text-gray-700">
-              <Search className="w-5 h-5" />
-            </button>
-            <button className="text-gray-700">
-              <Share className="w-5 h-5" />
-            </button>
+        <div className="sticky top-0 z-10 bg-white shadow-sm">
+          <div className="flex items-center justify-between p-4">
+            <Link to="/" className="text-gray-700">
+              <ArrowLeft className="w-6 h-6" />
+            </Link>
+            <h1 className="text-xl font-bold">dam ماركت</h1>
+            <div className="flex items-center gap-3">
+              <button className="text-gray-700">
+                <Search className="w-5 h-5" />
+              </button>
+              <button className="text-gray-700">
+                <Share className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Location Bar */}
+          <div className="flex items-center gap-2 px-4 py-2 border-b text-sm">
+            <MapPin className="w-4 h-4 text-brand-500" />
+            <span>التوصيل إلى:</span>
+            <div className="flex items-center">
+              <span className="font-medium">شارع الملك فهد</span>
+              <ChevronDown className="w-4 h-4 text-brand-500 mr-1" />
+            </div>
+          </div>
+
+          {/* Search Bar */}
+          <div className="px-4 py-3">
+            <div className="relative">
+              <Input 
+                type="search" 
+                placeholder="ابحث عن منتجات..." 
+                className="pr-10 bg-gray-100 border-0 rounded-xl"
+              />
+              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            </div>
           </div>
         </div>
 
-        {/* Intro Text */}
-        <div className="p-4 bg-gradient-to-r from-brand-50 to-brand-100 mb-4">
-          <h2 className="text-2xl font-bold text-brand-700">هنسهل عليك كل حاجة</h2>
-          <p className="text-sm text-gray-600 mt-1">اطلب منتجاتك واحنا هنوصلها لحد عندك</p>
+        {/* Intro Banner */}
+        <div className="mx-4 my-3 p-4 rounded-2xl bg-gradient-to-r from-brand-50 to-brand-100">
+          <h2 className="text-2xl font-bold text-brand-700 mb-1">توصيل سريع لمنتجاتك اليومية</h2>
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <Clock className="w-4 h-4 text-brand-500" />
+            <span>التوصيل خلال 45-30 دقيقة</span>
+          </div>
+        </div>
+
+        {/* Categories Section */}
+        <div className="px-4 py-3">
+          <h3 className="text-lg font-bold mb-3 flex items-center">
+            <Package className="w-5 h-5 ml-2 text-brand-500" />
+            الفئات
+          </h3>
+          
+          {categoriesLoading ? (
+            <div className="grid grid-cols-3 gap-3">
+              {[1, 2, 3, 4, 5, 6].map((item) => (
+                <Card key={item} className="p-2">
+                  <Skeleton className="w-20 h-20 rounded-full mb-2 mx-auto" />
+                  <Skeleton className="h-4 w-16 mx-auto" />
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 gap-3">
+              {categories?.map((category) => (
+                <Link key={category.id} to={`/market/category/${category.id}`}>
+                  <Card className="flex flex-col items-center p-2 hover:shadow-md transition-all border border-gray-100 rounded-xl overflow-hidden">
+                    <div className="w-20 h-20 rounded-full overflow-hidden mb-2 border-2 border-brand-100">
+                      <img 
+                        src={category.image} 
+                        alt={category.name} 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <h4 className="text-xs font-medium text-center">{category.name}</h4>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Offers Section */}
+        <div className="px-4 py-3">
+          <h3 className="text-lg font-bold mb-3">عروض خاصة</h3>
+          
+          {offersLoading ? (
+            <div className="overflow-x-auto flex gap-3 pb-2">
+              {[1, 2, 3].map((item) => (
+                <div key={item} className="min-w-60 flex-shrink-0">
+                  <Skeleton className="h-32 rounded-xl mb-2" />
+                  <Skeleton className="h-5 w-32 mb-1" />
+                  <Skeleton className="h-4 w-40" />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="overflow-x-auto flex gap-3 pb-2 no-scrollbar">
+              {offers?.map((offer) => (
+                <Card key={offer.id} className="min-w-60 overflow-hidden flex-shrink-0 border-0 rounded-xl shadow-md">
+                  <div className="relative">
+                    <img 
+                      src={offer.image} 
+                      alt={offer.title}
+                      className="w-full h-32 object-cover"
+                    />
+                    <Badge className="absolute top-2 right-2 bg-red-500 border-0 text-white">
+                      خصم {offer.discount}٪
+                    </Badge>
+                  </div>
+                  <div className="p-3">
+                    <h4 className="font-bold">{offer.title}</h4>
+                    <p className="text-xs text-gray-500">{offer.description}</p>
+                    <Button className="w-full mt-2 bg-brand-500 hover:bg-brand-600 text-white rounded-xl">استفد الآن</Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Popular Products Section */}
+        <div className="px-4 py-3">
+          <h3 className="text-lg font-bold mb-3">الأكثر طلباً</h3>
+          
+          {productsLoading ? (
+            <div className="grid grid-cols-2 gap-4">
+              {[1, 2, 3, 4].map((item) => (
+                <Card key={item} className="overflow-hidden border-0 shadow-sm">
+                  <Skeleton className="h-32 w-full" />
+                  <div className="p-3">
+                    <Skeleton className="h-5 w-20 mb-1" />
+                    <Skeleton className="h-4 w-32 mb-2" />
+                    <div className="flex justify-between items-center">
+                      <Skeleton className="h-6 w-16" />
+                      <Skeleton className="h-8 w-16 rounded-full" />
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-4">
+              {popularProducts?.map((product) => (
+                <Card key={product.id} className="overflow-hidden border rounded-xl shadow-sm hover:shadow-md transition-all">
+                  <div className="relative">
+                    <img 
+                      src={product.image} 
+                      alt={product.name}
+                      className="w-full h-32 object-cover"
+                    />
+                    {!product.inStock && (
+                      <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+                        <span className="bg-white text-red-500 px-2 py-1 rounded-md text-xs font-bold">نفذت الكمية</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-3">
+                    <h4 className="font-medium text-sm mb-1">{product.name}</h4>
+                    <p className="text-xs text-gray-500 mb-2">{product.quantity}</p>
+                    <div className="flex justify-between items-center">
+                      <span className="font-bold text-brand-700">{product.price} ريال</span>
+                      <Button 
+                        onClick={() => product.inStock && addToCart(product)}
+                        disabled={!product.inStock}
+                        size="sm" 
+                        className={`rounded-full h-9 w-9 p-0 ${product.inStock ? 'bg-brand-500 hover:bg-brand-600' : 'bg-gray-300'}`}
+                      >
+                        <ShoppingCart className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Cart Floating Button */}
-        <div className="fixed bottom-6 left-4 z-20">
-          <Link to="/market/cart">
-            <Button className="rounded-full w-14 h-14 bg-brand-500 hover:bg-brand-600 shadow-lg flex items-center justify-center">
-              <ShoppingCart className="w-6 h-6" />
-            </Button>
+        {itemCount > 0 && (
+          <Link to="/market/cart" className="fixed bottom-5 left-0 right-0 mx-auto w-11/12 max-w-md z-30">
+            <div className="bg-brand-500 text-white rounded-full py-3 px-5 flex items-center justify-between shadow-lg">
+              <div className="flex items-center gap-2">
+                <ShoppingCart className="h-6 w-6" />
+                <span className="font-bold">{itemCount} منتج</span>
+              </div>
+              <span className="font-bold">
+                {totalPrice.toFixed(2)} ريال
+              </span>
+            </div>
           </Link>
-        </div>
-
-        {/* Categories Grid */}
-        <div className="p-4">
-          <h3 className="text-lg font-bold mb-3">الفئات</h3>
-          <div className="grid grid-cols-3 gap-3">
-            {categories.map((category) => (
-              <Link key={category.id} to={`/market/category/${category.id}`}>
-                <Card className="flex flex-col items-center p-2 hover:shadow-md transition-shadow">
-                  <div className="w-20 h-20 rounded-full overflow-hidden mb-2">
-                    <img 
-                      src={category.image} 
-                      alt={category.name} 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <h4 className="text-xs font-medium text-center">{category.name}</h4>
-                </Card>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Popular Items Section */}
-        <div className="p-4">
-          <h3 className="text-lg font-bold mb-3">الأكثر طلباً</h3>
-          <div className="grid grid-cols-2 gap-4">
-            {[1, 2, 3, 4].map((item) => (
-              <Card key={item} className="overflow-hidden">
-                <img 
-                  src={`https://images.unsplash.com/photo-${1550000000000 + item * 11111}?auto=format&fit=crop&q=80&w=300&h=200`} 
-                  alt={`Popular item ${item}`}
-                  className="w-full h-32 object-cover"
-                />
-                <div className="p-2">
-                  <h4 className="font-medium">منتج شائع {item}</h4>
-                  <p className="text-xs text-gray-500 mb-2">وصف قصير للمنتج</p>
-                  <div className="flex justify-between items-center">
-                    <span className="font-bold">{10 + item} ريال</span>
-                    <Button variant="outline" size="sm" className="text-xs py-1">
-                      أضف للسلة
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-
-        {/* Special Offers */}
-        <div className="p-4 mb-20">
-          <h3 className="text-lg font-bold mb-3">عروض خاصة</h3>
-          <div className="overflow-x-auto flex gap-3 pb-2">
-            {[1, 2, 3, 4, 5].map((offer) => (
-              <Card key={offer} className="min-w-60 overflow-hidden flex-shrink-0">
-                <div className="relative">
-                  <img 
-                    src={`https://images.unsplash.com/photo-${1560000000000 + offer * 11111}?auto=format&fit=crop&q=80&w=300&h=150`} 
-                    alt={`Offer ${offer}`}
-                    className="w-full h-32 object-cover"
-                  />
-                  <div className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                    خصم {10 + offer * 5}%
-                  </div>
-                </div>
-                <div className="p-2">
-                  <h4 className="font-medium">عرض خاص {offer}</h4>
-                  <p className="text-xs text-gray-500 mb-2">اشتر واحد واحصل على الثاني مجاناً</p>
-                  <Button className="w-full text-xs bg-brand-500">تصفح العرض</Button>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
+        )}
       </div>
     </div>
+  );
+};
+
+// Wrapper component with MarketCartProvider
+const DamMarket: React.FC = () => {
+  return (
+    <MarketCartProvider>
+      <DamMarketContent />
+    </MarketCartProvider>
   );
 };
 
