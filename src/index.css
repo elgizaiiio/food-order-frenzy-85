@@ -45,6 +45,18 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    /* Brand color for Personal Care Section */
+    --brand-50: 280 100% 97%;
+    --brand-100: 280 100% 94%;
+    --brand-200: 280 96% 87%;
+    --brand-300: 280 91% 78%;
+    --brand-400: 280 95% 68%;
+    --brand-500: 280 91% 59%; /* Primary brand color */
+    --brand-600: 280 85% 52%;
+    --brand-700: 280 90% 45%;
+    --brand-800: 280 95% 38%;
+    --brand-900: 280 100% 32%;
   }
 
   .dark {
@@ -135,5 +147,31 @@
   
   .place-card {
     @apply min-w-[200px] bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100;
+  }
+  
+  /* Hide scrollbar for image carousels */
+  .hide-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Animations */
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out;
   }
 }

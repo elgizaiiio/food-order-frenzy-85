@@ -20,6 +20,13 @@ import MarketCategory from "./pages/MarketCategory";
 import MarketCart from "./pages/MarketCart";
 import MarketCheckout from "./pages/MarketCheckout";
 import MarketTracking from "./pages/MarketTracking";
+// Personal Care Section
+import PersonalCare from "./pages/PersonalCare";
+import PersonalCareCategory from "./pages/PersonalCareCategory";
+import PersonalCareProduct from "./pages/PersonalCareProduct";
+import PersonalCareCart from "./pages/PersonalCareCart";
+import PersonalCareCheckout from "./pages/PersonalCareCheckout";
+import PersonalCareTracking from "./pages/PersonalCareTracking";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +52,13 @@ const App = () => (
           <Route path="/market/cart" element={<MarketCart />} />
           <Route path="/market/checkout" element={<MarketCheckout />} />
           <Route path="/market/tracking" element={<MarketTracking />} />
+          {/* Personal Care Routes */}
+          <Route path="/personal-care" element={<PersonalCare />} />
+          <Route path="/personal-care/category/:categoryId" element={<PersonalCareCategory />} />
+          <Route path="/personal-care/product/:productId" element={<PersonalCareProduct />} />
+          <Route path="/personal-care/cart" element={<PersonalCareCart />} />
+          <Route path="/personal-care/checkout" element={<PersonalCareCheckout />} />
+          <Route path="/personal-care/tracking" element={<PersonalCareTracking />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
