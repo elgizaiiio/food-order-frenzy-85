@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Star, Clock, Filter, ArrowLeft, MapPin } from 'lucide-react';
+import { Star, Clock, Filter, ArrowLeft, MapPin, ChevronDown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
