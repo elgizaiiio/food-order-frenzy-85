@@ -10,7 +10,7 @@ interface CartItem {
   image: string;
   description: string;
   category_id: number;
-  quantity: number; // هنا الكمية هي رقم وليست نصاً
+  quantity: number;
 }
 
 interface MarketCartContextType {
@@ -80,12 +80,19 @@ export const MarketCartProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           title: "تمت الإضافة",
           description: `تمت إضافة ${product.name} إلى سلة التسوق`,
         });
-        return [...prevItems, { 
-          ...product, 
-          quantity: 1,
-          // تحويل أي حقول غير متوافقة إلى النوع الصحيح
-          price: typeof product.price === 'string' ? parseFloat(product.price) : product.price
-        }];
+        
+        // تحويل البيانات من منتج API إلى عنصر سلة
+        const newCartItem: CartItem = { 
+          id: product.id,
+          name: product.name,
+          price: typeof product.price === 'string' ? parseFloat(product.price) : product.price,
+          image: product.image,
+          description: product.description || '',
+          category_id: product.categoryId || 0,
+          quantity: 1
+        };
+        
+        return [...prevItems, newCartItem];
       }
     });
   };
@@ -158,4 +165,3 @@ export const MarketCartProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     </MarketCartContext.Provider>
   );
 };
-

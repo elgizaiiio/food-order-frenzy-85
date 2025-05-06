@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, MapPin, Clock, CreditCard, Phone, Wallet, DollarSign, Apple } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useMarketCart } from '@/context/MarketCartContext';
+import { useMarketCart, MarketCartProvider } from '@/context/MarketCartContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -269,27 +269,29 @@ const MarketCheckoutContent = () => {
 
 const MarketCheckout: React.FC = () => {
   return (
-    <CheckoutProvider>
-      <div className="min-h-screen bg-gray-50" dir="rtl">
-        <div className="max-w-md mx-auto bg-white">
-          {/* الرأس */}
-          <div className="sticky top-0 bg-white border-b shadow-sm z-20">
-            <div className="flex items-center justify-between p-4">
-              <Link to="/market/cart" className="text-gray-700">
-                <ArrowLeft className="w-6 h-6" />
-              </Link>
-              <h1 className="text-xl font-bold">الدفع والتوصيل</h1>
-              <div className="w-6"></div>
+    <MarketCartProvider>
+      <CheckoutProvider>
+        <div className="min-h-screen bg-gray-50" dir="rtl">
+          <div className="max-w-md mx-auto bg-white">
+            {/* الرأس */}
+            <div className="sticky top-0 bg-white border-b shadow-sm z-20">
+              <div className="flex items-center justify-between p-4">
+                <Link to="/market/cart" className="text-gray-700">
+                  <ArrowLeft className="w-6 h-6" />
+                </Link>
+                <h1 className="text-xl font-bold">الدفع والتوصيل</h1>
+                <div className="w-6"></div>
+              </div>
+            </div>
+
+            {/* محتوى الصفحة */}
+            <div className="p-4">
+              <MarketCheckoutContent />
             </div>
           </div>
-
-          {/* محتوى الصفحة */}
-          <div className="p-4">
-            <MarketCheckoutContent />
-          </div>
         </div>
-      </div>
-    </CheckoutProvider>
+      </CheckoutProvider>
+    </MarketCartProvider>
   );
 };
 
