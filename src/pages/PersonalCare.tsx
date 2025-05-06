@@ -1,14 +1,71 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Search, MessageCircle, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, Search, MessageCircle, ShoppingCart, Heart } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { usePersonalCareCart } from '@/context/PersonalCareCartContext';
+import { Progress } from '@/components/ui/progress';
 
 const PersonalCare: React.FC = () => {
-  const [cartItems, setCartItems] = useState<number>(0);
+  const { itemCount, totalPrice, addToCart } = usePersonalCareCart();
+  const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // محاكاة جلب البيانات من API
+    const fetchFeaturedProducts = async () => {
+      setLoading(true);
+      try {
+        // في التطبيق الحقيقي، هذا سيكون استدعاء API
+        setTimeout(() => {
+          const mockProducts = [
+            {
+              id: 1,
+              name: "عطر فلورا الفاخر",
+              price: 199,
+              image: "https://images.unsplash.com/photo-1592945403359-fd1c452a0a59?q=80&w=200&auto=format&fit=crop",
+              gender: "women",
+              rating: 4.8
+            },
+            {
+              id: 2,
+              name: "كريم مرطب للوجه",
+              price: 85,
+              image: "https://images.unsplash.com/photo-1570194065650-d99fb4ee271b?q=80&w=200&auto=format&fit=crop",
+              gender: "women",
+              rating: 4.5
+            },
+            {
+              id: 3,
+              name: "أحمر شفاه مات",
+              price: 65,
+              image: "https://images.unsplash.com/photo-1631214540553-ff044a3ff1d4?q=80&w=200&auto=format&fit=crop",
+              gender: "women",
+              rating: 4.7
+            },
+            {
+              id: 4,
+              name: "عطر رجالي خاص",
+              price: 215,
+              image: "https://images.unsplash.com/photo-1547887537-6158d64c35b3?q=80&w=200&auto=format&fit=crop",
+              gender: "men",
+              rating: 4.9
+            }
+          ];
+          setFeaturedProducts(mockProducts);
+          setLoading(false);
+        }, 800);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        setLoading(false);
+      }
+    };
+    
+    fetchFeaturedProducts();
+  }, []);
 
   // Women's Categories
   const womenCategories = [
@@ -57,6 +114,10 @@ const PersonalCare: React.FC = () => {
     }
   ];
 
+  const handleAddToCart = (product: any) => {
+    addToCart(product);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white">
@@ -65,7 +126,7 @@ const PersonalCare: React.FC = () => {
           <Link to="/" className="text-gray-700">
             <ArrowLeft className="w-6 h-6" />
           </Link>
-          <h1 className="text-xl font-bold">العناية الشخصية</h1>
+          <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 text-transparent bg-clip-text">العناية الشخصية</h1>
           <div className="flex items-center gap-4">
             <button className="text-gray-700">
               <Search className="w-5 h-5" />
@@ -80,7 +141,7 @@ const PersonalCare: React.FC = () => {
                 <DialogHeader>
                   <DialogTitle className="text-center">مساعد العناية الشخصية</DialogTitle>
                 </DialogHeader>
-                <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg">
                   <p className="text-gray-600">مرحباً! يمكنني مساعدتك في اختيار المنتجات المناسبة لبشرتك أو شعرك. ما الذي تبحث عنه؟</p>
                 </div>
               </DialogContent>
@@ -98,9 +159,9 @@ const PersonalCare: React.FC = () => {
         {/* Gender Tabs */}
         <Tabs defaultValue="women" className="w-full mb-6">
           <div className="px-4">
-            <TabsList className="w-full grid grid-cols-2">
-              <TabsTrigger value="women" className="text-lg">👩 للبنات</TabsTrigger>
-              <TabsTrigger value="men" className="text-lg">👨 للرجال</TabsTrigger>
+            <TabsList className="w-full grid grid-cols-2 bg-gradient-to-br from-purple-50 to-pink-50">
+              <TabsTrigger value="women" className="text-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white">👩 للبنات</TabsTrigger>
+              <TabsTrigger value="men" className="text-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white">👨 للرجال</TabsTrigger>
             </TabsList>
           </div>
 
@@ -108,8 +169,8 @@ const PersonalCare: React.FC = () => {
             <div className="grid grid-cols-2 gap-4 px-4">
               {womenCategories.map(category => (
                 <Link to={`/personal-care/category/${category.id}`} key={category.id}>
-                  <Card className="overflow-hidden hover:shadow-md transition-shadow">
-                    <div className="h-32 bg-gradient-to-br from-pink-50 to-purple-50">
+                  <Card className="overflow-hidden hover:shadow-lg transition-all transform hover:scale-105 border-0 shadow-sm">
+                    <div className="h-32 bg-gradient-to-br from-pink-100 to-purple-200">
                       <img
                         src={category.image}
                         alt={category.name}
@@ -128,8 +189,8 @@ const PersonalCare: React.FC = () => {
             <div className="grid grid-cols-2 gap-4 px-4">
               {menCategories.map(category => (
                 <Link to={`/personal-care/category/${category.id}`} key={category.id}>
-                  <Card className="overflow-hidden hover:shadow-md transition-shadow">
-                    <div className="h-32 bg-gradient-to-br from-blue-50 to-cyan-50">
+                  <Card className="overflow-hidden hover:shadow-lg transition-all transform hover:scale-105 border-0 shadow-sm">
+                    <div className="h-32 bg-gradient-to-br from-blue-100 to-indigo-200">
                       <img
                         src={category.image}
                         alt={category.name}
@@ -148,12 +209,15 @@ const PersonalCare: React.FC = () => {
 
         {/* Special Offers Section */}
         <div className="px-4 mb-8">
-          <h2 className="text-xl font-bold mb-4 text-right">عروض خاصة ليك</h2>
-          <div className="offers-container">
+          <h2 className="text-xl font-bold mb-4 text-right flex items-center gap-2">
+            <span className="h-6 w-1.5 rounded-full bg-gradient-to-b from-purple-500 to-pink-500"></span>
+            عروض خاصة ليك
+          </h2>
+          <div className="offers-container space-y-3">
             {specialOffers.map(offer => (
               <div 
                 key={offer.id} 
-                className="offer-card relative overflow-hidden"
+                className="offer-card relative overflow-hidden rounded-xl shadow-sm hover:shadow-md transition-all"
               >
                 <div className="relative">
                   <img 
@@ -174,53 +238,74 @@ const PersonalCare: React.FC = () => {
         </div>
 
         {/* Featured Products Preview */}
-        <div className="px-4 mb-12">
+        <div className="px-4 mb-20">
           <div className="flex justify-between items-center mb-4">
-            <Link to="/personal-care/featured" className="text-brand-500 text-sm">عرض الكل</Link>
-            <h2 className="text-xl font-bold">منتجات مميزة</h2>
+            <Link to="/personal-care/featured" className="text-purple-600 text-sm font-medium">عرض الكل</Link>
+            <h2 className="text-xl font-bold flex items-center gap-2">
+              <span className="h-6 w-1.5 rounded-full bg-gradient-to-b from-purple-500 to-pink-500"></span>
+              منتجات مميزة
+            </h2>
           </div>
           
-          <div className="grid grid-cols-2 gap-4">
-            {[1, 2, 3, 4].map((item) => (
-              <Link to={`/personal-care/product/${item}`} key={item}>
-                <Card className="overflow-hidden">
+          {loading ? (
+            <div className="space-y-4">
+              <div className="text-center text-sm text-gray-500">جاري تحميل المنتجات...</div>
+              <Progress value={40} className="h-1 w-full" indicatorClassName="bg-gradient-to-r from-purple-500 to-pink-500" />
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-4">
+              {featuredProducts.map((product) => (
+                <Card key={product.id} className="overflow-hidden border-0 shadow-sm hover:shadow-md transition-all">
                   <div className="relative">
                     <img 
-                      src={`https://images.unsplash.com/photo-${1590000000000 + item * 11111}?q=80&w=200&auto=format&fit=crop`} 
-                      alt={`منتج ${item}`}
+                      src={product.image} 
+                      alt={product.name}
                       className="w-full h-40 object-cover"
                     />
-                    {item === 1 && (
-                      <div className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                    {product.id === 1 && (
+                      <div className="absolute top-2 right-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs px-2 py-1 rounded-full">
                         جديد
                       </div>
                     )}
+                    <button className="absolute top-2 left-2 text-gray-600 bg-white/80 rounded-full p-1.5 backdrop-blur-sm">
+                      <Heart className="w-4 h-4" />
+                    </button>
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent p-2">
+                      <div className="flex items-center gap-1">
+                        <span className="text-yellow-400 text-xs">★</span>
+                        <span className="text-white text-xs">{product.rating}</span>
+                      </div>
+                    </div>
                   </div>
                   <div className="p-3">
-                    <h3 className="font-medium mb-1">منتج العناية {item}</h3>
+                    <h3 className="font-medium mb-1 text-gray-800">{product.name}</h3>
                     <div className="flex justify-between items-center">
-                      <span className="font-bold">{30 + (item * 10)} ريال</span>
-                      <Button size="sm" className="rounded-full h-8 w-8 p-0 bg-brand-500">
+                      <span className="font-bold text-purple-700">{product.price} ريال</span>
+                      <Button 
+                        onClick={() => handleAddToCart(product)}
+                        size="sm" 
+                        className="rounded-full h-8 w-8 p-0 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-sm"
+                      >
                         <span className="text-lg">+</span>
                       </Button>
                     </div>
                   </div>
                 </Card>
-              </Link>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Cart Button - Fixed */}
-        {cartItems > 0 && (
+        {itemCount > 0 && (
           <Link to="/personal-care/cart">
-            <div className="fixed bottom-5 left-0 right-0 mx-auto w-4/5 max-w-md bg-brand-500 text-white rounded-full py-3 px-5 flex items-center justify-between shadow-lg">
+            <div className="fixed bottom-5 left-0 right-0 mx-auto w-4/5 max-w-md bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full py-3 px-5 flex items-center justify-between shadow-lg">
               <div className="flex items-center gap-2">
                 <ShoppingCart className="h-6 w-6" />
-                <span className="font-bold">{cartItems} منتج</span>
+                <span className="font-bold">{itemCount} منتج</span>
               </div>
               <span className="font-bold">
-                120 ريال
+                {totalPrice} ريال
               </span>
             </div>
           </Link>

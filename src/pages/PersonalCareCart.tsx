@@ -1,130 +1,60 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Minus, Plus, X } from 'lucide-react';
+import { ArrowLeft, Minus, Plus, X, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { useToast } from '@/hooks/use-toast';
+import { Separator } from '@/components/ui/separator';
+import { usePersonalCareCart } from '@/context/PersonalCareCartContext';
+import { Badge } from '@/components/ui/badge';
 
 const PersonalCareCart: React.FC = () => {
-  const { toast } = useToast();
+  const { 
+    items, 
+    removeFromCart, 
+    increaseQuantity, 
+    decreaseQuantity,
+    itemCount,
+    totalPrice 
+  } = usePersonalCareCart();
   
-  // Mock cart data
-  const [cartItems, setCartItems] = useState([
+  // معلومات التوصيل والضريبة
+  const deliveryFee = 15;
+  const total = totalPrice + deliveryFee;
+
+  // منتجات مقترحة
+  const suggestedItems = [
     {
-      id: 1,
-      name: 'عطر فلورا الفاخر',
-      price: 199,
-      quantity: 1,
-      image: 'https://images.unsplash.com/photo-1592945403359-fd1c452a0a59?q=80&w=200&auto=format&fit=crop',
-      gender: 'women',
+      id: 10,
+      name: 'أحمر شفاه مات',
+      price: 65,
+      image: 'https://images.unsplash.com/photo-1631214540553-ff044a3ff1d4?q=80&w=200&auto=format&fit=crop',
     },
     {
-      id: 2,
-      name: 'كريم مرطب للوجه',
-      price: 85,
-      quantity: 2,
-      image: 'https://images.unsplash.com/photo-1570194065650-d99fb4ee271b?q=80&w=200&auto=format&fit=crop',
-      gender: 'women',
+      id: 11,
+      name: 'طقم فرش مكياج',
+      price: 120,
+      image: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=200&auto=format&fit=crop',
+    },
+    {
+      id: 12,
+      name: 'صابون طبيعي',
+      price: 45,
+      image: 'https://images.unsplash.com/photo-1600612253971-422e7f7faeb6?q=80&w=200&auto=format&fit=crop',
     }
-  ]);
+  ];
 
-  // Suggested items based on cart gender
-  const suggestedItems = {
-    women: [
-      {
-        id: 3,
-        name: 'أحمر شفاه مات',
-        price: 65,
-        image: 'https://images.unsplash.com/photo-1631214540553-ff044a3ff1d4?q=80&w=200&auto=format&fit=crop',
-      },
-      {
-        id: 4,
-        name: 'طقم فرش مكياج',
-        price: 120,
-        image: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=200&auto=format&fit=crop',
-      },
-      {
-        id: 5,
-        name: 'صابون طبيعي',
-        price: 45,
-        image: 'https://images.unsplash.com/photo-1600612253971-422e7f7faeb6?q=80&w=200&auto=format&fit=crop',
-      }
-    ],
-    men: [
-      {
-        id: 6,
-        name: 'بلسم للحية',
-        price: 75,
-        image: 'https://images.unsplash.com/photo-1621607242220-84722888644e?q=80&w=200&auto=format&fit=crop',
-      },
-      {
-        id: 7,
-        name: 'كريم للرجال',
-        price: 90,
-        image: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?q=80&w=200&auto=format&fit=crop',
-      },
-      {
-        id: 8,
-        name: 'عطر رجالي',
-        price: 215,
-        image: 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?q=80&w=200&auto=format&fit=crop',
-      }
-    ]
+  const handleAddSuggested = (product: any) => {
+    const { addToCart } = usePersonalCareCart();
+    addToCart(product);
   };
-
-  // Determine which suggested items to show based on cart contents
-  const predominantGender = cartItems.filter(item => item.gender === 'women').length >= 
-                           cartItems.filter(item => item.gender === 'men').length ? 'women' : 'men';
-
-  const updateQuantity = (id: number, change: number) => {
-    setCartItems(prevItems => 
-      prevItems.map(item => 
-        item.id === id 
-          ? { ...item, quantity: Math.max(1, item.quantity + change) } 
-          : item
-      )
-    );
-  };
-
-  const removeItem = (id: number) => {
-    const itemToRemove = cartItems.find(item => item.id === id);
-    if (itemToRemove) {
-      setCartItems(prevItems => prevItems.filter(item => item.id !== id));
-      toast({
-        title: "تمت إزالة المنتج",
-        description: `تم إزالة ${itemToRemove.name} من سلتك بنجاح.`,
-      });
-    }
-  };
-
-  const addSuggested = (product: any) => {
-    setCartItems(prev => [
-      ...prev,
-      { ...product, quantity: 1, gender: predominantGender }
-    ]);
-    
-    toast({
-      title: "تمت الإضافة",
-      description: `تم إضافة ${product.name} إلى سلتك.`,
-    });
-  };
-
-  // Calculate totals
-  const calculateSubtotal = () => {
-    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-  };
-
-  const subtotal = calculateSubtotal();
-  const deliveryFee = 15;
-  const total = subtotal + deliveryFee;
 
   return (
     <div className="min-h-screen bg-gray-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-24">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b">
-          <Link to="/personal-care" className="text-gray-700">
+        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-md sticky top-0 z-10">
+          <Link to="/personal-care" className="text-white">
             <ArrowLeft className="w-6 h-6" />
           </Link>
           <h1 className="text-xl font-bold">سلة المشتريات</h1>
@@ -134,79 +64,93 @@ const PersonalCareCart: React.FC = () => {
         {/* Cart Items */}
         <div className="p-4">
           <div className="mb-6">
-            {cartItems.length > 0 ? (
-              cartItems.map((item) => (
-                <div key={item.id} className="flex items-center justify-between py-3 border-b">
+            {items.length > 0 ? (
+              items.map((item) => (
+                <div key={item.id} className="flex items-center justify-between py-3 border-b hover:bg-purple-50 transition-colors rounded-lg px-2 my-2">
                   <div className="flex gap-3">
                     <img 
                       src={item.image} 
                       alt={item.name} 
-                      className="w-16 h-16 object-cover rounded-lg"
+                      className="w-16 h-16 object-cover rounded-lg shadow-sm"
                     />
                     <div>
-                      <h3 className="font-medium">{item.name}</h3>
-                      <p className="text-gray-600">{item.price} ريال</p>
-                      <div className="flex items-center gap-3 mt-1">
+                      <h3 className="font-medium text-gray-800">{item.name}</h3>
+                      <p className="text-purple-600 font-medium">{item.price} ريال</p>
+                      <div className="flex items-center gap-3 mt-1 bg-white rounded-full border shadow-sm p-1">
                         <button 
-                          className="w-6 h-6 flex items-center justify-center rounded-full border"
-                          onClick={() => updateQuantity(item.id, -1)}
+                          className="w-6 h-6 flex items-center justify-center rounded-full border-0 bg-purple-100 text-purple-700"
+                          onClick={() => decreaseQuantity(item.id)}
                         >
                           <Minus className="w-3 h-3" />
                         </button>
-                        <span>{item.quantity}</span>
+                        <span className="font-bold text-gray-800 w-6 text-center">{item.quantity}</span>
                         <button 
-                          className="w-6 h-6 flex items-center justify-center rounded-full border"
-                          onClick={() => updateQuantity(item.id, 1)}
+                          className="w-6 h-6 flex items-center justify-center rounded-full border-0 bg-gradient-to-r from-purple-500 to-pink-500 text-white"
+                          onClick={() => increaseQuantity(item.id)}
                         >
                           <Plus className="w-3 h-3" />
                         </button>
                       </div>
                     </div>
                   </div>
-                  <button className="text-gray-400" onClick={() => removeItem(item.id)}>
+                  <button 
+                    className="text-gray-400 hover:text-red-500 transition-colors" 
+                    onClick={() => removeFromCart(item.id)}
+                  >
                     <X className="w-5 h-5" />
                   </button>
                 </div>
               ))
             ) : (
               <div className="text-center py-8">
-                <p className="text-gray-500">سلتك فارغة</p>
+                <div className="bg-gray-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <ShoppingBag className="w-12 h-12 text-gray-400" />
+                </div>
+                <p className="text-gray-500 mb-4">سلتك فارغة</p>
                 <Link to="/personal-care">
-                  <Button className="mt-4 bg-brand-500">تصفح المنتجات</Button>
+                  <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
+                    تصفح المنتجات
+                  </Button>
                 </Link>
               </div>
             )}
           </div>
 
-          {cartItems.length > 0 && (
+          {items.length > 0 && (
             <>
               {/* Add More Button */}
               <Link to="/personal-care">
-                <Button variant="outline" className="w-full mb-8">
-                  إضافة المزيد
+                <Button variant="outline" className="w-full mb-8 border-purple-200 text-purple-700 hover:bg-purple-50">
+                  إضافة المزيد من المنتجات
                 </Button>
               </Link>
 
               {/* Suggested Items */}
               <div className="mb-8">
-                <h2 className="text-lg font-bold mb-3">منتجات قد تعجبك</h2>
+                <h2 className="text-lg font-bold mb-3 flex items-center gap-2">
+                  <span className="h-5 w-1.5 rounded-full bg-gradient-to-b from-purple-500 to-pink-500"></span>
+                  منتجات قد تعجبك
+                </h2>
                 <div className="flex overflow-x-auto gap-3 pb-2 no-scrollbar">
-                  {suggestedItems[predominantGender].map((item) => (
-                    <Card key={item.id} className="min-w-36 flex-shrink-0">
-                      <img 
-                        src={item.image} 
-                        alt={item.name} 
-                        className="w-full h-24 object-cover rounded-t-lg"
-                      />
+                  {suggestedItems.map((item) => (
+                    <Card key={item.id} className="min-w-36 flex-shrink-0 border-0 shadow-sm hover:shadow-md transition-all">
+                      <div className="relative">
+                        <img 
+                          src={item.image} 
+                          alt={item.name} 
+                          className="w-full h-24 object-cover rounded-t-lg"
+                        />
+                        <Badge className="absolute top-2 right-2 bg-gradient-to-r from-purple-500 to-pink-500 text-xs text-white">جديد</Badge>
+                      </div>
                       <div className="p-2">
-                        <h3 className="text-sm font-medium">{item.name}</h3>
+                        <h3 className="text-sm font-medium text-gray-800">{item.name}</h3>
                         <div className="flex items-center justify-between mt-2">
-                          <span className="text-sm">{item.price} ريال</span>
+                          <span className="text-sm font-bold text-purple-700">{item.price} ريال</span>
                           <Button 
                             size="sm" 
                             variant="outline" 
-                            className="h-7 text-xs rounded-full"
-                            onClick={() => addSuggested(item)}
+                            className="h-7 text-xs rounded-full border-purple-300 text-purple-700 hover:bg-purple-50"
+                            onClick={() => handleAddSuggested(item)}
                           >
                             إضافة
                           </Button>
@@ -218,20 +162,21 @@ const PersonalCareCart: React.FC = () => {
               </div>
 
               {/* Order Summary */}
-              <div className="mb-4">
-                <h2 className="text-lg font-bold mb-3">ملخص الطلب</h2>
+              <div className="mb-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4">
+                <h2 className="text-lg font-bold mb-3 text-gray-800">ملخص الطلب</h2>
                 <div className="space-y-2 mb-3">
                   <div className="flex justify-between">
                     <span className="text-gray-600">المجموع الفرعي</span>
-                    <span>{subtotal} ريال</span>
+                    <span className="font-medium">{totalPrice} ريال</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">رسوم التوصيل</span>
-                    <span>{deliveryFee} ريال</span>
+                    <span className="font-medium">{deliveryFee} ريال</span>
                   </div>
-                  <div className="flex justify-between font-bold pt-2 border-t">
+                  <Separator className="my-2 bg-gray-200" />
+                  <div className="flex justify-between font-bold pt-2">
                     <span>المبلغ الإجمالي</span>
-                    <span>{total} ريال</span>
+                    <span className="text-purple-700">{total} ريال</span>
                   </div>
                 </div>
               </div>
@@ -240,16 +185,16 @@ const PersonalCareCart: React.FC = () => {
         </div>
 
         {/* Bottom Buttons - Fixed at bottom */}
-        {cartItems.length > 0 && (
-          <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 max-w-md mx-auto">
+        {items.length > 0 && (
+          <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 max-w-md mx-auto shadow-lg">
             <div className="flex gap-3">
               <Link to="/personal-care" className="flex-1">
-                <Button variant="outline" className="w-full py-6">
+                <Button variant="outline" className="w-full py-6 text-gray-600 border-gray-300 hover:bg-gray-50">
                   إضافة المزيد
                 </Button>
               </Link>
               <Link to="/personal-care/checkout" className="flex-1">
-                <Button className="w-full py-6 bg-brand-500">
+                <Button className="w-full py-6 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
                   تابع الدفع
                 </Button>
               </Link>

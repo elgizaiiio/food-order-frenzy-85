@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { MarketCartProvider } from "@/context/MarketCartContext";
 import { PharmacyCartProvider } from "@/context/PharmacyCartContext";
+import { PersonalCareCartProvider } from "@/context/PersonalCareCartContext";
 import Index from "./pages/Index";
 import Restaurants from "./pages/Restaurants";
 import RestaurantMenu from "./pages/RestaurantMenu";
@@ -82,6 +83,19 @@ const MarketCartRoutes = () => (
   </MarketCartProvider>
 );
 
+const PersonalCareRoutes = () => (
+  <PersonalCareCartProvider>
+    <Routes>
+      <Route path="/" element={<PersonalCare />} />
+      <Route path="/category/:categoryId" element={<PersonalCareCategory />} />
+      <Route path="/product/:productId" element={<PersonalCareProduct />} />
+      <Route path="/cart" element={<PersonalCareCart />} />
+      <Route path="/checkout" element={<PersonalCareCheckout />} />
+      <Route path="/tracking" element={<PersonalCareTracking />} />
+    </Routes>
+  </PersonalCareCartProvider>
+);
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -102,13 +116,9 @@ const App = () => (
           {/* Market routes with MarketCartProvider */}
           <Route path="/market/*" element={<MarketCartRoutes />} />
           
-          {/* Personal Care Routes */}
-          <Route path="/personal-care" element={<PersonalCare />} />
-          <Route path="/personal-care/category/:categoryId" element={<PersonalCareCategory />} />
-          <Route path="/personal-care/product/:productId" element={<PersonalCareProduct />} />
-          <Route path="/personal-care/cart" element={<PersonalCareCart />} />
-          <Route path="/personal-care/checkout" element={<PersonalCareCheckout />} />
-          <Route path="/personal-care/tracking" element={<PersonalCareTracking />} />
+          {/* Personal Care Routes with PersonalCareCartProvider */}
+          <Route path="/personal-care/*" element={<PersonalCareRoutes />} />
+          
           {/* Clothes Routes */}
           <Route path="/clothes" element={<Clothes />} />
           <Route path="/clothes/category/:categoryId" element={<ClothesCategory />} />
