@@ -38,6 +38,13 @@ import GymSubscription from "./pages/GymSubscription";
 import GymPayment from "./pages/GymPayment";
 import GymSuccess from "./pages/GymSuccess";
 import GymSubscriptions from "./pages/GymSubscriptions";
+// User Profile Section
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
+import Addresses from "./pages/Addresses";
+import PaymentMethods from "./pages/PaymentMethods";
+import Orders from "./pages/Orders";
+import Coupons from "./pages/Coupons";
 
 const queryClient = new QueryClient();
 
@@ -81,6 +88,13 @@ const App = () => (
           <Route path="/gym/payment" element={<GymPayment />} />
           <Route path="/gym/success" element={<GymSuccess />} />
           <Route path="/gym/subscriptions" element={<GymSubscriptions />} />
+          {/* Profile Routes */}
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/addresses" element={<Addresses />} />
+          <Route path="/payment-methods" element={<PaymentMethods />} />
+          <Route path="/orders" element={<Orders />} />
+          <Route path="/coupons" element={<Coupons />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
