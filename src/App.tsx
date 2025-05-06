@@ -1,9 +1,11 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { MarketCartProvider } from "@/context/MarketCartContext";
+import { PharmacyCartProvider } from "@/context/PharmacyCartContext";
 import Index from "./pages/Index";
 import Restaurants from "./pages/Restaurants";
 import RestaurantMenu from "./pages/RestaurantMenu";
@@ -56,6 +58,30 @@ const queryClient = new QueryClient({
   },
 });
 
+// Create wrapper components for cart contexts
+const PharmacyCartRoutes = () => (
+  <PharmacyCartProvider>
+    <Routes>
+      <Route path="/" element={<Pharmacy />} />
+      <Route path="/cart" element={<PharmacyCart />} />
+      <Route path="/checkout" element={<PharmacyCheckout />} />
+      <Route path="/tracking" element={<PharmacyTracking />} />
+    </Routes>
+  </PharmacyCartProvider>
+);
+
+const MarketCartRoutes = () => (
+  <MarketCartProvider>
+    <Routes>
+      <Route path="/" element={<DamMarket />} />
+      <Route path="/category/:id" element={<MarketCategory />} />
+      <Route path="/cart" element={<MarketCart />} />
+      <Route path="/checkout" element={<MarketCheckout />} />
+      <Route path="/tracking" element={<MarketTracking />} />
+    </Routes>
+  </MarketCartProvider>
+);
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -69,17 +95,12 @@ const App = () => (
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/tracking" element={<OrderTracking />} />
-          <Route path="/pharmacy" element={<Pharmacy />} />
-          <Route path="/pharmacy/cart" element={<PharmacyCart />} />
-          <Route path="/pharmacy/checkout" element={<PharmacyCheckout />} />
-          <Route path="/pharmacy/tracking" element={<PharmacyTracking />} />
+          
+          {/* Pharmacy routes with PharmacyCartProvider */}
+          <Route path="/pharmacy/*" element={<PharmacyCartRoutes />} />
           
           {/* Market routes with MarketCartProvider */}
-          <Route path="/market" element={<DamMarket />} />
-          <Route path="/market/category/:id" element={<MarketCategory />} />
-          <Route path="/market/cart" element={<MarketCart />} />
-          <Route path="/market/checkout" element={<MarketCheckout />} />
-          <Route path="/market/tracking" element={<MarketTracking />} />
+          <Route path="/market/*" element={<MarketCartRoutes />} />
           
           {/* Personal Care Routes */}
           <Route path="/personal-care" element={<PersonalCare />} />

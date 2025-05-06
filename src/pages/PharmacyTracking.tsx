@@ -1,114 +1,256 @@
-import React from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, Clock, MapPin, CheckCircle, Pill } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Phone, MessageSquare, Map, Clock, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+
+interface OrderStatus {
+  step: number;
+  status: string;
+  time: string;
+  message: string;
+  isComplete: boolean;
+}
 
 const PharmacyTracking: React.FC = () => {
-  // Mock order data
-  const orderData = {
-    orderNumber: '#12345',
-    status: 'processing', // processing, preparing, delivering, delivered
-    estimatedTime: '30-45 دقيقة',
-    address: 'شارع الملك فهد، الرياض',
-    total: 70,
-    pharmacyName: 'صيدلية النهدي'
-  };
+  const [orderDetails, setOrderDetails] = useState<{
+    orderId: string;
+    estimatedDelivery: string;
+  } | null>(null);
 
-  // Get status text and percentage based on status
-  const getStatusDetails = (status: string) => {
-    switch (status) {
-      case 'processing':
-        return { text: 'طلبك وصلنا وهنشتغل عليه', percentage: 25 };
-      case 'preparing':
-        return { text: 'جاري تجهيز طلبك', percentage: 50 };
-      case 'delivering':
-        return { text: 'طلبك في الطريق إليك', percentage: 75 };
-      case 'delivered':
-        return { text: 'تم توصيل طلبك', percentage: 100 };
-      default:
-        return { text: 'طلبك وصلنا', percentage: 25 };
+  const [deliveryStatus, setDeliveryStatus] = useState<{
+    step: number;
+    progressPercent: number;
+    estimatedArrival: string;
+  }>({
+    step: 1,
+    progressPercent: 25,
+    estimatedArrival: '30-45 دقيقة',
+  });
+
+  const [statusTimeline, setStatusTimeline] = useState<OrderStatus[]>([
+    {
+      step: 1,
+      status: 'تم استلام الطلب',
+      time: 'الآن',
+      message: 'تم استلام طلبك وجاري تجهيزه',
+      isComplete: true,
+    },
+    {
+      step: 2,
+      status: 'جاري تجهيز الطلب',
+      time: '3 دقائق',
+      message: 'الصيدلية تقوم بتجهيز طلبك الآن',
+      isComplete: false,
+    },
+    {
+      step: 3,
+      status: 'الطلب في الطريق',
+      time: '10 دقائق',
+      message: 'السائق في طريقه إليك',
+      isComplete: false,
+    },
+    {
+      step: 4,
+      status: 'تم التوصيل',
+      time: '35 دقيقة',
+      message: 'تم توصيل طلبك بنجاح',
+      isComplete: false,
+    },
+  ]);
+
+  // محاكاة تقدم الطلب
+  useEffect(() => {
+    const storedOrder = sessionStorage.getItem('pharmacyOrderDetails');
+    if (storedOrder) {
+      setOrderDetails(JSON.parse(storedOrder));
     }
-  };
 
-  const statusDetails = getStatusDetails(orderData.status);
+    // محاكاة تحديث حالة الطلب كل 30 ثانية
+    const interval = setInterval(() => {
+      setDeliveryStatus(prev => {
+        // تقدم تدريجي في الخطوات
+        if (prev.step < 4) {
+          const nextStep = prev.step + 1;
+          const progressPercent = nextStep * 25;
+          
+          // تحديث حالة خط الزمن
+          setStatusTimeline(prevTimeline => 
+            prevTimeline.map(item => 
+              item.step === nextStep ? { ...item, isComplete: true } : item
+            )
+          );
+          
+          return {
+            ...prev,
+            step: nextStep,
+            progressPercent,
+            estimatedArrival: nextStep === 3 ? '15-20 دقيقة' : 
+                             nextStep === 4 ? 'تم التوصيل' : prev.estimatedArrival
+          };
+        }
+        return prev;
+      });
+    }, 30000); // كل 30 ثانية
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50" dir="rtl">
-      <div className="max-w-md mx-auto bg-white min-h-screen">
+      <div className="max-w-md mx-auto bg-white pb-10">
         {/* Header */}
-        <div className="bg-brand-500 text-white p-4 pt-10 rounded-b-3xl">
-          <Link to="/" className="text-white flex items-center mb-6">
-            <ChevronLeft className="w-6 h-6" />
-            <span className="font-medium">الرئيسية</span>
+        <div className="flex items-center justify-between p-4 border-b">
+          <Link to="/" className="text-gray-700">
+            <ArrowLeft className="w-6 h-6" />
           </Link>
-          
-          <div className="text-center mb-6">
-            <h1 className="text-xl font-bold mb-2">تتبع طلبك</h1>
-            <p className="text-sm opacity-80">رقم الطلب {orderData.orderNumber}</p>
-          </div>
-          
-          <div className="bg-white text-gray-800 rounded-lg p-4 mt-4">
-            <div className="flex justify-between items-center mb-4">
-              <div className="flex items-center gap-1">
-                <Clock className="w-5 h-5 text-brand-500" />
-                <span className="text-sm">الوقت المتوقع للوصول</span>
-              </div>
-              <span className="font-bold">{orderData.estimatedTime}</span>
-            </div>
-            
-            <div className="h-2 w-full bg-gray-100 rounded-full mb-2">
-              <div 
-                className="h-2 bg-brand-500 rounded-full" 
-                style={{ width: `${statusDetails.percentage}%` }}
-              ></div>
-            </div>
-            
-            <div className="text-center my-3">
-              <p className="text-sm font-medium text-gray-600">{statusDetails.text}</p>
-            </div>
-          </div>
+          <h1 className="text-xl font-bold">تتبع الطلب</h1>
+          <div className="w-6"></div> {/* Empty div for flex balance */}
         </div>
 
-        {/* Order Details */}
-        <div className="p-6">
-          <div className="border-b pb-4 mb-4">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-brand-100 rounded-full flex items-center justify-center">
-                <Pill className="w-6 h-6 text-brand-500" />
+        {/* Order Status Card */}
+        <div className="p-4">
+          <Card className="border-0 shadow-md rounded-xl overflow-hidden mb-6">
+            <div className="p-5 bg-gradient-to-r from-brand-500 to-brand-600 text-white">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h2 className="text-lg font-bold">رقم الطلب: #{orderDetails?.orderId || '123456'}</h2>
+                  <p className="text-sm text-white/80">
+                    {deliveryStatus.step < 4 ? `الوصول المتوقع: ${deliveryStatus.estimatedArrival}` : 'تم التوصيل بنجاح'}
+                  </p>
+                </div>
+                {deliveryStatus.step === 4 ? (
+                  <div className="bg-white rounded-full p-2">
+                    <CheckCircle className="w-6 h-6 text-green-500" />
+                  </div>
+                ) : (
+                  <div className="bg-white/20 rounded-full p-2">
+                    <Clock className="w-6 h-6 text-white" />
+                  </div>
+                )}
               </div>
-              <div>
-                <h2 className="font-bold text-lg">{orderData.pharmacyName}</h2>
-                <p className="text-sm text-gray-500">طلبك من صيدلية النهدي</p>
+              
+              <Progress 
+                value={deliveryStatus.progressPercent} 
+                className="h-2 bg-white/30" 
+                indicatorClassName="bg-white" 
+              />
+            </div>
+
+            <div className="p-4">
+              {/* Delivery Man Details */}
+              {deliveryStatus.step >= 2 && deliveryStatus.step < 4 && (
+                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg mb-4">
+                  <div className="flex items-center">
+                    <div className="w-12 h-12 bg-gray-200 rounded-full mr-3">
+                      <img 
+                        src="https://randomuser.me/api/portraits/men/32.jpg" 
+                        alt="السائق" 
+                        className="w-full h-full object-cover rounded-full"
+                      />
+                    </div>
+                    <div>
+                      <p className="font-medium">أحمد محمد</p>
+                      <p className="text-xs text-gray-500">السائق</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button size="icon" variant="outline" className="rounded-full h-10 w-10">
+                      <Phone className="h-5 w-5" />
+                    </Button>
+                    <Button size="icon" variant="outline" className="rounded-full h-10 w-10">
+                      <MessageSquare className="h-5 w-5" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* Status Timeline */}
+              <div className="space-y-4 mt-4">
+                {statusTimeline.map((status, index) => (
+                  <div key={status.step} className="flex items-start">
+                    <div className="mr-3 relative">
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                        status.isComplete ? 'bg-green-100' : 'bg-gray-100'
+                      }`}>
+                        {status.isComplete ? (
+                          <CheckCircle className="w-4 h-4 text-green-500" />
+                        ) : (
+                          <div className={`w-2 h-2 rounded-full ${
+                            deliveryStatus.step === status.step ? 'bg-brand-500' : 'bg-gray-300'
+                          }`} />
+                        )}
+                      </div>
+                      {index < statusTimeline.length - 1 && (
+                        <div className={`absolute top-6 bottom-0 left-3 w-0.5 h-12 ${
+                          status.isComplete ? 'bg-green-200' : 'bg-gray-100'
+                        }`} />
+                      )}
+                    </div>
+                    <div className={`flex-1 pb-5 ${status.isComplete ? 'opacity-100' : 'opacity-60'}`}>
+                      <div className="flex items-center justify-between">
+                        <p className="font-medium">{status.status}</p>
+                        <span className="text-xs text-gray-500">{status.time}</span>
+                      </div>
+                      <p className="text-sm text-gray-500">{status.message}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          </div>
-          
-          <div className="border-b pb-4 mb-4">
-            <div className="flex items-center gap-2 mb-3">
-              <MapPin className="w-5 h-5 text-brand-500" />
-              <h3 className="font-bold">عنوان التوصيل</h3>
+          </Card>
+
+          {/* Map Card */}
+          <Card className="border-0 shadow-sm rounded-xl overflow-hidden mb-6">
+            <div className="p-4 bg-gradient-to-r from-blue-50 to-white border-b">
+              <h2 className="font-bold flex items-center gap-2">
+                <Map className="w-5 h-5 text-blue-500" />
+                موقع التوصيل
+              </h2>
             </div>
-            <p className="text-gray-600">{orderData.address}</p>
-          </div>
-          
-          <div className="mb-8">
-            <h3 className="font-bold mb-2">تفاصيل الدفع</h3>
-            <div className="flex justify-between items-center">
-              <span>المبلغ الإجمالي</span>
-              <span className="font-bold">{orderData.total} ريال</span>
+            <div className="h-48 bg-gray-100 relative">
+              <div className="absolute inset-0 flex items-center justify-center">
+                <p className="text-gray-500">خريطة التتبع</p>
+              </div>
             </div>
-          </div>
-          
-          <div className="text-center">
-            <p className="text-gray-500 text-sm mb-8">
-              طلبك وصلنا، هيوصلك قريب جدًا وبنتمنالك شفاء قريب
-            </p>
-            
-            <Link to="/">
-              <Button className="bg-brand-500 w-full py-6">
-                العودة للرئيسية
-              </Button>
-            </Link>
+          </Card>
+
+          {/* Order Details Summary */}
+          <Card className="border-0 shadow-sm rounded-xl overflow-hidden">
+            <div className="p-4 bg-gradient-to-r from-brand-50 to-white border-b">
+              <h2 className="font-bold flex items-center gap-2">
+                <Package className="w-5 h-5 text-brand-500" />
+                تفاصيل الطلب
+              </h2>
+            </div>
+            <div className="p-4">
+              <div className="space-y-3 mb-4">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">طريقة الدفع</span>
+                  <span>الدفع عند الاستلام</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">المجموع الفرعي</span>
+                  <span>60 ريال</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">رسوم التوصيل</span>
+                  <span>10 ريال</span>
+                </div>
+                <div className="flex justify-between font-bold pt-2 border-t">
+                  <span>المبلغ الإجمالي</span>
+                  <span className="text-brand-700">70 ريال</span>
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          {/* Help Button */}
+          <div className="mt-8 text-center">
+            <p className="text-gray-500 mb-2">هل تحتاج إلى مساعدة؟</p>
+            <Button variant="outline" className="w-full">الاتصال بالدعم</Button>
           </div>
         </div>
       </div>
