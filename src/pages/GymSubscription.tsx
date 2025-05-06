@@ -1,11 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Check } from 'lucide-react';
+import { ArrowLeft, Check, Star, MapPin, Clock, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { toast } from 'sonner';
 
 type SubscriptionPlan = {
   id: string;
@@ -13,68 +14,108 @@ type SubscriptionPlan = {
   duration: string;
   price: number;
   features: string[];
+  recommended?: boolean;
+  priceDiscount?: number;
 };
 
 type GymInfo = {
   id: string;
   name: string;
   image: string;
+  location?: string;
+  rating?: number;
+  openHours?: string;
+  memberCount?: string;
 };
 
 const GymSubscription: React.FC = () => {
   // Get gym id from URL
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  
-  // Mock gym data - in real app, fetch based on ID
-  const gymInfo: GymInfo = {
+  const [loading, setLoading] = useState(true);
+  const [gymInfo, setGymInfo] = useState<GymInfo>({
     id: id || '',
-    name: id === 'iron-fitness' ? 'آيرون فيتنس' : 
-          id === 'gold-gym' ? 'جولد جيم' : 
-          id === 'fitness-time' ? 'فيتنس تايم' : 'باور زون',
-    image: 'https://images.unsplash.com/photo-1637666218229-7824d3b2ed83?auto=format&fit=crop&q=80&w=1000&h=400'
-  };
+    name: '',
+    image: '',
+  });
+  const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
+  
+  // محاكاة جلب البيانات من API
+  useEffect(() => {
+    const fetchGymDetails = async () => {
+      try {
+        // في الحالة الحقيقية، سيتم استبدال هذا بطلب API حقيقي
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        // Mock gym data - in real app, fetch based on ID
+        const mockGymInfo: GymInfo = {
+          id: id || '',
+          name: id === 'iron-fitness' ? 'آيرون فيتنس' : 
+                id === 'gold-gym' ? 'جولد جيم' : 
+                id === 'fitness-time' ? 'فيتنس تايم' : 'باور زون',
+          image: 'https://images.unsplash.com/photo-1637666218229-7824d3b2ed83?auto=format&fit=crop&q=80&w=1000&h=400',
+          location: 'شارع الملك فهد، الرياض',
+          rating: 4.7,
+          openHours: '6:00 - 22:00',
+          memberCount: '500+'
+        };
 
-  // Subscription plans
-  const plans: SubscriptionPlan[] = [
-    {
-      id: 'monthly',
-      title: 'شهرية',
-      duration: 'اشتراك لمدة شهر',
-      price: 299,
-      features: [
-        'وصول كامل إلى صالة الألعاب الرياضية',
-        'وصول محدود للفصول الجماعية',
-        'استخدام مناشف مجانية'
-      ]
-    },
-    {
-      id: 'quarterly',
-      title: 'ربع سنوية',
-      duration: 'اشتراك لمدة ٣ شهور',
-      price: 799,
-      features: [
-        'وصول كامل إلى صالة الألعاب الرياضية',
-        'وصول كامل للفصول الجماعية',
-        'استشارة مجانية مع المدرب',
-        'استخدام مناشف مجانية'
-      ]
-    },
-    {
-      id: 'yearly',
-      title: 'سنوية',
-      duration: 'اشتراك لمدة سنة كاملة',
-      price: 2499,
-      features: [
-        'وصول كامل إلى صالة الألعاب الرياضية',
-        'وصول كامل للفصول الجماعية',
-        '٣ استشارات مجانية مع المدرب',
-        'جلسة تقييم لياقة بدنية',
-        'استخدام مناشف وخزانة مجانية',
-        'خصم 15٪ على المشروبات في كافتيريا النادي'
-      ]
-    }
-  ];
+        // Subscription plans
+        const mockPlans: SubscriptionPlan[] = [
+          {
+            id: 'monthly',
+            title: 'شهرية',
+            duration: 'اشتراك لمدة شهر',
+            price: 299,
+            features: [
+              'وصول كامل إلى صالة الألعاب الرياضية',
+              'وصول محدود للفصول الجماعية',
+              'استخدام مناشف مجانية'
+            ]
+          },
+          {
+            id: 'quarterly',
+            title: 'ربع سنوية',
+            duration: 'اشتراك لمدة ٣ شهور',
+            price: 799,
+            priceDiscount: 897,
+            recommended: true,
+            features: [
+              'وصول كامل إلى صالة الألعاب الرياضية',
+              'وصول كامل للفصول الجماعية',
+              'استشارة مجانية مع المدرب',
+              'استخدام مناشف مجانية'
+            ]
+          },
+          {
+            id: 'yearly',
+            title: 'سنوية',
+            duration: 'اشتراك لمدة سنة كاملة',
+            price: 2499,
+            priceDiscount: 3588,
+            features: [
+              'وصول كامل إلى صالة الألعاب الرياضية',
+              'وصول كامل للفصول الجماعية',
+              '٣ استشارات مجانية مع المدرب',
+              'جلسة تقييم لياقة بدنية',
+              'استخدام مناشف وخزانة مجانية',
+              'خصم 15٪ على المشروبات في كافتيريا النادي'
+            ]
+          }
+        ];
+        
+        setGymInfo(mockGymInfo);
+        setPlans(mockPlans);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching gym details:', error);
+        toast.error('حدث خطأ أثناء تحميل بيانات النادي');
+        setLoading(false);
+      }
+    };
+    
+    fetchGymDetails();
+  }, [id]);
 
   const [selectedPlan, setSelectedPlan] = useState<string>('monthly');
 
@@ -92,8 +133,8 @@ const GymSubscription: React.FC = () => {
     <div className="min-h-screen bg-gray-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-20">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 bg-white shadow-sm sticky top-0 z-10">
-          <Link to="/gym" className="text-gray-700">
+        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-600 to-blue-500 text-white sticky top-0 z-10 shadow-md">
+          <Link to="/gym" className="text-white">
             <ArrowLeft className="w-6 h-6" />
           </Link>
           <h1 className="text-xl font-bold">خطط الاشتراك</h1>
@@ -101,70 +142,142 @@ const GymSubscription: React.FC = () => {
         </div>
 
         {/* Gym banner */}
-        <div className="relative h-40">
-          <img 
-            src={gymInfo.image} 
-            alt={gymInfo.name} 
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black bg-opacity-40 flex items-end">
-            <div className="p-4 w-full">
-              <h2 className="text-white text-2xl font-bold">{gymInfo.name}</h2>
+        {loading ? (
+          <div className="relative h-48 bg-gray-200 animate-pulse"></div>
+        ) : (
+          <div className="relative">
+            <div className="h-40">
+              <img 
+                src={gymInfo.image} 
+                alt={gymInfo.name} 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+            </div>
+            <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+              <div className="flex justify-between items-end">
+                <div>
+                  <h2 className="text-2xl font-bold">{gymInfo.name}</h2>
+                  {gymInfo.location && (
+                    <div className="flex items-center text-sm text-white/90 mt-1">
+                      <MapPin className="w-4 h-4 mr-1" />
+                      <span>{gymInfo.location}</span>
+                    </div>
+                  )}
+                </div>
+                {gymInfo.rating && (
+                  <div className="bg-white/20 px-2 py-1 rounded-lg backdrop-blur-sm">
+                    <div className="flex items-center">
+                      <Star className="w-4 h-4 text-yellow-400 fill-yellow-400 mr-1" />
+                      <span className="text-sm font-bold">{gymInfo.rating}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
+        )}
+
+        {/* Gym Info Cards */}
+        <div className="px-4 py-4 flex justify-between gap-2">
+          {gymInfo.openHours && (
+            <Card className="border-0 shadow-sm flex-1">
+              <CardContent className="p-3 flex flex-col items-center">
+                <Clock className="w-5 h-5 text-purple-500 mb-1" />
+                <span className="text-xs text-gray-500">ساعات العمل</span>
+                <span className="text-sm font-medium">{gymInfo.openHours}</span>
+              </CardContent>
+            </Card>
+          )}
+          {gymInfo.memberCount && (
+            <Card className="border-0 shadow-sm flex-1">
+              <CardContent className="p-3 flex flex-col items-center">
+                <Users className="w-5 h-5 text-blue-500 mb-1" />
+                <span className="text-xs text-gray-500">الأعضاء</span>
+                <span className="text-sm font-medium">{gymInfo.memberCount}</span>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* Subscription plans */}
-        <div className="px-4 py-6">
+        <div className="px-4 py-2">
           <h3 className="text-lg font-bold mb-4">اختر خطة الاشتراك</h3>
           
-          <RadioGroup 
-            value={selectedPlan} 
-            onValueChange={setSelectedPlan}
-            className="space-y-4"
-          >
-            {plans.map((plan) => (
-              <div
-                key={plan.id}
-                className={`border rounded-lg p-4 transition-all ${
-                  selectedPlan === plan.id 
-                    ? 'border-brand-500 bg-brand-50' 
-                    : 'border-gray-200'
-                }`}
-              >
-                <div className="flex items-center space-x-2 space-x-reverse">
-                  <RadioGroupItem 
-                    value={plan.id} 
-                    id={plan.id} 
-                    className="border-brand-500 text-brand-500"
-                  />
-                  <div className="w-full flex justify-between items-center">
-                    <Label htmlFor={plan.id} className="font-bold text-lg cursor-pointer">
-                      {plan.title}
-                    </Label>
-                    <span className="font-bold text-brand-700">{plan.price} ريال</span>
+          {loading ? (
+            <div className="space-y-4">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="h-48 bg-gray-200 animate-pulse rounded-lg"></div>
+              ))}
+            </div>
+          ) : (
+            <RadioGroup 
+              value={selectedPlan} 
+              onValueChange={setSelectedPlan}
+              className="space-y-4"
+            >
+              {plans.map((plan) => (
+                <div
+                  key={plan.id}
+                  className={`border rounded-xl transition-all overflow-hidden ${
+                    selectedPlan === plan.id 
+                      ? 'border-purple-500 ring-1 ring-purple-500 shadow-md' 
+                      : 'border-gray-200'
+                  } ${plan.recommended ? 'relative' : ''}`}
+                >
+                  {plan.recommended && (
+                    <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-purple-600 to-blue-500 text-white text-xs py-1 px-3 text-center font-medium">
+                      الخيار الأفضل
+                    </div>
+                  )}
+                  <div className={`p-4 ${plan.recommended ? 'pt-8' : ''}`}>
+                    <div className="flex items-center space-x-2 space-x-reverse">
+                      <RadioGroupItem 
+                        value={plan.id} 
+                        id={plan.id} 
+                        className="border-purple-500 text-purple-500"
+                      />
+                      <div className="w-full flex justify-between items-center">
+                        <Label htmlFor={plan.id} className="font-bold text-lg cursor-pointer">
+                          {plan.title}
+                        </Label>
+                        <div className="text-right">
+                          {plan.priceDiscount && (
+                            <span className="text-sm text-gray-500 line-through block">
+                              {plan.priceDiscount} ريال
+                            </span>
+                          )}
+                          <span className="font-bold text-lg text-purple-700">
+                            {plan.price} ريال
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-2 ms-6">
+                      <p className="text-gray-500 text-sm mb-2">{plan.duration}</p>
+                      <ul className="space-y-2 mt-3">
+                        {plan.features.map((feature, index) => (
+                          <li key={index} className="flex items-start text-sm">
+                            <div className="flex-shrink-0 h-5 w-5 rounded-full bg-purple-100 flex items-center justify-center mt-0.5 mr-2">
+                              <Check className="text-purple-600 w-3 h-3" />
+                            </div>
+                            <span className="text-gray-700">{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
                 </div>
-                
-                <div className="mt-2 ms-6">
-                  <p className="text-gray-500 text-sm mb-2">{plan.duration}</p>
-                  <ul className="space-y-1">
-                    {plan.features.map((feature, index) => (
-                      <li key={index} className="flex items-center text-sm">
-                        <Check className="text-brand-500 w-4 h-4 me-2 shrink-0" />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            ))}
-          </RadioGroup>
+              ))}
+            </RadioGroup>
+          )}
           
           <div className="mt-8">
             <Button 
-              className="w-full bg-brand-500 hover:bg-brand-600 py-6"
+              className="w-full bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white shadow-md py-6"
               onClick={handleSubmit}
+              disabled={loading}
             >
               تابع الدفع
             </Button>
