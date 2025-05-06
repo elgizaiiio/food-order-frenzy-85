@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Home, Dumbbell, Makeup } from 'lucide-react';
+import { Home, Dumbbell, Brush } from 'lucide-react';
 
 const Promos: React.FC = () => {
   const promos = [
@@ -21,7 +21,7 @@ const Promos: React.FC = () => {
     {
       id: 3,
       title: "محتاجه تجيبي ميكب؟",
-      icon: <Makeup className="h-8 w-8" />,
+      icon: <Brush className="h-8 w-8" />,
       color: "from-pink-50 to-pink-100",
       textColor: "text-pink-700"
     }

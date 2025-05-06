@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Restaurant, ShoppingCart, Shirt, Pill, Makeup, Dumbbell, Coffee } from 'lucide-react';
+import { UtensilsCrossed, ShoppingCart, Shirt, Pill, Brush, Dumbbell, Coffee } from 'lucide-react';
 
 type Category = {
   name: string;
@@ -12,7 +12,7 @@ const Categories: React.FC = () => {
   const categories: Category[] = [
     { 
       name: "مطاعم", 
-      icon: <Restaurant className="w-6 h-6" />, 
+      icon: <UtensilsCrossed className="w-6 h-6" />, 
       color: "bg-red-50 text-red-500" 
     },
     { 
@@ -32,7 +32,7 @@ const Categories: React.FC = () => {
     },
     { 
       name: "ميكب", 
-      icon: <Makeup className="w-6 h-6" />, 
+      icon: <Brush className="w-6 h-6" />, 
       color: "bg-pink-50 text-pink-500" 
     },
     { 
