@@ -1,15 +1,16 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, Search, ShoppingCart, Star, Plus } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
+import { usePersonalCareCart } from '@/context/PersonalCareCartContext';
+import { toast } from 'sonner';
+import { PersonalCareProduct } from '@/context/PersonalCareCartContext';
 
 const PersonalCareCategory: React.FC = () => {
   const { categoryId } = useParams<{ categoryId: string }>();
-  const [cartItems, setCartItems] = useState<number>(0);
-  const { toast } = useToast();
+  const { addToCart, itemCount, totalPrice } = usePersonalCareCart();
   
   // Category mapping
   const categoryMap: Record<string, { name: string, gender: 'women' | 'men', color: string }> = {
@@ -63,14 +64,11 @@ const PersonalCareCategory: React.FC = () => {
     for (let i = 1; i <= count; i++) {
       const imageIndex = (i - 1) % categoryImages.length;
       
-      const product = {
+      const product: PersonalCareProduct = {
         id: i,
         name: `${currentCategory.name} ${i}`,
-        description: 'وصف المنتج وتفاصيله',
         price: 30 + (i * 15),
-        rating: 3.5 + (Math.random() * 1.5),
         image: categoryImages[imageIndex],
-        inStock: Math.random() > 0.2, // 80% chance of being in stock
       };
       products.push(product);
     }
@@ -80,12 +78,9 @@ const PersonalCareCategory: React.FC = () => {
   
   const products = generateProducts();
 
-  const addToCart = (productName: string) => {
-    setCartItems(prev => prev + 1);
-    toast({
-      title: "تمت الإضافة إلى السلة",
-      description: `تم إضافة ${productName} إلى السلة بنجاح.`,
-    });
+  const handleAddToCart = (product: PersonalCareProduct) => {
+    addToCart(product);
+    toast(`تمت إضافة ${product.name} إلى السلة بنجاح.`);
   };
 
   return (
@@ -146,26 +141,21 @@ const PersonalCareCategory: React.FC = () => {
                 <div className="p-3">
                   <Link to={`/personal-care/product/${product.id}`}>
                     <h3 className="font-medium">{product.name}</h3>
-                    <p className="text-xs text-gray-500 mb-1">{product.description}</p>
                   </Link>
                   <div className="flex items-center gap-1 mb-2">
                     <Star className="h-3 w-3 fill-yellow-400 stroke-yellow-400" />
-                    <span className="text-xs">{product.rating.toFixed(1)}</span>
+                    <span className="text-xs">{(4 + Math.random()).toFixed(1)}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="font-bold">{product.price} ريال</span>
                     <Button 
                       size="sm" 
-                      className="rounded-full h-7 w-7 p-0 bg-brand-500"
-                      onClick={() => addToCart(product.name)}
-                      disabled={!product.inStock}
+                      className="rounded-full h-7 w-7 p-0 bg-gradient-to-r from-purple-500 to-pink-500"
+                      onClick={() => handleAddToCart(product)}
                     >
                       <Plus className="h-4 w-4" />
                     </Button>
                   </div>
-                  {!product.inStock && (
-                    <p className="text-xs text-red-500 mt-1">غير متوفر</p>
-                  )}
                 </div>
               </Card>
             ))}
@@ -173,15 +163,15 @@ const PersonalCareCategory: React.FC = () => {
         </div>
 
         {/* Cart Floating Button */}
-        {cartItems > 0 && (
+        {itemCount > 0 && (
           <Link to="/personal-care/cart">
-            <div className="fixed bottom-5 left-0 right-0 mx-auto w-4/5 max-w-md bg-brand-500 text-white rounded-full py-3 px-5 flex items-center justify-between shadow-lg">
+            <div className="fixed bottom-5 left-0 right-0 mx-auto w-4/5 max-w-md bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full py-3 px-5 flex items-center justify-between shadow-lg">
               <div className="flex items-center gap-2">
                 <ShoppingCart className="h-6 w-6" />
-                <span className="font-bold">{cartItems} منتج</span>
+                <span className="font-bold">{itemCount} منتج</span>
               </div>
               <span className="font-bold">
-                {180 + (cartItems * 45)} ريال
+                {totalPrice} ريال
               </span>
             </div>
           </Link>

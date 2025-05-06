@@ -3,14 +3,15 @@ import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, Star, Heart, Share, Minus, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { usePersonalCareCart } from '@/context/PersonalCareCartContext';
+import { toast } from 'sonner';
 
 const PersonalCareProduct: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
   const [quantity, setQuantity] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
-  const { toast } = useToast();
+  const { addToCart } = usePersonalCareCart();
 
   // Mock product data - in a real app, this would come from an API or database
   const product = {
@@ -58,19 +59,26 @@ const PersonalCareProduct: React.FC = () => {
 
   const toggleFavorite = () => {
     setIsFavorite(!isFavorite);
-    toast({
-      title: isFavorite ? "تم إزالة المنتج من المفضلة" : "تمت إضافة المنتج للمفضلة",
-      description: isFavorite ? 
-        `تم إزالة ${product.name} من قائمة المفضلة بنجاح.` : 
-        `تم إضافة ${product.name} إلى قائمة المفضلة بنجاح.`,
-    });
+    toast(
+      isFavorite ? "تم إزالة المنتج من المفضلة" : "تمت إضافة المنتج للمفضلة"
+    );
   };
 
-  const addToCart = () => {
-    toast({
-      title: "تمت الإضافة إلى السلة",
-      description: `تم إضافة ${quantity} من ${product.name} إلى السلة بنجاح.`,
-    });
+  const handleAddToCart = () => {
+    // Create product object with the correct price (use discountPrice if available)
+    const productToAdd = {
+      id: product.id,
+      name: product.name,
+      price: product.discountPrice || product.price,
+      image: product.images[0],
+    };
+    
+    // Add the product to cart with the selected quantity
+    for (let i = 0; i < quantity; i++) {
+      addToCart(productToAdd);
+    }
+    
+    toast(`تم إضافة ${quantity} من ${product.name} إلى السلة بنجاح.`);
   };
 
   // Generate stars for ratings

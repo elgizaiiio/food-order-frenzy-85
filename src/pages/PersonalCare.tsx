@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Search, MessageCircle, ShoppingCart, Heart } from 'lucide-react';
@@ -8,10 +7,12 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { usePersonalCareCart } from '@/context/PersonalCareCartContext';
 import { Progress } from '@/components/ui/progress';
+import { toast } from 'sonner';
+import { PersonalCareProduct } from '@/context/PersonalCareCartContext';
 
 const PersonalCare: React.FC = () => {
   const { itemCount, totalPrice, addToCart } = usePersonalCareCart();
-  const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
+  const [featuredProducts, setFeaturedProducts] = useState<PersonalCareProduct[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -114,8 +115,9 @@ const PersonalCare: React.FC = () => {
     }
   ];
 
-  const handleAddToCart = (product: any) => {
+  const handleAddToCart = (product: PersonalCareProduct) => {
     addToCart(product);
+    toast(`تمت إضافة ${product.name} إلى السلة`);
   };
 
   return (
