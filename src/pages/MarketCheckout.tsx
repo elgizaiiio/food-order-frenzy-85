@@ -241,7 +241,7 @@ const MarketCheckoutContent = () => {
       </Card>
       
       {/* شريط الدفع السفلي الثابت */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-10 max-w-md mx-auto my-[57px]">
+      <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-10 max-w-md mx-auto my-[59px]">
         <CheckoutButton />
       </div>
     </div>;
