@@ -1,97 +1,84 @@
 
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { UtensilsCrossed, ShoppingCart, Pill, Brush, Shirt, Dumbbell, Coffee, User } from 'lucide-react';
-
-type Category = {
-  name: string;
-  icon: React.ReactNode;
-  color: string;
-  bgColor: string;
-  link: string;
-};
+import { Icon } from '@/components/ui/Icon';
+import { Link } from 'react-router-dom';
 
 const CategoryIcons: React.FC = () => {
-  const navigate = useNavigate();
-  
-  const categories: Category[] = [
-    { 
-      name: "مطاعم", 
-      icon: <UtensilsCrossed className="w-6 h-6" />, 
-      color: "text-restaurant",
-      bgColor: "bg-red-50",
-      link: "/restaurants"
+  const categories = [
+    {
+      name: 'مطاعم',
+      icon: '/icons/restaurant.png',
+      path: '/restaurants',
+      color: 'bg-amber-50',
+      textColor: 'text-amber-700',
     },
-    { 
-      name: "سوبر ماركت", 
-      icon: <ShoppingCart className="w-6 h-6" />, 
-      color: "text-market",
-      bgColor: "bg-green-50",
-      link: "/market" 
+    {
+      name: 'ماركت',
+      icon: '/icons/market.png',
+      path: '/market',
+      color: 'bg-green-50',
+      textColor: 'text-green-700',
     },
-    { 
-      name: "صيدليات", 
-      icon: <Pill className="w-6 h-6" />, 
-      color: "text-pharmacy",
-      bgColor: "bg-blue-50",
-      link: "/pharmacy" 
+    {
+      name: 'صيدلية',
+      icon: '/icons/pharmacy.png',
+      path: '/pharmacy',
+      color: 'bg-blue-50',
+      textColor: 'text-blue-700',
     },
-    { 
-      name: "ميكب", 
-      icon: <Brush className="w-6 h-6" />, 
-      color: "text-beauty",
-      bgColor: "bg-pink-50",
-      link: "/personal-care" 
+    {
+      name: 'العناية الشخصية',
+      icon: '/icons/care.png',
+      path: '/personal-care',
+      color: 'bg-purple-50',
+      textColor: 'text-purple-700',
     },
-    { 
-      name: "ملابس", 
-      icon: <Shirt className="w-6 h-6" />, 
-      color: "text-clothes",
-      bgColor: "bg-blue-50",
-      link: "/clothes" 
+    {
+      name: 'ملابس',
+      icon: '/icons/clothes.png',
+      path: '/clothes',
+      color: 'bg-yellow-50',
+      textColor: 'text-yellow-700',
     },
-    { 
-      name: "جيم", 
-      icon: <Dumbbell className="w-6 h-6" />, 
-      color: "text-gym",
-      bgColor: "bg-yellow-50",
-      link: "/gym" 
-    },
-    { 
-      name: "قهوة", 
-      icon: <Coffee className="w-6 h-6" />, 
-      color: "text-coffee",
-      bgColor: "bg-amber-50",
-      link: "/coffee" 
-    },
-    { 
-      name: "حسابي", 
-      icon: <User className="w-6 h-6" />, 
-      color: "text-profile",
-      bgColor: "bg-purple-50",
-      link: "/profile" 
-    },
+    {
+      name: 'جيم',
+      icon: '/icons/gym.png',
+      path: '/gym',
+      color: 'bg-red-50',
+      textColor: 'text-red-700',
+    }
   ];
 
-  const handleCategoryClick = (path: string) => {
-    navigate(path);
-  };
-
+  // Render the categories with icons
   return (
-    <div className="px-4 mb-7 animate-fade-in animate-delay-1">
-      <div className="scroll-container">
-        {categories.map((category, index) => (
-          <div 
-            key={index} 
-            onClick={() => handleCategoryClick(category.link)} 
-            className="category-icon flex-shrink-0 cursor-pointer"
-          >
-            <div className={`category-icon-circle ${category.bgColor} ${category.color}`}>
-              {category.icon}
-            </div>
-            <span className="text-xs font-medium text-gray-700 mt-1">{category.name}</span>
-          </div>
-        ))}
+    <div className="py-4">
+      <h2 className="text-lg font-bold mb-3 px-4">التصنيفات</h2>
+      
+      <div className="scroll-container overflow-x-auto pb-2">
+        <div className="flex px-4 space-x-4 rtl:space-x-reverse">
+          {categories.map((category) => (
+            <Link 
+              key={category.name} 
+              to={category.path}
+              className="flex flex-col items-center min-w-[70px]"
+            >
+              <div className={`w-16 h-16 rounded-full ${category.color} flex items-center justify-center mb-2 shadow-sm`}>
+                <img 
+                  src={category.icon} 
+                  alt={category.name}
+                  className="w-8 h-8"
+                  onError={(e) => {
+                    // Fallback icon if image fails to load
+                    e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='20' height='20' x='2' y='2' rx='5' ry='5'/%3E%3Cpath d='M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z'/%3E%3Cline x1='17.5' y1='6.5' x2='17.51' y2='6.5'/%3E%3C/svg%3E";
+                  }}
+                />
+              </div>
+              <span className={`text-sm ${category.textColor} font-medium`}>
+                {category.name}
+              </span>
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   );
