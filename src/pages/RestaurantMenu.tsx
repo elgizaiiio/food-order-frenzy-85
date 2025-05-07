@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Clock, Search, Share2, Star, Heart, Plus, Minus, ShoppingBag, ChevronDown } from 'lucide-react';
@@ -28,9 +29,6 @@ const RestaurantMenu: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('popular');
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isFavorite, setIsFavorite] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
-  const [showQuantityDialog, setShowQuantityDialog] = useState(false);
-  const [tempQuantity, setTempQuantity] = useState(1);
 
   // Mock restaurant data - in a real app, this would come from an API or Supabase
   const restaurant = {
@@ -40,7 +38,7 @@ const RestaurantMenu: React.FC = () => {
     cover: "https://images.unsplash.com/photo-1552566626-52f8b828add9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1000&q=80",
     rating: 4.8,
     deliveryTime: "25-35",
-    deliveryFee: "10 ريال",
+    deliveryFee: "10 جنيه",
     cuisine: "شرقي، عربي، مشويات",
     categories: [{
       id: "popular",
@@ -140,45 +138,25 @@ const RestaurantMenu: React.FC = () => {
     });
     toast.success(`تمت إضافة ${item.name} إلى السلة`);
   };
-  const openQuantityDialog = (item: MenuItem) => {
-    setSelectedItem(item);
-    setTempQuantity(1);
-    setShowQuantityDialog(true);
-  };
-  const addToCartWithQuantity = () => {
-    if (selectedItem && tempQuantity > 0) {
-      setCartItems(prev => {
-        const existingItem = prev.find(cartItem => cartItem.id === selectedItem.id);
-        if (existingItem) {
-          return prev.map(cartItem => cartItem.id === selectedItem.id ? {
-            ...cartItem,
-            quantity: cartItem.quantity + tempQuantity
-          } : cartItem);
-        } else {
-          return [...prev, {
-            ...selectedItem,
-            quantity: tempQuantity
-          }];
-        }
-      });
-      toast.success(`تمت إضافة ${selectedItem.name} (${tempQuantity}) إلى السلة`);
-      setShowQuantityDialog(false);
-    }
-  };
+
   const getTotalPrice = () => {
     return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
   };
+  
   const getTotalItems = () => {
     return cartItems.reduce((total, item) => total + item.quantity, 0);
   };
+  
   const toggleFavorite = () => {
     setIsFavorite(!isFavorite);
     toast.success(isFavorite ? 'تمت إزالة المطعم من المفضلة' : 'تمت إضافة المطعم إلى المفضلة');
   };
+  
   const shareRestaurant = () => {
     // In a real app, this would use the Web Share API
     toast.info('تم نسخ رابط المطعم');
   };
+  
   return <div className="min-h-screen bg-gray-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-24">
         {/* Cover Image with Header */}
@@ -241,8 +219,8 @@ const RestaurantMenu: React.FC = () => {
                   <h3 className="font-bold text-gray-900">{item.name}</h3>
                   <p className="text-sm text-gray-600 mt-1 line-clamp-2">{item.description}</p>
                   <div className="flex items-center justify-between mt-3">
-                    <span className="font-bold text-gray-900">{item.price} ريال</span>
-                    <Button size="sm" onClick={() => openQuantityDialog(item)} className="rounded-full shadow-sm bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 group-hover:scale-105 transition-all">
+                    <span className="font-bold text-gray-900">{item.price} جنيه</span>
+                    <Button size="sm" onClick={() => addToCart(item)} className="rounded-full shadow-sm bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 group-hover:scale-105 transition-all">
                       <Plus className="w-4 h-4 mr-1" />
                       إضافة
                     </Button>
@@ -269,7 +247,7 @@ const RestaurantMenu: React.FC = () => {
                   <ShoppingBag className="mr-2" />
                   <span>{getTotalItems()} عناصر</span>
                 </div>
-                <span className="font-bold">{getTotalPrice()} ريال</span>
+                <span className="font-bold">{getTotalPrice()} جنيه</span>
               </div>
             </Button>
           </div> : <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 max-w-md mx-auto">
@@ -278,29 +256,6 @@ const RestaurantMenu: React.FC = () => {
               اختر طعامك المفضل
             </Button>
           </div>}
-        
-        {/* Quantity Dialog */}
-        <Dialog open={showQuantityDialog} onOpenChange={setShowQuantityDialog}>
-          <DialogContent className="sm:max-w-md" dir="rtl">
-            <div className="space-y-4">
-              <h3 className="text-lg font-bold text-center">
-                {selectedItem?.name}
-              </h3>
-              <div className="flex items-center justify-center gap-4 py-4">
-                <button onClick={() => setTempQuantity(q => Math.max(1, q - 1))} className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100">
-                  <Minus className="w-5 h-5" />
-                </button>
-                <span className="text-2xl font-bold">{tempQuantity}</span>
-                <button onClick={() => setTempQuantity(q => q + 1)} className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100">
-                  <Plus className="w-5 h-5" />
-                </button>
-              </div>
-              <Button className="w-full py-2 bg-gradient-to-r from-orange-500 to-pink-500" onClick={addToCartWithQuantity}>
-                إضافة إلى السلة ({selectedItem?.price && tempQuantity * selectedItem?.price} ريال)
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
       </div>
     </div>;
 };
