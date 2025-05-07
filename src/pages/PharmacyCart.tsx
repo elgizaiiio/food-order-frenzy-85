@@ -7,7 +7,14 @@ import { usePharmacyCart } from '@/context/PharmacyCartContext';
 import { Separator } from '@/components/ui/separator';
 
 const PharmacyCart: React.FC = () => {
-  const { items, increaseQuantity, decreaseQuantity, removeFromCart, totalPrice } = usePharmacyCart();
+  const { 
+    items, 
+    increaseQuantity, 
+    decreaseQuantity, 
+    removeFromCart, 
+    totalPrice 
+  } = usePharmacyCart();
+  
   const navigate = useNavigate();
   const deliveryFee = 10;
 
@@ -109,7 +116,7 @@ const PharmacyCart: React.FC = () => {
             </div>
 
             {/* Checkout Button */}
-            <div className="fixed bottom-0 right-0 left-0 max-w-md mx-auto bg-white border-t p-4">
+            <div className="fixed bottom-20 right-0 left-0 max-w-md mx-auto bg-white border-t p-4">
               <Button 
                 onClick={goToCheckout} 
                 className="w-full bg-indigo-500 hover:bg-indigo-600 text-lg h-12"
