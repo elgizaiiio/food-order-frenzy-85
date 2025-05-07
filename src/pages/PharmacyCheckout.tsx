@@ -140,6 +140,19 @@ const PharmacyCheckoutContent: React.FC = () => {
           )}
         </div>
       </div>
+      
+      {/* Bottom fixed button container - Adding this to maintain consistency with other checkout pages */}
+      {!isAddingNewAddress && (
+        <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-10 max-w-md mx-auto mb-20">
+          <Button 
+            className="w-full bg-brand-500 hover:bg-brand-600"
+            onClick={handleSubmitOrder}
+            disabled={isProcessing || !selectedAddressId}
+          >
+            {isProcessing ? "جاري تنفيذ الطلب..." : "تأكيد الطلب"}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
