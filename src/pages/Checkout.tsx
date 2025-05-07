@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Clock, ShoppingBag } from 'lucide-react';
@@ -13,27 +12,26 @@ import PaymentMethods from '@/components/PaymentMethods';
 import { getDeliveryEstimate, submitOrder } from '@/api/checkout';
 
 // العناصر في سلة المشتريات (كمحاكاة)
-const cartItems = [
-  {
-    id: 1,
-    name: "شاورما دجاج سبيشال",
-    price: 25,
-    quantity: 2,
-  },
-  {
-    id: 2,
-    name: "سلطة الشيف",
-    price: 15,
-    quantity: 1,
-  }
-];
+const cartItems = [{
+  id: 1,
+  name: "شاورما دجاج سبيشال",
+  price: 25,
+  quantity: 2
+}, {
+  id: 2,
+  name: "سلطة الشيف",
+  price: 15,
+  quantity: 1
+}];
 
 // مكون ملخص الطلب
 const OrderSummary = () => {
-  const { subtotal, deliveryFee, orderTotal } = useCheckout();
-  
-  return (
-    <div className="space-y-3">
+  const {
+    subtotal,
+    deliveryFee,
+    orderTotal
+  } = useCheckout();
+  return <div className="space-y-3">
       <div className="flex justify-between text-sm">
         <span className="text-gray-600">المجموع الفرعي</span>
         <span>{subtotal} ر.س</span>
@@ -47,19 +45,16 @@ const OrderSummary = () => {
         <span>الإجمالي</span>
         <span className="text-brand-600">{orderTotal} ر.س</span>
       </div>
-    </div>
-  );
+    </div>;
 };
 
 // مكون وقت التوصيل
 const DeliveryTime = () => {
   const [deliveryTime, setDeliveryTime] = useState({
     min: 30,
-    max: 45,
+    max: 45
   });
-
-  return (
-    <div className="space-y-4">
+  return <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-bold flex items-center gap-2">
           <Clock className="w-5 h-5 text-brand-500" />
@@ -82,49 +77,51 @@ const DeliveryTime = () => {
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>;
 };
 
 // مكون زر تأكيد الطلب
 const CheckoutButton = () => {
   const navigate = useNavigate();
-  const { selectedAddressId, paymentMethod, addresses, orderTotal } = useCheckout();
+  const {
+    selectedAddressId,
+    paymentMethod,
+    addresses,
+    orderTotal
+  } = useCheckout();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
   const handleCheckout = async () => {
     if (!selectedAddressId) {
       toast.error("الرجاء اختيار عنوان التوصيل");
       return;
     }
-    
     setIsSubmitting(true);
-    
     const selectedAddress = addresses.find(addr => addr.id === selectedAddressId);
-    
     try {
       // تحضير تفاصيل الطلب
       const orderDetails = {
         addressId: selectedAddressId,
         phone: selectedAddress?.phone || '',
         paymentMethod,
-        items: cartItems.map(item => ({ id: item.id, quantity: item.quantity })),
+        items: cartItems.map(item => ({
+          id: item.id,
+          quantity: item.quantity
+        })),
         total: orderTotal
       };
-      
+
       // إرسال الطلب إلى واجهة برمجة التطبيقات
       const response = await submitOrder(orderDetails);
-      
       if (response.success) {
         // عرض رسالة نجاح
         toast.success("تم تقديم طلبك بنجاح!");
-        
+
         // حفظ معلومات الطلب في sessionStorage لاستخدامها في صفحة التتبع
         sessionStorage.setItem('orderDetails', JSON.stringify({
           orderId: response.orderId,
           estimatedDelivery: response.estimatedDelivery
         }));
-        
+
         // الانتقال إلى صفحة تتبع الطلب
         navigate(response.trackingUrl || '/tracking');
       } else {
@@ -137,43 +134,30 @@ const CheckoutButton = () => {
       setIsSubmitting(false);
     }
   };
-  
-  return (
-    <Button 
-      onClick={handleCheckout}
-      className="w-full py-6 text-lg font-bold bg-brand-500 hover:bg-brand-600 text-white shadow-lg"
-      disabled={isSubmitting}
-    >
+  return <Button onClick={handleCheckout} className="w-full py-6 text-lg font-bold bg-brand-500 hover:bg-brand-600 text-white shadow-lg" disabled={isSubmitting}>
       {isSubmitting ? "جارٍ تأكيد الطلب..." : `تأكيد الطلب · ${orderTotal} ر.س`}
-    </Button>
-  );
+    </Button>;
 };
 
 // المكون الرئيسي لصفحة الدفع
 const CheckoutContent = () => {
   const [isAddingAddress, setIsAddingAddress] = useState(false);
-  const { setIsAddingNewAddress } = useCheckout();
-  
+  const {
+    setIsAddingNewAddress
+  } = useCheckout();
   const handleAddNewAddress = () => {
     setIsAddingAddress(true);
     setIsAddingNewAddress(true);
   };
-  
   const handleCancelAddAddress = () => {
     setIsAddingAddress(false);
     setIsAddingNewAddress(false);
   };
-
-  return (
-    <div className="space-y-6 pb-24">
+  return <div className="space-y-6 pb-24">
       {/* قسم العناوين */}
       <Card className="border-none shadow-sm">
         <CardContent className="p-5">
-          {isAddingAddress ? (
-            <NewAddressForm onCancel={handleCancelAddAddress} />
-          ) : (
-            <AddressSelector onAddNewClick={handleAddNewAddress} />
-          )}
+          {isAddingAddress ? <NewAddressForm onCancel={handleCancelAddAddress} /> : <AddressSelector onAddNewClick={handleAddNewAddress} />}
         </CardContent>
       </Card>
       
@@ -204,12 +188,10 @@ const CheckoutContent = () => {
             
             {/* عناصر السلة */}
             <div className="space-y-3 mb-4">
-              {cartItems.map((item) => (
-                <div key={item.id} className="flex justify-between text-sm">
+              {cartItems.map(item => <div key={item.id} className="flex justify-between text-sm">
                   <span>{item.name} × {item.quantity}</span>
                   <span>{item.price * item.quantity} ر.س</span>
-                </div>
-              ))}
+                </div>)}
             </div>
             
             <Separator />
@@ -221,16 +203,13 @@ const CheckoutContent = () => {
       </Card>
       
       {/* شريط الدفع السفلي الثابت */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-10 max-w-md mx-auto">
+      <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-10 max-w-md mx-auto my-[68px]">
         <CheckoutButton />
       </div>
-    </div>
-  );
+    </div>;
 };
-
 const Checkout: React.FC = () => {
-  return (
-    <CheckoutProvider>
+  return <CheckoutProvider>
       <div className="min-h-screen bg-gray-50" dir="rtl">
         <div className="max-w-md mx-auto bg-white">
           {/* الرأس */}
@@ -250,8 +229,6 @@ const Checkout: React.FC = () => {
           </div>
         </div>
       </div>
-    </CheckoutProvider>
-  );
+    </CheckoutProvider>;
 };
-
 export default Checkout;
