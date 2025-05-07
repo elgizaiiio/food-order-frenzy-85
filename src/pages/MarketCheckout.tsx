@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, MapPin, Clock, CreditCard, Phone, Wallet, DollarSign, Apple } from 'lucide-react';
@@ -18,11 +17,9 @@ import PaymentMethods from '@/components/PaymentMethods';
 const DeliveryTime = () => {
   const [deliveryTime] = useState({
     min: 30,
-    max: 45,
+    max: 45
   });
-
-  return (
-    <div className="space-y-4">
+  return <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-bold flex items-center gap-2">
           <Clock className="w-5 h-5 text-brand-500" />
@@ -45,21 +42,28 @@ const DeliveryTime = () => {
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>;
 };
 
 // مكون زر تأكيد الطلب
 const CheckoutButton = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const { items, clearCart } = useMarketCart();
-  const { selectedAddressId, paymentMethod, addresses } = useCheckout();
+  const {
+    toast
+  } = useToast();
+  const {
+    items,
+    clearCart
+  } = useMarketCart();
+  const {
+    selectedAddressId,
+    paymentMethod,
+    addresses
+  } = useCheckout();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const totalPrice = items.reduce((total, item) => total + (item.price * item.quantity), 0);
+  const totalPrice = items.reduce((total, item) => total + item.price * item.quantity, 0);
   const deliveryFee = 10;
   const orderTotal = totalPrice + deliveryFee;
-  
   const handleCheckout = async () => {
     if (!selectedAddressId) {
       toast({
@@ -69,40 +73,39 @@ const CheckoutButton = () => {
       });
       return;
     }
-    
     setIsSubmitting(true);
-    
     const selectedAddress = addresses.find(addr => addr.id === selectedAddressId);
-    
     try {
       // تحضير تفاصيل الطلب
       const orderDetails = {
         addressId: selectedAddressId,
         phone: selectedAddress?.phone || '',
         paymentMethod,
-        items: items.map(item => ({ id: item.id, quantity: item.quantity })),
+        items: items.map(item => ({
+          id: item.id,
+          quantity: item.quantity
+        })),
         total: orderTotal
       };
-      
+
       // إرسال الطلب إلى واجهة برمجة التطبيقات
       const response = await submitOrder(orderDetails);
-      
       if (response.success) {
         // عرض رسالة نجاح
         toast({
           title: "تم تقديم طلبك بنجاح!",
-          description: `رقم الطلب: ${response.orderId}`,
+          description: `رقم الطلب: ${response.orderId}`
         });
-        
+
         // حفظ معلومات الطلب في sessionStorage لاستخدامها في صفحة التتبع
         sessionStorage.setItem('orderDetails', JSON.stringify({
           orderId: response.orderId,
           estimatedDelivery: response.estimatedDelivery
         }));
-        
+
         // تفريغ السلة بعد الطلب الناجح
         clearCart();
-        
+
         // الانتقال إلى صفحة تتبع الطلب
         navigate('/market/tracking');
       } else {
@@ -123,45 +126,32 @@ const CheckoutButton = () => {
       setIsSubmitting(false);
     }
   };
-  
-  return (
-    <Button 
-      onClick={handleCheckout}
-      className="w-full py-6 text-lg font-bold bg-brand-500 hover:bg-brand-600 text-white shadow-lg"
-      disabled={isSubmitting || items.length === 0}
-    >
+  return <Button onClick={handleCheckout} className="w-full py-6 text-lg font-bold bg-brand-500 hover:bg-brand-600 text-white shadow-lg" disabled={isSubmitting || items.length === 0}>
       {isSubmitting ? "جارٍ تأكيد الطلب..." : `تأكيد الطلب · ${orderTotal} ر.س`}
-    </Button>
-  );
+    </Button>;
 };
 
 // مكون ملخص الطلب
 const OrderSummary = () => {
-  const { items } = useMarketCart();
-  const subtotal = items.reduce((total, item) => total + (item.price * item.quantity), 0);
+  const {
+    items
+  } = useMarketCart();
+  const subtotal = items.reduce((total, item) => total + item.price * item.quantity, 0);
   const deliveryFee = 10;
   const total = subtotal + deliveryFee;
-  
-  return (
-    <div className="space-y-4">
+  return <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-bold">ملخص الطلب</h3>
       </div>
       
       {/* عناصر السلة */}
       <div className="space-y-3">
-        {items.map((item) => (
-          <div key={item.id} className="flex justify-between items-center py-2 border-b border-gray-100">
+        {items.map(item => <div key={item.id} className="flex justify-between items-center py-2 border-b border-gray-100">
             <div className="flex items-center gap-3">
               <div className="bg-gray-100 w-12 h-12 rounded-md flex items-center justify-center overflow-hidden">
-                <img 
-                  src={item.image} 
-                  alt={item.name} 
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/100';
-                  }}
-                />
+                <img src={item.image} alt={item.name} className="w-full h-full object-cover" onError={e => {
+              (e.target as HTMLImageElement).src = 'https://via.placeholder.com/100';
+            }} />
               </div>
               <div>
                 <p className="font-medium">{item.name}</p>
@@ -169,8 +159,7 @@ const OrderSummary = () => {
               </div>
             </div>
             <p className="font-medium">{(item.price * item.quantity).toFixed(2)} ر.س</p>
-          </div>
-        ))}
+          </div>)}
       </div>
       
       {/* ملخص الأسعار */}
@@ -188,29 +177,28 @@ const OrderSummary = () => {
           <span className="text-brand-500">{total.toFixed(2)} ر.س</span>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
 
 // المكون الرئيسي لصفحة الدفع في السوبرماركت
 const MarketCheckoutContent = () => {
   const [isAddingAddress, setIsAddingAddress] = useState(false);
-  const { setIsAddingNewAddress } = useCheckout();
-  const { items } = useMarketCart();
-  
+  const {
+    setIsAddingNewAddress
+  } = useCheckout();
+  const {
+    items
+  } = useMarketCart();
   const handleAddNewAddress = () => {
     setIsAddingAddress(true);
     setIsAddingNewAddress(true);
   };
-  
   const handleCancelAddAddress = () => {
     setIsAddingAddress(false);
     setIsAddingNewAddress(false);
   };
-
   if (items.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+    return <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
         <div className="w-16 h-16 mb-4 rounded-full bg-brand-100 flex items-center justify-center">
           <MapPin className="w-8 h-8 text-brand-500" />
         </div>
@@ -221,20 +209,13 @@ const MarketCheckoutContent = () => {
             تصفح المنتجات
           </Button>
         </Link>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="space-y-6 pb-24">
+  return <div className="space-y-6 pb-24">
       {/* قسم العناوين */}
       <Card className="border-none shadow-sm">
         <CardContent className="p-5">
-          {isAddingAddress ? (
-            <NewAddressForm onCancel={handleCancelAddAddress} />
-          ) : (
-            <AddressSelector onAddNewClick={handleAddNewAddress} />
-          )}
+          {isAddingAddress ? <NewAddressForm onCancel={handleCancelAddAddress} /> : <AddressSelector onAddNewClick={handleAddNewAddress} />}
         </CardContent>
       </Card>
       
@@ -260,16 +241,13 @@ const MarketCheckoutContent = () => {
       </Card>
       
       {/* شريط الدفع السفلي الثابت */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-10 max-w-md mx-auto">
+      <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-10 max-w-md mx-auto my-[57px]">
         <CheckoutButton />
       </div>
-    </div>
-  );
+    </div>;
 };
-
 const MarketCheckout: React.FC = () => {
-  return (
-    <MarketCartProvider>
+  return <MarketCartProvider>
       <CheckoutProvider>
         <div className="min-h-screen bg-gray-50" dir="rtl">
           <div className="max-w-md mx-auto bg-white">
@@ -291,8 +269,6 @@ const MarketCheckout: React.FC = () => {
           </div>
         </div>
       </CheckoutProvider>
-    </MarketCartProvider>
-  );
+    </MarketCartProvider>;
 };
-
 export default MarketCheckout;
