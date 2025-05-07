@@ -69,7 +69,7 @@ const PharmacyCategory: React.FC = () => {
                 <Card key={product.id} className="overflow-hidden">
                   <div className="p-2">
                     <img 
-                      src={product.image} 
+                      src={product.image_url || 'https://via.placeholder.com/200?text=Medicine'} 
                       alt={product.name} 
                       className="w-full h-32 object-cover rounded"
                     />
@@ -81,9 +81,9 @@ const PharmacyCategory: React.FC = () => {
                         size="sm"
                         onClick={() => addToCart(product)}
                         className="bg-brand-500 hover:bg-brand-600"
-                        disabled={!product.inStock}
+                        disabled={product.stock <= 0}
                       >
-                        {product.inStock ? 'إضافة' : 'نفذ'}
+                        {product.stock > 0 ? 'إضافة' : 'نفذ'}
                       </Button>
                     </div>
                   </div>

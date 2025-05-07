@@ -32,7 +32,12 @@ const fetchPharmacyCategoryProducts = async (categoryId: string): Promise<Pharma
     throw error;
   }
   
-  return data || [];
+  // Transform the data to match our UI expectations
+  return data?.map(item => ({
+    ...item,
+    inStock: item.stock > 0,
+    image: item.image_url
+  })) || [];
 };
 
 // Function to fetch recommended products
@@ -47,7 +52,12 @@ const fetchRecommendedProducts = async (): Promise<PharmacyProduct[]> => {
     throw error;
   }
   
-  return data || [];
+  // Transform the data to match our UI expectations
+  return data?.map(item => ({
+    ...item,
+    inStock: item.stock > 0,
+    image: item.image_url
+  })) || [];
 };
 
 // Use this hook to get pharmacy categories
