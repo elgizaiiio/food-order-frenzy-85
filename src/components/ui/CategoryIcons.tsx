@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Icon } from '@/components/ui/Icon';
 import { Link } from 'react-router-dom';
 
 const CategoryIcons: React.FC = () => {
