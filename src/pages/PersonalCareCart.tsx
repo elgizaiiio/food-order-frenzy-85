@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Minus, Plus, X, ShoppingBag } from 'lucide-react';
@@ -187,7 +186,7 @@ const PersonalCareCart: React.FC = () => {
 
         {/* Bottom Buttons - Fixed at bottom */}
         {items.length > 0 && (
-          <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 max-w-md mx-auto shadow-lg">
+          <div className="fixed bottom-20 left-0 right-0 bg-white border-t p-4 max-w-md mx-auto shadow-lg">
             <div className="flex gap-3">
               <Link to="/personal-care" className="flex-1">
                 <Button variant="outline" className="w-full py-6 text-gray-600 border-gray-300 hover:bg-gray-50">

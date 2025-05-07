@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Search, Share, ShoppingCart, MapPin, ChevronDown, Package, Clock } from 'lucide-react';
@@ -29,7 +28,7 @@ const DamMarketContent: React.FC = () => {
     totalPrice
   } = useMarketCart();
   return <div className="min-h-screen bg-gray-50" dir="rtl">
-      <div className="max-w-md mx-auto bg-white pb-20">
+      <div className="max-w-md mx-auto bg-white pb-24">
         {/* Header */}
         <div className="sticky top-0 z-10 bg-white shadow-sm">
           <div className="flex items-center justify-between p-4">
@@ -150,8 +149,8 @@ const DamMarketContent: React.FC = () => {
             </div>}
         </div>
 
-        {/* Cart Floating Button */}
-        {itemCount > 0 && <div className="fixed bottom-5 left-0 right-0 mx-auto w-11/12 max-w-md z-30">
+        {/* Cart Floating Button - Adjusted position to be above bottom nav */}
+        {itemCount > 0 && <div className="fixed bottom-20 left-0 right-0 mx-auto w-11/12 max-w-md z-30">
             <div className="bg-brand-500 text-white rounded-lg shadow-lg p-4">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
