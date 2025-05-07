@@ -44,6 +44,7 @@ import GymSuccess from "./pages/GymSuccess";
 import GymSubscriptions from "./pages/GymSubscriptions";
 // User Profile Section
 import Profile from "./pages/Profile";
+import EditProfile from "./pages/EditProfile";
 import Settings from "./pages/Settings";
 import Addresses from "./pages/Addresses";
 import PaymentMethods from "./pages/PaymentMethods";
@@ -136,6 +137,7 @@ const App = () => (
             <Route path="/gym/subscriptions" element={<GymSubscriptions />} />
             {/* Profile Routes */}
             <Route path="/profile" element={<Profile />} />
+            <Route path="/edit-profile" element={<EditProfile />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/addresses" element={<Addresses />} />
             <Route path="/payment-methods" element={<PaymentMethods />} />
