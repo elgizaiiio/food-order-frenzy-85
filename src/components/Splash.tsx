@@ -5,18 +5,23 @@ import { motion } from 'framer-motion';
 
 interface SplashProps {
   duration?: number;
+  onComplete?: () => void;
 }
 
-const Splash: React.FC<SplashProps> = ({ duration = 2000 }) => {
+const Splash: React.FC<SplashProps> = ({ duration = 2000, onComplete }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate('/');
+      if (onComplete) {
+        onComplete();
+      } else {
+        navigate('/');
+      }
     }, duration);
 
     return () => clearTimeout(timer);
-  }, [duration, navigate]);
+  }, [duration, navigate, onComplete]);
 
   return (
     <motion.div 
