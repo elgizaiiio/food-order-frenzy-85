@@ -61,11 +61,14 @@ const CategoryIcons: React.FC = () => {
               to={category.path}
               className="flex flex-col items-center min-w-[80px]"
             >
-              <div className={`w-16 h-16 rounded-full ${category.color} flex items-center justify-center mb-2 shadow-md hover:shadow-lg transition-all`}>
+              <span className={`text-sm font-medium ${category.textColor} mb-2`}>
+                {category.name}
+              </span>
+              <div className={`w-16 h-16 rounded-full ${category.color} flex items-center justify-center shadow-sm hover:shadow-md transition-all overflow-hidden`}>
                 <img 
                   src={category.icon} 
                   alt={category.name}
-                  className="w-10 h-10"
+                  className="w-full h-full object-cover opacity-90"
                   onError={(e) => {
                     // Fallback to realistic image URLs from Unsplash if icon fails to load
                     const fallbackImages = {
@@ -80,9 +83,6 @@ const CategoryIcons: React.FC = () => {
                   }}
                 />
               </div>
-              <span className={`text-sm font-medium ${category.textColor}`}>
-                {category.name}
-              </span>
             </Link>
           ))}
         </div>
