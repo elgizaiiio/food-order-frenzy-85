@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Search, ShoppingCart, Pill, ChevronDown, ChevronUp } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -6,22 +6,52 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { usePharmacyCategories, useRecommendedProducts } from '@/hooks/usePharmacyData';
 import { usePharmacyCart } from '@/context/PharmacyCartContext';
+
 const Pharmacy: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showCategories, setShowCategories] = useState(false);
+  const [headerVisible, setHeaderVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
   const {
     data: categories,
     isLoading: categoriesLoading
   } = usePharmacyCategories();
+  
   const {
     data: recommendedProducts,
     isLoading: productsLoading
   } = useRecommendedProducts();
+  
   const {
     addToCart,
     itemCount,
     totalPrice
   } = usePharmacyCart();
+
+  // Handle scroll event to show/hide header
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        // Scrolling down & past threshold
+        setHeaderVisible(false);
+      } else {
+        // Scrolling up or at the top
+        setHeaderVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [lastScrollY]);
+
   const getCategoryIcon = (iconName: string) => {
     // تنفيذ بسيط للأيقونات، في تطبيق حقيقي يمكن استخدام مكتبة أيقونات كاملة
     return <Pill className="h-5 w-5" />;
@@ -31,10 +61,16 @@ const Pharmacy: React.FC = () => {
   const handleCheckout = () => {
     // توجيه المستخدم إلى صفحة السلة
   };
-  return <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
       <div className="max-w-md mx-auto bg-white pb-20">
-        {/* Header with gradient */}
-        <div className="sticky top-0 bg-gradient-to-r from-blue-500 to-indigo-600 z-10 shadow-md rounded-b-2xl">
+        {/* Header with gradient - now with transition for showing/hiding */}
+        <div 
+          className={`sticky top-0 bg-gradient-to-r from-blue-500 to-indigo-600 z-10 shadow-md rounded-b-2xl transition-transform duration-300 ${
+            headerVisible ? 'translate-y-0' : '-translate-y-full'
+          }`}
+        >
           <div className="flex items-center justify-between p-4 text-white">
             <Link to="/" className="text-white">
               <ArrowLeft className="w-6 h-6" />
@@ -42,25 +78,41 @@ const Pharmacy: React.FC = () => {
             <h1 className="text-xl font-bold">الصيدلية</h1>
             <Link to="/pharmacy/cart" className="relative">
               <ShoppingCart className="w-6 h-6 text-white" />
-              {itemCount > 0 && <span className="absolute -top-2 -right-2 bg-white text-blue-600 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
+              {itemCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-white text-blue-600 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
                   {itemCount}
-                </span>}
+                </span>
+              )}
             </Link>
           </div>
 
           {/* Search */}
           <div className="px-4 pb-6">
             <div className="relative">
-              <Input type="search" placeholder="ابحث عن الأدوية والمنتجات" className="pl-10 pr-4 py-2 rounded-full border-gray-300 bg-white/90 backdrop-blur-sm text-gray-700 shadow-md" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+              <Input 
+                type="search" 
+                placeholder="ابحث عن الأدوية والمنتجات" 
+                className="pl-10 pr-4 py-2 rounded-full border-gray-300 bg-white/90 backdrop-blur-sm text-gray-700 shadow-md" 
+                value={searchTerm} 
+                onChange={e => setSearchTerm(e.target.value)} 
+              />
               <div className="absolute inset-y-0 right-4 flex items-center">
                 <Search className="h-4 w-4 text-gray-500" />
               </div>
             </div>
             
             {/* زر "عايز حاجة معينة؟" */}
-            <Button variant="outline" onClick={() => setShowCategories(!showCategories)} className="w-full mt-3 flex items-center justify-between border-white text-white backdrop-blur-sm bg-blue-700 hover:bg-blue-600">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowCategories(!showCategories)} 
+              className="w-full mt-3 flex items-center justify-between border-white text-white backdrop-blur-sm bg-blue-700 hover:bg-blue-600"
+            >
               <span>عايز حاجة معينة؟</span>
-              {showCategories ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              {showCategories ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
             </Button>
           </div>
         </div>
@@ -113,6 +165,8 @@ const Pharmacy: React.FC = () => {
             </Link>
           </div>}
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default Pharmacy;
