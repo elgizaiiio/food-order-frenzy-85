@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { CreditCard, Wallet, DollarSign, Apple } from 'lucide-react';
+import { CreditCard, Wallet, DollarSign, Phone } from 'lucide-react';
 import { useCheckout, PaymentMethod } from '@/context/CheckoutContext';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
@@ -19,19 +19,19 @@ const PaymentMethods: React.FC = () => {
       id: 'card', 
       name: 'بطاقة ائتمان / فيزا', 
       icon: <CreditCard className="h-5 w-5 text-blue-600" />,
-      description: 'فيزا، ماستركارد'
+      description: 'فيزا، ماستركارد، ميزة'
     },
     { 
       id: 'wallet', 
       name: 'المحافظ الإلكترونية', 
       icon: <Wallet className="h-5 w-5 text-purple-600" />,
-      description: 'فودافون كاش، محفظة مصر الرقمية، وغيرها'
+      description: 'فودافون كاش، محفظة مصر الرقمية، وي باي'
     },
     { 
-      id: 'applepay', 
-      name: 'Apple Pay', 
-      icon: <Apple className="h-5 w-5 text-black" />,
-      description: 'الدفع السريع عبر Apple Pay'
+      id: 'fawry', 
+      name: 'فوري', 
+      icon: <Phone className="h-5 w-5 text-orange-600" />,
+      description: 'الدفع من خلال خدمة فوري'
     }
   ];
 
@@ -84,6 +84,7 @@ const PaymentMethods: React.FC = () => {
           <div className="flex gap-2">
             <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-6" />
             <img src="https://upload.wikimedia.org/wikipedia/commons/b/b7/MasterCard_Logo.svg" alt="MasterCard" className="h-6" />
+            <img src="https://upload.wikimedia.org/wikipedia/ar/3/3d/Meeza_card_logo.jpg" alt="Meeza" className="h-6" />
           </div>
           <span className="text-xs text-gray-500">معاملات آمنة 100%</span>
         </div>

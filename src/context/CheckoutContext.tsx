@@ -9,7 +9,7 @@ export interface Address {
   isDefault?: boolean;
 }
 
-export type PaymentMethod = 'cash' | 'wallet' | 'card' | 'applepay';
+export type PaymentMethod = 'cash' | 'wallet' | 'card' | 'fawry';
 
 interface CheckoutContextType {
   addresses: Address[];
