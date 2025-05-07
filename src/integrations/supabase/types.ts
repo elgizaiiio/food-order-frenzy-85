@@ -9,491 +9,351 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      admin_roles: {
+      homepage_highlights: {
         Row: {
-          created_at: string
           id: string
-          role: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          role: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          role?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      ai_chat: {
-        Row: {
-          ai_response: string
-          created_at: string | null
-          id: string
-          medicines_suggested: Json | null
-          updated_at: string | null
-          user_input: string
-        }
-        Insert: {
-          ai_response: string
-          created_at?: string | null
-          id?: string
-          medicines_suggested?: Json | null
-          updated_at?: string | null
-          user_input: string
-        }
-        Update: {
-          ai_response?: string
-          created_at?: string | null
-          id?: string
-          medicines_suggested?: Json | null
-          updated_at?: string | null
-          user_input?: string
-        }
-        Relationships: []
-      }
-      announcements: {
-        Row: {
-          content: string
-          created_at: string
-          created_by: string | null
-          id: string
+          image_url: string | null
+          order: number
+          ref_id: string | null
           title: string
-          updated_at: string
+          type: string | null
         }
         Insert: {
-          content: string
-          created_at?: string
-          created_by?: string | null
           id?: string
+          image_url?: string | null
+          order: number
+          ref_id?: string | null
           title: string
-          updated_at?: string
+          type?: string | null
         }
         Update: {
-          content?: string
-          created_at?: string
-          created_by?: string | null
           id?: string
+          image_url?: string | null
+          order?: number
+          ref_id?: string | null
           title?: string
-          updated_at?: string
+          type?: string | null
         }
         Relationships: []
-      }
-      app_info: {
-        Row: {
-          app_name: string
-          created_at: string | null
-          id: string
-          updated_at: string | null
-        }
-        Insert: {
-          app_name: string
-          created_at?: string | null
-          id?: string
-          updated_at?: string | null
-        }
-        Update: {
-          app_name?: string
-          created_at?: string | null
-          id?: string
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      delivery_addresses: {
-        Row: {
-          address: string
-          city: string
-          created_at: string | null
-          full_name: string
-          id: string
-          is_default: boolean | null
-          location: Json | null
-          notes: string | null
-          phone_number: string
-          updated_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          address: string
-          city: string
-          created_at?: string | null
-          full_name: string
-          id?: string
-          is_default?: boolean | null
-          location?: Json | null
-          notes?: string | null
-          phone_number: string
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          address?: string
-          city?: string
-          created_at?: string | null
-          full_name?: string
-          id?: string
-          is_default?: boolean | null
-          location?: Json | null
-          notes?: string | null
-          phone_number?: string
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
-      medicines: {
-        Row: {
-          available: boolean | null
-          created_at: string | null
-          description: string | null
-          id: string
-          image_url: string | null
-          name: string
-          price: number
-          updated_at: string | null
-        }
-        Insert: {
-          available?: boolean | null
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          image_url?: string | null
-          name: string
-          price: number
-          updated_at?: string | null
-        }
-        Update: {
-          available?: boolean | null
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          image_url?: string | null
-          name?: string
-          price?: number
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      menu_items: {
-        Row: {
-          created_at: string | null
-          description: string | null
-          id: string
-          image_url: string | null
-          name: string
-          price: number
-          restaurant_id: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          image_url?: string | null
-          name: string
-          price: number
-          restaurant_id?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          image_url?: string | null
-          name?: string
-          price?: number
-          restaurant_id?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "menu_items_restaurant_id_fkey"
-            columns: ["restaurant_id"]
-            isOneToOne: false
-            referencedRelation: "restaurants"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      order_items: {
-        Row: {
-          created_at: string | null
-          id: string
-          item_id: string | null
-          item_name: string
-          order_id: string | null
-          price: number
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          item_id?: string | null
-          item_name: string
-          order_id?: string | null
-          price: number
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          item_id?: string | null
-          item_name?: string
-          order_id?: string | null
-          price?: number
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "order_items_item_id_fkey"
-            columns: ["item_id"]
-            isOneToOne: false
-            referencedRelation: "menu_items"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "order_items_order_id_fkey"
-            columns: ["order_id"]
-            isOneToOne: false
-            referencedRelation: "orders"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       orders: {
         Row: {
-          address: string
           created_at: string | null
+          delivery_address_id: string | null
           id: string
-          payment_method: string
-          restaurant_id: string | null
-          total: number
-          updated_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          address: string
-          created_at?: string | null
-          id?: string
-          payment_method: string
-          restaurant_id?: string | null
-          total: number
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          address?: string
-          created_at?: string | null
-          id?: string
-          payment_method?: string
-          restaurant_id?: string | null
-          total?: number
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "orders_restaurant_id_fkey"
-            columns: ["restaurant_id"]
-            isOneToOne: false
-            referencedRelation: "restaurants"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      pharmacy_orders: {
-        Row: {
-          created_at: string | null
-          customer_name: string
-          customer_phone: string
-          delivery_address: string
-          id: string
-          medicine_ids: string[]
-          medicines_data: Json
-          payment_method: string
-          status: string
+          items: Json
+          order_type: string | null
+          payment_method_id: string | null
+          status: string | null
           total_amount: number
           updated_at: string | null
           user_id: string | null
         }
         Insert: {
           created_at?: string | null
-          customer_name: string
-          customer_phone: string
-          delivery_address: string
+          delivery_address_id?: string | null
           id?: string
-          medicine_ids: string[]
-          medicines_data: Json
-          payment_method?: string
-          status?: string
+          items: Json
+          order_type?: string | null
+          payment_method_id?: string | null
+          status?: string | null
           total_amount: number
           updated_at?: string | null
           user_id?: string | null
         }
         Update: {
           created_at?: string | null
-          customer_name?: string
-          customer_phone?: string
-          delivery_address?: string
+          delivery_address_id?: string | null
           id?: string
-          medicine_ids?: string[]
-          medicines_data?: Json
-          payment_method?: string
-          status?: string
+          items?: Json
+          order_type?: string | null
+          payment_method_id?: string | null
+          status?: string | null
           total_amount?: number
           updated_at?: string | null
           user_id?: string | null
         }
+        Relationships: [
+          {
+            foreignKeyName: "orders_delivery_address_id_fkey"
+            columns: ["delivery_address_id"]
+            isOneToOne: false
+            referencedRelation: "user_addresses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_payment_method_id_fkey"
+            columns: ["payment_method_id"]
+            isOneToOne: false
+            referencedRelation: "user_payment_methods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      personal_care_products: {
+        Row: {
+          category: string
+          created_at: string | null
+          description: string | null
+          gender: string | null
+          id: string
+          image_url: string | null
+          name: string
+          price: number
+          stock: number
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          description?: string | null
+          gender?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          price: number
+          stock?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          gender?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          price?: number
+          stock?: number
+        }
         Relationships: []
+      }
+      pharmacy_products: {
+        Row: {
+          category: string
+          created_at: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          name: string
+          price: number
+          requires_prescription: boolean | null
+          stock: number
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          price: number
+          requires_prescription?: boolean | null
+          stock?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          price?: number
+          requires_prescription?: boolean | null
+          stock?: number
+        }
+        Relationships: []
+      }
+      restaurant_menu: {
+        Row: {
+          category: string
+          created_at: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          name: string
+          price: number
+          restaurant_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          price: number
+          restaurant_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          price?: number
+          restaurant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "restaurant_menu_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       restaurants: {
         Row: {
           created_at: string | null
+          delivery_fee: number | null
           delivery_time: string | null
+          description: string | null
           id: string
-          image_url: string | null
+          logo_url: string | null
           name: string
           rating: number | null
-          updated_at: string | null
         }
         Insert: {
           created_at?: string | null
+          delivery_fee?: number | null
           delivery_time?: string | null
+          description?: string | null
           id?: string
-          image_url?: string | null
+          logo_url?: string | null
           name: string
           rating?: number | null
-          updated_at?: string | null
         }
         Update: {
           created_at?: string | null
+          delivery_fee?: number | null
           delivery_time?: string | null
+          description?: string | null
           id?: string
-          image_url?: string | null
+          logo_url?: string | null
           name?: string
           rating?: number | null
-          updated_at?: string | null
         }
         Relationships: []
       }
-      unified_orders: {
+      supermarket_products: {
         Row: {
+          category: string
           created_at: string | null
-          delivery_address_id: string | null
-          delivery_status: string
+          description: string | null
           id: string
-          items: Json
-          order_type: string
-          payment_method: string
-          payment_status: string
-          stripe_session_id: string | null
-          total_amount: number
-          updated_at: string | null
+          image_url: string | null
+          name: string
+          price: number
+          stock: number
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          price: number
+          stock?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          price?: number
+          stock?: number
+        }
+        Relationships: []
+      }
+      user_addresses: {
+        Row: {
+          city: string
+          created_at: string | null
+          full_address: string
+          id: string
+          is_default: boolean | null
+          label: string
+          phone_number: string
           user_id: string | null
         }
         Insert: {
+          city: string
           created_at?: string | null
-          delivery_address_id?: string | null
-          delivery_status?: string
+          full_address: string
           id?: string
-          items: Json
-          order_type: string
-          payment_method: string
-          payment_status?: string
-          stripe_session_id?: string | null
-          total_amount: number
-          updated_at?: string | null
+          is_default?: boolean | null
+          label: string
+          phone_number: string
           user_id?: string | null
         }
         Update: {
+          city?: string
           created_at?: string | null
-          delivery_address_id?: string | null
-          delivery_status?: string
+          full_address?: string
           id?: string
-          items?: Json
-          order_type?: string
-          payment_method?: string
-          payment_status?: string
-          stripe_session_id?: string | null
-          total_amount?: number
-          updated_at?: string | null
+          is_default?: boolean | null
+          label?: string
+          phone_number?: string
           user_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "unified_orders_delivery_address_id_fkey"
-            columns: ["delivery_address_id"]
+            foreignKeyName: "user_addresses_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "delivery_addresses"
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
       }
-      user_cards: {
+      user_payment_methods: {
         Row: {
-          card_number: string | null
-          created_at: string
+          created_at: string | null
           id: string
           is_default: boolean | null
-          last_four: string
-          user_id: string
+          last4: string | null
+          saved_token: string | null
+          type: string | null
+          user_id: string | null
         }
         Insert: {
-          card_number?: string | null
-          created_at?: string
+          created_at?: string | null
           id?: string
           is_default?: boolean | null
-          last_four: string
-          user_id: string
+          last4?: string | null
+          saved_token?: string | null
+          type?: string | null
+          user_id?: string | null
         }
         Update: {
-          card_number?: string | null
-          created_at?: string
+          created_at?: string | null
           id?: string
           is_default?: boolean | null
-          last_four?: string
-          user_id?: string
+          last4?: string | null
+          saved_token?: string | null
+          type?: string | null
+          user_id?: string | null
         }
-        Relationships: []
-      }
-      user_notifications: {
-        Row: {
-          created_at: string
-          id: string
-          message: string
-          notification_type: string | null
-          read: boolean | null
-          title: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          message: string
-          notification_type?: string | null
-          read?: boolean | null
-          title: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          message?: string
-          notification_type?: string | null
-          read?: boolean | null
-          title?: string
-          user_id?: string
-        }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_payment_methods_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       users: {
         Row: {
@@ -503,6 +363,8 @@ export type Database = {
           id: string
           name: string | null
           phone: string | null
+          phone_number: string | null
+          profile_image: string | null
           updated_at: string
           username: string | null
         }
@@ -513,6 +375,8 @@ export type Database = {
           id: string
           name?: string | null
           phone?: string | null
+          phone_number?: string | null
+          profile_image?: string | null
           updated_at?: string
           username?: string | null
         }
@@ -523,6 +387,8 @@ export type Database = {
           id?: string
           name?: string | null
           phone?: string | null
+          phone_number?: string | null
+          profile_image?: string | null
           updated_at?: string
           username?: string | null
         }
