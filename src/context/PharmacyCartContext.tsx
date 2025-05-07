@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { PharmacyProduct } from '@/api/pharmacy';
+import { PharmacyProduct } from '@/types/pharmacy';
 import { toast } from 'sonner';
 
 interface CartItem extends PharmacyProduct {
@@ -10,9 +10,9 @@ interface CartItem extends PharmacyProduct {
 interface PharmacyCartContextType {
   items: CartItem[];
   addToCart: (product: PharmacyProduct) => void;
-  removeFromCart: (productId: number) => void;
-  increaseQuantity: (productId: number) => void;
-  decreaseQuantity: (productId: number) => void;
+  removeFromCart: (productId: string) => void;
+  increaseQuantity: (productId: string) => void;
+  decreaseQuantity: (productId: string) => void;
   clearCart: () => void;
   itemCount: number;
   totalPrice: number;
@@ -73,7 +73,7 @@ export const PharmacyCartProvider: React.FC<{ children: React.ReactNode }> = ({ 
   };
 
   // إزالة منتج من السلة
-  const removeFromCart = (productId: number) => {
+  const removeFromCart = (productId: string) => {
     setItems(prevItems => {
       const itemToRemove = prevItems.find(item => item.id === productId);
       if (itemToRemove) {
@@ -84,7 +84,7 @@ export const PharmacyCartProvider: React.FC<{ children: React.ReactNode }> = ({ 
   };
 
   // زيادة كمية منتج
-  const increaseQuantity = (productId: number) => {
+  const increaseQuantity = (productId: string) => {
     setItems(prevItems => 
       prevItems.map(item => 
         item.id === productId ? { ...item, quantity: item.quantity + 1 } : item
@@ -93,7 +93,7 @@ export const PharmacyCartProvider: React.FC<{ children: React.ReactNode }> = ({ 
   };
 
   // إنقاص كمية منتج
-  const decreaseQuantity = (productId: number) => {
+  const decreaseQuantity = (productId: string) => {
     setItems(prevItems => {
       const existingItem = prevItems.find(item => item.id === productId);
       

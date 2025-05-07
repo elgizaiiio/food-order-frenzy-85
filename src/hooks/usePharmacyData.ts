@@ -99,7 +99,7 @@ export interface OrderConfirmation {
 // Pharmacy order interface
 export interface PharmacyOrder {
   items: Array<{
-    id: number;
+    id: string;
     quantity: number;
   }>;
   addressId: string;

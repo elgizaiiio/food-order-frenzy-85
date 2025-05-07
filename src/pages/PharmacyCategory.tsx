@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { usePharmacyCategoryProducts } from '@/hooks/usePharmacyData';
 import { usePharmacyCart } from '@/context/PharmacyCartContext';
+import { PharmacyProduct } from '@/types/pharmacy';
 
 const PharmacyCategory: React.FC = () => {
   const { categoryId = '' } = useParams<{ categoryId?: string }>();
@@ -17,7 +18,7 @@ const PharmacyCategory: React.FC = () => {
   // فلتر المنتجات بناء على مصطلح البحث
   const filteredProducts = products?.filter(
     product => product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              product.description.toLowerCase().includes(searchTerm.toLowerCase())
+              product.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -65,7 +66,7 @@ const PharmacyCategory: React.FC = () => {
             </div>
           ) : filteredProducts && filteredProducts.length > 0 ? (
             <div className="grid grid-cols-2 gap-4">
-              {filteredProducts.map((product) => (
+              {filteredProducts.map((product: PharmacyProduct) => (
                 <Card key={product.id} className="overflow-hidden">
                   <div className="p-2">
                     <img 
