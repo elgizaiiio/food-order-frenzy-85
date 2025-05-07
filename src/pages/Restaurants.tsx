@@ -249,13 +249,9 @@ const Restaurants: React.FC = () => {
                           <span className="text-sm text-gray-500">{restaurant.deliveryTime} دقيقة</span>
                         </div>
                       </div>
-                      <div className="text-sm text-gray-500">
-                        التوصيل: {restaurant.deliveryFee}
-                      </div>
+                      
                     </div>
-                    <Button className="w-full mt-3 rounded-xl" size="sm">
-                      ادخل المطعم
-                    </Button>
+                    
                   </div>
                 </Card>
               </div>)}
