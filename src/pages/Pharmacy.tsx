@@ -103,7 +103,7 @@ const Pharmacy: React.FC = () => {
         </div>
 
         {/* زر إتمام الطلب - يظهر فقط عند وجود منتجات في السلة */}
-        {itemCount > 0 && <div className="fixed bottom-20 left-0 right-0 max-w-md mx-auto z-10 mb-16 px-0 py-0 my-px">
+        {itemCount > 0 && <div className="fixed bottom-20 left-0 right-0 max-w-md z-10 mb-16 px-0 py-0 mx-0 my-px">
             <Link to="/pharmacy/cart">
               <Button className="w-full py-3 bg-brand-500 hover:bg-brand-600 text-white shadow-lg rounded-lg">
                 إتمام الطلب ({totalPrice.toFixed(2)} ج.م)
