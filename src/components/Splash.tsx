@@ -8,7 +8,7 @@ interface SplashProps {
   onComplete?: () => void;
 }
 
-const Splash: React.FC<SplashProps> = ({ duration = 2000, onComplete }) => {
+const Splash: React.FC<SplashProps> = ({ duration = 5000, onComplete }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
