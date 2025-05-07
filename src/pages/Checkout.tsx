@@ -203,7 +203,7 @@ const CheckoutContent = () => {
       </Card>
       
       {/* شريط الدفع السفلي الثابت */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-10 max-w-md mx-auto py-0 my-[68px]">
+      <div className="fixed bottom-20 left-0 right-0 bg-white shadow-lg border-t p-4 z-10 max-w-md mx-auto">
         <CheckoutButton />
       </div>
     </div>;
