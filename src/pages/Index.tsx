@@ -13,7 +13,7 @@ const Index: React.FC = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 800);
+    }, 4000); // Changed to 4 seconds
     
     return () => clearTimeout(timer);
   }, []);

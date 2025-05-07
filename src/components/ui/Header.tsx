@@ -19,7 +19,17 @@ const Header: React.FC = () => {
   };
 
   return (
-    <div className="px-4 pt-6 pb-2 animate-fade-in">
+    <div className="px-4 pt-6 pb-2 animate-fade-in bg-white">
+      {/* App Name and Profile Button */}
+      <div className="flex items-center justify-between mb-3">
+        <h1 className="text-2xl font-bold text-primary">
+          <span className="text-gray-800">dam</span>
+        </h1>
+        <Button variant="ghost" size="icon" className="rounded-full" onClick={navigateToProfile}>
+          <User className="h-5 w-5" />
+        </Button>
+      </div>
+
       {/* Delivery Address */}
       <div className="flex items-center justify-between mb-4 text-sm">
         <div className="flex items-center gap-1 text-gray-700">
@@ -50,10 +60,6 @@ const Header: React.FC = () => {
               </div>
             </PopoverContent>
           </Popover>
-          
-          <Button variant="ghost" size="icon" className="rounded-full" onClick={navigateToProfile}>
-            <User className="h-5 w-5" />
-          </Button>
         </div>
       </div>
       
