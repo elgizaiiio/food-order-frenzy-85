@@ -154,7 +154,7 @@ const CheckoutContent = () => {
     setIsAddingAddress(false);
     setIsAddingNewAddress(false);
   };
-  return <div className="space-y-6 pb-24">
+  return <div className="space-y-6 pb-28">
       {/* قسم العناوين */}
       <Card className="border-none shadow-sm">
         <CardContent className="p-5">
@@ -204,7 +204,7 @@ const CheckoutContent = () => {
       </Card>
       
       {/* شريط الدفع السفلي الثابت */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-10 max-w-md mx-auto mb-20">
+      <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-10 max-w-md mx-auto mb-28">
         <CheckoutButton />
       </div>
     </div>;
@@ -212,7 +212,7 @@ const CheckoutContent = () => {
 const Checkout: React.FC = () => {
   return <CheckoutProvider>
       <div className="min-h-screen bg-gray-50" dir="rtl">
-        <div className="max-w-md mx-auto bg-white">
+        <div className="max-w-md mx-auto bg-white pb-28">
           {/* الرأس */}
           <div className="sticky top-0 bg-white border-b shadow-sm z-20">
             <div className="flex items-center justify-between p-4">

@@ -81,8 +81,8 @@ const PharmacyCheckoutContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-md mx-auto bg-white pb-20">
+    <div className="min-h-screen bg-gray-50 pb-28">
+      <div className="max-w-md mx-auto bg-white">
         {/* Header */}
         <div className="sticky top-0 flex items-center justify-between p-4 bg-white shadow-sm z-10">
           <Link to="/pharmacy/cart" className="text-gray-700">
@@ -143,7 +143,7 @@ const PharmacyCheckoutContent: React.FC = () => {
       
       {/* Bottom fixed button container - Adding this to maintain consistency with other checkout pages */}
       {!isAddingNewAddress && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-10 max-w-md mx-auto mb-20">
+        <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-10 max-w-md mx-auto mb-28">
           <Button 
             className="w-full bg-brand-500 hover:bg-brand-600"
             onClick={handleSubmitOrder}

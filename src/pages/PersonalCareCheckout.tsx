@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, MapPin, Clock, CreditCard, Phone, Apple, Wallet, DollarSign, ShoppingBag } from 'lucide-react';
@@ -12,7 +13,9 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { Progress } from '@/components/ui/progress';
 import { usePersonalCareCart } from '@/context/PersonalCareCartContext';
+
 type PaymentMethod = 'cash' | 'card' | 'wallet' | 'applepay';
+
 const PersonalCareCheckout: React.FC = () => {
   const navigate = useNavigate();
   const {
@@ -101,8 +104,9 @@ const PersonalCareCheckout: React.FC = () => {
       });
     }, 500);
   };
+
   return <div className="min-h-screen bg-gray-50" dir="rtl">
-      <div className="max-w-md mx-auto bg-white pb-24">
+      <div className="max-w-md mx-auto bg-white pb-28">
         {/* Header */}
         <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-md sticky top-0 z-10">
           <Link to="/personal-care/cart" className="text-white">
@@ -399,7 +403,7 @@ const PersonalCareCheckout: React.FC = () => {
             </div>}
 
           {/* Submit Button - Fixed at Bottom */}
-          <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 max-w-md mx-auto shadow-lg mb-16">
+          <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 max-w-md mx-auto shadow-lg mb-28">
             <Button type="button" onClick={handleSubmitOrder} disabled={isSubmitting} className="w-full py-6 text-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-md">
               {isSubmitting ? "جاري تنفيذ الطلب..." : `تأكيد الطلب · ${total} ريال`}
             </Button>

@@ -7,6 +7,14 @@ const BottomNav: React.FC = () => {
   const location = useLocation();
   const path = location.pathname;
 
+  // التحقق إذا كانت الصفحة الحالية هي صفحة دفع
+  const isCheckoutPage = path.includes('checkout');
+
+  // إذا كانت الصفحة الحالية هي صفحة دفع، فلا نعرض شريط التنقل السفلي
+  if (isCheckoutPage) {
+    return null;
+  }
+
   const navItems = [
     {
       name: 'الرئيسية',
