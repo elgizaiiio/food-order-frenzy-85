@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, ClipboardList, UserRound } from 'lucide-react';
 
@@ -37,7 +37,7 @@ const BottomNav: React.FC = () => {
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-white shadow-lg border-t border-gray-200">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white shadow-lg border-t border-gray-200">
       <div className="flex justify-around items-center h-16 px-3">
         {navItems.map((item) => (
           <Link
@@ -46,6 +46,7 @@ const BottomNav: React.FC = () => {
             className={`flex flex-col items-center justify-center w-full h-full ${
               item.active ? 'text-brand-500 font-medium' : 'text-gray-500'
             }`}
+            prefetch="intent"
           >
             <div className={item.active ? 'text-brand-500' : 'text-gray-500'}>
               {item.icon}
@@ -54,8 +55,9 @@ const BottomNav: React.FC = () => {
           </Link>
         ))}
       </div>
-    </div>
+    </nav>
   );
 };
 
-export default BottomNav;
+// استخدام memo لمنع إعادة الرسم غير الضروري
+export default memo(BottomNav);
