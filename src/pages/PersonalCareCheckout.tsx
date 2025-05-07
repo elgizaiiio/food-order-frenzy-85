@@ -399,7 +399,7 @@ const PersonalCareCheckout: React.FC = () => {
             </div>}
 
           {/* Submit Button - Fixed at Bottom */}
-          <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 max-w-md mx-auto shadow-lg my-[56px]">
+          <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 max-w-md mx-auto shadow-lg mb-16">
             <Button type="button" onClick={handleSubmitOrder} disabled={isSubmitting} className="w-full py-6 text-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-md">
               {isSubmitting ? "جاري تنفيذ الطلب..." : `تأكيد الطلب · ${total} ريال`}
             </Button>

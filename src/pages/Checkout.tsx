@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Clock, ShoppingBag } from 'lucide-react';
@@ -203,7 +204,7 @@ const CheckoutContent = () => {
       </Card>
       
       {/* شريط الدفع السفلي الثابت */}
-      <div className="fixed bottom-20 left-0 right-0 bg-white shadow-lg border-t p-4 z-10 max-w-md mx-auto my-0 py-[8px]">
+      <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-10 max-w-md mx-auto mb-16">
         <CheckoutButton />
       </div>
     </div>;

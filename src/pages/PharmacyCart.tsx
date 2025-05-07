@@ -102,7 +102,7 @@ const PharmacyCart: React.FC = () => {
               </Card>
 
               {/* Action buttons */}
-              <div className="mt-6 space-y-3">
+              <div className="mt-6 space-y-3 mb-16">
                 <Button 
                   className="w-full bg-brand-500 hover:bg-brand-600"
                   onClick={() => navigate('/pharmacy/checkout')}

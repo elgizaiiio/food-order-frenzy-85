@@ -397,7 +397,7 @@ const ClothesCheckout: React.FC = () => {
         </div>
 
         {/* Bottom Button - Fixed at bottom */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 max-w-md mx-auto shadow-lg">
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 max-w-md mx-auto shadow-lg mb-16">
           <Button 
             onClick={handleSubmitOrder}
             disabled={loading}

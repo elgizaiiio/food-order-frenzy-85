@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Minus, Plus, Trash2, ShoppingCart } from 'lucide-react';
@@ -169,7 +170,7 @@ const ClothesCart: React.FC = () => {
         {cartItems.length > 0}
         
         {/* Bottom Buttons - Fixed at bottom */}
-        {cartItems.length > 0 && <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 max-w-md mx-auto shadow-lg my-[54px]">
+        {cartItems.length > 0 && <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 max-w-md mx-auto shadow-lg mb-16">
             <Link to="/clothes/checkout">
               <Button className="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white text-lg font-medium shadow-md">
                 إتمام الطلب ({total} جنيه)

@@ -241,11 +241,12 @@ const MarketCheckoutContent = () => {
       </Card>
       
       {/* شريط الدفع السفلي الثابت */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-10 max-w-md mx-auto my-[59px]">
+      <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-10 max-w-md mx-auto mb-16">
         <CheckoutButton />
       </div>
     </div>;
 };
+
 const MarketCheckout: React.FC = () => {
   return <MarketCartProvider>
       <CheckoutProvider>
@@ -271,4 +272,5 @@ const MarketCheckout: React.FC = () => {
       </CheckoutProvider>
     </MarketCartProvider>;
 };
+
 export default MarketCheckout;

@@ -129,7 +129,7 @@ const PharmacyCheckoutContent: React.FC = () => {
 
                 {/* Submit Order Button */}
                 <Button 
-                  className="w-full bg-brand-500 hover:bg-brand-600"
+                  className="w-full bg-brand-500 hover:bg-brand-600 mb-16"
                   onClick={handleSubmitOrder}
                   disabled={isProcessing || !selectedAddressId}
                 >

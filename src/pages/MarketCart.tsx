@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Minus, Plus, X, Trash2 } from 'lucide-react';
@@ -166,8 +167,8 @@ const MarketCart: React.FC = () => {
         </div>
 
         {/* Bottom Buttons - Fixed at bottom */}
-        {cartItems.length > 0 && <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 max-w-md mx-auto shadow-lg py-0 my-[69px]">
-            <div className="flex gap-3 my-0 py-[5px]">
+        {cartItems.length > 0 && <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 max-w-md mx-auto shadow-lg mb-16">
+            <div className="flex gap-3">
               <Link to="/market" className="flex-1">
                 <Button variant="outline" className="w-full py-6 text-gray-600 border-gray-300 hover:bg-gray-50">
                   إضافة المزيد
