@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Phone, CreditCard, Package, Check } from 'lucide-react';
+import { ArrowLeft, Package } from 'lucide-react';
 import { usePharmacyCart } from '@/context/PharmacyCartContext';
 import { Button } from '@/components/ui/button';
 import { toast } from "sonner";
@@ -23,10 +23,19 @@ const PharmacyCheckout: React.FC = () => {
   React.useEffect(() => {
     if (items.length === 0 && !isProcessing) {
       navigate('/pharmacy');
+      toast.error("سلة التسوق فارغة");
+    } else {
+      console.log("Items in checkout:", items);
     }
   }, [items, navigate, isProcessing]);
 
   const handleCheckout = async (addressId: string, paymentMethod: string) => {
+    if (items.length === 0) {
+      toast.error("لا يمكن إتمام الطلب، السلة فارغة");
+      navigate('/pharmacy');
+      return;
+    }
+
     setIsProcessing(true);
 
     try {
@@ -125,33 +134,30 @@ const PharmacyCheckout: React.FC = () => {
             <div className="w-6"></div>
           </div>
 
-          {isAddingAddress ? (
-            <CheckoutContent />
-          ) : (
-            <>
-              <CheckoutContent />
-              {/* Submit Order Button */}
-              <div className="fixed bottom-0 right-0 left-0 max-w-md mx-auto bg-white border-t p-4">
-                <Button 
-                  onClick={() => {
-                    const addressId = "1"; // في التطبيق الحقيقي، هذا سيكون من اختيار المستخدم
-                    const paymentMethod = "cash"; // في التطبيق الحقيقي، هذا سيكون من اختيار المستخدم
-                    handleCheckout(addressId, paymentMethod);
-                  }}
-                  disabled={isProcessing}
-                  className="w-full bg-indigo-500 hover:bg-indigo-600 text-lg h-12"
-                >
-                  {isProcessing ? (
-                    <span className="flex items-center gap-2">
-                      <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
-                      جاري المعالجة...
-                    </span>
-                  ) : (
-                    `تأكيد الطلب (${totalPrice + deliveryFee} ريال)`
-                  )}
-                </Button>
-              </div>
-            </>
+          <CheckoutContent />
+          
+          {/* Submit Order Button - Only show if not adding address and cart has items */}
+          {!isAddingAddress && items.length > 0 && (
+            <div className="fixed bottom-20 right-0 left-0 max-w-md mx-auto bg-white border-t p-4">
+              <Button 
+                onClick={() => {
+                  const addressId = "1"; // في التطبيق الحقيقي، هذا سيكون من اختيار المستخدم
+                  const paymentMethod = "cash"; // في التطبيق الحقيقي، هذا سيكون من اختيار المستخدم
+                  handleCheckout(addressId, paymentMethod);
+                }}
+                disabled={isProcessing || items.length === 0}
+                className="w-full bg-indigo-500 hover:bg-indigo-600 text-lg h-12"
+              >
+                {isProcessing ? (
+                  <span className="flex items-center gap-2 justify-center">
+                    <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
+                    جاري المعالجة...
+                  </span>
+                ) : (
+                  `تأكيد الطلب (${totalPrice + deliveryFee} ريال)`
+                )}
+              </Button>
+            </div>
           )}
         </div>
       </div>

@@ -23,6 +23,9 @@ const PharmacyCart: React.FC = () => {
 
   // التوجه إلى صفحة الدفع
   const goToCheckout = () => {
+    if (isEmpty) {
+      return;
+    }
     navigate('/pharmacy/checkout');
   };
 
