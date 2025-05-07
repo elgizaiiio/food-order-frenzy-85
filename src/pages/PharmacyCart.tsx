@@ -26,6 +26,11 @@ const PharmacyCart: React.FC = () => {
     navigate('/pharmacy/checkout');
   };
 
+  React.useEffect(() => {
+    // تحقق من وجود المنتجات في السلة عند تحميل الصفحة
+    console.log("Cart items:", items);
+  }, [items]);
+
   return (
     <div className="min-h-screen bg-gray-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-24">
