@@ -5,6 +5,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { UserProvider } from "@/context/UserContext";
 import { MarketCartProvider } from "@/context/MarketCartContext";
 import { PharmacyCartProvider } from "@/context/PharmacyCartContext";
 import { PersonalCareCartProvider } from "@/context/PersonalCareCartContext";
@@ -115,63 +116,65 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          {showSplash ? (
-            <Splash onComplete={() => setShowSplash(false)} />
-          ) : (
-            <>
-              <div className="pb-16"> {/* Add padding to the bottom to prevent content from being hidden by the navigation bar */}
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/splash" element={<Splash />} />
-                  <Route path="/restaurants" element={<Restaurants />} />
-                  <Route path="/restaurant/:id" element={<RestaurantMenu />} />
-                  <Route path="/cart" element={<Cart />} />
-                  <Route path="/checkout" element={<Checkout />} />
-                  <Route path="/tracking" element={<OrderTracking />} />
-                  <Route path="/about" element={<About />} />
-                  
-                  {/* Pharmacy routes with PharmacyCartProvider */}
-                  <Route path="/pharmacy/*" element={<PharmacyCartRoutes />} />
-                  
-                  {/* Market routes with MarketCartProvider */}
-                  <Route path="/market/*" element={<MarketCartRoutes />} />
-                  
-                  {/* Personal Care Routes with PersonalCareCartProvider */}
-                  <Route path="/personal-care/*" element={<PersonalCareRoutes />} />
-                  
-                  {/* Clothes Routes */}
-                  <Route path="/clothes" element={<Clothes />} />
-                  <Route path="/clothes/category/:categoryId" element={<ClothesCategory />} />
-                  <Route path="/clothes/cart" element={<ClothesCart />} />
-                  <Route path="/clothes/checkout" element={<ClothesCheckout />} />
-                  {/* Gym Routes */}
-                  <Route path="/gym" element={<Gym />} />
-                  <Route path="/gym/:id/subscribe" element={<GymSubscription />} />
-                  <Route path="/gym/payment" element={<GymPayment />} />
-                  <Route path="/gym/success" element={<GymSuccess />} />
-                  <Route path="/gym/subscriptions" element={<GymSubscriptions />} />
-                  {/* Profile Routes */}
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/edit-profile" element={<EditProfile />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/addresses" element={<Addresses />} />
-                  <Route path="/payment-methods" element={<PaymentMethods />} />
-                  <Route path="/add-payment-method" element={<AddPaymentMethod />} />
-                  <Route path="/orders" element={<Orders />} />
-                  <Route path="/coupons" element={<Coupons />} />
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </div>
-              <BottomNav />
-            </>
-          )}
-        </BrowserRouter>
-      </TooltipProvider>
+      <UserProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            {showSplash ? (
+              <Splash onComplete={() => setShowSplash(false)} />
+            ) : (
+              <>
+                <div className="pb-16"> {/* Add padding to the bottom to prevent content from being hidden by the navigation bar */}
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/splash" element={<Splash />} />
+                    <Route path="/restaurants" element={<Restaurants />} />
+                    <Route path="/restaurant/:id" element={<RestaurantMenu />} />
+                    <Route path="/cart" element={<Cart />} />
+                    <Route path="/checkout" element={<Checkout />} />
+                    <Route path="/tracking" element={<OrderTracking />} />
+                    <Route path="/about" element={<About />} />
+                    
+                    {/* Pharmacy routes with PharmacyCartProvider */}
+                    <Route path="/pharmacy/*" element={<PharmacyCartRoutes />} />
+                    
+                    {/* Market routes with MarketCartProvider */}
+                    <Route path="/market/*" element={<MarketCartRoutes />} />
+                    
+                    {/* Personal Care Routes with PersonalCareCartProvider */}
+                    <Route path="/personal-care/*" element={<PersonalCareRoutes />} />
+                    
+                    {/* Clothes Routes */}
+                    <Route path="/clothes" element={<Clothes />} />
+                    <Route path="/clothes/category/:categoryId" element={<ClothesCategory />} />
+                    <Route path="/clothes/cart" element={<ClothesCart />} />
+                    <Route path="/clothes/checkout" element={<ClothesCheckout />} />
+                    {/* Gym Routes */}
+                    <Route path="/gym" element={<Gym />} />
+                    <Route path="/gym/:id/subscribe" element={<GymSubscription />} />
+                    <Route path="/gym/payment" element={<GymPayment />} />
+                    <Route path="/gym/success" element={<GymSuccess />} />
+                    <Route path="/gym/subscriptions" element={<GymSubscriptions />} />
+                    {/* Profile Routes */}
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/edit-profile" element={<EditProfile />} />
+                    <Route path="/settings" element={<Settings />} />
+                    <Route path="/addresses" element={<Addresses />} />
+                    <Route path="/payment-methods" element={<PaymentMethods />} />
+                    <Route path="/add-payment-method" element={<AddPaymentMethod />} />
+                    <Route path="/orders" element={<Orders />} />
+                    <Route path="/coupons" element={<Coupons />} />
+                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </div>
+                <BottomNav />
+              </>
+            )}
+          </BrowserRouter>
+        </TooltipProvider>
+      </UserProvider>
     </QueryClientProvider>
   );
 };
