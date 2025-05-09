@@ -29,6 +29,10 @@ export interface OrderItem {
 // استرداد الطلبات من API
 export async function fetchUserOrders(): Promise<Order[]> {
   try {
+    // Get the authenticated user
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return [];
+    
     // Fetch orders from Supabase
     const { data: ordersData, error: ordersError } = await supabase
       .from('orders')
@@ -37,7 +41,8 @@ export async function fetchUserOrders(): Promise<Order[]> {
         user_addresses (full_address),
         user_payment_methods (type, last4)
       `)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .eq('user_id', user.id);
     
     if (ordersError) throw ordersError;
     

@@ -31,6 +31,7 @@ export async function fetchCategories(): Promise<Category[]> {
  */
 export async function fetchProductsByCategory(categoryId: number): Promise<Product[]> {
   try {
+    // Convert the categoryId to a string before passing it to the query
     const { data, error } = await supabase
       .from('supermarket_products')
       .select('*')
@@ -40,7 +41,7 @@ export async function fetchProductsByCategory(categoryId: number): Promise<Produ
     
     // Transform the data to match our Product interface
     return data.map(item => ({
-      id: parseInt(item.id),
+      id: parseInt(item.id.toString()),
       name: item.name,
       price: item.price,
       quantity: item.quantity || '',
@@ -95,7 +96,7 @@ export async function fetchPopularProducts(): Promise<Product[]> {
     
     // Transform the data to match our Product interface
     return data.map(item => ({
-      id: parseInt(item.id),
+      id: parseInt(item.id.toString()),
       name: item.name,
       price: item.price,
       quantity: item.quantity || '',

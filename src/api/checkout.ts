@@ -7,10 +7,11 @@ export interface OrderDetails {
   phone: string;
   paymentMethod: string;
   items: Array<{
-    id: number;
+    id: number | string;
     quantity: number;
   }>;
   total: number;
+  orderType: 'restaurant' | 'market' | 'pharmacy' | 'personal_care';
 }
 
 // واجهة استجابة الطلب
@@ -25,6 +26,16 @@ export interface OrderResponse {
 // دالة لإرسال الطلب إلى واجهة برمجة التطبيقات
 export async function submitOrder(orderDetails: OrderDetails): Promise<OrderResponse> {
   try {
+    // Get the authenticated user
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return {
+        success: false,
+        message: 'يجب تسجيل الدخول لإتمام الطلب'
+      };
+    }
+    
+    // Create the order in Supabase
     const { data, error } = await supabase
       .from('orders')
       .insert({
@@ -32,19 +43,30 @@ export async function submitOrder(orderDetails: OrderDetails): Promise<OrderResp
         total_amount: orderDetails.total,
         delivery_address_id: orderDetails.addressId,
         payment_method_id: orderDetails.paymentMethod,
-        order_type: 'restaurant',
-        status: 'pending'
+        order_type: orderDetails.orderType,
+        status: 'pending',
+        user_id: user.id
       })
       .select()
       .single();
     
     if (error) throw error;
     
+    // Determine the tracking URL based on order type
+    let trackingUrl = '/tracking';
+    if (orderDetails.orderType === 'market') {
+      trackingUrl = '/market/tracking';
+    } else if (orderDetails.orderType === 'pharmacy') {
+      trackingUrl = '/pharmacy/tracking';
+    } else if (orderDetails.orderType === 'personal_care') {
+      trackingUrl = '/personal-care/tracking';
+    }
+    
     return {
       success: true,
       orderId: data.id,
       estimatedDelivery: '30-45 دقيقة',
-      trackingUrl: '/tracking'
+      trackingUrl: trackingUrl
     };
   } catch (error) {
     console.error('Error submitting order:', error);
@@ -93,19 +115,8 @@ export async function initializeCardPayment(paymentDetails: CardPaymentInit): Pr
 
 // التحقق من أن منطقة التوصيل مدعومة
 export async function isDeliveryAreaSupported(address: string): Promise<boolean> {
-  try {
-    // In a real app, this would check against supported delivery areas
-    const { data, error } = await supabase.functions.invoke('check-delivery-area', {
-      body: { address }
-    });
-    
-    if (error) throw error;
-    
-    return data.supported;
-  } catch (error) {
-    console.error('Error checking delivery area:', error);
-    return true; // Default to supported in case of errors
-  }
+  // For now, we'll assume all areas are supported
+  return true;
 }
 
 // واجهة التوقعات لتوقيت التوصيل
@@ -118,7 +129,6 @@ export interface DeliveryEstimate {
 // الحصول على تقدير وقت التوصيل ورسومه
 export async function getDeliveryEstimate(addressId: string): Promise<DeliveryEstimate> {
   try {
-    // In a real app, this would calculate based on distance, etc.
     const { data, error } = await supabase
       .from('user_addresses')
       .select('city')
