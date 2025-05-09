@@ -1,11 +1,9 @@
-
 import React, { useState } from 'react';
 import { MapPin, ChevronDown, Search, User } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useNavigate } from 'react-router-dom';
-
 export const Header: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
@@ -13,13 +11,10 @@ export const Header: React.FC = () => {
   // بيانات العناوين - في تطبيق حقيقي ستأتي من API
   const [address, setAddress] = useState('شارع الملك فهد');
   const [savedAddresses, setSavedAddresses] = useState(['شارع الملك فهد', 'حي النزهة، الرياض', 'برج المملكة، الرياض']);
-
   const navigateToProfile = () => {
     navigate('/profile');
   };
-
-  return (
-    <div className="px-4 py-4 animate-fade-in bg-white">
+  return <div className="px-4 py-4 animate-fade-in bg-white">
       {/* تحديد العنوان */}
       <div className="flex items-center justify-between mb-4 text-sm">
         <div className="flex items-center gap-1.5 text-blue-700">
@@ -38,17 +33,10 @@ export const Header: React.FC = () => {
             <PopoverContent className="w-60" align="start">
               <div className="space-y-2">
                 <h4 className="font-medium text-sm text-blue-900">العناوين المحفوظة</h4>
-                {savedAddresses.map((addr, idx) => (
-                  <Button 
-                    key={idx} 
-                    variant="ghost" 
-                    className="w-full justify-start text-sm hover:bg-blue-50 hover:text-blue-700" 
-                    onClick={() => setAddress(addr)}
-                  >
+                {savedAddresses.map((addr, idx) => <Button key={idx} variant="ghost" className="w-full justify-start text-sm hover:bg-blue-50 hover:text-blue-700" onClick={() => setAddress(addr)}>
                     <MapPin className="w-4 h-4 mr-2 text-blue-500" />
                     {addr}
-                  </Button>
-                ))}
+                  </Button>)}
                 <Button variant="outline" className="w-full text-xs mt-2 text-blue-700 border-blue-300 hover:bg-blue-50 hover:border-blue-400">
                   إضافة عنوان جديد
                 </Button>
@@ -60,17 +48,10 @@ export const Header: React.FC = () => {
       
       {/* شريط البحث */}
       <div className="relative mb-2">
-        <Input 
-          type="search" 
-          placeholder="ابحث عن مطاعم، منتجات، خدمات..." 
-          className="w-full py-6 pl-4 pr-10 rounded-xl bg-blue-50/50 border border-blue-100 focus:border-blue-300 focus:ring-1 focus:ring-blue-300 shadow-sm text-right" 
-          value={searchQuery} 
-          onChange={e => setSearchQuery(e.target.value)} 
-        />
+        
         <div className="absolute inset-y-0 right-3 flex items-center">
-          <Search className="h-5 w-5 text-blue-500" />
+          
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };

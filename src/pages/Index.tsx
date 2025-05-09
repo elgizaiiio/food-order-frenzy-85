@@ -1,4 +1,3 @@
-
 import React, { Suspense, lazy } from 'react';
 import { useUser } from '@/context/UserContext';
 import TopBar from '@/components/TopBar';
@@ -11,14 +10,10 @@ const PopularPlaces = lazy(() => import('@/components/ui/PopularPlaces'));
 const Promos = lazy(() => import('@/components/ui/Promos'));
 
 // مكون تحميل محسّن
-const LoadingFallback = () => (
-  <div className="p-6 flex justify-center items-center">
+const LoadingFallback = () => <div className="p-6 flex justify-center items-center">
     <div className="w-10 h-10 border-3 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-  </div>
-);
-
-const HeroSection = () => (
-  <div className="relative px-4 pt-6 pb-8 mb-4 bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-b-3xl overflow-hidden">
+  </div>;
+const HeroSection = () => <div className="relative px-4 pt-6 pb-8 mb-4 bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-b-3xl overflow-hidden">
     <div className="absolute top-0 right-0 w-full h-full opacity-10">
       <div className="absolute top-0 right-0 w-24 h-24 bg-white rounded-full -mr-6 -mt-6"></div>
       <div className="absolute bottom-0 left-0 w-32 h-32 bg-white rounded-full -ml-10 -mb-10"></div>
@@ -28,18 +23,15 @@ const HeroSection = () => (
       اطلب كل ما تحتاجه من مكان واحد، بسرعة وسهولة
     </p>
     <div className="relative z-10">
-      <button className="bg-white text-blue-700 font-medium px-5 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all animate-fade-in animate-delay-2">
-        اكتشف الخدمات
-      </button>
+      
     </div>
-  </div>
-);
-
+  </div>;
 const Index: React.FC = () => {
-  const { userName, userAddress } = useUser();
-
-  return (
-    <div className="min-h-screen bg-blue-50/30">
+  const {
+    userName,
+    userAddress
+  } = useUser();
+  return <div className="min-h-screen bg-blue-50/30">
       <div className="max-w-md mx-auto bg-white pb-20">
         {/* Top Bar */}
         <TopBar userName={userName} address={userAddress} />
@@ -67,8 +59,6 @@ const Index: React.FC = () => {
           </Suspense>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
