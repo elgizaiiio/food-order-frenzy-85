@@ -6,11 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useNavigate } from 'react-router-dom';
 
-const Header: React.FC = () => {
+export const Header: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
 
-  // Mock data - in a real app, this would come from an API
+  // بيانات العناوين - في تطبيق حقيقي ستأتي من API
   const [address, setAddress] = useState('شارع الملك فهد');
   const [savedAddresses, setSavedAddresses] = useState(['شارع الملك فهد', 'حي النزهة، الرياض', 'برج المملكة، الرياض']);
 
@@ -19,42 +19,37 @@ const Header: React.FC = () => {
   };
 
   return (
-    <div className="px-4 pt-6 pb-2 animate-fade-in bg-white">
-      {/* App Name and Profile Button */}
-      <div className="flex items-center justify-between mb-3">
-        <h1 className="text-2xl font-bold text-primary">
-          <span className="text-gray-800">dam</span>
-        </h1>
-        <Button variant="ghost" size="icon" className="rounded-full" onClick={navigateToProfile}>
-          <User className="h-5 w-5" />
-        </Button>
-      </div>
-
-      {/* Delivery Address */}
+    <div className="px-4 py-4 animate-fade-in bg-white">
+      {/* تحديد العنوان */}
       <div className="flex items-center justify-between mb-4 text-sm">
-        <div className="flex items-center gap-1 text-gray-700">
-          <MapPin className="w-4 h-4 text-primary" />
+        <div className="flex items-center gap-1.5 text-blue-700">
+          <MapPin className="w-4 h-4" />
           <span className="font-medium">التوصيل إلى</span>
         </div>
         
         <div className="flex items-center justify-between w-full">
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="link" className="h-auto p-0 mx-1 flex items-center gap-1">
-                <span className="font-medium text-gray-900">{address}</span>
-                <ChevronDown className="w-4 h-4 text-primary" />
+              <Button variant="link" className="h-auto p-0 mx-1 flex items-center gap-1.5 text-blue-900">
+                <span className="font-medium">{address}</span>
+                <ChevronDown className="w-4 h-4 text-blue-500" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-60" align="start">
               <div className="space-y-2">
-                <h4 className="font-medium text-sm">العناوين المحفوظة</h4>
+                <h4 className="font-medium text-sm text-blue-900">العناوين المحفوظة</h4>
                 {savedAddresses.map((addr, idx) => (
-                  <Button key={idx} variant="ghost" className="w-full justify-start text-sm" onClick={() => setAddress(addr)}>
-                    <MapPin className="w-4 h-4 mr-2" />
+                  <Button 
+                    key={idx} 
+                    variant="ghost" 
+                    className="w-full justify-start text-sm hover:bg-blue-50 hover:text-blue-700" 
+                    onClick={() => setAddress(addr)}
+                  >
+                    <MapPin className="w-4 h-4 mr-2 text-blue-500" />
                     {addr}
                   </Button>
                 ))}
-                <Button variant="outline" className="w-full text-xs mt-2">
+                <Button variant="outline" className="w-full text-xs mt-2 text-blue-700 border-blue-300 hover:bg-blue-50 hover:border-blue-400">
                   إضافة عنوان جديد
                 </Button>
               </div>
@@ -63,21 +58,19 @@ const Header: React.FC = () => {
         </div>
       </div>
       
-      {/* Search Bar */}
-      <div className="relative mb-6">
+      {/* شريط البحث */}
+      <div className="relative mb-2">
         <Input 
           type="search" 
-          placeholder="دور على المطاعم والي انت عايزه" 
-          className="w-full py-6 pl-4 pr-10 rounded-full bg-gray-50 border-none shadow-sm text-right" 
+          placeholder="ابحث عن مطاعم، منتجات، خدمات..." 
+          className="w-full py-6 pl-4 pr-10 rounded-xl bg-blue-50/50 border border-blue-100 focus:border-blue-300 focus:ring-1 focus:ring-blue-300 shadow-sm text-right" 
           value={searchQuery} 
           onChange={e => setSearchQuery(e.target.value)} 
         />
         <div className="absolute inset-y-0 right-3 flex items-center">
-          <Search className="h-5 w-5 text-gray-500" />
+          <Search className="h-5 w-5 text-blue-500" />
         </div>
       </div>
     </div>
   );
 };
-
-export default Header;

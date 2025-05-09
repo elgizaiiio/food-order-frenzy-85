@@ -1,8 +1,10 @@
 
 import React from 'react';
-import { Star } from 'lucide-react';
+import { Star, Clock, BadgePercent } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 type Place = {
   id: number;
@@ -12,12 +14,14 @@ type Place = {
   category: string;
   deliveryTime: string;
   deliveryFee: string;
+  discount?: string;
+  isNew?: boolean;
 };
 
 const PopularPlaces: React.FC = () => {
   const navigate = useNavigate();
   
-  // Mock data - in a real app, this would come from an API
+  // بيانات الأماكن الرائجة - في تطبيق حقيقي ستأتي من API
   const places: Place[] = [
     {
       id: 1,
@@ -26,7 +30,8 @@ const PopularPlaces: React.FC = () => {
       rating: 4.8,
       category: "بيتزا",
       deliveryTime: "25-35 دقيقة",
-      deliveryFee: "15 ر.س"
+      deliveryFee: "15 ج.م",
+      discount: "خصم 20%"
     },
     {
       id: 2,
@@ -35,7 +40,7 @@ const PopularPlaces: React.FC = () => {
       rating: 4.6,
       category: "برجر",
       deliveryTime: "15-25 دقيقة",
-      deliveryFee: "10 ر.س"
+      deliveryFee: "10 ج.م"
     },
     {
       id: 3,
@@ -44,7 +49,8 @@ const PopularPlaces: React.FC = () => {
       rating: 4.5,
       category: "دجاج",
       deliveryTime: "20-30 دقيقة",
-      deliveryFee: "12 ر.س"
+      deliveryFee: "12 ج.م",
+      isNew: true
     },
     {
       id: 4,
@@ -53,7 +59,7 @@ const PopularPlaces: React.FC = () => {
       rating: 4.7,
       category: "قهوة",
       deliveryTime: "15-20 دقيقة",
-      deliveryFee: "8 ر.س"
+      deliveryFee: "8 ج.م"
     },
     {
       id: 5,
@@ -62,7 +68,8 @@ const PopularPlaces: React.FC = () => {
       rating: 4.4,
       category: "ساندويتشات",
       deliveryTime: "20-35 دقيقة",
-      deliveryFee: "14 ر.س"
+      deliveryFee: "14 ج.م",
+      discount: "توصيل مجاني"
     }
   ];
 
@@ -72,41 +79,60 @@ const PopularPlaces: React.FC = () => {
 
   return (
     <div className="px-4 mb-8 animate-fade-in animate-delay-2">
-      <h2 className="text-xl font-bold mb-4 text-right">يلا اكتشف الأماكن الرائجة</h2>
+      <div className="flex justify-between items-center mb-4">
+        <button className="text-sm text-blue-600 font-medium hover:underline">عرض الكل</button>
+        <h2 className="text-xl font-bold text-right text-blue-900">الأماكن الرائجة</h2>
+      </div>
+      
       <div className="scroll-container">
-        {places.map((place) => (
-          <div 
+        {places.map((place, index) => (
+          <Card 
             key={place.id} 
             onClick={() => navigateToRestaurant(place.id)}
-            className="place-card w-64 cursor-pointer"
+            className="w-72 cursor-pointer overflow-hidden border-blue-100 hover:border-blue-300 hover:shadow-md shadow-sm transition-all duration-300 flex-shrink-0 animate-fade-in"
+            style={{ animationDelay: `${index * 100}ms` }}
           >
-            <div className="relative h-40">
+            <div className="relative h-44">
               <img 
                 src={place.image} 
                 alt={place.name} 
                 className="w-full h-full object-cover"
                 loading="lazy"
               />
-              <div className="absolute bottom-2 right-2 bg-white rounded-full px-2 py-0.5 text-xs font-medium shadow-sm">
+              {place.discount && (
+                <Badge className="absolute top-3 left-3 bg-blue-600 text-white border-0">
+                  <BadgePercent className="w-3.5 h-3.5 mr-1" /> {place.discount}
+                </Badge>
+              )}
+              {place.isNew && (
+                <Badge className="absolute top-3 left-3 bg-green-600 text-white border-0">
+                  جديد
+                </Badge>
+              )}
+              <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm rounded-lg px-2.5 py-1 text-xs font-medium text-blue-800 shadow-sm">
                 {place.category}
               </div>
             </div>
-            <div className="p-3">
+            
+            <CardContent className="p-3">
               <div className="flex justify-between items-start">
-                <h3 className="text-lg font-medium">{place.name}</h3>
-                <div className="flex items-center gap-0.5 bg-green-50 px-1.5 py-0.5 rounded-full">
-                  <Star className="h-3 w-3 fill-yellow-400 stroke-yellow-400" />
-                  <span className="text-xs font-bold">{place.rating}</span>
+                <div className="flex items-center gap-0.5 bg-blue-50 px-2 py-0.5 rounded-full">
+                  <Star className="h-3.5 w-3.5 fill-yellow-400 stroke-yellow-400" />
+                  <span className="text-xs font-bold text-blue-900">{place.rating}</span>
                 </div>
+                <h3 className="text-lg font-medium text-blue-800">{place.name}</h3>
               </div>
               
-              <div className="flex items-center justify-between mt-2 text-gray-500 text-xs">
-                <span>{place.deliveryTime}</span>
-                <span>{place.deliveryFee}</span>
+              <div className="flex items-center justify-between mt-3 text-blue-600 text-xs">
+                <div className="flex items-center gap-1">
+                  <Clock className="w-3.5 h-3.5" />
+                  <span>{place.deliveryTime}</span>
+                </div>
+                <span className="font-medium">{place.deliveryFee}</span>
               </div>
               
               <Button 
-                className="w-full mt-3 bg-primary hover:bg-primary/90 text-white"
+                className="w-full mt-3 bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white shadow-sm"
                 size="sm"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -115,8 +141,8 @@ const PopularPlaces: React.FC = () => {
               >
                 اطلب الآن
               </Button>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
     </div>
