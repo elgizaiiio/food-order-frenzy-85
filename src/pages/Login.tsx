@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Lock, Mail, Eye, EyeOff, Apple } from 'lucide-react';
@@ -23,9 +22,7 @@ const loginSchema = z.object({
     message: "كلمة المرور يجب أن تحتوي على 6 أحرف على الأقل"
   })
 });
-
 type LoginFormValues = z.infer<typeof loginSchema>;
-
 const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState({
@@ -41,7 +38,7 @@ const Login: React.FC = () => {
     setBroMember,
     isLoggedIn
   } = useUser();
-  
+
   // إعداد نموذج تسجيل الدخول باستخدام React Hook Form
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -141,7 +138,6 @@ const Login: React.FC = () => {
       console.error(error);
     }
   };
-
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -150,18 +146,12 @@ const Login: React.FC = () => {
   if (isLoggedIn) {
     return <Navigate to="/" />;
   }
-
-  return (
-    <div 
-      className="min-h-screen bg-gradient-to-br from-brand-500 via-brand-400 to-yellow-400 flex flex-col items-center justify-center p-4" 
-      dir="rtl"
-      style={{ 
-        paddingTop: 'env(safe-area-inset-top, 0px)',
-        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-        paddingLeft: 'env(safe-area-inset-left, 0px)',
-        paddingRight: 'env(safe-area-inset-right, 0px)'
-      }}
-    >
+  return <div className="min-h-screen bg-gradient-to-br from-brand-500 via-brand-400 to-yellow-400 flex flex-col items-center justify-center p-4" dir="rtl" style={{
+    paddingTop: 'env(safe-area-inset-top, 0px)',
+    paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+    paddingLeft: 'env(safe-area-inset-left, 0px)',
+    paddingRight: 'env(safe-area-inset-right, 0px)'
+  }}>
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-block w-24 h-24 rounded-2xl bg-white text-brand-600 flex items-center justify-center mb-5 shadow-xl animate-bounce-in transform rotate-12">
@@ -176,34 +166,22 @@ const Login: React.FC = () => {
           <CardContent className="pt-6 px-6 pb-8">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-                <FormField 
-                  control={form.control} 
-                  name="email" 
-                  render={({ field }) => (
-                    <FormItem>
+                <FormField control={form.control} name="email" render={({
+                field
+              }) => <FormItem>
                       <FormLabel className="text-gray-700 font-medium">البريد الإلكتروني</FormLabel>
                       <FormControl>
                         <div className="relative">
-                          <Input 
-                            placeholder="أدخل بريدك الإلكتروني" 
-                            className="pl-10 h-12 bg-gray-50 border-gray-200 rounded-xl focus:border-brand-500 focus:ring-brand-500" 
-                            {...field}
-                            autoComplete="email"
-                            inputMode="email"
-                          />
-                          <Mail className="absolute right-3 top-3.5 h-5 w-5 text-gray-400" />
+                          <Input placeholder="أدخل بريدك الإلكتروني" className="pl-10 h-12 bg-gray-50 border-gray-200 rounded-xl focus:border-brand-500 focus:ring-brand-500" {...field} autoComplete="email" inputMode="email" />
+                          
                         </div>
                       </FormControl>
                       <FormMessage />
-                    </FormItem>
-                  )} 
-                />
+                    </FormItem>} />
                 
-                <FormField 
-                  control={form.control} 
-                  name="password" 
-                  render={({ field }) => (
-                    <FormItem>
+                <FormField control={form.control} name="password" render={({
+                field
+              }) => <FormItem>
                       <div className="flex justify-between">
                         <FormLabel className="text-gray-700 font-medium">كلمة المرور</FormLabel>
                         <Link to="/forgot-password" className="text-sm text-brand-600 hover:text-brand-700 font-medium">
@@ -212,48 +190,24 @@ const Login: React.FC = () => {
                       </div>
                       <FormControl>
                         <div className="relative">
-                          <Input 
-                            type={showPassword ? "text" : "password"} 
-                            placeholder="أدخل كلمة المرور" 
-                            className="pl-10 h-12 bg-gray-50 border-gray-200 rounded-xl focus:border-brand-500 focus:ring-brand-500"
-                            autoComplete="current-password"
-                            {...field} 
-                          />
-                          <Lock className="absolute right-3 top-3.5 h-5 w-5 text-gray-400" />
-                          <button 
-                            type="button" 
-                            onClick={togglePasswordVisibility} 
-                            className="absolute left-3 top-3.5 touch-manipulation"
-                            aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
-                          >
-                            {showPassword ? 
-                              <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" /> : 
-                              <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                            }
+                          <Input type={showPassword ? "text" : "password"} placeholder="أدخل كلمة المرور" className="pl-10 h-12 bg-gray-50 border-gray-200 rounded-xl focus:border-brand-500 focus:ring-brand-500" autoComplete="current-password" {...field} />
+                          
+                          <button type="button" onClick={togglePasswordVisibility} className="absolute left-3 top-3.5 touch-manipulation" aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}>
+                            {showPassword ? <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" /> : <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />}
                           </button>
                         </div>
                       </FormControl>
                       <FormMessage />
-                    </FormItem>
-                  )} 
-                />
+                    </FormItem>} />
                 
-                <Button 
-                  type="submit" 
-                  variant="gradient"
-                  size="lg"
-                  className="w-full h-14 rounded-xl font-bold shadow-lg transition-all hover:shadow-xl touch-manipulation" 
-                  disabled={loading.email}
-                >
-                  {loading.email ? (
-                    <span className="flex items-center">
+                <Button type="submit" variant="gradient" size="lg" className="w-full h-14 rounded-xl font-bold shadow-lg transition-all hover:shadow-xl touch-manipulation" disabled={loading.email}>
+                  {loading.email ? <span className="flex items-center">
                       <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
                       جاري تسجيل الدخول...
-                    </span>
-                  ) : "تسجيل الدخول"}
+                    </span> : "تسجيل الدخول"}
                 </Button>
               </form>
             </Form>
@@ -276,46 +230,26 @@ const Login: React.FC = () => {
         </div>
         
         <div className="grid grid-cols-2 gap-4">
-          <Button 
-            variant="outline" 
-            className="h-12 border-white/30 bg-white/80 hover:bg-white text-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all touch-manipulation" 
-            onClick={handleGoogleLogin} 
-            disabled={loading.google}
-          >
-            {loading.google ? (
-              <svg className="animate-spin h-5 w-5 text-brand-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <Button variant="outline" className="h-12 border-white/30 bg-white/80 hover:bg-white text-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all touch-manipulation" onClick={handleGoogleLogin} disabled={loading.google}>
+            {loading.google ? <svg className="animate-spin h-5 w-5 text-brand-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-            ) : (
-              <>
+              </svg> : <>
                 <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" className="w-5 h-5 mr-2" />
                 <span>Google</span>
-              </>
-            )}
+              </>}
           </Button>
-          <Button 
-            variant="outline" 
-            className="h-12 border-white/30 bg-white/80 hover:bg-white text-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all touch-manipulation" 
-            onClick={handleAppleLogin} 
-            disabled={loading.apple}
-          >
-            {loading.apple ? (
-              <svg className="animate-spin h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <Button variant="outline" className="h-12 border-white/30 bg-white/80 hover:bg-white text-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all touch-manipulation" onClick={handleAppleLogin} disabled={loading.apple}>
+            {loading.apple ? <svg className="animate-spin h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-            ) : (
-              <>
+              </svg> : <>
                 <Apple className="w-5 h-5 mr-2" />
                 <span>Apple</span>
-              </>
-            )}
+              </>}
           </Button>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Login;
