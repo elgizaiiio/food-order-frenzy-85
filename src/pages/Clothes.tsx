@@ -85,7 +85,7 @@ const Clothes: React.FC = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 to-indigo-800/60 flex flex-col justify-center p-6">
             <h2 className="text-3xl font-bold text-white mb-2 animate-fade-in">تسوق بأناقة</h2>
             <p className="text-white/90 mb-4 max-w-xs animate-fade-in">أحدث صيحات الموضة العالمية وبأفضل الأسعار</p>
-            <Button className="bg-white text-blue-700 hover:bg-blue-50 w-2/3 shadow-lg transition-all duration-300 hover:scale-105">تسوق الآن</Button>
+            
           </div>
         </div>
 
