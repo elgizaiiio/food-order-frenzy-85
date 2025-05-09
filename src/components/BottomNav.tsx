@@ -7,11 +7,12 @@ const BottomNav: React.FC = () => {
   const location = useLocation();
   const path = location.pathname;
 
-  // التحقق إذا كانت الصفحة الحالية هي صفحة دفع
+  // التحقق إذا كانت الصفحة الحالية هي صفحة دفع أو صفحات تسجيل الدخول/التسجيل
   const isCheckoutPage = path.includes('checkout');
+  const isAuthPage = path === '/login' || path === '/register' || path === '/forgot-password';
 
-  // إذا كانت الصفحة الحالية هي صفحة دفع، فلا نعرض شريط التنقل السفلي
-  if (isCheckoutPage) {
+  // إذا كانت الصفحة الحالية هي صفحة دفع أو صفحة مصادقة، فلا نعرض شريط التنقل السفلي
+  if (isCheckoutPage || isAuthPage) {
     return null;
   }
 
