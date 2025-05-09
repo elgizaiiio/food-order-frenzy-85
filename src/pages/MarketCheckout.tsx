@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, MapPin, Clock, CreditCard, Phone, Wallet, DollarSign, Apple, ShoppingBag } from 'lucide-react';
@@ -20,8 +19,7 @@ const DeliveryTime = () => {
     min: 30,
     max: 45
   });
-  return (
-    <div className="space-y-4">
+  return <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-bold flex items-center gap-2 text-blue-800">
           <Clock className="w-5 h-5 text-blue-600" />
@@ -44,8 +42,7 @@ const DeliveryTime = () => {
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>;
 };
 
 // مكون زر تأكيد الطلب
@@ -67,7 +64,6 @@ const CheckoutButton = () => {
   const totalPrice = items.reduce((total, item) => total + item.price * item.quantity, 0);
   const deliveryFee = 10;
   const orderTotal = totalPrice + deliveryFee;
-  
   const handleCheckout = async () => {
     if (!selectedAddressId) {
       toast({
@@ -130,18 +126,9 @@ const CheckoutButton = () => {
       setIsSubmitting(false);
     }
   };
-  
-  return (
-    <Button 
-      onClick={handleCheckout} 
-      variant="gradient"
-      size="checkout"
-      className="w-full shadow-lg" 
-      disabled={isSubmitting || items.length === 0}
-    >
+  return <Button onClick={handleCheckout} variant="gradient" size="checkout" className="w-full shadow-lg" disabled={isSubmitting || items.length === 0}>
       {isSubmitting ? "جاري تأكيد الطلب..." : `تأكيد الطلب • ${orderTotal.toFixed(2)} ج.م`}
-    </Button>
-  );
+    </Button>;
 };
 
 // مكون ملخص الطلب
@@ -152,27 +139,19 @@ const OrderSummary = () => {
   const subtotal = items.reduce((total, item) => total + item.price * item.quantity, 0);
   const deliveryFee = 10;
   const total = subtotal + deliveryFee;
-  
-  return (
-    <div className="space-y-4">
+  return <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-bold text-blue-800">ملخص الطلب</h3>
       </div>
       
       {/* عناصر السلة */}
       <div className="space-y-3">
-        {items.map(item => (
-          <div key={item.id} className="flex justify-between items-center py-2 border-b border-blue-100">
+        {items.map(item => <div key={item.id} className="flex justify-between items-center py-2 border-b border-blue-100">
             <div className="flex items-center gap-3">
               <div className="bg-blue-50 w-12 h-12 rounded-md flex items-center justify-center overflow-hidden border border-blue-100 shadow-sm">
-                <img 
-                  src={item.image} 
-                  alt={item.name} 
-                  className="w-full h-full object-cover" 
-                  onError={e => {
-                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/100?text=صورة+غير+متوفرة';
-                  }} 
-                />
+                <img src={item.image} alt={item.name} className="w-full h-full object-cover" onError={e => {
+              (e.target as HTMLImageElement).src = 'https://via.placeholder.com/100?text=صورة+غير+متوفرة';
+            }} />
               </div>
               <div>
                 <p className="font-medium text-blue-900">{item.name}</p>
@@ -180,8 +159,7 @@ const OrderSummary = () => {
               </div>
             </div>
             <p className="font-medium text-blue-700">{(item.price * item.quantity).toFixed(2)} ج.م</p>
-          </div>
-        ))}
+          </div>)}
       </div>
       
       {/* ملخص الأسعار */}
@@ -199,8 +177,7 @@ const OrderSummary = () => {
           <span className="text-blue-600">{total.toFixed(2)} ج.م</span>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
 
 // المكون الرئيسي لصفحة الدفع في السوبرماركت
@@ -220,10 +197,8 @@ const MarketCheckoutContent = () => {
     setIsAddingAddress(false);
     setIsAddingNewAddress(false);
   };
-  
   if (items.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+    return <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
         <div className="w-16 h-16 mb-4 rounded-full bg-blue-100 flex items-center justify-center">
           <ShoppingBag className="w-8 h-8 text-blue-600" />
         </div>
@@ -234,20 +209,13 @@ const MarketCheckoutContent = () => {
             تصفح المنتجات
           </Button>
         </Link>
-      </div>
-    );
+      </div>;
   }
-  
-  return (
-    <div className="space-y-6 pb-32">
+  return <div className="space-y-6 pb-32">
       {/* قسم العناوين */}
       <Card className="border-none shadow-sm">
         <CardContent className="p-5">
-          {isAddingAddress ? (
-            <NewAddressForm onCancel={handleCancelAddAddress} />
-          ) : (
-            <AddressSelector onAddNewClick={handleAddNewAddress} />
-          )}
+          {isAddingAddress ? <NewAddressForm onCancel={handleCancelAddAddress} /> : <AddressSelector onAddNewClick={handleAddNewAddress} />}
         </CardContent>
       </Card>
       
@@ -271,13 +239,10 @@ const MarketCheckoutContent = () => {
           <OrderSummary />
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>;
 };
-
 const MarketCheckout: React.FC = () => {
-  return (
-    <MarketCartProvider>
+  return <MarketCartProvider>
       <CheckoutProvider>
         <div className="min-h-screen bg-blue-50" dir="rtl">
           <div className="max-w-md mx-auto bg-white pb-32">
@@ -300,12 +265,10 @@ const MarketCheckout: React.FC = () => {
         </div>
         
         {/* زر تأكيد الطلب العائم */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-50 max-w-md mx-auto">
+        <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-50 max-w-md mx-auto my-[240px]">
           <CheckoutButton />
         </div>
       </CheckoutProvider>
-    </MarketCartProvider>
-  );
+    </MarketCartProvider>;
 };
-
 export default MarketCheckout;
