@@ -62,7 +62,7 @@ const BottomNav: React.FC = () => {
       active: path === '/',
     },
     {
-      name: 'الطلبات',
+      name: 'طلباتي',
       icon: <ClipboardList className="w-6 h-6" />,
       path: '/orders',
       active: path === '/orders',

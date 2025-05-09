@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Lock, Mail, Eye, EyeOff, Apple } from 'lucide-react';
@@ -16,10 +17,10 @@ import { useIsMobile } from "@/hooks/use-mobile";
 // تعريف مخطط التحقق من البيانات
 const loginSchema = z.object({
   email: z.string().email({
-    message: "يرجى إدخال بريد إلكتروني صالح"
+    message: "لازم تكتب إيميل صح"
   }),
   password: z.string().min(6, {
-    message: "كلمة المرور يجب أن تحتوي على 6 أحرف على الأقل"
+    message: "الباسورد لازم يكون ٦ حروف على الأقل"
   })
 });
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -76,7 +77,7 @@ const Login: React.FC = () => {
         ...loading,
         email: false
       });
-      toast.error("حدث خطأ أثناء تسجيل الدخول");
+      toast.error("حصل مشكلة أثناء تسجيل الدخول");
       console.error(error);
     }
   };
@@ -91,8 +92,8 @@ const Login: React.FC = () => {
       // استخدام supabase في المستقبل
       // محاكاة تسجيل الدخول الناجح
       setTimeout(() => {
-        toast.success("تم تسجيل الدخول بنجاح باستخدام Google");
-        setUserName("مستخدم Google");
+        toast.success("تم تسجيل الدخول بنجاح باستخدام جوجل");
+        setUserName("مستخدم جوجل");
         setVerified(true);
         setLoading({
           ...loading,
@@ -105,7 +106,7 @@ const Login: React.FC = () => {
         ...loading,
         google: false
       });
-      toast.error("حدث خطأ أثناء تسجيل الدخول باستخدام Google");
+      toast.error("حصل مشكلة أثناء تسجيل الدخول بجوجل");
       console.error(error);
     }
   };
@@ -120,8 +121,8 @@ const Login: React.FC = () => {
       // استخدام supabase في المستقبل
       // محاكاة تسجيل الدخول الناجح
       setTimeout(() => {
-        toast.success("تم تسجيل الدخول بنجاح باستخدام Apple");
-        setUserName("مستخدم Apple");
+        toast.success("تم تسجيل الدخول بنجاح باستخدام آبل");
+        setUserName("مستخدم آبل");
         setVerified(true);
         setLoading({
           ...loading,
@@ -134,7 +135,7 @@ const Login: React.FC = () => {
         ...loading,
         apple: false
       });
-      toast.error("حدث خطأ أثناء تسجيل الدخول باستخدام Apple");
+      toast.error("حصل مشكلة أثناء تسجيل الدخول بآبل");
       console.error(error);
     }
   };
@@ -157,8 +158,8 @@ const Login: React.FC = () => {
           <div className="inline-block w-24 h-24 rounded-2xl bg-white text-brand-600 flex items-center justify-center mb-5 shadow-xl animate-bounce-in transform rotate-12">
             <span className="text-3xl font-bold">دام</span>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">مرحباً بك مجدداً!</h1>
-          <p className="text-white/90 text-lg">يرجى تسجيل الدخول للاستمتاع بتجربتنا</p>
+          <h1 className="text-3xl font-bold text-white mb-2">أهلاً بيك تاني!</h1>
+          <p className="text-white/90 text-lg">سجل دخول علشان تستمتع بخدماتنا</p>
         </div>
         
         <Card className="border-none shadow-2xl bg-white/95 backdrop-blur-sm rounded-2xl overflow-hidden animate-fade-in">
@@ -169,10 +170,10 @@ const Login: React.FC = () => {
                 <FormField control={form.control} name="email" render={({
                 field
               }) => <FormItem>
-                      <FormLabel className="text-gray-700 font-medium">البريد الإلكتروني</FormLabel>
+                      <FormLabel className="text-gray-700 font-medium">الإيميل</FormLabel>
                       <FormControl>
                         <div className="relative">
-                          <Input placeholder="أدخل بريدك الإلكتروني" className="pl-10 h-12 bg-gray-50 border-gray-200 rounded-xl focus:border-brand-500 focus:ring-brand-500" {...field} autoComplete="email" inputMode="email" />
+                          <Input placeholder="اكتب إيميلك هنا" className="pl-10 h-12 bg-gray-50 border-gray-200 rounded-xl focus:border-brand-500 focus:ring-brand-500" {...field} autoComplete="email" inputMode="email" />
                           
                         </div>
                       </FormControl>
@@ -183,16 +184,16 @@ const Login: React.FC = () => {
                 field
               }) => <FormItem>
                       <div className="flex justify-between">
-                        <FormLabel className="text-gray-700 font-medium">كلمة المرور</FormLabel>
+                        <FormLabel className="text-gray-700 font-medium">الباسورد</FormLabel>
                         <Link to="/forgot-password" className="text-sm text-brand-600 hover:text-brand-700 font-medium">
-                          نسيت كلمة المرور؟
+                          نسيت الباسورد؟
                         </Link>
                       </div>
                       <FormControl>
                         <div className="relative">
-                          <Input type={showPassword ? "text" : "password"} placeholder="أدخل كلمة المرور" className="pl-10 h-12 bg-gray-50 border-gray-200 rounded-xl focus:border-brand-500 focus:ring-brand-500" autoComplete="current-password" {...field} />
+                          <Input type={showPassword ? "text" : "password"} placeholder="اكتب الباسورد بتاعك" className="pl-10 h-12 bg-gray-50 border-gray-200 rounded-xl focus:border-brand-500 focus:ring-brand-500" autoComplete="current-password" {...field} />
                           
-                          <button type="button" onClick={togglePasswordVisibility} className="absolute left-3 top-3.5 touch-manipulation" aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}>
+                          <button type="button" onClick={togglePasswordVisibility} className="absolute left-3 top-3.5 touch-manipulation" aria-label={showPassword ? "شاطر اوي" : "اظهر الباسورد"}>
                             {showPassword ? <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" /> : <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />}
                           </button>
                         </div>
@@ -207,16 +208,16 @@ const Login: React.FC = () => {
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
                       جاري تسجيل الدخول...
-                    </span> : "تسجيل الدخول"}
+                    </span> : "دخول"}
                 </Button>
               </form>
             </Form>
             
             <div className="text-center mt-6">
               <p className="text-gray-600">
-                ليس لديك حساب؟{" "}
+                معندكش اكونت؟{" "}
                 <Link to="/register" className="text-brand-600 hover:text-brand-700 font-bold">
-                  إنشاء حساب جديد
+                  سجل حساب جديد
                 </Link>
               </p>
             </div>
@@ -225,7 +226,7 @@ const Login: React.FC = () => {
         
         <div className="flex justify-center items-center my-6">
           <hr className="flex-grow border-t border-white/30" />
-          <span className="px-4 text-white text-sm font-medium">أو استمر بواسطة</span>
+          <span className="px-4 text-white text-sm font-medium">أو دخول بواسطة</span>
           <hr className="flex-grow border-t border-white/30" />
         </div>
         
@@ -236,7 +237,7 @@ const Login: React.FC = () => {
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg> : <>
                 <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" className="w-5 h-5 mr-2" />
-                <span>Google</span>
+                <span>جوجل</span>
               </>}
           </Button>
           <Button variant="outline" className="h-12 border-white/30 bg-white/80 hover:bg-white text-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all touch-manipulation" onClick={handleAppleLogin} disabled={loading.apple}>
@@ -245,7 +246,7 @@ const Login: React.FC = () => {
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg> : <>
                 <Apple className="w-5 h-5 mr-2" />
-                <span>Apple</span>
+                <span>آبل</span>
               </>}
           </Button>
         </div>

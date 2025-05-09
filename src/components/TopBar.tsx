@@ -13,7 +13,7 @@ interface TopBarProps {
 
 const TopBar: React.FC<TopBarProps> = ({
   userName,
-  address = "شارع مصطفى النحاس، مدينة نصر"
+  address = "مصطفى النحاس، مدينة نصر، القاهرة"
 }) => {
   const { userName: contextUserName, isVerified, isBroMember, isLoggedIn, setBroMember, setVerified, setUserName } = useUser();
   const navigate = useNavigate();
@@ -24,7 +24,7 @@ const TopBar: React.FC<TopBarProps> = ({
     setUserName("محمد");
     setVerified(false);
     setBroMember(false);
-    toast.success("تم تسجيل الخروج بنجاح");
+    toast.success("خرجت بنجاح من الأكونت");
     navigate('/login');
   };
   
@@ -43,13 +43,13 @@ const TopBar: React.FC<TopBarProps> = ({
             </div>
             <div className="flex flex-col">
               <span className="font-medium text-sm">
-                مرحباً، {displayName}
+                أهلاً، {displayName}
               </span>
               {isVerified && (
-                <span className="text-xs text-blue-200">حساب موثق</span>
+                <span className="text-xs text-blue-200">حساب متوثق</span>
               )}
               {isBroMember && (
-                <span className="text-xs text-yellow-300">Bro</span>
+                <span className="text-xs text-yellow-300">مشترك Bro</span>
               )}
             </div>
           </Link>
@@ -61,7 +61,7 @@ const TopBar: React.FC<TopBarProps> = ({
             onClick={handleLogin}
           >
             <LogIn className="w-4 h-4 mr-2" />
-            <span>تسجيل الدخول</span>
+            <span>تسجيل دخول</span>
           </Button>
         )}
         
@@ -74,7 +74,7 @@ const TopBar: React.FC<TopBarProps> = ({
               className="text-blue-100 hover:bg-blue-500 hover:text-white p-1"
               onClick={handleLogout}
             >
-              تسجيل الخروج
+              اخرج
             </Button>
           )}
         </div>

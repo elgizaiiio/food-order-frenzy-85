@@ -1,3 +1,4 @@
+
 import React, { Suspense, lazy } from 'react';
 import { useUser } from '@/context/UserContext';
 import TopBar from '@/components/TopBar';
@@ -18,9 +19,9 @@ const HeroSection = () => <div className="relative px-4 pt-6 pb-8 mb-4 bg-gradie
       <div className="absolute top-0 right-0 w-24 h-24 bg-white rounded-full -mr-6 -mt-6"></div>
       <div className="absolute bottom-0 left-0 w-32 h-32 bg-white rounded-full -ml-10 -mb-10"></div>
     </div>
-    <h1 className="text-3xl font-bold mb-2 animate-fade-in">مرحباً بك في dam</h1>
+    <h1 className="text-3xl font-bold mb-2 animate-fade-in">أهلا بيك في تطبيق دام</h1>
     <p className="text-lg text-blue-100 mb-6 max-w-xs animate-fade-in animate-delay-1">
-      اطلب كل ما تحتاجه من مكان واحد، بسرعة وسهولة
+      اطلب كل حاجة محتاجها من مكان واحد، بسرعة وسهولة
     </p>
     <div className="relative z-10">
       

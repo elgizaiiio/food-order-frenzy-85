@@ -14,7 +14,7 @@ const Promos: React.FC = () => {
     },
     {
       id: 2,
-      title: "عاوز تروح الجيم؟",
+      title: "عايز تروح الجيم؟",
       description: "اشتراك شهري بـ 300 جنيه",
       icon: <Dumbbell className="h-8 w-8" />,
       color: "from-yellow-50 to-yellow-100",
