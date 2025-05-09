@@ -5,83 +5,31 @@ import { ArrowLeft, Share, Search, MapPin, Star, Clock, DollarSign, Users, Dumbb
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
-
-type GymItem = {
-  id: string;
-  name: string;
-  image: string;
-  location: string;
-  rating: number;
-  features?: string[];
-  openHours?: string;
-  price?: string;
-};
+import { fetchGyms, GymItem } from '@/services/gymService';
+import { useAuth } from '@/context/AuthContext';
 
 const Gym: React.FC = () => {
   const [gyms, setGyms] = useState<GymItem[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { user } = useAuth(); // Get the authenticated user
   
-  // محاكاة جلب البيانات من API
+  // Fetch gym data from Supabase
   useEffect(() => {
-    const fetchGyms = async () => {
+    const getGyms = async () => {
       try {
-        // في الحالة الحقيقية، سيتم استبدال هذا بطلب API حقيقي
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        const mockData: GymItem[] = [
-          {
-            id: 'iron-fitness',
-            name: 'آيرون فيتنس',
-            image: 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&q=80&w=500&h=300',
-            location: 'شارع الملك فهد',
-            rating: 4.8,
-            features: ['تدريب شخصي', 'ساونا', 'مسبح داخلي'],
-            openHours: '24 ساعة',
-            price: 'من 1999 جنيه/شهر'
-          },
-          {
-            id: 'gold-gym',
-            name: 'جولد جيم',
-            image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=500&h=300',
-            location: 'حي النزهة',
-            rating: 4.5,
-            features: ['صالة كارديو', 'يوغا', 'زومبا'],
-            openHours: '6:00 - 23:00',
-            price: 'من 2499 جنيه/شهر'
-          },
-          {
-            id: 'fitness-time',
-            name: 'فيتنس تايم',
-            image: 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?auto=format&fit=crop&q=80&w=500&h=300',
-            location: 'طريق الشيخ زايد',
-            rating: 4.7,
-            features: ['كروس فيت', 'تمارين جماعية', 'مدربين معتمدين'],
-            openHours: '5:00 - 23:30',
-            price: 'من 2190 جنيه/شهر'
-          },
-          {
-            id: 'power-zone',
-            name: 'باور زون',
-            image: 'https://images.unsplash.com/photo-1637666218229-7824d3b2ed83?auto=format&fit=crop&q=80&w=500&h=300',
-            location: 'الجامعة الشرقية',
-            rating: 4.4,
-            features: ['أجهزة حديثة', 'تدريب قوة', 'كمال أجسام'],
-            openHours: '6:00 - 22:00',
-            price: 'من 1890 جنيه/شهر'
-          },
-        ];
-        
-        setGyms(mockData);
-        setLoading(false);
+        setLoading(true);
+        const data = await fetchGyms();
+        setGyms(data);
       } catch (error) {
         console.error('Error fetching gyms:', error);
         toast.error('حدث خطأ أثناء تحميل بيانات النوادي');
+      } finally {
         setLoading(false);
       }
     };
     
-    fetchGyms();
+    getGyms();
   }, []);
 
   return (

@@ -1,225 +1,168 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Settings, Edit, Home, CreditCard, Clock, Gift, ChevronRight, User, Award, Users, Share2, CheckCircle } from 'lucide-react';
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import TopBar from "@/components/TopBar";
-import { toast } from "sonner";
-import { useUser } from "@/context/UserContext";
+import { ArrowLeft, User, Settings, MapPin, CreditCard, Package, Ticket, MessageSquare, UserPlus, LogOut } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useAuth } from '@/context/AuthContext';
+import { toast } from 'sonner';
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
-  const { isVerified, isBroMember } = useUser();
-  const [user, setUser] = useState({
-    name: 'أحمد محمد',
-    username: '@ahmed_dam',
-    profilePicture: undefined,
-    points: 235
-  });
-
-  const handleSubscribe = () => {
-    // Navigate to the Dam Bro subscription page
-    navigate('/dam-bro');
-    toast.success('جاري تحويلك إلى صفحة الاشتراك');
+  const { user, signOut } = useAuth();
+  
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      navigate('/login');
+    } catch (error) {
+      console.error('Error signing out:', error);
+      toast.error('حدث خطأ أثناء تسجيل الخروج');
+    }
   };
-
-  return <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white" dir="rtl">
+  
+  return (
+    <div className="min-h-screen bg-gray-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-20">
         {/* Header */}
-        <div className="sticky top-0 flex items-center justify-between p-4 bg-white shadow-sm z-10">
-          <Link to="/" className="text-blue-600">
+        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-700 to-indigo-800 text-white sticky top-0 z-10 shadow-md">
+          <Link to="/" className="text-white hover:text-blue-200">
             <ArrowLeft className="w-6 h-6" />
           </Link>
-          <h1 className="text-xl font-bold text-zinc-950">الملف الشخصي</h1>
-          <Link to="/settings" className="text-blue-600">
+          <h1 className="text-xl font-bold">الملف الشخصي</h1>
+          <Link to="/settings" className="text-white hover:text-blue-200">
             <Settings className="w-6 h-6" />
           </Link>
         </div>
-
-        {/* Profile Overview Card */}
-        <div className="px-4 py-6 animate-fade-in">
-          <Card className="border-none overflow-hidden shadow-md bg-gradient-to-r from-blue-50 to-blue-100 rounded-2xl">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <Avatar className="w-20 h-20 border-4 border-white shadow-md">
-                  {user.profilePicture ? <AvatarImage src={user.profilePicture} alt={user.name} /> : <AvatarFallback className="bg-gradient-to-br from-blue-400 to-blue-600 text-white text-2xl">
-                      {user.name.charAt(0)}
-                    </AvatarFallback>}
-                </Avatar>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <h2 className="text-2xl font-bold text-zinc-950">{user.name}</h2>
-                      {isVerified && (
-                        <span className="ml-2 text-blue-600">
-                          <CheckCircle className="w-5 h-5 fill-blue-500 text-white" />
-                        </span>
-                      )}
-                      {isBroMember && (
-                        <span className="ml-2 text-sm font-bold bg-gradient-to-r from-indigo-600 to-blue-600 text-transparent bg-clip-text">
-                          Bro
-                        </span>
-                      )}
-                    </div>
-                    <Link to="/edit-profile" className="text-blue-500 bg-blue-50 p-2 rounded-full hover:bg-blue-100 transition-colors">
-                      <Edit className="w-5 h-5" />
-                    </Link>
-                  </div>
-                  <p className="text-sm text-zinc-950">{user.username}</p>
-                  <div className="mt-3 flex items-center bg-blue-50/80 rounded-full px-3 py-1 w-fit">
-                    <Award className="w-4 h-4 text-blue-600 mr-1" />
-                    <span className="text-sm font-medium text-zinc-950">النقاط: {user.points}</span>
-                    <span className="mx-2 text-blue-300">•</span>
-                    <span className="text-sm text-zinc-950">{isBroMember ? 'مستخدم ذهبي' : 'مستخدم فضي'}</span>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Menu Section */}
-        <div className="px-4 py-2 animate-fade-in" style={{
-        animationDelay: "100ms"
-      }}>
-          <h3 className="text-lg font-semibold mb-4 text-blue-800">حسابي</h3>
-          
-          {/* Saved Addresses */}
-          <Link to="/addresses" className="block">
-            <div className="flex items-center justify-between p-4 mb-2 hover:bg-blue-50 rounded-xl transition-colors">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-100 to-blue-200 flex items-center justify-center shadow-sm">
-                  <Home className="w-5 h-5 text-blue-600" />
-                </div>
-                <span className="font-medium text-zinc-950">العناوين المحفوظة</span>
-              </div>
-              <ChevronRight className="w-5 h-5 text-blue-400" />
+        
+        {/* Profile Info */}
+        <div className="p-4">
+          <div className="flex items-center mb-6">
+            <Avatar className="h-20 w-20 border-4 border-white shadow-md">
+              <AvatarImage src="" />
+              <AvatarFallback className="bg-blue-100 text-blue-800 text-xl">
+                {user?.email?.charAt(0)?.toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div className="mr-4">
+              <h2 className="text-xl font-bold text-blue-900">{user?.email}</h2>
+              <p className="text-blue-600">مرحبًا بك في التطبيق</p>
             </div>
+          </div>
+          
+          <Link to="/edit-profile">
+            <Button 
+              className="w-full mb-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
+            >
+              تعديل الملف الشخصي
+            </Button>
           </Link>
           
-          {/* Saved Payment Methods */}
-          <Link to="/payment-methods" className="block">
-            <div className="flex items-center justify-between p-4 mb-2 hover:bg-blue-50 rounded-xl transition-colors">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-100 to-blue-200 flex items-center justify-center shadow-sm">
-                  <CreditCard className="w-5 h-5 text-blue-600" />
-                </div>
-                <span className="font-medium text-zinc-950">البطاقات المحفوظة</span>
-              </div>
-              <ChevronRight className="w-5 h-5 text-blue-400" />
-            </div>
-          </Link>
-          
-          {/* Order History */}
-          <Link to="/orders" className="block">
-            <div className="flex items-center justify-between p-4 mb-2 hover:bg-blue-50 rounded-xl transition-colors">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-100 to-blue-200 flex items-center justify-center shadow-sm">
-                  <Clock className="w-5 h-5 text-blue-600" />
-                </div>
-                <span className="font-medium text-zinc-950">الطلبات السابقة</span>
-              </div>
-              <ChevronRight className="w-5 h-5 text-blue-400" />
-            </div>
-          </Link>
-          
-          {/* Coupons */}
-          <Link to="/coupons" className="block">
-            <div className="flex items-center justify-between p-4 mb-2 hover:bg-blue-50 rounded-xl transition-colors">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-100 to-blue-200 flex items-center justify-center shadow-sm">
-                  <Gift className="w-5 h-5 text-blue-600" />
-                </div>
-                <span className="font-medium text-zinc-950">القسائم</span>
-              </div>
-              <ChevronRight className="w-5 h-5 text-blue-400" />
-            </div>
-          </Link>
-          
-          {/* Account Settings */}
-          <Link to="/settings" className="block">
-            <div className="flex items-center justify-between p-4 mb-2 hover:bg-blue-50 rounded-xl transition-colors">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-100 to-blue-200 flex items-center justify-center shadow-sm">
-                  <User className="w-5 h-5 text-blue-600" />
-                </div>
-                <span className="font-medium text-zinc-950">إعدادات الحساب</span>
-              </div>
-              <ChevronRight className="w-5 h-5 text-blue-400" />
-            </div>
-          </Link>
-
-          {/* Invite Friends - New Item */}
-          <Link to="/invite-friends" className="block">
-            <div className="flex items-center justify-between p-4 mb-2 hover:bg-blue-50 rounded-xl transition-colors">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-100 to-blue-200 flex items-center justify-center shadow-sm">
-                  <Users className="w-5 h-5 text-blue-600" />
-                </div>
-                <span className="font-medium text-zinc-950">دعوة الأصدقاء</span>
-              </div>
-              <ChevronRight className="w-5 h-5 text-blue-400" />
-            </div>
-          </Link>
-        </div>
-
-        {/* Referral Program Card */}
-        <div className="px-4 py-6 animate-fade-in" style={{
-        animationDelay: "200ms"
-      }}>
-          <Card className="overflow-hidden border-none shadow-md bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-2xl">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-3">
+          {/* Menu Options */}
+          <div className="space-y-1">
+            <Link to="/addresses">
+              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-blue-50 transition-colors">
                 <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mr-3">
-                    <span className="text-lg font-bold">Dam</span>
+                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                    <MapPin className="w-5 h-5 text-blue-600" />
                   </div>
-                  <h3 className="text-xl font-bold">Dam Bro</h3>
+                  <span className="text-blue-900">العناوين</span>
                 </div>
-                <div className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm">
-                  <span>99 جنيه / شهرياً</span>
-                </div>
+                <span className="text-gray-400">
+                  <ArrowLeft className="w-5 h-5 rotate-180" />
+                </span>
               </div>
-              
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-4">
-                <h4 className="font-medium mb-3">مميزات الاشتراك:</h4>
-                <ul className="space-y-2 text-sm">
-                  <li className="flex items-center gap-2">
-                    <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">✓</div>
-                    <span>دعم فني على مدار الساعة</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">✓</div>
-                    <span>عروض حصرية للمشتركين</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">✓</div>
-                    <span>أولوية في الخدمة</span>
-                  </li>
-                </ul>
-              </div>
-              
-              <Button 
-                className="w-full bg-white text-blue-700 hover:bg-blue-50 font-bold transition-colors"
-                onClick={handleSubscribe}
-              >
-                {isBroMember ? 'تم الاشتراك' : 'اشترك الآن'}
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Dam Bro Feature (Coming Soon) */}
-        <div className="px-4 py-2 animate-fade-in" style={{
-        animationDelay: "300ms"
-      }}>
-          <Card className="border border-dashed border-blue-300 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl">
+            </Link>
             
-          </Card>
+            <Link to="/payment-methods">
+              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-blue-50 transition-colors">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                    <CreditCard className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <span className="text-blue-900">طرق الدفع</span>
+                </div>
+                <span className="text-gray-400">
+                  <ArrowLeft className="w-5 h-5 rotate-180" />
+                </span>
+              </div>
+            </Link>
+            
+            <Link to="/orders">
+              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-blue-50 transition-colors">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                    <Package className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <span className="text-blue-900">الطلبات السابقة</span>
+                </div>
+                <span className="text-gray-400">
+                  <ArrowLeft className="w-5 h-5 rotate-180" />
+                </span>
+              </div>
+            </Link>
+            
+            <Link to="/coupons">
+              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-blue-50 transition-colors">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                    <Ticket className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <span className="text-blue-900">الكوبونات</span>
+                </div>
+                <span className="text-gray-400">
+                  <ArrowLeft className="w-5 h-5 rotate-180" />
+                </span>
+              </div>
+            </Link>
+            
+            <Link to="/chat-support">
+              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-blue-50 transition-colors">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                    <MessageSquare className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <span className="text-blue-900">الدعم الفني</span>
+                </div>
+                <span className="text-gray-400">
+                  <ArrowLeft className="w-5 h-5 rotate-180" />
+                </span>
+              </div>
+            </Link>
+            
+            <Link to="/invite-friends">
+              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-blue-50 transition-colors">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                    <UserPlus className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <span className="text-blue-900">دعوة الأصدقاء</span>
+                </div>
+                <span className="text-gray-400">
+                  <ArrowLeft className="w-5 h-5 rotate-180" />
+                </span>
+              </div>
+            </Link>
+            
+            <button 
+              onClick={handleSignOut}
+              className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-red-50 transition-colors text-right"
+            >
+              <div className="flex items-center">
+                <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center mr-3">
+                  <LogOut className="w-5 h-5 text-red-600" />
+                </div>
+                <span className="text-red-600">تسجيل الخروج</span>
+              </div>
+              <span className="text-red-300">
+                <ArrowLeft className="w-5 h-5 rotate-180" />
+              </span>
+            </button>
+          </div>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default Profile;

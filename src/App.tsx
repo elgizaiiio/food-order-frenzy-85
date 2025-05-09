@@ -9,8 +9,10 @@ import { UserProvider } from "@/context/UserContext";
 import { MarketCartProvider } from "@/context/MarketCartContext";
 import { PharmacyCartProvider } from "@/context/PharmacyCartContext";
 import { PersonalCareCartProvider } from "@/context/PersonalCareCartContext";
+import { AuthProvider } from "@/context/AuthContext";
 import BottomNav from "./components/BottomNav";
 import AuthGuard from "./components/AuthGuard";
+
 // Personal Care Section
 import PersonalCare from "./pages/PersonalCare";
 import PersonalCareCategory from "./pages/PersonalCareCategory";
@@ -166,13 +168,15 @@ const AppContent = () => {
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <UserProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <AppContent />
-        </TooltipProvider>
-      </UserProvider>
+      <AuthProvider>
+        <UserProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <AppContent />
+          </TooltipProvider>
+        </UserProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 };

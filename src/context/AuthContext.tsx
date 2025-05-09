@@ -1,103 +1,100 @@
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
+import { toast } from 'sonner';
 
 interface AuthContextType {
-  session: Session | null;
   user: User | null;
-  signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, name: string) => Promise<void>;
-  signOut: () => Promise<void>;
+  session: Session | null;
   loading: boolean;
-  error: string | null;
+  signIn: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string) => Promise<void>;
+  signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-      }
-    );
+    // Set up the auth state listener first
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
 
-    // THEN check for existing session
+    // Then check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    setError(null);
     try {
-      setLoading(true);
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
     } catch (error: any) {
-      setError(error.message || 'Error signing in');
-      console.error('Error signing in:', error);
-    } finally {
-      setLoading(false);
+      toast.error(error.message || 'حدث خطأ أثناء تسجيل الدخول');
+      throw error;
     }
   };
 
-  const signUp = async (email: string, password: string, name: string) => {
-    setError(null);
+  const signUp = async (email: string, password: string) => {
     try {
-      setLoading(true);
-      const { error } = await supabase.auth.signUp({ 
-        email, 
-        password, 
-        options: {
-          data: {
-            name: name
-          }
-        }
-      });
+      const { error } = await supabase.auth.signUp({ email, password });
       if (error) throw error;
+      toast.success('تم إنشاء الحساب بنجاح! يرجى التحقق من بريدك الإلكتروني');
     } catch (error: any) {
-      setError(error.message || 'Error signing up');
-      console.error('Error signing up:', error);
-    } finally {
-      setLoading(false);
+      toast.error(error.message || 'حدث خطأ أثناء إنشاء الحساب');
+      throw error;
     }
   };
 
   const signOut = async () => {
-    setError(null);
     try {
-      setLoading(true);
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      // Clear auth state
+      const cleanupAuthState = () => {
+        localStorage.removeItem('supabase.auth.token');
+        // Remove all Supabase auth keys from localStorage
+        Object.keys(localStorage).forEach((key) => {
+          if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+            localStorage.removeItem(key);
+          }
+        });
+      };
+      
+      // Clean up auth state
+      cleanupAuthState();
+      
+      // Attempt global sign out
+      await supabase.auth.signOut({ scope: 'global' });
+      
+      // Force page reload for a clean state
+      window.location.href = '/';
     } catch (error: any) {
-      setError(error.message || 'Error signing out');
-      console.error('Error signing out:', error);
-    } finally {
-      setLoading(false);
+      toast.error('حدث خطأ أثناء تسجيل الخروج');
+      console.error('Logout error:', error);
     }
   };
 
   const value = {
-    session,
     user,
+    session,
+    loading,
     signIn,
     signUp,
     signOut,
-    loading,
-    error
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -1,23 +1,29 @@
 
-import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useUser } from '@/context/UserContext';
+import { useAuth } from '@/context/AuthContext';
 
 interface AuthGuardProps {
   children: React.ReactNode;
 }
 
-const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
-  const { isLoggedIn } = useUser();
+const AuthGuard = ({ children }: AuthGuardProps) => {
+  const { user, loading } = useAuth();
   const location = useLocation();
 
-  // إذا لم يكن المستخدم مسجل دخول، قم بتوجيهه إلى صفحة تسجيل الدخول
-  // مع حفظ المسار الذي كان يحاول الوصول إليه
-  if (!isLoggedIn) {
+  if (loading) {
+    // While checking authentication status, you could return a loading component
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-blue-50">
+        <div className="w-16 h-16 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    // Redirect to login if user is not authenticated
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // إذا كان المستخدم مسجل دخول، اعرض المحتوى
   return <>{children}</>;
 };
 

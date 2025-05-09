@@ -1,360 +1,167 @@
 
 import React, { useState } from 'react';
-import { useNavigate, Link, Navigate } from 'react-router-dom';
-import { User, Lock, Mail, Eye, EyeOff, Apple } from 'lucide-react';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { toast } from "sonner";
-import { useForm } from "react-hook-form";
-import { useUser } from "@/context/UserContext";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-
-// تعريف مخطط التحقق من البيانات
-const registerSchema = z.object({
-  name: z.string().min(3, {
-    message: "الاسم يجب أن يحتوي على 3 أحرف على الأقل"
-  }),
-  email: z.string().email({
-    message: "يرجى إدخال بريد إلكتروني صالح"
-  }),
-  password: z.string().min(6, {
-    message: "كلمة المرور يجب أن تحتوي على 6 أحرف على الأقل"
-  }),
-  confirmPassword: z.string()
-}).refine(data => data.password === data.confirmPassword, {
-  message: "كلمات المرور غير متطابقة",
-  path: ["confirmPassword"]
-});
-
-type RegisterFormValues = z.infer<typeof registerSchema>;
+import { Link, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Mail, Lock, User, EyeOff, Eye } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { toast } from 'sonner';
+import { useAuth } from '@/context/AuthContext';
 
 const Register: React.FC = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [loading, setLoading] = useState({
-    email: false,
-    google: false,
-    apple: false
-  });
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { setUserName, isLoggedIn } = useUser();
-
-  // إعداد نموذج التسجيل باستخدام React Hook Form
-  const form = useForm<RegisterFormValues>({
-    resolver: zodResolver(registerSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: ""
-    }
-  });
-
-  // معالجة التسجيل
-  const onSubmit = async (data: RegisterFormValues) => {
-    try {
-      setLoading({
-        ...loading,
-        email: true
-      });
-
-      // محاكاة التسجيل الناجح
-      setTimeout(() => {
-        toast.success("تم إنشاء الحساب بنجاح");
-        setUserName(data.name); // تعيين اسم المستخدم
-        setLoading({
-          ...loading,
-          email: false
-        });
-        navigate("/"); // التوجيه إلى الصفحة الرئيسية
-      }, 1000);
-    } catch (error) {
-      setLoading({
-        ...loading,
-        email: false
-      });
-      toast.error("حدث خطأ أثناء إنشاء الحساب");
-      console.error(error);
-    }
-  };
-
-  // تسجيل الدخول باستخدام جوجل
-  const handleGoogleLogin = async () => {
-    try {
-      setLoading({
-        ...loading,
-        google: true
-      });
-      
-      // محاكاة تسجيل الدخول الناجح
-      setTimeout(() => {
-        toast.success("تم إنشاء الحساب بنجاح باستخدام Google");
-        setUserName("مستخدم Google");
-        setLoading({
-          ...loading,
-          google: false
-        });
-        navigate("/");
-      }, 1000);
-    } catch (error) {
-      setLoading({
-        ...loading,
-        google: false
-      });
-      toast.error("حدث خطأ أثناء التسجيل باستخدام Google");
-      console.error(error);
-    }
-  };
-
-  // تسجيل الدخول باستخدام أبل
-  const handleAppleLogin = async () => {
-    try {
-      setLoading({
-        ...loading,
-        apple: true
-      });
-      
-      // محاكاة تسجيل الدخول الناجح
-      setTimeout(() => {
-        toast.success("تم إنشاء الحساب بنجاح باستخدام Apple");
-        setUserName("مستخدم Apple");
-        setLoading({
-          ...loading,
-          apple: false
-        });
-        navigate("/");
-      }, 1000);
-    } catch (error) {
-      setLoading({
-        ...loading,
-        apple: false
-      });
-      toast.error("حدث خطأ أثناء التسجيل باستخدام Apple");
-      console.error(error);
-    }
-  };
+  const { signUp, user } = useAuth();
   
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-  
-  const toggleConfirmPasswordVisibility = () => {
-    setShowConfirmPassword(!showConfirmPassword);
-  };
+  // If user is already logged in, redirect to home page
+  React.useEffect(() => {
+    if (user) {
+      navigate('/', { replace: true });
+    }
+  }, [user, navigate]);
 
-  // Redirect if user is already logged in
-  if (isLoggedIn) {
-    return <Navigate to="/" />;
-  }
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
+    if (!email || !password || !confirmPassword) {
+      toast.error('يرجى إدخال جميع الحقول المطلوبة');
+      return;
+    }
+    
+    if (password !== confirmPassword) {
+      toast.error('كلمة المرور وتأكيدها غير متطابقين');
+      return;
+    }
+    
+    if (password.length < 6) {
+      toast.error('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+      return;
+    }
+    
+    setLoading(true);
+    
+    try {
+      await signUp(email, password);
+      toast.success('تم إنشاء الحساب بنجاح! يرجى تسجيل الدخول');
+      navigate('/login');
+    } catch (error) {
+      console.error('Registration error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
   
   return (
-    <div 
-      className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-500 flex flex-col items-center justify-center p-4" 
-      dir="rtl" 
-      style={{
-        paddingTop: 'env(safe-area-inset-top, 0px)',
-        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-        paddingLeft: 'env(safe-area-inset-left, 0px)',
-        paddingRight: 'env(safe-area-inset-right, 0px)'
-      }}
-    >
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="inline-block w-24 h-24 rounded-2xl bg-blue-800 text-white flex items-center justify-center mb-5 shadow-xl animate-bounce-in transform -rotate-12">
-            <span className="text-3xl font-bold">دام</span>
-          </div>
-          <h1 className="text-3xl font-bold text-white mb-2">إنشاء حساب جديد</h1>
-          <p className="text-white/90 text-lg font-bold">انضم إلينا واستمتع بتجربتنا المميزة</p>
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white" dir="rtl">
+      <div className="max-w-md mx-auto pt-8 pb-16 px-4">
+        <div className="mb-8 flex items-center justify-between">
+          <Link to="/" className="text-blue-600 hover:text-blue-800">
+            <ArrowLeft className="w-6 h-6" />
+          </Link>
+          <h1 className="text-2xl font-bold text-blue-900 flex-1 text-center">إنشاء حساب</h1>
+          <div className="w-6"></div> {/* For layout balance */}
         </div>
         
-        <Card className="border-none shadow-2xl bg-white/95 backdrop-blur-sm rounded-2xl overflow-hidden animate-fade-in">
-          <div className="h-2 bg-gradient-to-r from-blue-600 to-blue-400"></div>
-          <CardContent className="pt-6 px-6 pb-8">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField 
-                  control={form.control} 
-                  name="name" 
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-gray-700 font-medium">الاسم الكامل</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Input 
-                            placeholder="أدخل اسمك الكامل" 
-                            className="pl-10 h-12 bg-gray-50 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-blue-500" 
-                            {...field} 
-                          />
-                          <User className="absolute right-3 top-3.5 h-5 w-5 text-gray-400" />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} 
+        <div className="bg-white rounded-2xl shadow-md p-6 mb-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <label htmlFor="email" className="text-sm font-medium text-blue-800 block">
+                البريد الإلكتروني
+              </label>
+              <div className="relative">
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="أدخل بريدك الإلكتروني"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="pl-10 pr-4 py-2 rounded-lg border-blue-200 focus:border-blue-400 focus:ring-blue-300"
+                  required
                 />
-                
-                <FormField 
-                  control={form.control} 
-                  name="email" 
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-gray-700 font-medium">البريد الإلكتروني</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Input 
-                            placeholder="أدخل بريدك الإلكتروني" 
-                            className="pl-10 h-12 bg-gray-50 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-blue-500" 
-                            {...field} 
-                          />
-                          <Mail className="absolute right-3 top-3.5 h-5 w-5 text-gray-400" />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} 
-                />
-                
-                <FormField 
-                  control={form.control} 
-                  name="password" 
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-gray-700 font-medium">كلمة المرور</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Input 
-                            type={showPassword ? "text" : "password"} 
-                            placeholder="أدخل كلمة المرور" 
-                            className="pl-10 h-12 bg-gray-50 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-blue-500" 
-                            {...field} 
-                          />
-                          <Lock className="absolute right-3 top-3.5 h-5 w-5 text-gray-400" />
-                          <button 
-                            type="button" 
-                            onClick={togglePasswordVisibility} 
-                            className="absolute left-3 top-3.5 touch-manipulation"
-                            aria-label={showPassword ? "إخفاء الباسورد" : "إظهار الباسورد"}
-                          >
-                            {showPassword ? 
-                              <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" /> : 
-                              <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                            }
-                          </button>
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} 
-                />
-                
-                <FormField 
-                  control={form.control} 
-                  name="confirmPassword" 
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-gray-700 font-medium">تأكيد كلمة المرور</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Input 
-                            type={showConfirmPassword ? "text" : "password"} 
-                            placeholder="أكد كلمة المرور" 
-                            className="pl-10 h-12 bg-gray-50 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-blue-500" 
-                            {...field} 
-                          />
-                          <Lock className="absolute right-3 top-3.5 h-5 w-5 text-gray-400" />
-                          <button 
-                            type="button" 
-                            onClick={toggleConfirmPasswordVisibility} 
-                            className="absolute left-3 top-3.5 touch-manipulation"
-                            aria-label={showConfirmPassword ? "إخفاء الباسورد" : "إظهار الباسورد"}
-                          >
-                            {showConfirmPassword ? 
-                              <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" /> : 
-                              <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                            }
-                          </button>
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} 
-                />
-                
-                <Button 
-                  type="submit" 
-                  className="w-full h-14 rounded-xl font-bold shadow-lg transition-all hover:shadow-xl mt-4 bg-blue-600 hover:bg-blue-700" 
-                  disabled={loading.email}
-                >
-                  {loading.email ? (
-                    <span className="flex items-center">
-                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      جاري إنشاء الحساب...
-                    </span>
-                  ) : (
-                    "إنشاء حساب"
-                  )}
-                </Button>
-              </form>
-            </Form>
-            
-            <div className="text-center mt-6">
-              <p className="text-gray-600">
-                لديك حساب بالفعل؟{" "}
-                <Link to="/login" className="text-blue-600 hover:text-blue-700 font-bold">تسجيل الدخول</Link>
-              </p>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <Mail className="h-5 w-5 text-blue-500" />
+                </div>
+              </div>
             </div>
-          </CardContent>
-        </Card>
-        
-        <div className="flex justify-center items-center my-6">
-          <hr className="flex-grow border-t border-white/30" />
-          <span className="px-4 text-white text-sm font-medium">أو استمر بواسطة</span>
-          <hr className="flex-grow border-t border-white/30" />
+            
+            <div className="space-y-2">
+              <label htmlFor="password" className="text-sm font-medium text-blue-800 block">
+                كلمة المرور
+              </label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="أدخل كلمة المرور"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="pl-10 pr-4 py-2 rounded-lg border-blue-200 focus:border-blue-400 focus:ring-blue-300"
+                  required
+                />
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <Lock className="h-5 w-5 text-blue-500" />
+                </div>
+                <button
+                  type="button"
+                  className="absolute inset-y-0 left-0 flex items-center pl-3"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5 text-blue-400 hover:text-blue-600" />
+                  ) : (
+                    <Eye className="h-5 w-5 text-blue-400 hover:text-blue-600" />
+                  )}
+                </button>
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <label htmlFor="confirmPassword" className="text-sm font-medium text-blue-800 block">
+                تأكيد كلمة المرور
+              </label>
+              <div className="relative">
+                <Input
+                  id="confirmPassword"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="أعد إدخال كلمة المرور"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="pl-10 pr-4 py-2 rounded-lg border-blue-200 focus:border-blue-400 focus:ring-blue-300"
+                  required
+                />
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <Lock className="h-5 w-5 text-blue-500" />
+                </div>
+              </div>
+            </div>
+            
+            <Button 
+              type="submit" 
+              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-6 shadow-md"
+              disabled={loading}
+            >
+              {loading ? (
+                <div className="flex items-center justify-center">
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                  <span>جاري إنشاء الحساب...</span>
+                </div>
+              ) : (
+                "إنشاء حساب"
+              )}
+            </Button>
+          </form>
         </div>
         
-        <div className="grid grid-cols-2 gap-4">
-          <Button 
-            variant="outline" 
-            className="h-12 border-white/30 bg-white/80 hover:bg-white text-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all touch-manipulation" 
-            onClick={handleGoogleLogin} 
-            disabled={loading.google}
-          >
-            {loading.google ? (
-              <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-            ) : (
-              <>
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" className="w-5 h-5 ml-2" />
-                <span>Google</span>
-              </>
-            )}
-          </Button>
-          <Button 
-            variant="outline" 
-            className="h-12 border-white/30 bg-white/80 hover:bg-white text-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all touch-manipulation" 
-            onClick={handleAppleLogin} 
-            disabled={loading.apple}
-          >
-            {loading.apple ? (
-              <svg className="animate-spin h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-            ) : (
-              <>
-                <Apple className="w-5 h-5 ml-2" />
-                <span>Apple</span>
-              </>
-            )}
-          </Button>
+        <div className="text-center">
+          <p className="text-blue-800">
+            لديك حساب بالفعل؟{" "}
+            <Link to="/login" className="text-blue-600 font-medium hover:underline">
+              تسجيل الدخول
+            </Link>
+          </p>
         </div>
       </div>
     </div>

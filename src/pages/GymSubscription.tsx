@@ -7,6 +7,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { toast } from 'sonner';
+import { fetchGymById, GymItem } from '@/services/gymService';
+import { useAuth } from '@/context/AuthContext';
 
 type SubscriptionPlan = {
   id: string;
@@ -18,109 +20,85 @@ type SubscriptionPlan = {
   priceDiscount?: number;
 };
 
-type GymInfo = {
-  id: string;
-  name: string;
-  image: string;
-  location?: string;
-  rating?: number;
-  openHours?: string;
-  memberCount?: string;
-};
-
 const GymSubscription: React.FC = () => {
   // Get gym id from URL
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth(); // Get the authenticated user
   const [loading, setLoading] = useState(true);
-  const [gymInfo, setGymInfo] = useState<GymInfo>({
-    id: id || '',
-    name: '',
-    image: '',
-  });
-  const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
+  const [gymInfo, setGymInfo] = useState<GymItem | null>(null);
+  const [plans, setPlans] = useState<SubscriptionPlan[]>([
+    {
+      id: 'monthly',
+      title: 'شهرية',
+      duration: 'اشتراك لمدة شهر',
+      price: 1999,
+      features: [
+        'وصول كامل إلى صالة الألعاب الرياضية',
+        'وصول محدود للفصول الجماعية',
+        'استخدام مناشف مجانية'
+      ]
+    },
+    {
+      id: 'quarterly',
+      title: 'ربع سنوية',
+      duration: 'اشتراك لمدة ٣ شهور',
+      price: 4999,
+      priceDiscount: 5997,
+      recommended: true,
+      features: [
+        'وصول كامل إلى صالة الألعاب الرياضية',
+        'وصول كامل للفصول الجماعية',
+        'استشارة مجانية مع المدرب',
+        'استخدام مناشف مجانية'
+      ]
+    },
+    {
+      id: 'yearly',
+      title: 'سنوية',
+      duration: 'اشتراك لمدة سنة كاملة',
+      price: 14999,
+      priceDiscount: 23988,
+      features: [
+        'وصول كامل إلى صالة الألعاب الرياضية',
+        'وصول كامل للفصول الجماعية',
+        '٣ استشارات مجانية مع المدرب',
+        'جلسة تقييم لياقة بدنية',
+        'استخدام مناشف وخزانة مجانية',
+        'خصم 15٪ على المشروبات في كافتيريا النادي'
+      ]
+    }
+  ]);
   
-  // محاكاة جلب البيانات من API
+  // Fetch gym details from Supabase
   useEffect(() => {
-    const fetchGymDetails = async () => {
+    const getGymDetails = async () => {
+      if (!id) return;
+      
       try {
-        // في الحالة الحقيقية، سيتم استبدال هذا بطلب API حقيقي
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        // Mock gym data - in real app, fetch based on ID
-        const mockGymInfo: GymInfo = {
-          id: id || '',
-          name: id === 'iron-fitness' ? 'آيرون فيتنس' : 
-                id === 'gold-gym' ? 'جولد جيم' : 
-                id === 'fitness-time' ? 'فيتنس تايم' : 'باور زون',
-          image: 'https://images.unsplash.com/photo-1637666218229-7824d3b2ed83?auto=format&fit=crop&q=80&w=1000&h=400',
-          location: 'شارع الملك فهد، الرياض',
-          rating: 4.7,
-          openHours: '6:00 - 22:00',
-          memberCount: '500+'
-        };
-
-        // Subscription plans
-        const mockPlans: SubscriptionPlan[] = [
-          {
-            id: 'monthly',
-            title: 'شهرية',
-            duration: 'اشتراك لمدة شهر',
-            price: 1999,
-            features: [
-              'وصول كامل إلى صالة الألعاب الرياضية',
-              'وصول محدود للفصول الجماعية',
-              'استخدام مناشف مجانية'
-            ]
-          },
-          {
-            id: 'quarterly',
-            title: 'ربع سنوية',
-            duration: 'اشتراك لمدة ٣ شهور',
-            price: 4999,
-            priceDiscount: 5997,
-            recommended: true,
-            features: [
-              'وصول كامل إلى صالة الألعاب الرياضية',
-              'وصول كامل للفصول الجماعية',
-              'استشارة مجانية مع المدرب',
-              'استخدام مناشف مجانية'
-            ]
-          },
-          {
-            id: 'yearly',
-            title: 'سنوية',
-            duration: 'اشتراك لمدة سنة كاملة',
-            price: 14999,
-            priceDiscount: 23988,
-            features: [
-              'وصول كامل إلى صالة الألعاب الرياضية',
-              'وصول كامل للفصول الجماعية',
-              '٣ استشارات مجانية مع المدرب',
-              'جلسة تقييم لياقة بدنية',
-              'استخدام مناشف وخزانة مجانية',
-              'خصم 15٪ على المشروبات في كافتيريا النادي'
-            ]
-          }
-        ];
-        
-        setGymInfo(mockGymInfo);
-        setPlans(mockPlans);
-        setLoading(false);
+        setLoading(true);
+        const gymData = await fetchGymById(id);
+        setGymInfo(gymData);
       } catch (error) {
         console.error('Error fetching gym details:', error);
         toast.error('حدث خطأ أثناء تحميل بيانات النادي');
+      } finally {
         setLoading(false);
       }
     };
     
-    fetchGymDetails();
+    getGymDetails();
   }, [id]);
 
   const [selectedPlan, setSelectedPlan] = useState<string>('monthly');
 
   const handleSubmit = () => {
     const plan = plans.find(p => p.id === selectedPlan);
+    if (!user) {
+      toast.error('يجب تسجيل الدخول أولاً');
+      return;
+    }
+    
     navigate('/gym/payment', { 
       state: { 
         gym: gymInfo,
@@ -142,7 +120,7 @@ const GymSubscription: React.FC = () => {
         </div>
 
         {/* Gym banner */}
-        {loading ? (
+        {loading || !gymInfo ? (
           <div className="relative h-48 bg-blue-100 animate-pulse"></div>
         ) : (
           <div className="relative">
@@ -179,26 +157,26 @@ const GymSubscription: React.FC = () => {
         )}
 
         {/* Gym Info Cards */}
-        <div className="px-4 py-4 flex justify-between gap-2">
-          {gymInfo.openHours && (
-            <Card className="border-0 shadow-sm flex-1 bg-blue-50 border border-blue-100">
-              <CardContent className="p-3 flex flex-col items-center">
-                <Clock className="w-5 h-5 text-blue-600 mb-1" />
-                <span className="text-xs text-blue-700">ساعات العمل</span>
-                <span className="text-sm font-medium text-blue-900">{gymInfo.openHours}</span>
-              </CardContent>
-            </Card>
-          )}
-          {gymInfo.memberCount && (
+        {gymInfo && (
+          <div className="px-4 py-4 flex justify-between gap-2">
+            {gymInfo.openHours && (
+              <Card className="border-0 shadow-sm flex-1 bg-blue-50 border border-blue-100">
+                <CardContent className="p-3 flex flex-col items-center">
+                  <Clock className="w-5 h-5 text-blue-600 mb-1" />
+                  <span className="text-xs text-blue-700">ساعات العمل</span>
+                  <span className="text-sm font-medium text-blue-900">{gymInfo.openHours}</span>
+                </CardContent>
+              </Card>
+            )}
             <Card className="border-0 shadow-sm flex-1 bg-blue-50 border border-blue-100">
               <CardContent className="p-3 flex flex-col items-center">
                 <Users className="w-5 h-5 text-blue-600 mb-1" />
                 <span className="text-xs text-blue-700">الأعضاء</span>
-                <span className="text-sm font-medium text-blue-900">{gymInfo.memberCount}</span>
+                <span className="text-sm font-medium text-blue-900">500+</span>
               </CardContent>
             </Card>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Subscription plans */}
         <div className="px-4 py-2">
@@ -238,34 +216,28 @@ const GymSubscription: React.FC = () => {
                         className="border-blue-600 text-blue-600"
                       />
                       <div className="w-full flex justify-between items-center">
-                        <Label htmlFor={plan.id} className="font-bold text-lg cursor-pointer text-blue-800">
-                          {plan.title}
+                        <Label htmlFor={plan.id} className="flex-1 cursor-pointer">
+                          <div className="font-bold text-lg text-blue-800">{plan.title}</div>
+                          <div className="text-sm text-blue-700">{plan.duration}</div>
                         </Label>
                         <div className="text-right">
+                          <div className="font-bold text-lg text-blue-800">{plan.price} جنيه</div>
                           {plan.priceDiscount && (
-                            <span className="text-sm text-gray-500 line-through block">
-                              {plan.priceDiscount} جنيه
-                            </span>
+                            <div className="text-xs line-through text-blue-400">{plan.priceDiscount} جنيه</div>
                           )}
-                          <span className="font-bold text-lg text-blue-700">
-                            {plan.price} جنيه
-                          </span>
                         </div>
                       </div>
                     </div>
                     
-                    <div className="mt-2 ms-6">
-                      <p className="text-blue-600 text-sm mb-2">{plan.duration}</p>
-                      <ul className="space-y-2 mt-3">
-                        {plan.features.map((feature, index) => (
-                          <li key={index} className="flex items-start text-sm">
-                            <div className="flex-shrink-0 h-5 w-5 rounded-full bg-blue-100 flex items-center justify-center mt-0.5 mr-2">
-                              <Check className="text-blue-600 w-3 h-3" />
-                            </div>
-                            <span className="text-blue-800">{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
+                    <div className="mt-4 space-y-2 pl-8">
+                      {plan.features.map((feature, idx) => (
+                        <div key={idx} className="flex items-start">
+                          <div className="mt-0.5 min-w-4 w-4 h-4 bg-blue-100 rounded-full flex items-center justify-center mr-2">
+                            <Check className="w-3 h-3 text-blue-600" />
+                          </div>
+                          <span className="text-sm text-blue-700">{feature}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -273,15 +245,13 @@ const GymSubscription: React.FC = () => {
             </RadioGroup>
           )}
           
-          <div className="mt-8">
-            <Button 
-              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md py-6"
-              onClick={handleSubmit}
-              disabled={loading}
-            >
-              تابع الدفع
-            </Button>
-          </div>
+          <Button 
+            onClick={handleSubmit}
+            disabled={loading || !gymInfo}
+            className="w-full mt-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md py-6"
+          >
+            اختر هذه الخطة
+          </Button>
         </div>
       </div>
     </div>

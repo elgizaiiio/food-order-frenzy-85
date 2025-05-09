@@ -1,7 +1,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchGyms, fetchGymById, fetchUserSubscriptions, createSubscription, GymSubscription } from '@/services/gymService';
-import { useAuth } from '@/context/AuthContext'; // Assuming you have an auth context
+import { useAuth } from '@/context/AuthContext'; // Using our new AuthContext
 
 export function useGyms() {
   return useQuery({
@@ -21,7 +21,7 @@ export function useGymDetails(id: string) {
 }
 
 export function useUserSubscriptions() {
-  const { user } = useAuth(); // Assuming you have a useAuth hook to get the current user
+  const { user } = useAuth(); // Get the authenticated user from our new context
   
   return useQuery({
     queryKey: ['user-subscriptions', user?.id],

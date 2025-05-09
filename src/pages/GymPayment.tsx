@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ArrowLeft, CreditCard, Building, Check, Home, MapPin, Phone, Wallet, Apple } from 'lucide-react';
@@ -14,6 +13,8 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useAuth } from '@/context/AuthContext';
+import { createSubscription, GymItem } from '@/services/gymService';
 
 type GymInfo = {
   id: string;
@@ -49,7 +50,8 @@ const formSchema = z.object({
 const GymPayment: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { gym, plan } = location.state as { gym: GymInfo; plan: PlanInfo };
+  const { user } = useAuth();
+  const { gym, plan } = location.state as { gym: GymItem; plan: any };
   const [loading, setLoading] = useState(false);
   const [isAddingAddress, setIsAddingAddress] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
@@ -141,24 +143,48 @@ const GymPayment: React.FC = () => {
     toast.success("تم إضافة العنوان بنجاح");
   };
 
-  const handleSubmit = (values: z.infer<typeof formSchema>) => {
+  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (!user) {
+      toast.error('يجب تسجيل الدخول أولاً');
+      return;
+    }
+    
     setLoading(true);
     
-    // محاكاة طلب API
-    setTimeout(() => {
+    try {
+      // Create the gym subscription in Supabase
       const selectedAddress = addresses.find(addr => addr.id === values.addressId);
+      const totals = calculateTotal();
       
-      console.log({
-        gym,
-        plan,
-        payment: values,
-        address: selectedAddress,
-        discount: discount > 0 ? { code: selectedCoupon, percentage: discount } : null,
-        total: calculateTotal().finalTotal
+      // Calculate start and end dates
+      const startDate = new Date();
+      const endDate = new Date();
+      
+      // Set end date based on plan duration
+      if (plan.id === 'monthly') {
+        endDate.setMonth(endDate.getMonth() + 1);
+      } else if (plan.id === 'quarterly') {
+        endDate.setMonth(endDate.getMonth() + 3);
+      } else if (plan.id === 'yearly') {
+        endDate.setFullYear(endDate.getFullYear() + 1);
+      }
+      
+      await createSubscription({
+        user_id: user.id,
+        gym_id: gym.id,
+        plan_name: plan.title,
+        start_date: startDate.toISOString(),
+        end_date: endDate.toISOString(),
+        price: totals.finalTotal,
+        status: 'active'
       });
+      
+      // Simulate a delay for the payment process
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
       toast.success("تم تأكيد الطلب بنجاح!");
       
+      // Navigate to success page
       navigate('/gym/success', {
         state: {
           gym,
@@ -167,13 +193,18 @@ const GymPayment: React.FC = () => {
             ...values,
             phone: selectedAddress?.phone || values.phone,
             discount: discount > 0 ? { code: selectedCoupon, percentage: discount } : null,
-            total: calculateTotal().finalTotal
+            total: totals.finalTotal
           }
         }
       });
-    }, 1500);
+    } catch (error) {
+      console.error('Error creating subscription:', error);
+      toast.error('حدث خطأ أثناء إنشاء الاشتراك. يرجى المحاولة مرة أخرى.');
+    } finally {
+      setLoading(false);
+    }
   };
-
+  
   const totals = calculateTotal();
 
   return (

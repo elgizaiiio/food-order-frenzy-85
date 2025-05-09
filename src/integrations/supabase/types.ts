@@ -9,6 +9,86 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      gym_subscriptions: {
+        Row: {
+          created_at: string | null
+          end_date: string
+          gym_id: string | null
+          id: string
+          plan_name: string
+          price: number
+          start_date: string
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          end_date: string
+          gym_id?: string | null
+          id?: string
+          plan_name: string
+          price: number
+          start_date: string
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          end_date?: string
+          gym_id?: string | null
+          id?: string
+          plan_name?: string
+          price?: number
+          start_date?: string
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gym_subscriptions_gym_id_fkey"
+            columns: ["gym_id"]
+            isOneToOne: false
+            referencedRelation: "gyms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gyms: {
+        Row: {
+          created_at: string | null
+          features: Json | null
+          id: string
+          image: string | null
+          location: string | null
+          name: string
+          open_hours: string | null
+          price: string | null
+          rating: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          features?: Json | null
+          id?: string
+          image?: string | null
+          location?: string | null
+          name: string
+          open_hours?: string | null
+          price?: string | null
+          rating?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          features?: Json | null
+          id?: string
+          image?: string | null
+          location?: string | null
+          name?: string
+          open_hours?: string | null
+          price?: string | null
+          rating?: number | null
+        }
+        Relationships: []
+      }
       homepage_highlights: {
         Row: {
           id: string
