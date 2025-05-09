@@ -1,22 +1,39 @@
 
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 interface SplashProps {
   duration?: number;
   onComplete?: () => void;
+  redirectPath?: string;
 }
 
-const Splash: React.FC<SplashProps> = ({ duration = 2000, onComplete }) => {
-  const navigate = useNavigate();
+const Splash: React.FC<SplashProps> = ({ 
+  duration = 2000, 
+  onComplete,
+  redirectPath = '/' 
+}) => {
+  // Use try-catch to safely use useNavigate
+  // This will allow the component to work both inside and outside Router context
+  let navigate: ReturnType<typeof useNavigate> | undefined;
+  let location: ReturnType<typeof useLocation> | undefined;
+  
+  try {
+    navigate = useNavigate();
+    location = useLocation();
+  } catch (error) {
+    // If useNavigate fails, we're outside Router context
+    // We'll rely on onComplete callback instead
+    console.log('Splash component rendered outside Router context, using onComplete callback instead');
+  }
 
   useEffect(() => {
     // مباشرة تحميل الصفحة التالية بينما يتم عرض الـ splash
     const preloadNextRoute = () => {
       const link = document.createElement('link');
       link.rel = 'prefetch';
-      link.href = '/';
+      link.href = redirectPath;
       document.head.appendChild(link);
     };
 
@@ -25,11 +42,13 @@ const Splash: React.FC<SplashProps> = ({ duration = 2000, onComplete }) => {
     const timer = setTimeout(() => {
       if (onComplete) {
         onComplete();
+      } else if (navigate) {
+        navigate(redirectPath);
       }
     }, duration);
 
     return () => clearTimeout(timer);
-  }, [duration, navigate, onComplete]);
+  }, [duration, navigate, onComplete, redirectPath]);
 
   return (
     <motion.div 
