@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Home, MapPin, CreditCard, Banknote, CheckCircle, Plus, Apple, Wallet } from 'lucide-react';
+import { ArrowLeft, Home, MapPin, CreditCard, Banknote, CheckCircle, Plus, Apple, Wallet, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
