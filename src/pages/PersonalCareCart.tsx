@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Minus, Plus, X, ShoppingBag } from 'lucide-react';
@@ -50,11 +51,11 @@ const PersonalCareCart: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50" dir="rtl">
-      <div className="max-w-md mx-auto bg-white pb-24">
+    <div className="min-h-screen bg-blue-50" dir="rtl">
+      <div className="max-w-md mx-auto bg-white pb-24 shadow-md">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-md sticky top-0 z-10">
-          <Link to="/personal-care" className="text-white">
+        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-md sticky top-0 z-10">
+          <Link to="/personal-care" className="text-white hover:text-blue-100 transition-colors">
             <ArrowLeft className="w-6 h-6" />
           </Link>
           <h1 className="text-xl font-bold">سلة المشتريات</h1>
@@ -62,30 +63,30 @@ const PersonalCareCart: React.FC = () => {
         </div>
 
         {/* Cart Items */}
-        <div className="p-4">
+        <div className="p-5">
           <div className="mb-6">
             {items.length > 0 ? (
               items.map((item) => (
-                <div key={item.id} className="flex items-center justify-between py-3 border-b hover:bg-purple-50 transition-colors rounded-lg px-2 my-2">
+                <div key={item.id} className="flex items-center justify-between py-3 border-b border-blue-100 hover:bg-blue-50 transition-colors rounded-lg px-2 my-2 animate-fade-in">
                   <div className="flex gap-3">
                     <img 
                       src={item.image} 
                       alt={item.name} 
-                      className="w-16 h-16 object-cover rounded-lg shadow-sm"
+                      className="w-16 h-16 object-cover rounded-lg shadow-sm border border-blue-100"
                     />
                     <div>
                       <h3 className="font-medium text-gray-800">{item.name}</h3>
-                      <p className="text-purple-600 font-medium">{item.price} ريال</p>
-                      <div className="flex items-center gap-3 mt-1 bg-white rounded-full border shadow-sm p-1">
+                      <p className="text-blue-600 font-medium">{item.price} ريال</p>
+                      <div className="flex items-center gap-3 mt-1 bg-white rounded-full border border-blue-200 shadow-sm p-1">
                         <button 
-                          className="w-6 h-6 flex items-center justify-center rounded-full border-0 bg-purple-100 text-purple-700"
+                          className="w-6 h-6 flex items-center justify-center rounded-full border-0 bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors"
                           onClick={() => decreaseQuantity(item.id)}
                         >
                           <Minus className="w-3 h-3" />
                         </button>
                         <span className="font-bold text-gray-800 w-6 text-center">{item.quantity}</span>
                         <button 
-                          className="w-6 h-6 flex items-center justify-center rounded-full border-0 bg-gradient-to-r from-purple-500 to-pink-500 text-white"
+                          className="w-6 h-6 flex items-center justify-center rounded-full border-0 bg-blue-600 text-white hover:bg-blue-700 transition-colors"
                           onClick={() => increaseQuantity(item.id)}
                         >
                           <Plus className="w-3 h-3" />
@@ -102,13 +103,13 @@ const PersonalCareCart: React.FC = () => {
                 </div>
               ))
             ) : (
-              <div className="text-center py-8">
-                <div className="bg-gray-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <ShoppingBag className="w-12 h-12 text-gray-400" />
+              <div className="text-center py-8 animate-fade-in">
+                <div className="bg-blue-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <ShoppingBag className="w-12 h-12 text-blue-600" />
                 </div>
                 <p className="text-gray-500 mb-4">سلتك فارغة</p>
                 <Link to="/personal-care">
-                  <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
+                  <Button className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white shadow-md">
                     تصفح المنتجات
                   </Button>
                 </Link>
@@ -120,36 +121,41 @@ const PersonalCareCart: React.FC = () => {
             <>
               {/* Add More Button */}
               <Link to="/personal-care">
-                <Button variant="outline" className="w-full mb-8 border-purple-200 text-purple-700 hover:bg-purple-50">
+                <Button 
+                  variant="outline" 
+                  className="w-full mb-8 border-blue-200 text-blue-700 hover:bg-blue-50"
+                >
                   إضافة المزيد من المنتجات
                 </Button>
               </Link>
 
               {/* Suggested Items */}
-              <div className="mb-8">
+              <div className="mb-8 animate-fade-in">
                 <h2 className="text-lg font-bold mb-3 flex items-center gap-2">
-                  <span className="h-5 w-1.5 rounded-full bg-gradient-to-b from-purple-500 to-pink-500"></span>
+                  <span className="h-5 w-1.5 rounded-full bg-gradient-to-b from-blue-600 to-indigo-700"></span>
                   منتجات قد تعجبك
                 </h2>
                 <div className="flex overflow-x-auto gap-3 pb-2 no-scrollbar">
                   {suggestedItems.map((item) => (
-                    <Card key={item.id} className="min-w-36 flex-shrink-0 border-0 shadow-sm hover:shadow-md transition-all">
+                    <Card key={item.id} className="min-w-36 flex-shrink-0 border border-blue-100 shadow-sm hover:shadow-md transition-all">
                       <div className="relative">
                         <img 
                           src={item.image} 
                           alt={item.name} 
                           className="w-full h-24 object-cover rounded-t-lg"
                         />
-                        <Badge className="absolute top-2 right-2 bg-gradient-to-r from-purple-500 to-pink-500 text-xs text-white">جديد</Badge>
+                        <Badge className="absolute top-2 right-2 bg-gradient-to-r from-blue-600 to-indigo-700 text-xs text-white">
+                          جديد
+                        </Badge>
                       </div>
                       <div className="p-2">
                         <h3 className="text-sm font-medium text-gray-800">{item.name}</h3>
                         <div className="flex items-center justify-between mt-2">
-                          <span className="text-sm font-bold text-purple-700">{item.price} ريال</span>
+                          <span className="text-sm font-bold text-blue-700">{item.price} ريال</span>
                           <Button 
                             size="sm" 
                             variant="outline" 
-                            className="h-7 text-xs rounded-full border-purple-300 text-purple-700 hover:bg-purple-50"
+                            className="h-7 text-xs rounded-full border-blue-300 text-blue-700 hover:bg-blue-50"
                             onClick={() => handleAddSuggested(item)}
                           >
                             إضافة
@@ -162,7 +168,7 @@ const PersonalCareCart: React.FC = () => {
               </div>
 
               {/* Order Summary */}
-              <div className="mb-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4">
+              <div className="mb-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100 animate-fade-in">
                 <h2 className="text-lg font-bold mb-3 text-gray-800">ملخص الطلب</h2>
                 <div className="space-y-2 mb-3">
                   <div className="flex justify-between">
@@ -173,10 +179,10 @@ const PersonalCareCart: React.FC = () => {
                     <span className="text-gray-600">رسوم التوصيل</span>
                     <span className="font-medium">{deliveryFee} ريال</span>
                   </div>
-                  <Separator className="my-2 bg-gray-200" />
+                  <Separator className="my-2 bg-blue-200" />
                   <div className="flex justify-between font-bold pt-2">
                     <span>المبلغ الإجمالي</span>
-                    <span className="text-purple-700">{total} ريال</span>
+                    <span className="text-blue-700">{total} ريال</span>
                   </div>
                 </div>
               </div>
@@ -189,12 +195,17 @@ const PersonalCareCart: React.FC = () => {
           <div className="fixed bottom-20 left-0 right-0 bg-white border-t p-4 max-w-md mx-auto shadow-lg">
             <div className="flex gap-3">
               <Link to="/personal-care" className="flex-1">
-                <Button variant="outline" className="w-full py-6 text-gray-600 border-gray-300 hover:bg-gray-50">
+                <Button 
+                  variant="outline" 
+                  className="w-full py-6 text-gray-600 border-gray-300 hover:bg-blue-50"
+                >
                   إضافة المزيد
                 </Button>
               </Link>
               <Link to="/personal-care/checkout" className="flex-1">
-                <Button className="w-full py-6 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
+                <Button 
+                  className="w-full py-6 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white shadow-md"
+                >
                   تابع الدفع
                 </Button>
               </Link>
