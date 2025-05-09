@@ -1,27 +1,29 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { PharmacyCategory, PharmacyProduct } from '@/types/pharmacy';
+import { PharmacyProduct } from '@/types/pharmacy';
 
 // Function to fetch pharmacy categories
-const fetchPharmacyCategories = async (): Promise<PharmacyCategory[]> => {
-  // For now, return mock categories until we create real categories in the database
-  return [
-    { id: 'ear-drops', name: 'قطرات الأذن', icon: 'ear' },
-    { id: 'allergy', name: 'مضادات الحساسية', icon: 'allergy' },
-    { id: 'mental', name: 'أدوية نفسية', icon: 'mental' },
-    { id: 'skin', name: 'الجلدية', icon: 'skin' },
-    { id: 'cold', name: 'البرد والإنفلونزا', icon: 'cold' },
-    { id: 'immunity', name: 'الجهاز المناعي', icon: 'immunity' },
-    { id: 'vaccines', name: 'اللقاحات', icon: 'vaccines' },
-    { id: 'womens', name: 'صحة المرأة', icon: 'women' },
-    { id: 'diabetes', name: 'السكري', icon: 'diabetes' },
-    { id: 'painkillers', name: 'المسكنات', icon: 'painkillers' }
-  ];
+const fetchPharmacyCategories = async () => {
+  const { data, error } = await supabase
+    .from('pharmacy_categories')
+    .select('*')
+    .order('name', { ascending: true });
+    
+  if (error) {
+    console.error('Error fetching pharmacy categories:', error);
+    throw error;
+  }
+  
+  return data?.map(item => ({
+    id: item.id,
+    name: item.name,
+    icon: item.icon || 'pill'
+  })) || [];
 };
 
 // Function to fetch pharmacy products by category
-const fetchPharmacyCategoryProducts = async (categoryId: string): Promise<PharmacyProduct[]> => {
+const fetchPharmacyCategoryProducts = async (categoryId: string) => {
   const { data, error } = await supabase
     .from('pharmacy_products')
     .select('*')
@@ -41,10 +43,11 @@ const fetchPharmacyCategoryProducts = async (categoryId: string): Promise<Pharma
 };
 
 // Function to fetch recommended products
-const fetchRecommendedProducts = async (): Promise<PharmacyProduct[]> => {
+const fetchRecommendedProducts = async () => {
   const { data, error } = await supabase
     .from('pharmacy_products')
     .select('*')
+    .eq('is_recommended', true)
     .limit(6);
     
   if (error) {
@@ -109,21 +112,34 @@ export interface PharmacyOrder {
 
 // Function to submit a pharmacy order
 export async function submitPharmacyOrder(order: PharmacyOrder): Promise<OrderConfirmation> {
-  // This will be implemented with Supabase when we set up the orders table
-  await new Promise(resolve => setTimeout(resolve, 1500));
-  
-  // Simulate success (95% success rate)
-  if (Math.random() > 0.05) {
+  try {
+    // Create a new order in the orders table
+    const { data, error } = await supabase
+      .from('orders')
+      .insert({
+        order_type: 'pharmacy',
+        items: order.items,
+        delivery_address_id: order.addressId,
+        payment_method_id: order.paymentMethod,
+        total_amount: 0, // We'll calculate this on the server side
+        status: 'pending'
+      })
+      .select()
+      .single();
+    
+    if (error) throw error;
+    
     return {
       success: true,
-      orderId: `ORD-${Date.now().toString().substring(6)}`,
+      orderId: data.id,
       estimatedDelivery: '30-45 دقيقة',
       trackingUrl: '/pharmacy/tracking'
     };
-  } else {
+  } catch (error) {
+    console.error('Error submitting order:', error);
     return {
       success: false,
-      message: 'حدث خطأ أثناء معالجة طلبك. الرجاء المحاولة مرة أخرى.',
+      message: 'حدث خطأ أثناء معالجة طلبك. الرجاء المحاولة مرة أخرى.'
     };
   }
 }

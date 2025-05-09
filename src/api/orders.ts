@@ -1,4 +1,6 @@
 
+import { supabase } from '@/integrations/supabase/client';
+
 // واجهة طلب المستخدم
 export interface Order {
   id: string;
@@ -24,118 +26,133 @@ export interface OrderItem {
   options?: string[];
 }
 
-// محاكاة طلب API لاسترداد الطلبات
+// استرداد الطلبات من API
 export async function fetchUserOrders(): Promise<Order[]> {
-  // محاكاة تأخير الشبكة
-  await new Promise(resolve => setTimeout(resolve, 800));
-  
-  const orders: Order[] = [
-    {
-      id: 'ORD-457812',
-      restaurantName: 'ماكدونالدز',
-      restaurantLogo: 'https://images.unsplash.com/photo-1599059813005-11265ba4b4ce?auto=format&fit=crop&q=80&w=200&h=200',
-      status: 'تم التوصيل',
-      date: '٢٦ أبريل، ٢٠٢٥',
-      items: [
-        { id: 1, name: 'بيج ماك', quantity: 2, price: 65 },
-        { id: 2, name: 'بطاطس كبير', quantity: 1, price: 25 },
-        { id: 3, name: 'كوكا كولا', quantity: 2, price: 15 },
-      ],
-      total: 185,
-      deliveryFee: 15,
-      address: 'شارع التحرير، وسط البلد، القاهرة',
-      paymentMethod: 'كاش',
-      rating: 4
-    },
-    {
-      id: 'ORD-452391',
-      restaurantName: 'برجر كينج',
-      restaurantLogo: 'https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?auto=format&fit=crop&q=80&w=200&h=200',
-      status: 'جاري التوصيل',
-      date: '٢ مايو، ٢٠٢٥',
-      items: [
-        { id: 1, name: 'واپر', quantity: 1, price: 90 },
-        { id: 2, name: 'اونيون رينجز', quantity: 1, price: 35 },
-      ],
-      total: 140,
-      deliveryFee: 15,
-      address: 'شارع مصطفى النحاس، مدينة نصر، القاهرة',
-      paymentMethod: 'فودافون كاش',
-      estimatedDelivery: '١٥ دقيقة',
-      trackingUrl: '/tracking'
-    },
-    {
-      id: 'ORD-448726',
-      restaurantName: 'بيتزا هت',
-      restaurantLogo: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=200&h=200',
-      status: 'قيد التجهيز',
-      date: '٢ مايو، ٢٠٢٥',
-      items: [
-        { id: 1, name: 'بيتزا سوبريم كبيرة', quantity: 1, price: 180 },
-        { id: 2, name: 'كوكا كولا عائلي', quantity: 1, price: 30 },
-        { id: 3, name: 'خبز بالثوم', quantity: 2, price: 45 },
-      ],
-      total: 300,
-      deliveryFee: 0,
-      address: 'شارع ٩، المعادي، القاهرة',
-      paymentMethod: 'كاش',
-      estimatedDelivery: '٤٥ دقيقة'
-    },
-    {
-      id: 'ORD-446512',
-      restaurantName: 'كنتاكي',
-      restaurantLogo: 'https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?auto=format&fit=crop&q=80&w=200&h=200',
-      status: 'تم الإلغاء',
-      date: '١ مايو، ٢٠٢٥',
-      items: [
-        { id: 1, name: 'وجبة دجاج عائلية', quantity: 1, price: 220 },
-      ],
-      total: 235,
-      deliveryFee: 15,
-      address: 'شارع مكرم عبيد، مدينة نصر، القاهرة',
-      paymentMethod: 'كاش',
-    },
-    {
-      id: 'ORD-442198',
-      restaurantName: 'بابا جونز',
-      restaurantLogo: 'https://images.unsplash.com/photo-1571066811602-716837d681de?auto=format&fit=crop&q=80&w=200&h=200',
-      status: 'تم التوصيل',
-      date: '٣٠ أبريل، ٢٠٢٥',
-      items: [
-        { id: 1, name: 'بيتزا ببروني متوسطة', quantity: 2, price: 140 },
-        { id: 2, name: 'كوكا كولا', quantity: 2, price: 15 },
-      ],
-      total: 310,
-      deliveryFee: 15,
-      address: 'شارع جامعة الدول العربية، المهندسين، الجيزة',
-      paymentMethod: 'فوري',
-      rating: 5
-    },
-  ];
-
-  return orders;
+  try {
+    // Fetch orders from Supabase
+    const { data: ordersData, error: ordersError } = await supabase
+      .from('orders')
+      .select(`
+        *,
+        user_addresses (full_address),
+        user_payment_methods (type, last4)
+      `)
+      .order('created_at', { ascending: false });
+    
+    if (ordersError) throw ordersError;
+    
+    // Format the orders to match the expected Order interface
+    const formattedOrders: Order[] = await Promise.all(ordersData.map(async (order) => {
+      // Get restaurant info if it's a restaurant order
+      let restaurantName = "الدكان";
+      let restaurantLogo = "https://images.unsplash.com/photo-1599059813005-11265ba4b4ce?auto=format&fit=crop&q=80&w=200&h=200";
+      
+      if (order.order_type === 'restaurant' && order.items && order.items[0]?.restaurant_id) {
+        const { data: restaurantData } = await supabase
+          .from('restaurants')
+          .select('name, logo_url')
+          .eq('id', order.items[0].restaurant_id)
+          .single();
+          
+        if (restaurantData) {
+          restaurantName = restaurantData.name;
+          restaurantLogo = restaurantData.logo_url;
+        }
+      }
+      
+      // Format the date
+      const date = new Date(order.created_at);
+      const formattedDate = date.toLocaleDateString('ar-EG', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+      
+      // Format status
+      let status: Order['status'] = 'قيد التجهيز';
+      switch(order.status) {
+        case 'pending': status = 'قيد التجهيز'; break;
+        case 'delivery': status = 'جاري التوصيل'; break;
+        case 'completed': status = 'تم التوصيل'; break;
+        case 'cancelled': status = 'تم الإلغاء'; break;
+      }
+      
+      // Format order items
+      const items: OrderItem[] = order.items.map((item: any) => ({
+        id: item.id,
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+        options: item.options
+      }));
+      
+      return {
+        id: order.id,
+        restaurantName,
+        restaurantLogo,
+        status,
+        date: formattedDate,
+        items,
+        total: order.total_amount,
+        deliveryFee: 15, // Hardcoded for now
+        address: order.user_addresses?.full_address || 'عنوان غير معروف',
+        paymentMethod: order.user_payment_methods?.type || 'كاش',
+        estimatedDelivery: status === 'جاري التوصيل' ? '١٥ دقيقة' : undefined,
+        trackingUrl: status === 'جاري التوصيل' || status === 'قيد التجهيز' ? '/tracking' : undefined,
+        rating: order.rating
+      };
+    }));
+    
+    return formattedOrders;
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    throw error;
+  }
 }
 
-// محاكاة API لتقييم طلب
+// تقييم طلب
 export async function rateOrder(orderId: string, rating: number): Promise<{ success: boolean }> {
-  // محاكاة تأخير الشبكة
-  await new Promise(resolve => setTimeout(resolve, 800));
-  
-  // محاكاة نجاح 95% من الوقت
-  const success = Math.random() < 0.95;
-  
-  return { success };
+  try {
+    const { error } = await supabase
+      .from('orders')
+      .update({ rating })
+      .eq('id', orderId);
+    
+    if (error) throw error;
+    
+    return { success: true };
+  } catch (error) {
+    console.error('Error rating order:', error);
+    return { success: false };
+  }
 }
 
-// محاكاة API لإعادة طلب
+// إعادة طلب
 export async function reorder(orderId: string): Promise<{ success: boolean, cartUrl?: string }> {
-  // محاكاة تأخير الشبكة
-  await new Promise(resolve => setTimeout(resolve, 800));
-  
-  // محاكاة نجاح 95% من الوقت
-  const success = Math.random() < 0.95;
-  
-  return success 
-    ? { success: true, cartUrl: '/cart' }
-    : { success: false };
+  try {
+    // Get the original order
+    const { data: order, error: orderError } = await supabase
+      .from('orders')
+      .select('items, order_type')
+      .eq('id', orderId)
+      .single();
+    
+    if (orderError) throw orderError;
+    
+    // Store the items in session storage for the cart to pick up
+    sessionStorage.setItem('reorderItems', JSON.stringify(order.items));
+    
+    // Return the appropriate cart URL based on order type
+    let cartUrl = '/cart';
+    if (order.order_type === 'market') {
+      cartUrl = '/market/cart';
+    } else if (order.order_type === 'pharmacy') {
+      cartUrl = '/pharmacy/cart';
+    }
+    
+    return { success: true, cartUrl };
+  } catch (error) {
+    console.error('Error reordering:', error);
+    return { success: false };
+  }
 }

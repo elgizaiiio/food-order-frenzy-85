@@ -1,6 +1,6 @@
 
 import { useQuery } from '@tanstack/react-query';
-import { getCategories, getOffers, getPopularProducts, getProductsByCategory } from '@/api/market';
+import { fetchCategories, fetchOffers, fetchPopularProducts, fetchProductsByCategory } from '@/services/marketService';
 
 /**
  * استخدام فئات السوق
@@ -9,7 +9,7 @@ import { getCategories, getOffers, getPopularProducts, getProductsByCategory } f
 export const useCategories = () => {
   return useQuery({
     queryKey: ['marketCategories'],
-    queryFn: getCategories,
+    queryFn: fetchCategories,
     staleTime: 5 * 60 * 1000, // 5 دقائق
     retry: 2
   });
@@ -22,7 +22,7 @@ export const useCategories = () => {
 export const useOffers = () => {
   return useQuery({
     queryKey: ['marketOffers'],
-    queryFn: getOffers,
+    queryFn: fetchOffers,
     staleTime: 5 * 60 * 1000, // 5 دقائق
     retry: 2
   });
@@ -35,7 +35,7 @@ export const useOffers = () => {
 export const usePopularProducts = () => {
   return useQuery({
     queryKey: ['marketPopularProducts'],
-    queryFn: getPopularProducts,
+    queryFn: fetchPopularProducts,
     staleTime: 3 * 60 * 1000, // 3 دقائق
     retry: 2
   });
@@ -49,7 +49,7 @@ export const usePopularProducts = () => {
 export const useProductsByCategory = (categoryId: number) => {
   return useQuery({
     queryKey: ['marketProducts', categoryId],
-    queryFn: () => getProductsByCategory(categoryId),
+    queryFn: () => fetchProductsByCategory(categoryId),
     enabled: !!categoryId,
     staleTime: 2 * 60 * 1000, // 2 دقائق
     retry: 2

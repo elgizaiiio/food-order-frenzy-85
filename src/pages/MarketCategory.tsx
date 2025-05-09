@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { useProductsByCategory, useCategories } from '@/hooks/useMarketData';
 import { useMarketCart, MarketCartProvider } from '@/context/MarketCartContext';
 import { Product } from '@/api/market';
+import { toast } from 'sonner';
 
 // Filter types
 type FilterOption = 'all' | 'inStock' | 'priceAsc' | 'priceDesc';
@@ -18,12 +19,21 @@ const MarketCategoryContent: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const categoryId = parseInt(id || '1');
   
-  const { data: categories } = useCategories();
-  const { data: products, isLoading } = useProductsByCategory(categoryId);
+  const { data: categories, isLoading: categoriesLoading } = useCategories();
+  const { data: products, isLoading: productsLoading, error } = useProductsByCategory(categoryId);
   const { addToCart, items, increaseQuantity, decreaseQuantity, itemCount, totalPrice } = useMarketCart();
   
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<FilterOption>('all');
+
+  const isLoading = categoriesLoading || productsLoading;
+
+  // Show error toast if there's an error fetching data
+  React.useEffect(() => {
+    if (error) {
+      toast.error("حدثت مشكلة في تحميل البيانات. يرجى المحاولة لاحقًا.");
+    }
+  }, [error]);
 
   // Current category name
   const currentCategory = categories?.find(cat => cat.id === categoryId)?.name || 'القسم';
@@ -175,6 +185,18 @@ const MarketCategoryContent: React.FC = () => {
                   </div>
                 </Card>
               ))}
+            </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <div className="text-red-400 text-5xl mb-4">⚠️</div>
+              <h3 className="text-xl font-bold text-red-800 mb-2">حدث خطأ في تحميل البيانات</h3>
+              <p className="text-gray-500 mb-4">حدثت مشكلة أثناء الاتصال بالخادم. يرجى المحاولة لاحقًا</p>
+              <Button 
+                onClick={() => window.location.reload()}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                إعادة تحميل الصفحة
+              </Button>
             </div>
           ) : filteredProducts.length === 0 ? (
             <div className="text-center py-12">
