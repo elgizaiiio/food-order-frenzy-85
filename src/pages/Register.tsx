@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate, Link, Navigate } from 'react-router-dom';
 import { User, Lock, Mail, Eye, EyeOff, Apple } from 'lucide-react';
@@ -28,6 +29,7 @@ const registerSchema = z.object({
   path: ["confirmPassword"]
 });
 type RegisterFormValues = z.infer<typeof registerSchema>;
+
 const Register: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -41,11 +43,6 @@ const Register: React.FC = () => {
     setUserName,
     isLoggedIn
   } = useUser();
-
-  // إذا كان المستخدم مسجل دخول بالفعل، فإننا نقوم بتوجيهه إلى الصفحة الرئيسية
-  if (isLoggedIn) {
-    return <Navigate to="/" />;
-  }
 
   // إعداد نموذج التسجيل باستخدام React Hook Form
   const form = useForm<RegisterFormValues>({
@@ -143,12 +140,20 @@ const Register: React.FC = () => {
       console.error(error);
     }
   };
+  
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+  
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
+
+  // Render a redirect if user is already logged in
+  if (isLoggedIn) {
+    return <Navigate to="/" />;
+  }
+  
   return <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-white flex flex-col items-center justify-center p-4" dir="rtl">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
@@ -170,7 +175,7 @@ const Register: React.FC = () => {
                       <FormControl>
                         <div className="relative">
                           <Input placeholder="أدخل اسمك الكامل" className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-blue-500 focus:ring-blue-500" {...field} />
-                          
+                          <User className="absolute right-3 top-3.5 h-5 w-5 text-gray-400" />
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -183,7 +188,7 @@ const Register: React.FC = () => {
                       <FormControl>
                         <div className="relative">
                           <Input placeholder="أدخل بريدك الإلكتروني" className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-blue-500 focus:ring-blue-500" {...field} />
-                          
+                          <Mail className="absolute right-3 top-3.5 h-5 w-5 text-gray-400" />
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -196,7 +201,7 @@ const Register: React.FC = () => {
                       <FormControl>
                         <div className="relative">
                           <Input type={showPassword ? "text" : "password"} placeholder="أدخل كلمة المرور" className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-blue-500 focus:ring-blue-500" {...field} />
-                          
+                          <Lock className="absolute right-3 top-3.5 h-5 w-5 text-gray-400" />
                           <button type="button" onClick={togglePasswordVisibility} className="absolute left-3 top-3.5">
                             {showPassword ? <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" /> : <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />}
                           </button>
@@ -212,7 +217,7 @@ const Register: React.FC = () => {
                       <FormControl>
                         <div className="relative">
                           <Input type={showConfirmPassword ? "text" : "password"} placeholder="أكد كلمة المرور" className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-blue-500 focus:ring-blue-500" {...field} />
-                          
+                          <Lock className="absolute right-3 top-3.5 h-5 w-5 text-gray-400" />
                           <button type="button" onClick={toggleConfirmPasswordVisibility} className="absolute left-3 top-3.5">
                             {showConfirmPassword ? <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" /> : <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />}
                           </button>
@@ -273,4 +278,5 @@ const Register: React.FC = () => {
       </div>
     </div>;
 };
+
 export default Register;

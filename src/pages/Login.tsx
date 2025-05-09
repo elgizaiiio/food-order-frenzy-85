@@ -1,6 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
-import { useNavigate, Link, Navigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { Lock, Mail, Eye, EyeOff, Apple } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,12 +41,7 @@ const Login: React.FC = () => {
     setBroMember,
     isLoggedIn
   } = useUser();
-
-  // إذا كان المستخدم مسجل دخول بالفعل، فإننا نقوم بتوجيهه إلى الصفحة الرئيسية
-  if (isLoggedIn) {
-    return <Navigate to="/" />;
-  }
-
+  
   // إعداد نموذج تسجيل الدخول باستخدام React Hook Form
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -150,6 +145,11 @@ const Login: React.FC = () => {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+
+  // Render a redirect if user is already logged in
+  if (isLoggedIn) {
+    return <Navigate to="/" />;
+  }
 
   return (
     <div 
