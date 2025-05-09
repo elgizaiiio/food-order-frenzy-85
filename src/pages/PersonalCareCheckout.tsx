@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, MapPin, Clock, CreditCard, Phone, Apple, Wallet, DollarSign, ShoppingBag } from 'lucide-react';
@@ -13,9 +12,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { Progress } from '@/components/ui/progress';
 import { usePersonalCareCart } from '@/context/PersonalCareCartContext';
-
 type PaymentMethod = 'cash' | 'card' | 'wallet' | 'applepay';
-
 const PersonalCareCheckout: React.FC = () => {
   const navigate = useNavigate();
   const {
@@ -110,9 +107,7 @@ const PersonalCareCheckout: React.FC = () => {
       });
     }, 500);
   };
-
-  return (
-    <div className="min-h-screen bg-blue-50" dir="rtl">
+  return <div className="min-h-screen bg-blue-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-28">
         {/* Header */}
         <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-md sticky top-0 z-10">
@@ -131,8 +126,7 @@ const PersonalCareCheckout: React.FC = () => {
               عنوان التوصيل
             </h2>
 
-            {isAddingNewAddress ? (
-              <Card className="border-0 shadow-sm overflow-hidden border border-blue-100">
+            {isAddingNewAddress ? <Card className="border-0 shadow-sm overflow-hidden border border-blue-100">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-4">
                     <button onClick={handleCancelAddAddress} className="text-blue-500">
@@ -144,25 +138,19 @@ const PersonalCareCheckout: React.FC = () => {
 
                   <Form {...newAddressForm}>
                     <form onSubmit={newAddressForm.handleSubmit(handleAddNewAddress)} className="space-y-4">
-                      <FormField
-                        control={newAddressForm.control}
-                        name="title"
-                        render={({ field }) => (
-                          <FormItem className="space-y-2">
+                      <FormField control={newAddressForm.control} name="title" render={({
+                    field
+                  }) => <FormItem className="space-y-2">
                             <FormLabel className="text-blue-800">اسم العنوان (المنزل، العمل، ...)</FormLabel>
                             <FormControl>
                               <Input {...field} placeholder="مثال: المنزل، العمل، ..." className="border-blue-200 focus:border-blue-400 focus:ring-blue-400" />
                             </FormControl>
                             <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                          </FormItem>} />
 
-                      <FormField
-                        control={newAddressForm.control}
-                        name="phone"
-                        render={({ field }) => (
-                          <FormItem className="space-y-2">
+                      <FormField control={newAddressForm.control} name="phone" render={({
+                    field
+                  }) => <FormItem className="space-y-2">
                             <FormLabel className="flex items-center gap-1 text-blue-800">
                               <Phone className="w-4 h-4 text-blue-600" />
                               رقم الهاتف
@@ -171,15 +159,11 @@ const PersonalCareCheckout: React.FC = () => {
                               <Input {...field} type="tel" placeholder="05xxxxxxxx" className="border-blue-200 focus:border-blue-400 focus:ring-blue-400" dir="ltr" />
                             </FormControl>
                             <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                          </FormItem>} />
 
-                      <FormField
-                        control={newAddressForm.control}
-                        name="fullAddress"
-                        render={({ field }) => (
-                          <FormItem className="space-y-2">
+                      <FormField control={newAddressForm.control} name="fullAddress" render={({
+                    field
+                  }) => <FormItem className="space-y-2">
                             <FormLabel className="flex items-center gap-1 text-blue-800">
                               <MapPin className="w-4 h-4 text-blue-600" />
                               العنوان التفصيلي
@@ -188,9 +172,7 @@ const PersonalCareCheckout: React.FC = () => {
                               <Input {...field} placeholder="مثال: شارع الملك فهد، حي الورود، الرياض" className="border-blue-200 focus:border-blue-400 focus:ring-blue-400" />
                             </FormControl>
                             <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                          </FormItem>} />
 
                       <div className="pt-2 flex gap-3">
                         <Button type="button" variant="personalCareOutline" className="flex-1" onClick={handleCancelAddAddress}>
@@ -203,13 +185,10 @@ const PersonalCareCheckout: React.FC = () => {
                     </form>
                   </Form>
                 </CardContent>
-              </Card>
-            ) : (
-              <Card className="border-0 shadow-sm overflow-hidden border border-blue-100">
+              </Card> : <Card className="border-0 shadow-sm overflow-hidden border border-blue-100">
                 <CardContent className="p-4">
                   <RadioGroup value={selectedAddressId} onValueChange={setSelectedAddressId} className="space-y-3">
-                    {addresses.map(address => (
-                      <div key={address.id} className="relative">
+                    {addresses.map(address => <div key={address.id} className="relative">
                         <RadioGroupItem value={address.id} id={`address-${address.id}`} className="peer sr-only" />
                         <Label htmlFor={`address-${address.id}`} className="flex flex-col space-y-1 cursor-pointer rounded-lg border border-blue-200 p-4 hover:bg-blue-50 peer-data-[state=checked]:border-blue-500 peer-data-[state=checked]:bg-blue-50">
                           <div className="flex items-start justify-between">
@@ -221,8 +200,7 @@ const PersonalCareCheckout: React.FC = () => {
                             {selectedAddressId === address.id && <div className="h-4 w-4 rounded-full bg-gradient-to-r from-blue-500 to-blue-700"></div>}
                           </div>
                         </Label>
-                      </div>
-                    ))}
+                      </div>)}
                   </RadioGroup>
                   
                   {/* Add New Address Button */}
@@ -231,8 +209,7 @@ const PersonalCareCheckout: React.FC = () => {
                     <span>إضافة عنوان جديد</span>
                   </Button>
                 </CardContent>
-              </Card>
-            )}
+              </Card>}
           </div>
 
           {/* Delivery Time Section */}
@@ -268,11 +245,7 @@ const PersonalCareCheckout: React.FC = () => {
 
             <Card className="border-0 shadow-sm border border-blue-100">
               <CardContent className="p-4">
-                <RadioGroup 
-                  value={selectedPayment} 
-                  onValueChange={value => setSelectedPayment(value as PaymentMethod)} 
-                  className="space-y-3"
-                >
+                <RadioGroup value={selectedPayment} onValueChange={value => setSelectedPayment(value as PaymentMethod)} className="space-y-3">
                   {/* Cash on Delivery */}
                   <div className="relative">
                     <RadioGroupItem value="cash" id="payment-cash" className="peer sr-only" />
@@ -351,60 +324,38 @@ const PersonalCareCheckout: React.FC = () => {
                 </RadioGroup>
 
                 {/* Card Icons for Credit Card Option */}
-                {selectedPayment === 'card' && (
-                  <div className="flex items-center justify-between px-2 py-3 mt-3 bg-blue-50 rounded-lg">
+                {selectedPayment === 'card' && <div className="flex items-center justify-between px-2 py-3 mt-3 bg-blue-50 rounded-lg">
                     <div className="flex gap-2">
                       <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-6" />
                       <img src="https://upload.wikimedia.org/wikipedia/commons/b/b7/MasterCard_Logo.svg" alt="MasterCard" className="h-6" />
                       <img src="https://upload.wikimedia.org/wikipedia/ar/b/bd/Mada_Logo.svg" alt="Mada" className="h-6" />
                     </div>
                     <span className="text-xs text-gray-500">معاملات آمنة 100%</span>
-                  </div>
-                )}
+                  </div>}
 
                 {/* Card Details Form */}
-                {selectedPayment === 'card' && (
-                  <div className="mt-4 space-y-4 border-t pt-4 border-blue-100">
+                {selectedPayment === 'card' && <div className="mt-4 space-y-4 border-t pt-4 border-blue-100">
                     <div className="space-y-2">
                       <Label htmlFor="card-number" className="text-blue-800">رقم البطاقة</Label>
-                      <Input 
-                        id="card-number" 
-                        placeholder="XXXX XXXX XXXX XXXX" 
-                        className="border-blue-200 focus:border-blue-400 focus:ring-blue-400" 
-                      />
+                      <Input id="card-number" placeholder="XXXX XXXX XXXX XXXX" className="border-blue-200 focus:border-blue-400 focus:ring-blue-400" />
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-2">
                         <Label htmlFor="expiry-date" className="text-blue-800">تاريخ الانتهاء</Label>
-                        <Input 
-                          id="expiry-date" 
-                          placeholder="MM/YY" 
-                          className="border-blue-200 focus:border-blue-400 focus:ring-blue-400" 
-                        />
+                        <Input id="expiry-date" placeholder="MM/YY" className="border-blue-200 focus:border-blue-400 focus:ring-blue-400" />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="cvv" className="text-blue-800">CVV</Label>
-                        <Input 
-                          id="cvv" 
-                          placeholder="XXX" 
-                          className="border-blue-200 focus:border-blue-400 focus:ring-blue-400" 
-                        />
+                        <Input id="cvv" placeholder="XXX" className="border-blue-200 focus:border-blue-400 focus:ring-blue-400" />
                       </div>
                     </div>
                     <div className="flex items-center">
-                      <input 
-                        type="checkbox" 
-                        id="save-card" 
-                        checked={saveCardInfo} 
-                        onChange={() => setSaveCardInfo(!saveCardInfo)} 
-                        className="w-4 h-4 text-blue-600 rounded border-blue-300 focus:ring-blue-500" 
-                      />
+                      <input type="checkbox" id="save-card" checked={saveCardInfo} onChange={() => setSaveCardInfo(!saveCardInfo)} className="w-4 h-4 text-blue-600 rounded border-blue-300 focus:ring-blue-500" />
                       <label htmlFor="save-card" className="mr-2 text-sm text-gray-600">
                         حفظ بيانات البطاقة للطلبات القادمة
                       </label>
                     </div>
-                  </div>
-                )}
+                  </div>}
               </CardContent>
             </Card>
           </div>
@@ -420,12 +371,10 @@ const PersonalCareCheckout: React.FC = () => {
               <CardContent className="p-4">
                 {/* Items List */}
                 <div className="space-y-2 mb-4">
-                  {items.map(item => (
-                    <div key={item.id} className="flex justify-between text-sm">
+                  {items.map(item => <div key={item.id} className="flex justify-between text-sm">
                       <span className="text-blue-900">{item.name} × {item.quantity}</span>
                       <span className="font-medium text-blue-700">{item.price * item.quantity} ريال</span>
-                    </div>
-                  ))}
+                    </div>)}
                 </div>
 
                 <Separator className="my-3 bg-blue-200" />
@@ -450,34 +399,19 @@ const PersonalCareCheckout: React.FC = () => {
           </div>
 
           {/* Loading Progress */}
-          {isSubmitting && (
-            <div className="mb-6">
+          {isSubmitting && <div className="mb-6">
               <p className="text-center text-sm text-gray-600 mb-2">جاري معالجة طلبك...</p>
-              <Progress 
-                value={loadingProgress} 
-                className="h-2" 
-                indicatorClassName="bg-gradient-to-r from-blue-500 to-blue-700" 
-              />
-            </div>
-          )}
+              <Progress value={loadingProgress} className="h-2" indicatorClassName="bg-gradient-to-r from-blue-500 to-blue-700" />
+            </div>}
 
           {/* Submit Button - Fixed at Bottom */}
-          <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 max-w-md mx-auto shadow-lg">
-            <Button 
-              type="button" 
-              onClick={handleSubmitOrder} 
-              disabled={isSubmitting} 
-              variant="personalCare"
-              size="checkout"
-              className="w-full"
-            >
+          <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 max-w-md mx-auto shadow-lg my-[112px]">
+            <Button type="button" onClick={handleSubmitOrder} disabled={isSubmitting} variant="personalCare" size="checkout" className="w-full">
               {isSubmitting ? "جاري تنفيذ الطلب..." : `تأكيد الطلب · ${total} ريال`}
             </Button>
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default PersonalCareCheckout;
