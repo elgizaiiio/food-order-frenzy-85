@@ -32,7 +32,7 @@ const OrderSummary = () => {
     deliveryFee,
     orderTotal
   } = useCheckout();
-  return <div className="space-y-3">
+  return <div className="space-y-2">
       <div className="flex justify-between text-sm">
         <span className="text-gray-600">المجموع الفرعي</span>
         <span>{subtotal} ج.م</span>
@@ -55,7 +55,7 @@ const DeliveryTime = () => {
     min: 30,
     max: 45
   });
-  return <div className="space-y-3">
+  return <div className="space-y-2">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-bold flex items-center gap-2 text-blue-800">
           <Clock className="w-5 h-5 text-blue-600" />
@@ -64,7 +64,7 @@ const DeliveryTime = () => {
       </div>
 
       <Card className="overflow-hidden bg-gradient-to-r from-blue-50 to-white border border-blue-100">
-        <CardContent className="p-4">
+        <CardContent className="p-3">
           <div className="flex justify-between items-center">
             <div className="flex-1">
               <p className="text-sm text-gray-600">هيوصل في حوالي</p>
@@ -154,32 +154,32 @@ const CheckoutContent = () => {
     setIsAddingAddress(false);
     setIsAddingNewAddress(false);
   };
-  return <div className="space-y-5">
+  return <div className="space-y-4">
       {/* قسم العناوين */}
       <Card className="border border-blue-100 shadow-sm">
-        <CardContent className="p-5">
+        <CardContent className="p-4">
           {isAddingAddress ? <NewAddressForm onCancel={handleCancelAddAddress} /> : <AddressSelector onAddNewClick={handleAddNewAddress} />}
         </CardContent>
       </Card>
       
       {/* قسم وقت التوصيل */}
       <Card className="border border-blue-100 shadow-sm">
-        <CardContent className="p-5">
+        <CardContent className="p-4">
           <DeliveryTime />
         </CardContent>
       </Card>
       
       {/* قسم طرق الدفع */}
       <Card className="border border-blue-100 shadow-sm">
-        <CardContent className="p-5">
+        <CardContent className="p-4">
           <PaymentMethods />
         </CardContent>
       </Card>
       
       {/* قسم ملخص الطلب */}
       <Card className="border border-blue-100 shadow-sm">
-        <CardContent className="p-5">
-          <div className="space-y-4">
+        <CardContent className="p-4">
+          <div className="space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold flex items-center gap-2 text-blue-800">
                 <ShoppingBag className="w-5 h-5 text-blue-600" />
@@ -188,7 +188,7 @@ const CheckoutContent = () => {
             </div>
             
             {/* عناصر السلة */}
-            <div className="space-y-3 mb-4">
+            <div className="space-y-2">
               {cartItems.map(item => <div key={item.id} className="flex justify-between text-sm">
                   <span className="text-blue-800 font-medium">{item.name} × {item.quantity}</span>
                   <span className="text-blue-700 font-medium">{item.price * item.quantity} ج.م</span>
@@ -204,6 +204,7 @@ const CheckoutContent = () => {
       </Card>
     </div>;
 };
+
 const Checkout: React.FC = () => {
   return <CheckoutProvider>
       <div className="min-h-screen bg-blue-50" dir="rtl">
@@ -226,10 +227,11 @@ const Checkout: React.FC = () => {
         </div>
         
         {/* شريط الدفع السفلي الثابت */}
-        <div className="fixed bottom-0 left-0 right-0 shadow-lg border-t p-4 z-50 max-w-md mx-auto bg-white">
+        <div className="fixed bottom-16 left-0 right-0 shadow-lg border-t p-3 z-50 max-w-md mx-auto bg-white">
           <CheckoutButton />
         </div>
       </div>
     </CheckoutProvider>;
 };
+
 export default Checkout;

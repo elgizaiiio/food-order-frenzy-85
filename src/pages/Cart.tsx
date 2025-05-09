@@ -47,7 +47,7 @@ const Cart: React.FC = () => {
   const total = subtotal + deliveryFee;
   
   return <div className="min-h-screen bg-blue-50" dir="rtl">
-      <div className="max-w-md mx-auto bg-white pb-24">
+      <div className="max-w-md mx-auto bg-white pb-20">
         {/* الهيدر */}
         <div className="flex items-center justify-between p-4 bg-gradient-to-l from-blue-600 to-blue-800 text-white sticky top-0 z-10 shadow-md">
           <Link to="/restaurant/1" className="text-white hover:text-blue-100 transition-colors">
@@ -59,15 +59,15 @@ const Cart: React.FC = () => {
 
         {/* محتويات السلة */}
         <div className="p-4">
-          <div className="mb-4">
+          <div>
             {cartItems.length > 0 ? (
               <>
                 <div className="mb-2">
                   <h2 className="text-lg font-bold text-blue-800">منتجات السلة</h2>
                 </div>
                 {cartItems.map(item => (
-                  <div key={item.id} className="flex items-center justify-between p-4 mb-3 border border-blue-100 hover:bg-blue-50 transition-colors rounded-lg shadow-sm animate-fade-in">
-                    <div className="flex gap-4">
+                  <div key={item.id} className="flex items-center justify-between p-3 mb-2 border border-blue-100 hover:bg-blue-50 transition-colors rounded-lg shadow-sm animate-fade-in">
+                    <div className="flex gap-3">
                       <img 
                         src={item.image} 
                         alt={item.name} 
@@ -103,10 +103,10 @@ const Cart: React.FC = () => {
                 ))}
 
                 {/* زر إضافة المزيد */}
-                <Link to="/restaurant/1">
+                <Link to="/restaurant/1" className="block mb-3">
                   <Button 
                     variant="outline" 
-                    className="w-full mb-4 border-blue-300 text-blue-700 hover:bg-blue-50 hover:text-blue-800"
+                    className="w-full border-blue-300 text-blue-700 hover:bg-blue-50 hover:text-blue-800"
                   >
                     إضافة منتجات أخرى
                   </Button>
@@ -132,12 +132,12 @@ const Cart: React.FC = () => {
                 </div>
               </>
             ) : (
-              <div className="text-center py-10 bg-blue-50 rounded-xl animate-fade-in">
-                <div className="bg-blue-100 rounded-full w-20 h-20 mx-auto flex items-center justify-center mb-4">
-                  <ShoppingBag className="w-10 h-10 text-blue-500" />
+              <div className="text-center py-8 bg-blue-50 rounded-xl animate-fade-in">
+                <div className="bg-blue-100 rounded-full w-16 h-16 mx-auto flex items-center justify-center mb-3">
+                  <ShoppingBag className="w-8 h-8 text-blue-500" />
                 </div>
                 <h3 className="text-xl font-bold text-blue-800 mb-2">السلة فارغة</h3>
-                <p className="text-gray-500 mb-6">لم تقم بإضافة أي منتجات للسلة بعد</p>
+                <p className="text-gray-500 mb-4">لم تقم بإضافة أي منتجات للسلة بعد</p>
                 <Link to="/restaurant/1">
                   <Button className="bg-gradient-to-l from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white shadow-lg">
                     ابدأ التسوق
@@ -150,7 +150,7 @@ const Cart: React.FC = () => {
 
         {/* زر إتمام الطلب العائم في الأسفل */}
         {cartItems.length > 0 && (
-          <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-50 max-w-md mx-auto shadow-lg">
+          <div className="fixed bottom-16 left-0 right-0 bg-white border-t p-3 z-50 max-w-md mx-auto shadow-lg">
             <Link to="/checkout">
               <Button className="w-full bg-gradient-to-l from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white shadow-md text-lg">
                 إتمام الطلب • {total} ج.م

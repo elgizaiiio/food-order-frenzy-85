@@ -61,7 +61,7 @@ const Pharmacy: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      <div className="max-w-md mx-auto bg-white pb-20">
+      <div className="max-w-md mx-auto bg-white pb-16">
         {/* Header with gradient - now with transition for showing/hiding */}
         <div 
           className={`sticky top-0 bg-gradient-to-r from-blue-600 to-indigo-700 z-10 shadow-md rounded-b-2xl transition-transform duration-300 ${
@@ -84,7 +84,7 @@ const Pharmacy: React.FC = () => {
           </div>
 
           {/* Search */}
-          <div className="px-4 pb-6">
+          <div className="px-4 pb-4">
             <div className="relative">
               <Input 
                 type="search" 
@@ -102,7 +102,7 @@ const Pharmacy: React.FC = () => {
             <Button 
               variant="outlineBlue"
               onClick={() => setShowCategories(!showCategories)} 
-              className="w-full mt-3 flex items-center justify-between text-blue-700 backdrop-blur-sm bg-white/90 hover:bg-blue-50"
+              className="w-full mt-2 flex items-center justify-between text-blue-700 backdrop-blur-sm bg-white/90 hover:bg-blue-50"
             >
               <span>عايز حاجة معينة؟</span>
               {showCategories ? (
@@ -117,9 +117,9 @@ const Pharmacy: React.FC = () => {
         {/* Categories - تظهر فقط عند الضغط على الزر */}
         {showCategories && (
           <div className="px-4 py-4 border-b bg-white/95 backdrop-blur-sm animate-fade-in">
-            <h2 className="text-lg font-bold mb-4 text-blue-800">الفئات</h2>
+            <h2 className="text-lg font-bold mb-3 text-blue-800">الفئات</h2>
             {categoriesLoading ? (
-              <div className="flex justify-center py-4">
+              <div className="flex justify-center py-3">
                 <p className="text-blue-600">جاري التحميل...</p>
               </div>
             ) : (
@@ -142,32 +142,32 @@ const Pharmacy: React.FC = () => {
         )}
 
         {/* Recommended Products */}
-        <div className="px-4 py-4">
-          <h2 className="text-lg font-bold mb-4 text-blue-800">منتجات موصى بها</h2>
+        <div className="px-4 py-3">
+          <h2 className="text-lg font-bold mb-3 text-blue-800">منتجات موصى بها</h2>
           {productsLoading ? (
-            <div className="flex justify-center py-8">
+            <div className="flex justify-center py-4">
               <p className="text-blue-600">جاري التحميل...</p>
             </div>
           ) : !recommendedProducts || recommendedProducts.length === 0 ? (
-            <div className="text-center py-8 border rounded-lg border-dashed border-blue-200">
+            <div className="text-center py-6 border rounded-lg border-dashed border-blue-200">
               <p className="text-blue-500">لا توجد منتجات حالياً</p>
               <p className="text-blue-400 text-sm mt-2">يمكنك إضافة منتجات من لوحة التحكم</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               {recommendedProducts?.map((product: PharmacyProduct) => (
                 <Card key={product.id} className="overflow-hidden border border-blue-100 shadow-md hover:shadow-lg transition-all hover:scale-[1.02]">
-                  <div className="p-3">
+                  <div className="p-2">
                     <div className="bg-blue-50 rounded-lg overflow-hidden">
                       <img 
                         src={product.image_url || 'https://via.placeholder.com/200?text=Medicine'} 
                         alt={product.name} 
-                        className="w-full h-32 object-cover hover:scale-105 transition-transform duration-300" 
+                        className="w-full h-28 object-cover hover:scale-105 transition-transform duration-300" 
                       />
                     </div>
-                    <h3 className="font-medium mt-2 line-clamp-1 text-blue-800">{product.name}</h3>
+                    <h3 className="font-medium mt-1 line-clamp-1 text-blue-800">{product.name}</h3>
                     <p className="text-xs text-blue-600 line-clamp-2 h-8">{product.description}</p>
-                    <div className="flex items-center justify-between mt-3">
+                    <div className="flex items-center justify-between mt-2">
                       <span className="font-bold text-blue-700">{product.price} ج.م</span>
                       <Button 
                         size="sm" 
@@ -187,7 +187,7 @@ const Pharmacy: React.FC = () => {
 
         {/* زر إتمام الطلب - يظهر فقط عند وجود منتجات في السلة */}
         {itemCount > 0 && (
-          <div className="fixed bottom-20 left-0 right-0 max-w-md z-10 mb-16 px-4 mx-auto">
+          <div className="fixed bottom-16 left-0 right-0 max-w-md z-10 px-4 mx-auto">
             <Link to="/pharmacy/cart">
               <Button 
                 variant="pharmacy" 

@@ -64,7 +64,7 @@ const PersonalCareCart: React.FC = () => {
 
         {/* محتويات السلة */}
         <div className="p-4">
-          <div className="mb-4">
+          <div>
             {items.length > 0 ? (
               items.map((item) => (
                 <div key={item.id} className="flex items-center justify-between py-3 border-b border-blue-100 hover:bg-blue-50 transition-colors rounded-lg px-2 my-2 animate-fade-in">
@@ -104,8 +104,8 @@ const PersonalCareCart: React.FC = () => {
               ))
             ) : (
               <div className="text-center py-8 animate-fade-in">
-                <div className="bg-blue-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <ShoppingBag className="w-12 h-12 text-blue-600" />
+                <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <ShoppingBag className="w-8 h-8 text-blue-600" />
                 </div>
                 <p className="text-gray-500 mb-4">السلة فارغة</p>
                 <Link to="/personal-care">
@@ -123,10 +123,10 @@ const PersonalCareCart: React.FC = () => {
           {items.length > 0 && (
             <>
               {/* زر إضافة المزيد */}
-              <Link to="/personal-care">
+              <Link to="/personal-care" className="block mb-3">
                 <Button 
                   variant="personalCareOutline" 
-                  className="w-full mb-4"
+                  className="w-full"
                 >
                   إضافة منتجات تانية
                 </Button>
@@ -171,9 +171,9 @@ const PersonalCareCart: React.FC = () => {
               </div>
 
               {/* ملخص الطلب */}
-              <div className="mb-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200 animate-fade-in">
-                <h2 className="text-lg font-bold mb-3 text-blue-800">ملخص الطلب</h2>
-                <div className="space-y-2 mb-3">
+              <div className="mb-3 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200 animate-fade-in">
+                <h2 className="text-lg font-bold mb-2 text-blue-800">ملخص الطلب</h2>
+                <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-gray-600">المجموع الفرعي</span>
                     <span className="font-medium">{totalPrice} ج.م</span>
@@ -183,7 +183,7 @@ const PersonalCareCart: React.FC = () => {
                     <span className="font-medium">{deliveryFee} ج.م</span>
                   </div>
                   <Separator className="my-2 bg-blue-200" />
-                  <div className="flex justify-between font-bold pt-2">
+                  <div className="flex justify-between font-bold pt-1">
                     <span className="text-blue-900">المبلغ الإجمالي</span>
                     <span className="text-blue-700">{total} ج.م</span>
                   </div>
@@ -195,7 +195,7 @@ const PersonalCareCart: React.FC = () => {
 
         {/* أزرار أسفل الصفحة - مثبتة في الأسفل */}
         {items.length > 0 && (
-          <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-50 max-w-md mx-auto shadow-lg">
+          <div className="fixed bottom-16 left-0 right-0 bg-white border-t p-3 z-50 max-w-md mx-auto shadow-lg">
             <div className="flex gap-3">
               <Link to="/personal-care" className="flex-1">
                 <Button 

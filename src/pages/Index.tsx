@@ -13,17 +13,17 @@ const PopularPlaces = lazy(() => import('@/components/ui/PopularPlaces'));
 const Promos = lazy(() => import('@/components/ui/Promos'));
 
 // مكون تحميل محسّن
-const LoadingFallback = () => <div className="p-6 flex justify-center items-center">
-    <div className="w-10 h-10 border-3 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+const LoadingFallback = () => <div className="p-3 flex justify-center items-center">
+    <div className="w-8 h-8 border-3 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
   </div>;
 
-const HeroSection = () => <div className="relative px-4 pt-6 pb-8 mb-4 bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-b-3xl overflow-hidden">
+const HeroSection = () => <div className="relative px-4 pt-6 pb-6 mb-3 bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-b-3xl overflow-hidden">
     <div className="absolute top-0 right-0 w-full h-full opacity-10">
       <div className="absolute top-0 right-0 w-24 h-24 bg-white rounded-full -mr-6 -mt-6"></div>
       <div className="absolute bottom-0 left-0 w-32 h-32 bg-white rounded-full -ml-10 -mb-10"></div>
     </div>
     <h1 className="text-3xl font-bold mb-2 animate-fade-in">أهلا بيك في تطبيق دام</h1>
-    <p className="text-lg text-blue-100 mb-6 max-w-xs animate-fade-in animate-delay-1">
+    <p className="text-lg text-blue-100 mb-4 max-w-xs animate-fade-in animate-delay-1">
       اطلب كل حاجة محتاجها من مكان واحد، بسرعة وسهولة
     </p>
     <div className="relative z-10 animate-fade-in animate-delay-2">
@@ -49,7 +49,7 @@ const Index: React.FC = () => {
   } = useUser();
   
   return <div className="min-h-screen bg-blue-50/30">
-      <div className="max-w-md mx-auto bg-white pb-20">
+      <div className="max-w-md mx-auto bg-white pb-16">
         {/* Top Bar */}
         <TopBar userName={userName} address={userAddress} />
         

@@ -39,7 +39,7 @@ const PharmacyCart: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-blue-50">
-      <div className="max-w-md mx-auto bg-white pb-32 shadow-sm">
+      <div className="max-w-md mx-auto bg-white pb-24 shadow-sm">
         {/* الهيدر */}
         <div className="sticky top-0 flex items-center justify-between p-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-md z-10">
           <Link to="/pharmacy" className="text-white hover:text-blue-100 transition-colors">
@@ -50,14 +50,14 @@ const PharmacyCart: React.FC = () => {
         </div>
 
         {/* محتويات السلة */}
-        <div className="px-5 py-4">
+        <div className="px-4 py-3">
           {items.length === 0 ? (
-            <div className="text-center py-12 animate-fade-in">
-              <div className="w-20 h-20 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-4">
+            <div className="text-center py-10 animate-fade-in">
+              <div className="w-16 h-16 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-3">
                 <ShoppingBag className="w-8 h-8 text-blue-600" />
               </div>
               <h3 className="font-bold text-lg mb-2 text-blue-800">السلة فاضية</h3>
-              <p className="text-blue-600 mb-6">لسه مضفتش أي حاجة للسلة</p>
+              <p className="text-blue-600 mb-4">لسه مضفتش أي حاجة للسلة</p>
               <Button 
                 onClick={() => navigate('/pharmacy')}
                 variant="pharmacy"
@@ -116,7 +116,7 @@ const PharmacyCart: React.FC = () => {
               </div>
 
               {/* المنتجات المقترحة */}
-              <div className="mt-8 mb-6 animate-fade-in">
+              <div className="mt-4 mb-3 animate-fade-in">
                 <h3 className="font-bold mb-3 text-blue-800 flex items-center">
                   <div className="w-1 h-5 bg-blue-600 ml-2"></div>
                   منتجات ممكن تعجبك
@@ -151,9 +151,9 @@ const PharmacyCart: React.FC = () => {
               </div>
 
               {/* ملخص الطلب */}
-              <Card className="mt-6 bg-blue-50 border border-blue-100 animate-fade-in">
-                <CardContent className="p-4">
-                  <h3 className="font-bold mb-3 text-blue-800">ملخص الطلب</h3>
+              <Card className="mt-4 bg-blue-50 border border-blue-100 animate-fade-in">
+                <CardContent className="p-3">
+                  <h3 className="font-bold mb-2 text-blue-800">ملخص الطلب</h3>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-blue-700">المجموع الفرعي</span>
@@ -164,7 +164,7 @@ const PharmacyCart: React.FC = () => {
                       <span className="font-medium text-blue-800">{deliveryFee.toFixed(2)} ج.م</span>
                     </div>
                     <Separator className="my-2 bg-blue-200" />
-                    <div className="pt-2 font-bold flex justify-between">
+                    <div className="pt-1 font-bold flex justify-between">
                       <span className="text-blue-800">المجموع</span>
                       <span className="text-blue-700">{orderTotal.toFixed(2)} ج.م</span>
                     </div>
@@ -173,7 +173,7 @@ const PharmacyCart: React.FC = () => {
               </Card>
 
               {/* أزرار التحكم */}
-              <div className="mt-6 space-y-3">
+              <div className="mt-3 space-y-3">
                 <Button 
                   variant="outlineBlue" 
                   className="w-full"
@@ -189,7 +189,7 @@ const PharmacyCart: React.FC = () => {
       
       {/* زر إتمام الطلب العائم في أسفل الصفحة */}
       {items.length > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t border-blue-100 p-4 z-50 max-w-md mx-auto">
+        <div className="fixed bottom-16 left-0 right-0 bg-white shadow-lg border-t border-blue-100 p-3 z-50 max-w-md mx-auto">
           <Button 
             variant="pharmacy"
             size="checkout" 
