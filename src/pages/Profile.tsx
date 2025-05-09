@@ -1,10 +1,12 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Settings, Edit, Home, CreditCard, Clock, Gift, ChevronRight, User, Award } from 'lucide-react';
+import { ArrowLeft, Settings, Edit, Home, CreditCard, Clock, Gift, ChevronRight, User, Award, Users, Share2 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import TopBar from "@/components/TopBar";
+
 const Profile: React.FC = () => {
   const [user, setUser] = useState({
     name: 'أحمد محمد',
@@ -125,6 +127,19 @@ const Profile: React.FC = () => {
               <ChevronRight className="w-5 h-5 text-blue-400" />
             </div>
           </Link>
+
+          {/* Invite Friends - New Item */}
+          <Link to="/invite-friends" className="block">
+            <div className="flex items-center justify-between p-4 mb-2 hover:bg-blue-50 rounded-xl transition-colors">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-100 to-blue-200 flex items-center justify-center shadow-sm">
+                  <Users className="w-5 h-5 text-blue-600" />
+                </div>
+                <span className="font-medium text-zinc-950">دعوة الأصدقاء</span>
+              </div>
+              <ChevronRight className="w-5 h-5 text-blue-400" />
+            </div>
+          </Link>
         </div>
 
         {/* Referral Program Card */}
@@ -132,7 +147,40 @@ const Profile: React.FC = () => {
         animationDelay: "200ms"
       }}>
           <Card className="overflow-hidden border-none shadow-md bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-2xl">
-            
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-xl font-bold">Dam Bro</h3>
+                <div className="bg-white/20 px-3 py-1 rounded-full text-sm">
+                  <span>99 جنيه / شهرياً</span>
+                </div>
+              </div>
+              
+              <div className="bg-white/10 rounded-xl p-4 mb-4">
+                <h4 className="font-medium mb-3">مميزات الاشتراك:</h4>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-center gap-2">
+                    <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">✓</div>
+                    <span>توصيل مجاني لجميع الطلبات</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">✓</div>
+                    <span>خصم 10% على جميع المنتجات</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">✓</div>
+                    <span>دعم فني على مدار الساعة</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">✓</div>
+                    <span>عروض حصرية للمشتركين</span>
+                  </li>
+                </ul>
+              </div>
+              
+              <Button className="w-full bg-white text-blue-600 hover:bg-blue-50">
+                اشترك الآن
+              </Button>
+            </CardContent>
           </Card>
         </div>
 

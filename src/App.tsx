@@ -59,6 +59,7 @@ import Orders from "./pages/Orders";
 import Coupons from "./pages/Coupons";
 import About from "./pages/About";
 import ChatSupport from "./pages/ChatSupport";
+import InviteFriends from "./pages/InviteFriends";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -173,6 +174,7 @@ const App = () => {
                     <Route path="/orders" element={<Orders />} />
                     <Route path="/coupons" element={<Coupons />} />
                     <Route path="/chat-support" element={<ChatSupport />} />
+                    <Route path="/invite-friends" element={<InviteFriends />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
