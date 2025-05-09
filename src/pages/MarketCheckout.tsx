@@ -96,7 +96,7 @@ const CheckoutButton = () => {
           description: `رقم الطلب: ${response.orderId}`
         });
 
-        // حفظ معلومات الطلب في sessionStorage لاستخدامها في صفحة التتبع
+        // حفظ معلومات الطلب في sessionStorage لاستخدامها في ��فحة التتبع
         sessionStorage.setItem('orderDetails', JSON.stringify({
           orderId: response.orderId,
           estimatedDelivery: response.estimatedDelivery

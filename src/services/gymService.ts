@@ -29,7 +29,7 @@ export interface GymSubscription {
  */
 export async function fetchGyms(): Promise<GymItem[]> {
   try {
-    // For now we'll use mock data since the gyms table doesn't exist yet in Supabase
+    // Since the gyms table doesn't exist in Supabase, we'll use mock data
     const mockData: GymItem[] = [
       {
         id: 'iron-fitness',
@@ -109,29 +109,20 @@ export async function fetchGymById(id: string): Promise<GymItem> {
  */
 export async function fetchUserSubscriptions(userId: string): Promise<GymSubscription[]> {
   try {
-    // Since gym_subscriptions table might not exist yet, we'll check and return mock data if it fails
-    try {
-      const { data, error } = await supabase
-        .from('gym_subscriptions')
-        .select('*, gyms(*)')
-        .eq('user_id', userId);
-      
-      if (error) throw error;
-      return data || [];
-    } catch (e) {
-      console.log('Falling back to mock subscriptions data');
-      // Return mock subscriptions if the table doesn't exist
-      return [{
-        id: "1",
-        user_id: userId,
-        gym_id: "gold-gym",
-        plan_name: "الباقة الذهبية",
-        start_date: new Date().toISOString(),
-        end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-        price: 199,
-        status: 'active'
-      }];
-    }
+    // Return mock subscriptions since the gym_subscriptions table doesn't exist yet
+    console.log('Returning mock subscriptions data since the gym_subscriptions table does not exist');
+    
+    // Return mock subscriptions
+    return [{
+      id: "1",
+      user_id: userId,
+      gym_id: "gold-gym",
+      plan_name: "الباقة الذهبية",
+      start_date: new Date().toISOString(),
+      end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+      price: 199,
+      status: 'active'
+    }];
   } catch (error) {
     console.error('Error fetching gym subscriptions:', error);
     throw error;
@@ -143,26 +134,15 @@ export async function fetchUserSubscriptions(userId: string): Promise<GymSubscri
  */
 export async function createSubscription(subscription: Omit<GymSubscription, 'id' | 'created_at'>): Promise<GymSubscription> {
   try {
-    // Try to insert into the gym_subscriptions table, but if it doesn't exist yet, return mock data
-    try {
-      const { data, error } = await supabase
-        .from('gym_subscriptions')
-        .insert(subscription)
-        .select()
-        .single();
-      
-      if (error) throw error;
-      
-      return data;
-    } catch (e) {
-      console.log('Falling back to mock subscription creation');
-      // Return mock subscription if the table doesn't exist
-      return {
-        id: Math.random().toString(36).substring(7),
-        ...subscription,
-        created_at: new Date().toISOString()
-      };
-    }
+    // Return mock subscription since the gym_subscriptions table doesn't exist yet
+    console.log('Returning mock subscription data since the gym_subscriptions table does not exist');
+    
+    // Return mock data
+    return {
+      id: Math.random().toString(36).substring(7),
+      ...subscription,
+      created_at: new Date().toISOString()
+    };
   } catch (error) {
     console.error('Error creating gym subscription:', error);
     throw error;
