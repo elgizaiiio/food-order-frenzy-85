@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { UserProvider } from "@/context/UserContext";
 import { MarketCartProvider } from "@/context/MarketCartContext";
 import { PharmacyCartProvider } from "@/context/PharmacyCartContext";
@@ -140,77 +140,75 @@ const App = () => {
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <BrowserRouter>
-            {showSplash ? (
-              <Splash onComplete={() => setShowSplash(false)} />
-            ) : isNewUser ? (
-              <OnboardingScreen />  // عرض شاشة Onboarding للمستخدمين الجدد
-            ) : (
-              <>
-                <div className="pb-16"> {/* Add padding to the bottom to prevent content from being hidden by the navigation bar */}
-                  <Routes>
-                    {/* Authentication Routes - Not Protected */}
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/forgot-password" element={<ForgotPassword />} />
-                    
-                    {/* Protected Routes */}
-                    <Route path="/" element={<AuthGuard><Index /></AuthGuard>} />
-                    <Route path="/splash" element={<Splash />} />
-                    <Route path="/onboarding" element={<OnboardingScreen />} />
-                    <Route path="/restaurants" element={<AuthGuard><Restaurants /></AuthGuard>} />
-                    <Route path="/restaurant/:id" element={<AuthGuard><RestaurantMenu /></AuthGuard>} />
-                    <Route path="/cart" element={<AuthGuard><Cart /></AuthGuard>} />
-                    <Route path="/checkout" element={<AuthGuard><Checkout /></AuthGuard>} />
-                    <Route path="/tracking" element={<AuthGuard><OrderTracking /></AuthGuard>} />
-                    <Route path="/about" element={<AuthGuard><About /></AuthGuard>} />
-                    
-                    {/* Pharmacy routes with PharmacyCartProvider */}
-                    <Route path="/pharmacy/*" element={<PharmacyCartRoutes />} />
-                    
-                    {/* Market routes with MarketCartProvider */}
-                    <Route path="/market/*" element={<MarketCartRoutes />} />
-                    
-                    {/* Personal Care Routes with PersonalCareCartProvider */}
-                    <Route path="/personal-care/*" element={<PersonalCareRoutes />} />
-                    
-                    {/* Clothes Routes */}
-                    <Route path="/clothes" element={<AuthGuard><Clothes /></AuthGuard>} />
-                    <Route path="/clothes/category/:categoryId" element={<AuthGuard><ClothesCategory /></AuthGuard>} />
-                    <Route path="/clothes/cart" element={<AuthGuard><ClothesCart /></AuthGuard>} />
-                    <Route path="/clothes/checkout" element={<AuthGuard><ClothesCheckout /></AuthGuard>} />
-                    
-                    {/* Gym Routes */}
-                    <Route path="/gym" element={<AuthGuard><Gym /></AuthGuard>} />
-                    <Route path="/gym/:id/subscribe" element={<AuthGuard><GymSubscription /></AuthGuard>} />
-                    <Route path="/gym/payment" element={<AuthGuard><GymPayment /></AuthGuard>} />
-                    <Route path="/gym/success" element={<AuthGuard><GymSuccess /></AuthGuard>} />
-                    <Route path="/gym/subscriptions" element={<AuthGuard><GymSubscriptions /></AuthGuard>} />
-                    
-                    {/* Profile Routes */}
-                    <Route path="/profile" element={<AuthGuard><Profile /></AuthGuard>} />
-                    <Route path="/edit-profile" element={<AuthGuard><EditProfile /></AuthGuard>} />
-                    <Route path="/settings" element={<AuthGuard><Settings /></AuthGuard>} />
-                    <Route path="/edit-contact-info" element={<AuthGuard><EditContactInfo /></AuthGuard>} />
-                    <Route path="/change-password" element={<AuthGuard><ChangePassword /></AuthGuard>} />
-                    <Route path="/notification-settings" element={<AuthGuard><NotificationSettings /></AuthGuard>} />
-                    <Route path="/addresses" element={<AuthGuard><Addresses /></AuthGuard>} />
-                    <Route path="/payment-methods" element={<AuthGuard><PaymentMethods /></AuthGuard>} />
-                    <Route path="/add-payment-method" element={<AuthGuard><AddPaymentMethod /></AuthGuard>} />
-                    <Route path="/orders" element={<AuthGuard><Orders /></AuthGuard>} />
-                    <Route path="/coupons" element={<AuthGuard><Coupons /></AuthGuard>} />
-                    <Route path="/chat-support" element={<AuthGuard><ChatSupport /></AuthGuard>} />
-                    <Route path="/invite-friends" element={<AuthGuard><InviteFriends /></AuthGuard>} />
-                    <Route path="/dam-bro" element={<AuthGuard><DamBro /></AuthGuard>} />
-                    
-                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </div>
-                <BottomNav />
-              </>
-            )}
-          </BrowserRouter>
+          {showSplash ? (
+            <Splash onComplete={() => setShowSplash(false)} />
+          ) : isNewUser ? (
+            <OnboardingScreen />  // عرض شاشة Onboarding للمستخدمين الجدد
+          ) : (
+            <>
+              <div className="pb-16"> {/* Add padding to the bottom to prevent content from being hidden by the navigation bar */}
+                <Routes>
+                  {/* Authentication Routes - Not Protected */}
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  
+                  {/* Protected Routes */}
+                  <Route path="/" element={<AuthGuard><Index /></AuthGuard>} />
+                  <Route path="/splash" element={<Splash />} />
+                  <Route path="/onboarding" element={<OnboardingScreen />} />
+                  <Route path="/restaurants" element={<AuthGuard><Restaurants /></AuthGuard>} />
+                  <Route path="/restaurant/:id" element={<AuthGuard><RestaurantMenu /></AuthGuard>} />
+                  <Route path="/cart" element={<AuthGuard><Cart /></AuthGuard>} />
+                  <Route path="/checkout" element={<AuthGuard><Checkout /></AuthGuard>} />
+                  <Route path="/tracking" element={<AuthGuard><OrderTracking /></AuthGuard>} />
+                  <Route path="/about" element={<AuthGuard><About /></AuthGuard>} />
+                  
+                  {/* Pharmacy routes with PharmacyCartProvider */}
+                  <Route path="/pharmacy/*" element={<PharmacyCartRoutes />} />
+                  
+                  {/* Market routes with MarketCartProvider */}
+                  <Route path="/market/*" element={<MarketCartRoutes />} />
+                  
+                  {/* Personal Care Routes with PersonalCareCartProvider */}
+                  <Route path="/personal-care/*" element={<PersonalCareRoutes />} />
+                  
+                  {/* Clothes Routes */}
+                  <Route path="/clothes" element={<AuthGuard><Clothes /></AuthGuard>} />
+                  <Route path="/clothes/category/:categoryId" element={<AuthGuard><ClothesCategory /></AuthGuard>} />
+                  <Route path="/clothes/cart" element={<AuthGuard><ClothesCart /></AuthGuard>} />
+                  <Route path="/clothes/checkout" element={<AuthGuard><ClothesCheckout /></AuthGuard>} />
+                  
+                  {/* Gym Routes */}
+                  <Route path="/gym" element={<AuthGuard><Gym /></AuthGuard>} />
+                  <Route path="/gym/:id/subscribe" element={<AuthGuard><GymSubscription /></AuthGuard>} />
+                  <Route path="/gym/payment" element={<AuthGuard><GymPayment /></AuthGuard>} />
+                  <Route path="/gym/success" element={<AuthGuard><GymSuccess /></AuthGuard>} />
+                  <Route path="/gym/subscriptions" element={<AuthGuard><GymSubscriptions /></AuthGuard>} />
+                  
+                  {/* Profile Routes */}
+                  <Route path="/profile" element={<AuthGuard><Profile /></AuthGuard>} />
+                  <Route path="/edit-profile" element={<AuthGuard><EditProfile /></AuthGuard>} />
+                  <Route path="/settings" element={<AuthGuard><Settings /></AuthGuard>} />
+                  <Route path="/edit-contact-info" element={<AuthGuard><EditContactInfo /></AuthGuard>} />
+                  <Route path="/change-password" element={<AuthGuard><ChangePassword /></AuthGuard>} />
+                  <Route path="/notification-settings" element={<AuthGuard><NotificationSettings /></AuthGuard>} />
+                  <Route path="/addresses" element={<AuthGuard><Addresses /></AuthGuard>} />
+                  <Route path="/payment-methods" element={<AuthGuard><PaymentMethods /></AuthGuard>} />
+                  <Route path="/add-payment-method" element={<AuthGuard><AddPaymentMethod /></AuthGuard>} />
+                  <Route path="/orders" element={<AuthGuard><Orders /></AuthGuard>} />
+                  <Route path="/coupons" element={<AuthGuard><Coupons /></AuthGuard>} />
+                  <Route path="/chat-support" element={<AuthGuard><ChatSupport /></AuthGuard>} />
+                  <Route path="/invite-friends" element={<AuthGuard><InviteFriends /></AuthGuard>} />
+                  <Route path="/dam-bro" element={<AuthGuard><DamBro /></AuthGuard>} />
+                  
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </div>
+              <BottomNav />
+            </>
+          )}
         </TooltipProvider>
       </UserProvider>
     </QueryClientProvider>
