@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Clock, ShoppingBag } from 'lucide-react';
@@ -32,9 +31,7 @@ const OrderSummary = () => {
     deliveryFee,
     orderTotal
   } = useCheckout();
-  
-  return (
-    <div className="space-y-3">
+  return <div className="space-y-3">
       <div className="flex justify-between text-sm">
         <span className="text-gray-600">المجموع الفرعي</span>
         <span>{subtotal} ج.م</span>
@@ -48,8 +45,7 @@ const OrderSummary = () => {
         <span>الإجمالي</span>
         <span className="text-blue-700">{orderTotal} ج.م</span>
       </div>
-    </div>
-  );
+    </div>;
 };
 
 // مكون وقت التوصيل
@@ -58,9 +54,7 @@ const DeliveryTime = () => {
     min: 30,
     max: 45
   });
-  
-  return (
-    <div className="space-y-4">
+  return <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-bold flex items-center gap-2 text-blue-800">
           <Clock className="w-5 h-5 text-blue-600" />
@@ -83,8 +77,7 @@ const DeliveryTime = () => {
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>;
 };
 
 // مكون زر تأكيد الطلب
@@ -97,16 +90,13 @@ const CheckoutButton = () => {
     orderTotal
   } = useCheckout();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
   const handleCheckout = async () => {
     if (!selectedAddressId) {
       toast.error("لازم تختار عنوان للتوصيل الأول");
       return;
     }
-    
     setIsSubmitting(true);
     const selectedAddress = addresses.find(addr => addr.id === selectedAddressId);
-    
     try {
       // تحضير تفاصيل الطلب
       const orderDetails = {
@@ -122,7 +112,6 @@ const CheckoutButton = () => {
 
       // إرسال الطلب إلى واجهة برمجة التطبيقات
       const response = await submitOrder(orderDetails);
-      
       if (response.success) {
         // عرض رسالة نجاح
         toast.success("تم تقديم طلبك بنجاح!");
@@ -145,18 +134,9 @@ const CheckoutButton = () => {
       setIsSubmitting(false);
     }
   };
-  
-  return (
-    <Button 
-      onClick={handleCheckout} 
-      disabled={isSubmitting} 
-      variant="gradient"
-      size="checkout"
-      className="w-full shadow-lg"
-    >
+  return <Button onClick={handleCheckout} disabled={isSubmitting} variant="gradient" size="checkout" className="w-full shadow-lg">
       {isSubmitting ? "جاري تأكيد الطلب..." : `تأكيد الطلب • ${orderTotal} ج.م`}
-    </Button>
-  );
+    </Button>;
 };
 
 // المكون الرئيسي لصفحة الدفع
@@ -165,27 +145,19 @@ const CheckoutContent = () => {
   const {
     setIsAddingNewAddress
   } = useCheckout();
-  
   const handleAddNewAddress = () => {
     setIsAddingAddress(true);
     setIsAddingNewAddress(true);
   };
-  
   const handleCancelAddAddress = () => {
     setIsAddingAddress(false);
     setIsAddingNewAddress(false);
   };
-  
-  return (
-    <div className="space-y-6 pb-32">
+  return <div className="space-y-6 pb-32">
       {/* قسم العناوين */}
       <Card className="border border-blue-100 shadow-sm">
         <CardContent className="p-5">
-          {isAddingAddress ? (
-            <NewAddressForm onCancel={handleCancelAddAddress} />
-          ) : (
-            <AddressSelector onAddNewClick={handleAddNewAddress} />
-          )}
+          {isAddingAddress ? <NewAddressForm onCancel={handleCancelAddAddress} /> : <AddressSelector onAddNewClick={handleAddNewAddress} />}
         </CardContent>
       </Card>
       
@@ -216,12 +188,10 @@ const CheckoutContent = () => {
             
             {/* عناصر السلة */}
             <div className="space-y-3 mb-4">
-              {cartItems.map(item => (
-                <div key={item.id} className="flex justify-between text-sm">
+              {cartItems.map(item => <div key={item.id} className="flex justify-between text-sm">
                   <span className="text-blue-800 font-medium">{item.name} × {item.quantity}</span>
                   <span className="text-blue-700 font-medium">{item.price * item.quantity} ج.م</span>
-                </div>
-              ))}
+                </div>)}
             </div>
             
             <Separator className="bg-blue-100" />
@@ -233,16 +203,13 @@ const CheckoutContent = () => {
       </Card>
       
       {/* شريط الدفع السفلي الثابت */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-50 max-w-md mx-auto">
+      <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-50 max-w-md mx-auto py-[18px] my-[220px]">
         <CheckoutButton />
       </div>
-    </div>
-  );
+    </div>;
 };
-
 const Checkout: React.FC = () => {
-  return (
-    <CheckoutProvider>
+  return <CheckoutProvider>
       <div className="min-h-screen bg-blue-50" dir="rtl">
         <div className="max-w-md mx-auto bg-white pb-32">
           {/* الرأس */}
@@ -262,8 +229,6 @@ const Checkout: React.FC = () => {
           </div>
         </div>
       </div>
-    </CheckoutProvider>
-  );
+    </CheckoutProvider>;
 };
-
 export default Checkout;
