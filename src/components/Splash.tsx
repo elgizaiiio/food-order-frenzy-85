@@ -12,6 +12,16 @@ const Splash: React.FC<SplashProps> = ({ duration = 2000, onComplete }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // مباشرة تحميل الصفحة التالية بينما يتم عرض الـ splash
+    const preloadNextRoute = () => {
+      const link = document.createElement('link');
+      link.rel = 'prefetch';
+      link.href = '/';
+      document.head.appendChild(link);
+    };
+
+    preloadNextRoute();
+
     const timer = setTimeout(() => {
       if (onComplete) {
         onComplete();
@@ -25,7 +35,7 @@ const Splash: React.FC<SplashProps> = ({ duration = 2000, onComplete }) => {
 
   return (
     <motion.div 
-      className="fixed inset-0 flex flex-col items-center justify-center bg-brand-500 z-50"
+      className="fixed inset-0 flex flex-col items-center justify-center bg-purple-700 z-50"
       initial={{ opacity: 1 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -41,10 +51,12 @@ const Splash: React.FC<SplashProps> = ({ duration = 2000, onComplete }) => {
           src="/dam-logo.png" 
           alt="Dam Logo" 
           className="w-32 h-32"
-          loading="eager"
+          loading="eager" // مهم للتحميل المبكر للصورة
+          fetchPriority="high" // أولوية عالية للتحميل
+          decoding="async" // فك ترميز الصورة بالتزامن مع تحميل الصفحة
           onError={(e) => {
-            // Fallback if logo doesn't exist
-            e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80' fill='none'%3E%3Crect width='80' height='80' rx='40' fill='%23FF6B00'/%3E%3Cpath d='M24 40C24 35.5817 27.5817 32 32 32H48C52.4183 32 56 35.5817 56 40V40C56 44.4183 52.4183 48 48 48H32C27.5817 48 24 44.4183 24 40V40Z' fill='white'/%3E%3C/svg%3E";
+            // استخدام SVG كبديل أسرع وأخف وزنًا من الصور
+            e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80' fill='none'%3E%3Crect width='80' height='80' rx='40' fill='%239333EA'/%3E%3Cpath d='M24 40C24 35.5817 27.5817 32 32 32H48C52.4183 32 56 35.5817 56 40V40C56 44.4183 52.4183 48 48 48H32C27.5817 48 24 44.4183 24 40V40Z' fill='white'/%3E%3C/svg%3E";
           }}
         />
       </motion.div>

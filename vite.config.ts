@@ -12,7 +12,6 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react({
-      // تمكين استخدام memo للتحسين
       jsxImportSource: 'react',
     }),
     mode === 'development' &&
@@ -24,7 +23,6 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
-    // تحسين بناء التطبيق
     target: 'esnext',
     minify: 'terser',
     cssMinify: true,
@@ -35,14 +33,31 @@ export default defineConfig(({ mode }) => ({
             'react', 
             'react-dom',
             'react-router-dom',
-            'framer-motion',
-            'lucide-react'
           ],
+          'ui': [
+            'framer-motion',
+            'lucide-react',
+            '@radix-ui/react-accordion',
+            '@radix-ui/react-alert-dialog',
+            '@radix-ui/react-avatar'
+          ],
+          'form-components': [
+            'react-hook-form',
+            'zod',
+            '@hookform/resolvers'
+          ]
         }
       }
-    }
+    },
+    // تحسينات إضافية لتسريع التحميل
+    assetsInlineLimit: 4096, // دمج الملفات الصغيرة كـ base64
+    chunkSizeWarningLimit: 1000, // زيادة حد التحذير لحجم الملفات
+    reportCompressedSize: false, // تسريع عملية البناء
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom']
+    include: ['react', 'react-dom', 'react-router-dom', 'framer-motion'],
+    esbuildOptions: {
+      target: 'esnext', // استخدام أحدث الميزات المتاحة
+    }
   }
 }));
