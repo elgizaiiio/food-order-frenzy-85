@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Minus, Plus, Trash2, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, Minus, Plus, Trash2, ShoppingCart, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
@@ -97,7 +97,7 @@ const ClothesCart: React.FC = () => {
     <div className="min-h-screen bg-blue-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-24 shadow-md">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-700 to-blue-900 text-white sticky top-0 z-10 shadow-md">
+        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-700 to-indigo-600 text-white sticky top-0 z-10 shadow-md">
           <Link to="/clothes" className="text-white hover:text-blue-100 transition-colors">
             <ArrowLeft className="w-6 h-6" />
           </Link>
@@ -130,7 +130,7 @@ const ClothesCart: React.FC = () => {
                       className="w-24 h-24 object-cover rounded-md border border-blue-100"
                     />
                     <div className="ml-4 flex-1">
-                      <h3 className="font-medium text-gray-800">{item.name}</h3>
+                      <h3 className="font-medium text-blue-800">{item.name}</h3>
                       <div className="flex text-xs text-gray-500 space-x-2 space-x-reverse mt-1">
                         <span>{item.type}</span>
                         <span>•</span>
@@ -138,8 +138,8 @@ const ClothesCart: React.FC = () => {
                       </div>
                       <div className="flex justify-between items-center mt-3">
                         <div className="flex flex-col">
-                          <span className="font-bold text-blue-700">{item.price * item.quantity} جنيه</span>
-                          {item.quantity > 1 && <span className="text-xs text-gray-500">{item.quantity} × {item.price} جنيه</span>}
+                          <span className="font-bold text-blue-700">{item.price * item.quantity} ريال</span>
+                          {item.quantity > 1 && <span className="text-xs text-gray-500">{item.quantity} × {item.price} ريال</span>}
                         </div>
                         <div className="flex items-center gap-2">
                           <button 
@@ -170,7 +170,7 @@ const ClothesCart: React.FC = () => {
 
               {/* Suggested Products */}
               <div className="mt-8 animate-fade-in">
-                <h2 className="text-lg font-bold mb-3 flex items-center text-gray-800">
+                <h2 className="text-lg font-bold mb-3 flex items-center text-blue-800">
                   <span className="block w-1 h-6 bg-blue-600 ml-2"></span>
                   منتجات مقترحة
                 </h2>
@@ -178,7 +178,7 @@ const ClothesCart: React.FC = () => {
                   {suggestedProducts.map(product => (
                     <Card 
                       key={product.id} 
-                      className="overflow-hidden border border-blue-100 hover:shadow-md transition-all cursor-pointer"
+                      className="overflow-hidden border border-blue-100 hover:shadow-md transition-all cursor-pointer hover:scale-105"
                       onClick={() => addSuggested(product)}
                     >
                       <div className="relative">
@@ -187,13 +187,13 @@ const ClothesCart: React.FC = () => {
                           alt={product.name} 
                           className="w-full h-24 object-cover" 
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-blue-900/30 to-transparent"></div>
-                        <div className="absolute bottom-1 right-1 bg-blue-600 text-white text-xs p-1 rounded">
-                          {product.price} ج
+                        <div className="absolute inset-0 bg-gradient-to-t from-blue-900/40 to-transparent"></div>
+                        <div className="absolute bottom-1 right-1 bg-blue-700 text-white text-xs p-1 rounded">
+                          {product.price} ريال
                         </div>
                       </div>
                       <div className="p-2">
-                        <h3 className="text-xs font-medium text-center truncate">{product.name}</h3>
+                        <h3 className="text-xs font-medium text-center truncate text-blue-800">{product.name}</h3>
                       </div>
                     </Card>
                   ))}
@@ -202,19 +202,19 @@ const ClothesCart: React.FC = () => {
 
               {/* Order Summary */}
               <Card className="p-4 mt-6 border-none shadow-sm bg-blue-50 animate-fade-in">
-                <h3 className="font-bold mb-4 text-gray-800">ملخص الطلب</h3>
+                <h3 className="font-bold mb-4 text-blue-800">ملخص الطلب</h3>
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-600">المجموع الفرعي</span>
-                    <span className="font-medium">{subtotal} جنيه</span>
+                    <span className="font-medium">{subtotal} ريال</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">رسوم التوصيل</span>
-                    <span className="font-medium">{deliveryFee} جنيه</span>
+                    <span className="font-medium">{deliveryFee} ريال</span>
                   </div>
                   <div className="border-t pt-3 mt-2 flex justify-between font-bold">
                     <span>الإجمالي</span>
-                    <span className="text-blue-700">{total} جنيه</span>
+                    <span className="text-blue-700">{total} ريال</span>
                   </div>
                 </div>
               </Card>
@@ -226,8 +226,8 @@ const ClothesCart: React.FC = () => {
         {cartItems.length > 0 && (
           <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 max-w-md mx-auto shadow-lg mb-16">
             <Link to="/clothes/checkout">
-              <Button variant="gradient" size="checkout" className="w-full">
-                إتمام الطلب ({total} جنيه)
+              <Button variant="gradient" size="checkout" className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
+                إتمام الطلب ({total} ريال)
               </Button>
             </Link>
           </div>

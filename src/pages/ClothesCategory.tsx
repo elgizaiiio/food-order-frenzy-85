@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, Search, ShoppingCart, Star, Plus, Filter, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Search, ShoppingCart, Star, Plus, Filter, ChevronDown, Heart } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -100,12 +100,13 @@ const ClothesCategory: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState<ClothesProduct[]>([]);
   const [showFilters, setShowFilters] = useState(false);
+  const [favorites, setFavorites] = useState<number[]>([]);
   
   // Category mapping
   const categoryMap: Record<string, { name: string, color: string, bgImage: string }> = {
     'girls': { 
       name: 'ملابس بناتي', 
-      color: 'from-pink-400 to-purple-500', 
+      color: 'from-indigo-400 to-blue-500', 
       bgImage: 'https://images.unsplash.com/photo-1613995887374-3c9e8d49320b?auto=format&fit=crop&q=80&w=600'
     },
     'boys': { 
@@ -115,19 +116,19 @@ const ClothesCategory: React.FC = () => {
     },
     'kids': { 
       name: 'ملابس أطفال', 
-      color: 'from-yellow-400 to-orange-400', 
+      color: 'from-sky-400 to-blue-500', 
       bgImage: 'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?auto=format&fit=crop&q=80&w=600'
     },
     'sportswear': { 
       name: 'ملابس رياضية', 
-      color: 'from-green-400 to-teal-500', 
+      color: 'from-blue-400 to-indigo-500', 
       bgImage: 'https://images.unsplash.com/photo-1483721310020-03333e577078?auto=format&fit=crop&q=80&w=600'
     },
   };
 
   const currentCategory = categoryMap[categoryId || ''] || { 
     name: 'الملابس', 
-    color: 'from-blue-500 to-teal-500',
+    color: 'from-blue-600 to-indigo-600',
     bgImage: 'https://images.unsplash.com/photo-1618518507212-8dd17705afd8?auto=format&fit=crop&q=80&w=600' 
   };
 
@@ -142,7 +143,7 @@ const ClothesCategory: React.FC = () => {
 
   const handleAddToCart = (product: ClothesProduct) => {
     // This would integrate with a cart context in a real app
-    toast(`تمت إضافة ${product.name} إلى السلة بنجاح.`, {
+    toast.success(`تمت إضافة ${product.name} إلى السلة بنجاح.`, {
       action: {
         label: "عرض السلة",
         onClick: () => window.location.href = '/clothes/cart'
@@ -150,20 +151,32 @@ const ClothesCategory: React.FC = () => {
     });
   };
 
+  const toggleFavorite = (id: number) => {
+    setFavorites(prev => {
+      if (prev.includes(id)) {
+        toast.info("تمت إزالة المنتج من المفضلة");
+        return prev.filter(itemId => itemId !== id);
+      } else {
+        toast.success("تمت إضافة المنتج للمفضلة");
+        return [...prev, id];
+      }
+    });
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50" dir="rtl">
+    <div className="min-h-screen bg-blue-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-20">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 bg-white shadow-sm sticky top-0 z-10">
-          <Link to="/clothes" className="text-gray-700">
+        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-700 to-indigo-600 text-white sticky top-0 z-10 shadow-md">
+          <Link to="/clothes" className="text-white hover:text-blue-100 transition-colors">
             <ArrowLeft className="w-6 h-6" />
           </Link>
           <h1 className="text-xl font-bold">{currentCategory.name}</h1>
           <div className="flex items-center gap-4">
-            <button className="text-gray-700">
+            <button className="text-white hover:text-blue-100 transition-colors">
               <Search className="w-5 h-5" />
             </button>
-            <Link to="/clothes/cart" className="text-gray-700 relative">
+            <Link to="/clothes/cart" className="text-white hover:text-blue-100 transition-colors relative">
               <ShoppingCart className="w-5 h-5" />
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
                 2
@@ -174,15 +187,15 @@ const ClothesCategory: React.FC = () => {
 
         {/* Category Banner */}
         <div className="relative h-40 overflow-hidden">
-          <div className={`absolute inset-0 bg-gradient-to-r ${currentCategory.color} opacity-80`}></div>
+          <div className={`absolute inset-0 bg-gradient-to-r ${currentCategory.color} opacity-90`}></div>
           <img 
             src={currentCategory.bgImage} 
             alt={currentCategory.name}
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 flex flex-col justify-center p-6">
-            <h2 className="text-2xl font-bold text-white mb-1">{currentCategory.name}</h2>
-            <p className="text-sm text-white opacity-90">تسوق أحدث صيحات الموضة من {currentCategory.name}</p>
+            <h2 className="text-2xl font-bold text-white mb-1 animate-fade-in">{currentCategory.name}</h2>
+            <p className="text-sm text-white/90 animate-fade-in">تسوق أحدث صيحات الموضة من {currentCategory.name}</p>
           </div>
         </div>
 
@@ -193,16 +206,16 @@ const ClothesCategory: React.FC = () => {
             <input 
               type="text" 
               placeholder={`ابحث في ${currentCategory.name}...`}
-              className="w-full p-3 pl-10 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 pl-10 pr-4 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
             />
-            <Search className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-3 top-3 text-blue-400 w-5 h-5" />
           </div>
           
           {/* Filter button */}
           <div className="flex justify-between items-center">
             <Button 
               variant="outline" 
-              className="border-gray-300 flex items-center gap-2"
+              className="border-blue-300 flex items-center gap-2 text-blue-700 hover:bg-blue-50"
               onClick={() => setShowFilters(!showFilters)}
             >
               <Filter className="w-4 h-4" />
@@ -215,22 +228,22 @@ const ClothesCategory: React.FC = () => {
           
           {/* Filter options */}
           {showFilters && (
-            <div className="bg-gray-50 p-4 rounded-lg space-y-3 animate-fade-in">
+            <div className="bg-blue-50 p-4 rounded-lg space-y-3 animate-fade-in border border-blue-100">
               <div>
-                <h3 className="font-medium mb-2">السعر</h3>
+                <h3 className="font-medium mb-2 text-blue-800">السعر</h3>
                 <div className="flex flex-wrap gap-2">
-                  <Button variant="outline" size="sm" className="bg-white">أقل من 100 ريال</Button>
-                  <Button variant="outline" size="sm" className="bg-white">100 - 200 ريال</Button>
-                  <Button variant="outline" size="sm" className="bg-white">200+ ريال</Button>
+                  <Button variant="outline" size="sm" className="bg-white border-blue-200 text-blue-700">أقل من 100 ريال</Button>
+                  <Button variant="outline" size="sm" className="bg-white border-blue-200 text-blue-700">100 - 200 ريال</Button>
+                  <Button variant="outline" size="sm" className="bg-white border-blue-200 text-blue-700">200+ ريال</Button>
                 </div>
               </div>
               
               <div>
-                <h3 className="font-medium mb-2">الترتيب حسب</h3>
+                <h3 className="font-medium mb-2 text-blue-800">الترتيب حسب</h3>
                 <div className="flex flex-wrap gap-2">
-                  <Button variant="outline" size="sm" className="bg-white">الأكثر مبيعاً</Button>
-                  <Button variant="outline" size="sm" className="bg-white">الأحدث</Button>
-                  <Button variant="outline" size="sm" className="bg-white">السعر: من الأقل للأعلى</Button>
+                  <Button variant="outline" size="sm" className="bg-white border-blue-200 text-blue-700">الأكثر مبيعاً</Button>
+                  <Button variant="outline" size="sm" className="bg-white border-blue-200 text-blue-700">الأحدث</Button>
+                  <Button variant="outline" size="sm" className="bg-white border-blue-200 text-blue-700">السعر: من الأقل للأعلى</Button>
                 </div>
               </div>
             </div>
@@ -243,16 +256,16 @@ const ClothesCategory: React.FC = () => {
             <div className="grid grid-cols-2 gap-4">
               {[1, 2, 3, 4].map(i => (
                 <div key={i} className="animate-pulse">
-                  <div className="bg-gray-200 h-40 rounded-lg mb-2"></div>
-                  <div className="bg-gray-200 h-4 w-3/4 rounded mb-2"></div>
-                  <div className="bg-gray-200 h-4 w-1/2 rounded"></div>
+                  <div className="bg-blue-200 h-40 rounded-lg mb-2"></div>
+                  <div className="bg-blue-200 h-4 w-3/4 rounded mb-2"></div>
+                  <div className="bg-blue-200 h-4 w-1/2 rounded"></div>
                 </div>
               ))}
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-4">
               {products.map((product) => (
-                <Card key={product.id} className="overflow-hidden border border-gray-100 hover:shadow-md transition-shadow">
+                <Card key={product.id} className="overflow-hidden border border-blue-100 hover:shadow-lg transition-all hover:scale-[1.02] group">
                   <Link to={`/clothes/product/${product.id}`} className="block relative">
                     <img 
                       src={product.image} 
@@ -264,10 +277,19 @@ const ClothesCategory: React.FC = () => {
                         خصم {product.discount}%
                       </div>
                     )}
+                    <button 
+                      className="absolute top-2 left-2 bg-white/80 p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        toggleFavorite(product.id);
+                      }}
+                    >
+                      <Heart className={`w-4 h-4 ${favorites.includes(product.id) ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
+                    </button>
                   </Link>
                   <div className="p-3">
                     <Link to={`/clothes/product/${product.id}`}>
-                      <h3 className="font-medium text-gray-800">{product.name}</h3>
+                      <h3 className="font-medium text-blue-800 group-hover:text-blue-600 transition-colors">{product.name}</h3>
                       <p className="text-xs text-gray-500">{product.type}</p>
                     </Link>
                     <div className="flex items-center gap-1 mt-1">
@@ -279,17 +301,20 @@ const ClothesCategory: React.FC = () => {
                       <div>
                         {product.discount ? (
                           <div className="flex flex-col">
-                            <span className="font-bold text-red-600">{Math.round(product.price * (1 - product.discount/100))} ريال</span>
+                            <span className="font-bold text-blue-700">{Math.round(product.price * (1 - product.discount/100))} ريال</span>
                             <span className="text-xs text-gray-500 line-through">{product.price} ريال</span>
                           </div>
                         ) : (
-                          <span className="font-bold text-gray-800">{product.price} ريال</span>
+                          <span className="font-bold text-blue-700">{product.price} ريال</span>
                         )}
                       </div>
                       <Button 
                         size="sm" 
-                        className="rounded-full h-7 w-7 p-0 bg-gradient-to-r from-blue-500 to-cyan-400"
-                        onClick={() => handleAddToCart(product)}
+                        className="rounded-full h-7 w-7 p-0 bg-gradient-to-r from-blue-600 to-indigo-600 hover:shadow-md transition-shadow"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleAddToCart(product);
+                        }}
                       >
                         <Plus className="h-4 w-4" />
                       </Button>
