@@ -13,6 +13,7 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 type GymInfo = {
   id: string;
@@ -51,6 +52,10 @@ const GymPayment: React.FC = () => {
   const { gym, plan } = location.state as { gym: GymInfo; plan: PlanInfo };
   const [loading, setLoading] = useState(false);
   const [isAddingAddress, setIsAddingAddress] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
+  const [selectedCoupon, setSelectedCoupon] = useState<string | null>(null);
+  const [discount, setDiscount] = useState(0);
+  
   const [addresses, setAddresses] = useState<Address[]>([
     { 
       id: '1', 
@@ -66,6 +71,13 @@ const GymPayment: React.FC = () => {
       phone: '05xxxxxxxx',
     }
   ]);
+
+  // Coupons data
+  const coupons = [
+    { code: 'NEWUSER', discount: 10, description: 'خصم 10% للمستخدمين الجدد' },
+    { code: 'SUMMER', discount: 15, description: 'خصم 15% لفصل الصيف' },
+    { code: 'WEEKEND', discount: 5, description: 'خصم 5% لعروض نهاية الأسبوع' },
+  ];
 
   // Initialize the form
   const form = useForm<z.infer<typeof formSchema>>({
@@ -92,6 +104,29 @@ const GymPayment: React.FC = () => {
     }
   });
 
+  const handleApplyCoupon = (code: string) => {
+    const coupon = coupons.find(c => c.code === code);
+    if (coupon) {
+      setSelectedCoupon(code);
+      setDiscount(coupon.discount);
+      setShowDialog(false);
+      toast.success(`تم تطبيق الكوبون بنجاح! خصم ${coupon.discount}%`);
+    }
+  };
+
+  const calculateTotal = () => {
+    const serviceCharge = 25; // رسوم خدمة ثابتة
+    const subtotal = plan.price;
+    const discountAmount = subtotal * (discount / 100);
+    const finalTotal = subtotal + serviceCharge - discountAmount;
+    return {
+      subtotal,
+      serviceCharge,
+      discountAmount,
+      finalTotal
+    };
+  };
+
   const handleAddAddress = (data: any) => {
     const newAddress = {
       id: Date.now().toString(),
@@ -117,7 +152,9 @@ const GymPayment: React.FC = () => {
         gym,
         plan,
         payment: values,
-        address: selectedAddress
+        address: selectedAddress,
+        discount: discount > 0 ? { code: selectedCoupon, percentage: discount } : null,
+        total: calculateTotal().finalTotal
       });
       
       toast.success("تم تأكيد الطلب بنجاح!");
@@ -128,19 +165,23 @@ const GymPayment: React.FC = () => {
           plan,
           payment: {
             ...values,
-            phone: selectedAddress?.phone || values.phone
+            phone: selectedAddress?.phone || values.phone,
+            discount: discount > 0 ? { code: selectedCoupon, percentage: discount } : null,
+            total: calculateTotal().finalTotal
           }
         }
       });
     }, 1500);
   };
 
+  const totals = calculateTotal();
+
   return (
     <div className="min-h-screen bg-gray-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-20">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-600 to-blue-500 text-white sticky top-0 z-10 shadow-md">
-          <Link to={`/gym/${gym.id}/subscribe`} className="text-white">
+        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-700 to-indigo-700 text-white sticky top-0 z-10 shadow-md">
+          <Link to={`/gym/${gym.id}/subscribe`} className="text-white hover:text-blue-200 transition-colors">
             <ArrowLeft className="w-6 h-6" />
           </Link>
           <h1 className="text-xl font-bold">الدفع</h1>
@@ -151,29 +192,50 @@ const GymPayment: React.FC = () => {
         <div className="px-4 py-4">
           {/* Order summary card */}
           <Card className="overflow-hidden mb-6 border-0 shadow-md">
-            <div className="p-4 bg-gradient-to-r from-purple-100 to-blue-50 border-b">
+            <div className="p-4 bg-gradient-to-r from-blue-100 to-indigo-50 border-b">
               <div className="flex justify-between items-center">
-                <h3 className="font-bold text-lg text-gray-800">ملخص الاشتراك</h3>
-                <span className="text-sm text-purple-600">{gym.name}</span>
+                <h3 className="font-bold text-lg text-blue-800">ملخص الاشتراك</h3>
+                <span className="text-sm text-blue-700">{gym.name}</span>
               </div>
             </div>
             <CardContent className="p-4">
               <div className="flex justify-between mb-2">
-                <span className="text-gray-600">نوع الاشتراك</span>
-                <span className="font-medium">{plan.title} ({plan.duration})</span>
+                <span className="text-blue-700">نوع الاشتراك</span>
+                <span className="font-medium text-blue-900">{plan.title} ({plan.duration})</span>
               </div>
               <div className="flex justify-between mb-4">
-                <span className="text-gray-600">قيمة الاشتراك</span>
-                <span className="font-medium">{plan.price} ريال</span>
+                <span className="text-blue-700">قيمة الاشتراك</span>
+                <span className="font-medium text-blue-900">{plan.price} جنيه</span>
               </div>
-              <div className="flex justify-between pt-3 border-t">
-                <span className="text-gray-600">رسوم خدمة</span>
-                <span>15 ريال</span>
+              
+              <div className="flex justify-between border-t border-blue-100 pt-3">
+                <span className="text-blue-700">رسوم خدمة</span>
+                <span className="text-blue-900">25 جنيه</span>
               </div>
-              <div className="flex justify-between mt-2 pb-1">
-                <span className="font-bold">المجموع</span>
-                <span className="font-bold text-lg text-purple-600">{plan.price + 15} ريال</span>
+              
+              {discount > 0 && (
+                <div className="flex justify-between mt-2 text-green-600">
+                  <span className="flex items-center">
+                    <Check className="w-4 h-4 mr-1" />
+                    خصم ({selectedCoupon})
+                  </span>
+                  <span>- {totals.discountAmount} جنيه</span>
+                </div>
+              )}
+              
+              <div className="flex justify-between mt-2 pb-1 pt-2 border-t border-blue-100">
+                <span className="font-bold text-blue-800">المجموع</span>
+                <span className="font-bold text-lg text-blue-700">{totals.finalTotal} جنيه</span>
               </div>
+              
+              <Button 
+                type="button"
+                variant="outlineBlue" 
+                className="w-full mt-3 text-blue-700 border-blue-200 hover:bg-blue-50"
+                onClick={() => setShowDialog(true)}
+              >
+                {selectedCoupon ? 'تغيير كوبون الخصم' : 'إضافة كوبون خصم'}
+              </Button>
             </CardContent>
           </Card>
           
@@ -183,21 +245,22 @@ const GymPayment: React.FC = () => {
                 <div className="flex items-center justify-between mb-4">
                   <button 
                     onClick={() => setIsAddingAddress(false)} 
-                    className="text-gray-500"
+                    className="text-blue-600 hover:text-blue-800 transition-colors"
                     type="button"
                   >
                     <ArrowLeft className="w-5 h-5" />
                   </button>
-                  <h3 className="text-lg font-bold">إضافة عنوان جديد</h3>
+                  <h3 className="text-lg font-bold text-blue-800">إضافة عنوان جديد</h3>
                   <div className="w-5"></div>
                 </div>
                 
                 <form onSubmit={addressForm.handleSubmit(handleAddAddress)} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="title">اسم العنوان</Label>
+                    <Label htmlFor="title" className="text-blue-800">اسم العنوان</Label>
                     <Input
                       id="title"
                       placeholder="المنزل، العمل، ..."
+                      className="border-blue-200 focus:border-blue-400 focus:ring-blue-300"
                       {...addressForm.register('title', { required: true })}
                     />
                     {addressForm.formState.errors.title && (
@@ -206,13 +269,14 @@ const GymPayment: React.FC = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="address" className="flex items-center">
-                      <MapPin className="w-4 h-4 mr-1 text-gray-500" />
+                    <Label htmlFor="address" className="flex items-center text-blue-800">
+                      <MapPin className="w-4 h-4 mr-1 text-blue-600" />
                       العنوان
                     </Label>
                     <Input
                       id="address"
                       placeholder="الحي، الشارع، رقم المبنى"
+                      className="border-blue-200 focus:border-blue-400 focus:ring-blue-300"
                       {...addressForm.register('address', { required: true })}
                     />
                     {addressForm.formState.errors.address && (
@@ -221,14 +285,15 @@ const GymPayment: React.FC = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="phone" className="flex items-center">
-                      <Phone className="w-4 h-4 mr-1 text-gray-500" />
+                    <Label htmlFor="phone" className="flex items-center text-blue-800">
+                      <Phone className="w-4 h-4 mr-1 text-blue-600" />
                       رقم الهاتف
                     </Label>
                     <Input
                       id="phone"
                       type="tel"
                       placeholder="05xxxxxxxx"
+                      className="border-blue-200 focus:border-blue-400 focus:ring-blue-300"
                       {...addressForm.register('phone', { 
                         required: true,
                         pattern: /^(05)[0-9]{8}$/ 
@@ -242,14 +307,14 @@ const GymPayment: React.FC = () => {
                   <div className="flex gap-2 pt-2">
                     <Button 
                       type="submit" 
-                      className="flex-1 bg-gradient-to-r from-purple-600 to-blue-500"
+                      className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
                     >
                       إضافة
                     </Button>
                     <Button 
                       type="button" 
-                      variant="outline" 
-                      className="flex-1"
+                      variant="outlineBlue" 
+                      className="flex-1 border-blue-200 text-blue-700"
                       onClick={() => setIsAddingAddress(false)}
                     >
                       إلغاء
@@ -263,8 +328,8 @@ const GymPayment: React.FC = () => {
               <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
                 {/* Address section */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-bold flex items-center">
-                    <MapPin className="w-5 h-5 mr-2 text-purple-500" />
+                  <h3 className="text-lg font-bold flex items-center text-blue-800">
+                    <MapPin className="w-5 h-5 mr-2 text-blue-600" />
                     عنوان الإشتراك
                   </h3>
                   
@@ -288,22 +353,22 @@ const GymPayment: React.FC = () => {
                                 />
                                 <Label
                                   htmlFor={`address-${address.id}`}
-                                  className="flex flex-col space-y-1 cursor-pointer rounded-lg border border-gray-200 p-4 hover:bg-gray-50 peer-data-[state=checked]:border-purple-500 peer-data-[state=checked]:bg-purple-50"
+                                  className="flex flex-col space-y-1 cursor-pointer rounded-lg border border-gray-200 p-4 hover:bg-blue-50 peer-data-[state=checked]:border-blue-500 peer-data-[state=checked]:bg-blue-50"
                                 >
                                   <div className="flex items-start justify-between">
                                     <div>
                                       <div className="flex items-center">
-                                        <div className="w-6 h-6 rounded-full bg-purple-100 flex items-center justify-center mr-2">
-                                          <Home className="w-3 h-3 text-purple-600" />
+                                        <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center mr-2">
+                                          <Home className="w-3 h-3 text-blue-600" />
                                         </div>
-                                        <span className="font-medium">{address.title}</span>
+                                        <span className="font-medium text-blue-900">{address.title}</span>
                                       </div>
-                                      <p className="text-sm text-gray-500 mt-1">{address.address}</p>
-                                      <p className="text-xs text-gray-400 mt-1">{address.phone}</p>
+                                      <p className="text-sm text-blue-700 mt-1">{address.address}</p>
+                                      <p className="text-xs text-blue-600 mt-1">{address.phone}</p>
                                     </div>
                                     {addressId === address.id && (
-                                      <div className="h-5 w-5 rounded-full bg-purple-100 flex items-center justify-center">
-                                        <Check className="h-3 w-3 text-purple-600" />
+                                      <div className="h-5 w-5 rounded-full bg-blue-100 flex items-center justify-center">
+                                        <Check className="h-3 w-3 text-blue-600" />
                                       </div>
                                     )}
                                   </div>
@@ -316,8 +381,8 @@ const GymPayment: React.FC = () => {
                       
                       <Button 
                         type="button"
-                        variant="outline" 
-                        className="w-full mt-3 border-dashed border-gray-300 hover:bg-gray-50"
+                        variant="outlineBlue" 
+                        className="w-full mt-3 border-dashed border-blue-200 hover:bg-blue-50 text-blue-700"
                         onClick={() => setIsAddingAddress(true)}
                       >
                         <Plus className="w-4 h-4 mr-2" />
@@ -333,15 +398,15 @@ const GymPayment: React.FC = () => {
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-lg font-bold flex items-center">
-                        <Phone className="w-5 h-5 mr-2 text-purple-500" />
+                      <FormLabel className="text-lg font-bold flex items-center text-blue-800">
+                        <Phone className="w-5 h-5 mr-2 text-blue-600" />
                         رقم الهاتف للتواصل
                       </FormLabel>
                       <FormControl>
                         <Input 
                           placeholder="05XXXXXXXX" 
                           type="tel" 
-                          className="border-gray-300 focus:border-purple-400"
+                          className="border-blue-200 focus:border-blue-400 focus:ring-blue-300"
                           {...field} 
                         />
                       </FormControl>
@@ -352,8 +417,8 @@ const GymPayment: React.FC = () => {
                 
                 {/* Payment method */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-bold flex items-center">
-                    <CreditCard className="w-5 h-5 mr-2 text-purple-500" />
+                  <h3 className="text-lg font-bold flex items-center text-blue-800">
+                    <CreditCard className="w-5 h-5 mr-2 text-blue-600" />
                     طريقة الدفع
                   </h3>
                   
@@ -372,19 +437,19 @@ const GymPayment: React.FC = () => {
                               >
                                 <div className="relative">
                                   <RadioGroupItem value="card" id="card" className="peer sr-only" />
-                                  <Label htmlFor="card" className="flex items-center justify-between p-4 rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50 peer-data-[state=checked]:border-purple-500 peer-data-[state=checked]:bg-purple-50">
+                                  <Label htmlFor="card" className="flex items-center justify-between p-4 rounded-lg border border-gray-200 cursor-pointer hover:bg-blue-50 peer-data-[state=checked]:border-blue-500 peer-data-[state=checked]:bg-blue-50">
                                     <div className="flex items-center">
                                       <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
                                         <CreditCard className="w-4 h-4 text-blue-600" />
                                       </div>
                                       <div>
-                                        <p className="font-medium">فيزا / ماستركارد</p>
-                                        <p className="text-xs text-gray-500">الدفع بالبطاقة الائتمانية</p>
+                                        <p className="font-medium text-blue-900">فيزا / ماستركارد</p>
+                                        <p className="text-xs text-blue-700">الدفع بالبطاقة الائتمانية</p>
                                       </div>
                                     </div>
                                     {paymentMethod === "card" && (
-                                      <div className="h-5 w-5 rounded-full bg-purple-100 flex items-center justify-center">
-                                        <Check className="h-3 w-3 text-purple-600" />
+                                      <div className="h-5 w-5 rounded-full bg-blue-100 flex items-center justify-center">
+                                        <Check className="h-3 w-3 text-blue-600" />
                                       </div>
                                     )}
                                   </Label>
@@ -392,19 +457,19 @@ const GymPayment: React.FC = () => {
                                 
                                 <div className="relative">
                                   <RadioGroupItem value="wallet" id="wallet" className="peer sr-only" />
-                                  <Label htmlFor="wallet" className="flex items-center justify-between p-4 rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50 peer-data-[state=checked]:border-purple-500 peer-data-[state=checked]:bg-purple-50">
+                                  <Label htmlFor="wallet" className="flex items-center justify-between p-4 rounded-lg border border-gray-200 cursor-pointer hover:bg-blue-50 peer-data-[state=checked]:border-blue-500 peer-data-[state=checked]:bg-blue-50">
                                     <div className="flex items-center">
-                                      <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center mr-3">
-                                        <Wallet className="w-4 h-4 text-purple-600" />
+                                      <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                        <Wallet className="w-4 h-4 text-blue-600" />
                                       </div>
                                       <div>
-                                        <p className="font-medium">المحافظ الإلكترونية</p>
-                                        <p className="text-xs text-gray-500">STC Pay وغيرها</p>
+                                        <p className="font-medium text-blue-900">المحافظ الإلكترونية</p>
+                                        <p className="text-xs text-blue-700">فودافون كاش، محفظة مصر الرقمية</p>
                                       </div>
                                     </div>
                                     {paymentMethod === "wallet" && (
-                                      <div className="h-5 w-5 rounded-full bg-purple-100 flex items-center justify-center">
-                                        <Check className="h-3 w-3 text-purple-600" />
+                                      <div className="h-5 w-5 rounded-full bg-blue-100 flex items-center justify-center">
+                                        <Check className="h-3 w-3 text-blue-600" />
                                       </div>
                                     )}
                                   </Label>
@@ -412,19 +477,19 @@ const GymPayment: React.FC = () => {
                                 
                                 <div className="relative">
                                   <RadioGroupItem value="applepay" id="applepay" className="peer sr-only" />
-                                  <Label htmlFor="applepay" className="flex items-center justify-between p-4 rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50 peer-data-[state=checked]:border-purple-500 peer-data-[state=checked]:bg-purple-50">
+                                  <Label htmlFor="applepay" className="flex items-center justify-between p-4 rounded-lg border border-gray-200 cursor-pointer hover:bg-blue-50 peer-data-[state=checked]:border-blue-500 peer-data-[state=checked]:bg-blue-50">
                                     <div className="flex items-center">
-                                      <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center mr-3">
-                                        <Apple className="w-4 h-4 text-white" />
+                                      <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                        <Apple className="w-4 h-4 text-blue-800" />
                                       </div>
                                       <div>
-                                        <p className="font-medium">Apple Pay</p>
-                                        <p className="text-xs text-gray-500">الدفع السريع والآمن</p>
+                                        <p className="font-medium text-blue-900">Apple Pay</p>
+                                        <p className="text-xs text-blue-700">الدفع السريع والآمن</p>
                                       </div>
                                     </div>
                                     {paymentMethod === "applepay" && (
-                                      <div className="h-5 w-5 rounded-full bg-purple-100 flex items-center justify-center">
-                                        <Check className="h-3 w-3 text-purple-600" />
+                                      <div className="h-5 w-5 rounded-full bg-blue-100 flex items-center justify-center">
+                                        <Check className="h-3 w-3 text-blue-600" />
                                       </div>
                                     )}
                                   </Label>
@@ -432,19 +497,19 @@ const GymPayment: React.FC = () => {
                                 
                                 <div className="relative">
                                   <RadioGroupItem value="cash" id="cash" className="peer sr-only" />
-                                  <Label htmlFor="cash" className="flex items-center justify-between p-4 rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50 peer-data-[state=checked]:border-purple-500 peer-data-[state=checked]:bg-purple-50">
+                                  <Label htmlFor="cash" className="flex items-center justify-between p-4 rounded-lg border border-gray-200 cursor-pointer hover:bg-blue-50 peer-data-[state=checked]:border-blue-500 peer-data-[state=checked]:bg-blue-50">
                                     <div className="flex items-center">
                                       <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center mr-3">
                                         <Building className="w-4 h-4 text-green-600" />
                                       </div>
                                       <div>
-                                        <p className="font-medium">الدفع في النادي</p>
-                                        <p className="text-xs text-gray-500">ادفع عند أول زيارة</p>
+                                        <p className="font-medium text-blue-900">الدفع في النادي</p>
+                                        <p className="text-xs text-blue-700">ادفع عند أول زيارة</p>
                                       </div>
                                     </div>
                                     {paymentMethod === "cash" && (
-                                      <div className="h-5 w-5 rounded-full bg-purple-100 flex items-center justify-center">
-                                        <Check className="h-3 w-3 text-purple-600" />
+                                      <div className="h-5 w-5 rounded-full bg-blue-100 flex items-center justify-center">
+                                        <Check className="h-3 w-3 text-blue-600" />
                                       </div>
                                     )}
                                   </Label>
@@ -458,13 +523,13 @@ const GymPayment: React.FC = () => {
                       
                       {paymentMethod === "card" && (
                         <div className="mt-4">
-                          <div className="bg-gray-50 rounded-lg p-3 flex justify-between items-center">
+                          <div className="bg-blue-50 rounded-lg p-3 flex justify-between items-center">
                             <div className="flex gap-2">
                               <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png" alt="Visa" className="h-6" />
                               <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/MasterCard_Logo.svg/2560px-MasterCard_Logo.svg.png" alt="MasterCard" className="h-6" />
                               <img src="https://upload.wikimedia.org/wikipedia/ar/b/bd/Mada_Logo.svg" alt="Mada" className="h-6" />
                             </div>
-                            <span className="text-xs text-gray-500">معاملات آمنة 100%</span>
+                            <span className="text-xs text-blue-700">معاملات آمنة 100%</span>
                           </div>
                           
                           <FormField
@@ -476,9 +541,10 @@ const GymPayment: React.FC = () => {
                                   <Checkbox
                                     checked={field.value}
                                     onCheckedChange={field.onChange}
+                                    className="border-blue-300 text-blue-600 focus:ring-blue-300"
                                   />
                                 </FormControl>
-                                <FormLabel>
+                                <FormLabel className="text-blue-800">
                                   حفظ بيانات البطاقة للمستقبل
                                 </FormLabel>
                               </FormItem>
@@ -492,7 +558,7 @@ const GymPayment: React.FC = () => {
                 
                 <Button 
                   type="submit" 
-                  className="w-full bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white shadow-md py-6"
+                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md py-6"
                   disabled={loading}
                 >
                   {loading ? (
@@ -501,12 +567,53 @@ const GymPayment: React.FC = () => {
                       <span>جاري التأكيد...</span>
                     </div>
                   ) : (
-                    <>تأكيد الدفع</>
+                    <>تأكيد الدفع - {totals.finalTotal} جنيه</>
                   )}
                 </Button>
               </form>
             </Form>
           )}
+
+          {/* Coupon dialog */}
+          <Dialog open={showDialog} onOpenChange={setShowDialog}>
+            <DialogContent className="sm:max-w-md" dir="rtl">
+              <DialogHeader>
+                <DialogTitle className="text-center text-blue-800 mb-4">اختر كوبون خصم</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-3">
+                {coupons.map((coupon) => (
+                  <div 
+                    key={coupon.code}
+                    className={`border rounded-lg p-3 cursor-pointer transition-all ${selectedCoupon === coupon.code ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-200 hover:bg-blue-50'}`}
+                    onClick={() => handleApplyCoupon(coupon.code)}
+                  >
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-2">
+                        <div className="bg-blue-100 text-blue-800 font-bold px-2 py-1 rounded">
+                          {coupon.code}
+                        </div>
+                        <span className="font-medium text-blue-900">خصم {coupon.discount}%</span>
+                      </div>
+                      {selectedCoupon === coupon.code && (
+                        <div className="h-5 w-5 rounded-full bg-blue-500 flex items-center justify-center">
+                          <Check className="h-3 w-3 text-white" />
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-600 mt-1">{coupon.description}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-end mt-4">
+                <Button 
+                  variant="outlineBlue"
+                  onClick={() => setShowDialog(false)}
+                >
+                  إغلاق
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </div>

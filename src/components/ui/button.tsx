@@ -30,6 +30,10 @@ const buttonVariants = cva(
         personalCare: "bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white shadow-md",
         personalCarePill: "bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 rounded-full font-medium",
         personalCareOutline: "border border-blue-300 text-blue-700 bg-white hover:bg-blue-50 hover:border-blue-400",
+        gym: "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md", 
+        gymOutline: "border border-blue-300 text-blue-700 bg-white hover:bg-blue-50 hover:border-blue-400",
+        gymAction: "bg-blue-600 text-white hover:bg-blue-700 shadow-sm",
+        gymPill: "bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 rounded-full font-medium",
       },
       size: {
         default: "h-10 px-4 py-2",
@@ -38,7 +42,8 @@ const buttonVariants = cva(
         xl: "h-14 rounded-md px-8 text-lg",
         icon: "h-10 w-10",
         checkout: "h-14 px-6 rounded-xl text-lg font-bold",
-        pill: "h-8 px-4 rounded-full text-sm"
+        pill: "h-8 px-4 rounded-full text-sm",
+        gym: "h-12 px-6 rounded-lg text-base font-medium",
       },
     },
     defaultVariants: {

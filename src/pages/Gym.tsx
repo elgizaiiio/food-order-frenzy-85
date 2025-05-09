@@ -38,7 +38,7 @@ const Gym: React.FC = () => {
             rating: 4.8,
             features: ['تدريب شخصي', 'ساونا', 'مسبح داخلي'],
             openHours: '24 ساعة',
-            price: 'من 199 ريال/شهر'
+            price: 'من 1999 جنيه/شهر'
           },
           {
             id: 'gold-gym',
@@ -48,7 +48,7 @@ const Gym: React.FC = () => {
             rating: 4.5,
             features: ['صالة كارديو', 'يوغا', 'زومبا'],
             openHours: '6:00 - 23:00',
-            price: 'من 249 ريال/شهر'
+            price: 'من 2499 جنيه/شهر'
           },
           {
             id: 'fitness-time',
@@ -58,7 +58,7 @@ const Gym: React.FC = () => {
             rating: 4.7,
             features: ['كروس فيت', 'تمارين جماعية', 'مدربين معتمدين'],
             openHours: '5:00 - 23:30',
-            price: 'من 219 ريال/شهر'
+            price: 'من 2190 جنيه/شهر'
           },
           {
             id: 'power-zone',
@@ -68,7 +68,7 @@ const Gym: React.FC = () => {
             rating: 4.4,
             features: ['أجهزة حديثة', 'تدريب قوة', 'كمال أجسام'],
             openHours: '6:00 - 22:00',
-            price: 'من 189 ريال/شهر'
+            price: 'من 1890 جنيه/شهر'
           },
         ];
         
@@ -88,33 +88,33 @@ const Gym: React.FC = () => {
     <div className="min-h-screen bg-gray-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-20">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-600 to-blue-500 text-white sticky top-0 z-10 shadow-md">
+        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-700 to-indigo-800 text-white sticky top-0 z-10 shadow-lg">
           <Link to="/" className="text-white">
             <ArrowLeft className="w-6 h-6" />
           </Link>
           <h1 className="text-xl font-bold">dam Gym</h1>
           <div className="flex items-center gap-3">
-            <button className="text-white">
+            <button className="text-white hover:text-blue-200 transition-colors">
               <Search className="w-5 h-5" />
             </button>
-            <button className="text-white">
+            <button className="text-white hover:text-blue-200 transition-colors">
               <Share className="w-5 h-5" />
             </button>
           </div>
         </div>
 
         {/* Welcome message */}
-        <div className="px-4 pt-6 pb-2 bg-gradient-to-r from-purple-50 to-blue-50 rounded-b-3xl shadow-sm">
-          <h2 className="text-2xl font-bold text-gray-800">عاش يوحش !!</h2>
-          <p className="text-gray-600 mt-1">اختار النادي اللي تحبه واشترك معانا</p>
+        <div className="px-4 pt-6 pb-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-b-3xl shadow-sm">
+          <h2 className="text-2xl font-bold text-blue-900">عاش يوحش !!</h2>
+          <p className="text-blue-800 mt-1">اختار النادي اللي تحبه واشترك معانا</p>
         </div>
 
         {/* Gym Subscriptions button */}
         <div className="px-4 py-4">
           <Link to="/gym/subscriptions">
             <Button 
-              variant="outline" 
-              className="w-full bg-gradient-to-r from-yellow-50 to-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100 py-6 font-medium shadow-sm"
+              variant="outlineBlue" 
+              className="w-full bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border-blue-200 hover:bg-blue-100 py-6 font-medium shadow-sm"
             >
               <Users className="w-5 h-5 mr-2" />
               اشتراكاتك الحالية
@@ -124,8 +124,8 @@ const Gym: React.FC = () => {
 
         {/* Gym List */}
         <div className="px-4 py-2">
-          <h3 className="text-lg font-semibold mb-4 flex items-center">
-            <Dumbbell className="w-5 h-5 text-purple-600 mr-2" />
+          <h3 className="text-lg font-semibold mb-4 flex items-center text-blue-900">
+            <Dumbbell className="w-5 h-5 text-blue-600 mr-2" />
             النوادي المتاحة
           </h3>
           
@@ -134,11 +134,11 @@ const Gym: React.FC = () => {
             <div className="space-y-4">
               {[1, 2, 3].map(i => (
                 <Card key={i} className="overflow-hidden border-none shadow-md animate-pulse">
-                  <div className="relative h-48 bg-gray-200"></div>
+                  <div className="relative h-48 bg-blue-100"></div>
                   <CardContent className="p-4">
-                    <div className="h-6 bg-gray-200 rounded-md mb-2 w-3/4"></div>
-                    <div className="h-4 bg-gray-200 rounded-md mb-4 w-1/2"></div>
-                    <div className="h-10 bg-gray-200 rounded-md w-full"></div>
+                    <div className="h-6 bg-blue-100 rounded-md mb-2 w-3/4"></div>
+                    <div className="h-4 bg-blue-100 rounded-md mb-4 w-1/2"></div>
+                    <div className="h-10 bg-blue-100 rounded-md w-full"></div>
                   </CardContent>
                 </Card>
               ))}
@@ -148,7 +148,7 @@ const Gym: React.FC = () => {
               {gyms.map((gym) => (
                 <Card 
                   key={gym.id} 
-                  className="overflow-hidden border border-gray-100 rounded-xl shadow-md transition-all hover:shadow-lg"
+                  className="overflow-hidden border border-blue-100 rounded-xl shadow-md transition-all hover:shadow-lg hover:border-blue-300"
                 >
                   <div className="relative h-48">
                     <img 
@@ -156,21 +156,21 @@ const Gym: React.FC = () => {
                       alt={gym.name} 
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute top-0 right-0 bg-gradient-to-l from-purple-500 to-blue-500 text-white px-3 py-1 m-2 rounded-full text-sm font-medium shadow-sm">
+                    <div className="absolute top-0 right-0 bg-gradient-to-l from-blue-700 to-indigo-600 text-white px-3 py-1 m-2 rounded-full text-sm font-medium shadow-sm">
                       {gym.price}
                     </div>
                   </div>
                   <CardContent className="p-4">
                     <div className="flex justify-between items-center mb-2">
-                      <h3 className="font-bold text-xl text-gray-800">{gym.name}</h3>
+                      <h3 className="font-bold text-xl text-blue-800">{gym.name}</h3>
                       <div className="flex items-center bg-amber-50 px-2 py-1 rounded-md">
                         <Star className="w-4 h-4 text-amber-500 fill-amber-500 mr-1" />
                         <span className="text-sm font-semibold text-amber-700">{gym.rating}</span>
                       </div>
                     </div>
                     
-                    <div className="flex items-center text-sm text-gray-500 mb-3">
-                      <MapPin className="w-4 h-4 mr-1 text-gray-400" />
+                    <div className="flex items-center text-sm text-blue-700 mb-3">
+                      <MapPin className="w-4 h-4 mr-1 text-blue-500" />
                       <span>{gym.location}</span>
                     </div>
                     
@@ -179,7 +179,7 @@ const Gym: React.FC = () => {
                         {gym.features.map((feature, idx) => (
                           <span 
                             key={idx}
-                            className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full"
+                            className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full border border-blue-100"
                           >
                             {feature}
                           </span>
@@ -187,19 +187,19 @@ const Gym: React.FC = () => {
                       </div>
                     )}
                     
-                    <div className="flex justify-between items-center mb-4 text-sm text-gray-500">
+                    <div className="flex justify-between items-center mb-4 text-sm text-blue-700">
                       <div className="flex items-center">
-                        <Clock className="w-4 h-4 mr-1 text-gray-400" />
+                        <Clock className="w-4 h-4 mr-1 text-blue-500" />
                         <span>{gym.openHours}</span>
                       </div>
                       <div className="flex items-center">
-                        <DollarSign className="w-4 h-4 mr-1 text-gray-400" />
+                        <DollarSign className="w-4 h-4 mr-1 text-blue-500" />
                         <span>{gym.price?.split('/')[0]}</span>
                       </div>
                     </div>
                     
                     <Button 
-                      className="w-full bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white shadow-md py-6"
+                      className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md py-6"
                       onClick={() => navigate(`/gym/${gym.id}/subscribe`)}
                     >
                       اشترك الآن
