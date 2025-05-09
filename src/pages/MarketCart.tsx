@@ -1,33 +1,23 @@
 
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowLeft, Minus, Plus, X, Trash2, ShoppingBag } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Minus, Plus, X, Trash2, ShoppingBag, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { toast } from "sonner";
+import { MarketCartProvider, useMarketCart } from '@/context/MarketCartContext';
 
-const MarketCart: React.FC = () => {
-  // Mock cart data
-  const [cartItems, setCartItems] = useState([{
-    id: 1,
-    name: "كوكاكولا",
-    price: 6,
-    quantity: 2,
-    image: "https://images.unsplash.com/photo-1581006852262-e4307cf6283a?auto=format&fit=crop&q=80&w=200&h=200"
-  }, {
-    id: 2,
-    name: "عصير برتقال",
-    price: 12,
-    quantity: 1,
-    image: "https://images.unsplash.com/photo-1600271886742-f049cd451bba?auto=format&fit=crop&q=80&w=200&h=200"
-  }, {
-    id: 3,
-    name: "ماء معدني",
-    price: 2,
-    quantity: 3,
-    image: "https://images.unsplash.com/photo-1616118132534-381148898bb4?auto=format&fit=crop&q=80&w=200&h=200"
-  }]);
-
+const MarketCartContent: React.FC = () => {
+  const navigate = useNavigate();
+  const { 
+    items, 
+    removeFromCart, 
+    increaseQuantity, 
+    decreaseQuantity, 
+    clearCart,
+    totalPrice
+  } = useMarketCart();
+  
   // Suggested items
   const suggestedItems = [{
     id: 4,
@@ -46,37 +36,29 @@ const MarketCart: React.FC = () => {
     image: "https://images.unsplash.com/photo-1576673442511-7e39b6545c87?auto=format&fit=crop&q=80&w=200&h=200"
   }];
   
-  const updateQuantity = (id: number, change: number) => {
-    setCartItems(prevItems => prevItems.map(item => item.id === id ? {
-      ...item,
-      quantity: Math.max(1, item.quantity + change)
-    } : item));
-  };
-  
   const removeItem = (id: number) => {
-    const itemToRemove = cartItems.find(item => item.id === id);
+    const itemToRemove = items.find(item => item.id === id);
     if (itemToRemove) {
-      setCartItems(prevItems => prevItems.filter(item => item.id !== id));
+      removeFromCart(id);
       toast.success(`تم إزالة ${itemToRemove.name} من سلتك`);
     }
   };
   
   const addSuggested = (item: any) => {
-    setCartItems(prev => [...prev, {
+    const productToAdd = {
       ...item,
-      quantity: 1
-    }]);
+      quantity: '',
+      categoryId: 0,
+      inStock: true,
+      description: '',
+    };
+    increaseQuantity(item.id);
     toast.success(`تمت إضافة ${item.name} إلى سلتك`);
   };
 
-  // Calculate total
-  const calculateSubtotal = () => {
-    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
-  };
-  
-  const subtotal = calculateSubtotal();
+  // Calculate delivery fee and total
   const deliveryFee = 10;
-  const total = subtotal + deliveryFee;
+  const orderTotal = totalPrice + deliveryFee;
   
   return (
     <div className="min-h-screen bg-blue-50" dir="rtl">
@@ -93,8 +75,8 @@ const MarketCart: React.FC = () => {
         {/* Cart Items */}
         <div className="p-5">
           <div className="mb-6">
-            {cartItems.length > 0 ? (
-              cartItems.map(item => (
+            {items.length > 0 ? (
+              items.map(item => (
                 <div 
                   key={item.id} 
                   className="flex items-center justify-between p-4 mb-3 rounded-xl bg-white shadow-sm border border-blue-100 hover:bg-blue-50 transition-colors animate-fade-in"
@@ -104,20 +86,23 @@ const MarketCart: React.FC = () => {
                       src={item.image} 
                       alt={item.name} 
                       className="w-20 h-20 object-cover rounded-lg shadow-md border border-blue-100" 
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/100?text=صورة+غير+متوفرة';
+                      }}
                     />
                     <div>
-                      <h3 className="font-bold text-gray-800">{item.name}</h3>
+                      <h3 className="font-bold text-blue-900">{item.name}</h3>
                       <p className="text-blue-600 font-medium">{item.price} جنيه</p>
                       <div className="flex items-center gap-3 mt-2 bg-white rounded-full border border-blue-200 shadow-sm p-1">
                         <button 
-                          onClick={() => updateQuantity(item.id, -1)} 
+                          onClick={() => decreaseQuantity(item.id)} 
                           className="w-7 h-7 flex items-center justify-center rounded-full border-0 bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors"
                         >
                           <Minus className="w-3 h-3" />
                         </button>
-                        <span className="font-bold text-gray-800 w-6 text-center">{item.quantity}</span>
+                        <span className="font-bold text-blue-900 w-6 text-center">{item.quantity}</span>
                         <button 
-                          onClick={() => updateQuantity(item.id, 1)} 
+                          onClick={() => increaseQuantity(item.id)} 
                           className="w-7 h-7 flex items-center justify-center rounded-full border-0 bg-blue-500 text-white hover:bg-blue-600 transition-colors"
                         >
                           <Plus className="w-3 h-3" />
@@ -138,7 +123,7 @@ const MarketCart: React.FC = () => {
                 <div className="bg-blue-100 rounded-full w-20 h-20 mx-auto flex items-center justify-center mb-4">
                   <ShoppingBag className="w-10 h-10 text-blue-500" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-800 mb-2">سلة التسوق فارغة</h3>
+                <h3 className="text-xl font-bold text-blue-800 mb-2">سلة التسوق فارغة</h3>
                 <p className="text-gray-500 mb-6">لم تقم بإضافة أي منتجات بعد</p>
                 <Link to="/market">
                   <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg">
@@ -149,13 +134,13 @@ const MarketCart: React.FC = () => {
             )}
           </div>
 
-          {cartItems.length > 0 && (
+          {items.length > 0 && (
             <>
               {/* Add More Button */}
               <Link to="/market">
                 <Button 
                   variant="outline" 
-                  className="w-full mb-8 border-blue-300 text-blue-700 hover:bg-blue-50 hover:text-blue-800 py-6 text-lg"
+                  className="w-full mb-8 border-blue-300 text-blue-700 hover:bg-blue-50 hover:text-blue-800 py-6 text-lg shadow-sm"
                 >
                   إضافة المزيد من المنتجات
                 </Button>
@@ -163,7 +148,7 @@ const MarketCart: React.FC = () => {
 
               {/* Suggested Items */}
               <div className="mb-8 animate-fade-in">
-                <h2 className="text-xl font-bold mb-4 text-gray-800 border-r-4 border-blue-500 pr-3">منتجات قد تعجبك أيضاً</h2>
+                <h2 className="text-xl font-bold mb-4 text-blue-800 border-r-4 border-blue-500 pr-3">منتجات قد تعجبك أيضاً</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                   {suggestedItems.map(item => (
                     <Card 
@@ -175,17 +160,20 @@ const MarketCart: React.FC = () => {
                           src={item.image} 
                           alt={item.name} 
                           className="w-full h-28 object-cover" 
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = 'https://via.placeholder.com/100?text=صورة+غير+متوفرة';
+                          }}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-blue-900/30 to-transparent"></div>
                       </div>
-                      <div className="p-3">
-                        <h3 className="font-medium text-gray-800">{item.name}</h3>
+                      <div className="p-3 bg-gradient-to-b from-blue-50 to-white">
+                        <h3 className="font-medium text-blue-800">{item.name}</h3>
                         <div className="flex items-center justify-between mt-2">
                           <span className="text-blue-600 font-bold">{item.price} جنيه</span>
                           <Button 
                             size="sm" 
                             onClick={() => addSuggested(item)} 
-                            className="rounded-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white"
+                            className="rounded-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-sm"
                           >
                             إضافة
                           </Button>
@@ -198,34 +186,55 @@ const MarketCart: React.FC = () => {
 
               {/* Order Summary */}
               <div className="mb-4 bg-blue-50 p-5 rounded-xl shadow-sm border border-blue-100 animate-fade-in">
-                <h2 className="text-xl font-bold mb-4 text-gray-800">ملخص الطلب</h2>
+                <h2 className="text-xl font-bold mb-4 text-blue-800">ملخص الطلب</h2>
                 <div className="space-y-3 mb-4">
                   <div className="flex justify-between">
                     <span className="text-gray-600">المجموع الفرعي</span>
-                    <span className="font-medium">{subtotal} جنيه</span>
+                    <span className="font-medium">{totalPrice.toFixed(2)} جنيه</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">رسوم التوصيل</span>
-                    <span className="font-medium">{deliveryFee} جنيه</span>
+                    <span className="font-medium">{deliveryFee.toFixed(2)} جنيه</span>
                   </div>
                   <div className="flex justify-between font-bold pt-3 border-t text-lg">
                     <span>المبلغ الإجمالي</span>
-                    <span className="text-blue-600">{total} جنيه</span>
+                    <span className="text-blue-600">{orderTotal.toFixed(2)} جنيه</span>
                   </div>
                 </div>
+              </div>
+
+              {/* Buttons */}
+              <div className="mt-6 space-y-3 mb-16">
+                <Button 
+                  onClick={() => navigate('/market/checkout')}
+                  className="w-full py-6 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold shadow-md text-lg"
+                >
+                  <ShoppingCart className="ml-2 h-5 w-5" />
+                  إتمام الطلب
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full border-gray-300 text-gray-600 hover:bg-blue-50 hover:text-blue-700"
+                  onClick={() => {
+                    clearCart();
+                    toast.success("تم تفريغ السلة بنجاح");
+                  }}
+                >
+                  تفريغ السلة
+                </Button>
               </div>
             </>
           )}
         </div>
 
         {/* Bottom Buttons - Fixed at bottom */}
-        {cartItems.length > 0 && (
+        {items.length > 0 && (
           <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 max-w-md mx-auto shadow-lg mb-16">
             <div className="flex gap-3">
               <Link to="/market" className="flex-1">
                 <Button 
                   variant="outline" 
-                  className="w-full py-6 text-gray-600 border-gray-300 hover:bg-blue-50"
+                  className="w-full py-6 text-blue-700 border-blue-200 hover:bg-blue-50 shadow-sm"
                 >
                   إضافة المزيد
                 </Button>
@@ -242,6 +251,14 @@ const MarketCart: React.FC = () => {
         )}
       </div>
     </div>
+  );
+};
+
+const MarketCart: React.FC = () => {
+  return (
+    <MarketCartProvider>
+      <MarketCartContent />
+    </MarketCartProvider>
   );
 };
 

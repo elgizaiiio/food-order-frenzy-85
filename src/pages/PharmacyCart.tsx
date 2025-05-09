@@ -54,9 +54,9 @@ const PharmacyCart: React.FC = () => {
           {items.length === 0 ? (
             <div className="text-center py-12 animate-fade-in">
               <div className="w-20 h-20 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                <ShoppingBag className="w-8 h-8 text-blue-500" />
+                <ShoppingBag className="w-8 h-8 text-blue-600" />
               </div>
-              <h3 className="font-bold text-lg mb-2">السلة فارغة</h3>
+              <h3 className="font-bold text-lg mb-2 text-blue-800">السلة فارغة</h3>
               <p className="text-gray-500 mb-6">لم تُضِف أي منتجات إلى سلة المشتريات بعد</p>
               <Button 
                 onClick={() => navigate('/pharmacy')}
@@ -74,10 +74,13 @@ const PharmacyCart: React.FC = () => {
                     <img 
                       src={item.image} 
                       alt={item.name} 
-                      className="w-16 h-16 object-cover rounded shadow-sm border border-blue-100"
+                      className="w-16 h-16 object-cover rounded-lg shadow-sm border border-blue-100"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/100?text=صورة+غير+متوفرة';
+                      }}
                     />
                     <div className="flex-1 mr-3">
-                      <h3 className="font-medium text-gray-800">{item.name}</h3>
+                      <h3 className="font-medium text-blue-800">{item.name}</h3>
                       <p className="text-sm text-blue-600 font-medium">{item.price} ج.م</p>
                     </div>
                     <div className="flex items-center ml-2">
@@ -93,7 +96,7 @@ const PharmacyCart: React.FC = () => {
                       <Button 
                         variant="outline" 
                         size="icon"
-                        className="h-8 w-8 rounded-full bg-blue-500 text-white hover:bg-blue-600 border-blue-500"
+                        className="h-8 w-8 rounded-full bg-blue-600 text-white hover:bg-blue-700 border-blue-600"
                         onClick={() => increaseQuantity(item.id)}
                       >
                         <Plus className="h-3 w-3" />
@@ -113,7 +116,7 @@ const PharmacyCart: React.FC = () => {
 
               {/* Suggested Products */}
               <div className="mt-8 mb-6 animate-fade-in">
-                <h3 className="font-bold mb-3 text-gray-800 flex items-center">
+                <h3 className="font-bold mb-3 text-blue-800 flex items-center">
                   <div className="w-1 h-5 bg-blue-600 ml-2"></div>
                   منتجات قد تعجبك
                 </h3>
@@ -124,14 +127,17 @@ const PharmacyCart: React.FC = () => {
                         src={product.image} 
                         alt={product.name} 
                         className="w-full h-24 object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = 'https://via.placeholder.com/100?text=صورة+غير+متوفرة';
+                        }}
                       />
-                      <CardContent className="p-2">
-                        <p className="text-sm font-medium">{product.name}</p>
+                      <CardContent className="p-2 bg-gradient-to-b from-blue-50 to-white">
+                        <p className="text-sm font-medium text-blue-800">{product.name}</p>
                         <div className="flex justify-between items-center mt-1">
-                          <span className="text-xs text-blue-700 font-bold">{product.price} ج.م</span>
+                          <span className="text-xs text-blue-600 font-bold">{product.price} ج.م</span>
                           <Button 
                             size="sm" 
-                            className="h-6 w-6 p-0 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-700"
+                            className="h-6 w-6 p-0 rounded-full bg-blue-600 hover:bg-blue-700 text-white"
                           >
                             <Plus className="h-3 w-3" />
                           </Button>
@@ -145,7 +151,7 @@ const PharmacyCart: React.FC = () => {
               {/* Order summary */}
               <Card className="mt-6 bg-blue-50 border border-blue-100 animate-fade-in">
                 <CardContent className="p-4">
-                  <h3 className="font-bold mb-3 text-gray-800">ملخص الطلب</h3>
+                  <h3 className="font-bold mb-3 text-blue-800">ملخص الطلب</h3>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-gray-600">المجموع الفرعي</span>

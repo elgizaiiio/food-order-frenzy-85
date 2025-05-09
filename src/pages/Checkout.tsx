@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Clock, ShoppingBag } from 'lucide-react';
@@ -31,7 +32,9 @@ const OrderSummary = () => {
     deliveryFee,
     orderTotal
   } = useCheckout();
-  return <div className="space-y-3">
+  
+  return (
+    <div className="space-y-3">
       <div className="flex justify-between text-sm">
         <span className="text-gray-600">المجموع الفرعي</span>
         <span>{subtotal} ر.س</span>
@@ -40,12 +43,13 @@ const OrderSummary = () => {
         <span className="text-gray-600">رسوم التوصيل</span>
         <span>{deliveryFee} ر.س</span>
       </div>
-      <Separator className="my-2" />
+      <Separator className="my-2 bg-blue-200" />
       <div className="flex justify-between font-bold">
         <span>الإجمالي</span>
-        <span className="text-brand-600">{orderTotal} ر.س</span>
+        <span className="text-blue-700">{orderTotal} ر.س</span>
       </div>
-    </div>;
+    </div>
+  );
 };
 
 // مكون وقت التوصيل
@@ -54,30 +58,33 @@ const DeliveryTime = () => {
     min: 30,
     max: 45
   });
-  return <div className="space-y-4">
+  
+  return (
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-bold flex items-center gap-2">
-          <Clock className="w-5 h-5 text-brand-500" />
+        <h3 className="text-lg font-bold flex items-center gap-2 text-blue-800">
+          <Clock className="w-5 h-5 text-blue-600" />
           وقت التوصيل المتوقع
         </h3>
       </div>
 
-      <Card className="overflow-hidden bg-gradient-to-r from-brand-50 to-white">
+      <Card className="overflow-hidden bg-gradient-to-r from-blue-50 to-white border border-blue-100">
         <CardContent className="p-4">
           <div className="flex justify-between items-center">
             <div className="flex-1">
               <p className="text-sm text-gray-600">وقت الوصول المتوقع</p>
-              <p className="text-lg font-bold text-brand-700">
+              <p className="text-lg font-bold text-blue-700">
                 {deliveryTime.min} - {deliveryTime.max} دقيقة
               </p>
             </div>
-            <div className="w-12 h-12 flex items-center justify-center bg-brand-100 rounded-full">
-              <Clock className="w-6 h-6 text-brand-600" />
+            <div className="w-12 h-12 flex items-center justify-center bg-blue-100 rounded-full shadow-sm">
+              <Clock className="w-6 h-6 text-blue-600" />
             </div>
           </div>
         </CardContent>
       </Card>
-    </div>;
+    </div>
+  );
 };
 
 // مكون زر تأكيد الطلب
@@ -90,13 +97,16 @@ const CheckoutButton = () => {
     orderTotal
   } = useCheckout();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
   const handleCheckout = async () => {
     if (!selectedAddressId) {
       toast.error("الرجاء اختيار عنوان التوصيل");
       return;
     }
+    
     setIsSubmitting(true);
     const selectedAddress = addresses.find(addr => addr.id === selectedAddressId);
+    
     try {
       // تحضير تفاصيل الطلب
       const orderDetails = {
@@ -112,6 +122,7 @@ const CheckoutButton = () => {
 
       // إرسال الطلب إلى واجهة برمجة التطبيقات
       const response = await submitOrder(orderDetails);
+      
       if (response.success) {
         // عرض رسالة نجاح
         toast.success("تم تقديم طلبك بنجاح!");
@@ -134,9 +145,16 @@ const CheckoutButton = () => {
       setIsSubmitting(false);
     }
   };
-  return <Button onClick={handleCheckout} disabled={isSubmitting} className="w-full py-6 text-lg font-bold text-white shadow-lg bg-blue-800 hover:bg-blue-700">
+  
+  return (
+    <Button 
+      onClick={handleCheckout} 
+      disabled={isSubmitting} 
+      className="w-full py-6 text-lg font-bold text-white shadow-lg bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
+    >
       {isSubmitting ? "جارٍ تأكيد الطلب..." : `تأكيد الطلب · ${orderTotal} ر.س`}
-    </Button>;
+    </Button>
+  );
 };
 
 // المكون الرئيسي لصفحة الدفع
@@ -145,56 +163,66 @@ const CheckoutContent = () => {
   const {
     setIsAddingNewAddress
   } = useCheckout();
+  
   const handleAddNewAddress = () => {
     setIsAddingAddress(true);
     setIsAddingNewAddress(true);
   };
+  
   const handleCancelAddAddress = () => {
     setIsAddingAddress(false);
     setIsAddingNewAddress(false);
   };
-  return <div className="space-y-6 pb-28">
+  
+  return (
+    <div className="space-y-6 pb-28">
       {/* قسم العناوين */}
-      <Card className="border-none shadow-sm">
+      <Card className="border border-blue-100 shadow-sm">
         <CardContent className="p-5">
-          {isAddingAddress ? <NewAddressForm onCancel={handleCancelAddAddress} /> : <AddressSelector onAddNewClick={handleAddNewAddress} />}
+          {isAddingAddress ? (
+            <NewAddressForm onCancel={handleCancelAddAddress} />
+          ) : (
+            <AddressSelector onAddNewClick={handleAddNewAddress} />
+          )}
         </CardContent>
       </Card>
       
       {/* قسم وقت التوصيل */}
-      <Card className="border-none shadow-sm">
+      <Card className="border border-blue-100 shadow-sm">
         <CardContent className="p-5">
           <DeliveryTime />
         </CardContent>
       </Card>
       
       {/* قسم طرق الدفع */}
-      <Card className="border-none shadow-sm">
+      <Card className="border border-blue-100 shadow-sm">
         <CardContent className="p-5">
           <PaymentMethods />
         </CardContent>
       </Card>
       
       {/* قسم ملخص الطلب */}
-      <Card className="border-none shadow-sm">
+      <Card className="border border-blue-100 shadow-sm">
         <CardContent className="p-5">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-bold flex items-center gap-2">
-                <ShoppingBag className="w-5 h-5 text-brand-500" />
+              <h3 className="text-lg font-bold flex items-center gap-2 text-blue-800">
+                <ShoppingBag className="w-5 h-5 text-blue-600" />
                 ملخص الطلب
               </h3>
             </div>
             
             {/* عناصر السلة */}
             <div className="space-y-3 mb-4">
-              {cartItems.map(item => <div key={item.id} className="flex justify-between text-sm">
-                  <span>{item.name} × {item.quantity}</span>
-                  <span>{item.price * item.quantity} ر.س</span>
-                </div>)}
+              {cartItems.map(item => (
+                <div key={item.id} className="flex justify-between text-sm">
+                  <span className="text-blue-800 font-medium">{item.name} × {item.quantity}</span>
+                  <span className="text-blue-700 font-medium">{item.price * item.quantity} ر.س</span>
+                </div>
+              ))}
             </div>
             
-            <Separator />
+            <Separator className="bg-blue-100" />
             
             {/* ملخص الأسعار */}
             <OrderSummary />
@@ -206,16 +234,19 @@ const CheckoutContent = () => {
       <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-10 max-w-md mx-auto mb-28">
         <CheckoutButton />
       </div>
-    </div>;
+    </div>
+  );
 };
+
 const Checkout: React.FC = () => {
-  return <CheckoutProvider>
-      <div className="min-h-screen bg-gray-50" dir="rtl">
+  return (
+    <CheckoutProvider>
+      <div className="min-h-screen bg-blue-50" dir="rtl">
         <div className="max-w-md mx-auto bg-white pb-28">
           {/* الرأس */}
-          <div className="sticky top-0 bg-white border-b shadow-sm z-20">
+          <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-md z-20">
             <div className="flex items-center justify-between p-4">
-              <Link to="/cart" className="text-gray-700">
+              <Link to="/cart" className="text-white hover:text-blue-100">
                 <ArrowLeft className="w-6 h-6" />
               </Link>
               <h1 className="text-xl font-bold">الدفع والتوصيل</h1>
@@ -229,6 +260,8 @@ const Checkout: React.FC = () => {
           </div>
         </div>
       </div>
-    </CheckoutProvider>;
+    </CheckoutProvider>
+  );
 };
+
 export default Checkout;

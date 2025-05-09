@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, MapPin, Clock, CreditCard, Phone, Wallet, DollarSign, Apple } from 'lucide-react';
+import { ArrowLeft, MapPin, Clock, CreditCard, Phone, Wallet, DollarSign, Apple, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useMarketCart, MarketCartProvider } from '@/context/MarketCartContext';
 import { Card, CardContent } from '@/components/ui/card';
@@ -20,30 +20,32 @@ const DeliveryTime = () => {
     min: 30,
     max: 45
   });
-  return <div className="space-y-4">
+  return (
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-bold flex items-center gap-2">
-          <Clock className="w-5 h-5 text-brand-500" />
+        <h3 className="text-lg font-bold flex items-center gap-2 text-blue-800">
+          <Clock className="w-5 h-5 text-blue-600" />
           وقت التوصيل المتوقع
         </h3>
       </div>
 
-      <Card className="overflow-hidden bg-gradient-to-r from-brand-50 to-white">
+      <Card className="overflow-hidden bg-gradient-to-r from-blue-50 to-white border border-blue-100">
         <CardContent className="p-4">
           <div className="flex justify-between items-center">
             <div className="flex-1">
               <p className="text-sm text-gray-600">وقت الوصول المتوقع</p>
-              <p className="text-lg font-bold text-brand-700">
+              <p className="text-lg font-bold text-blue-700">
                 {deliveryTime.min} - {deliveryTime.max} دقيقة
               </p>
             </div>
-            <div className="w-12 h-12 flex items-center justify-center bg-brand-100 rounded-full">
-              <Clock className="w-6 h-6 text-brand-600" />
+            <div className="w-12 h-12 flex items-center justify-center bg-blue-100 rounded-full shadow-sm">
+              <Clock className="w-6 h-6 text-blue-600" />
             </div>
           </div>
         </CardContent>
       </Card>
-    </div>;
+    </div>
+  );
 };
 
 // مكون زر تأكيد الطلب
@@ -65,6 +67,7 @@ const CheckoutButton = () => {
   const totalPrice = items.reduce((total, item) => total + item.price * item.quantity, 0);
   const deliveryFee = 10;
   const orderTotal = totalPrice + deliveryFee;
+  
   const handleCheckout = async () => {
     if (!selectedAddressId) {
       toast({
@@ -127,9 +130,16 @@ const CheckoutButton = () => {
       setIsSubmitting(false);
     }
   };
-  return <Button onClick={handleCheckout} className="w-full py-6 text-lg font-bold bg-brand-500 hover:bg-brand-600 text-white shadow-lg" disabled={isSubmitting || items.length === 0}>
-      {isSubmitting ? "جارٍ تأكيد الطلب..." : `تأكيد الطلب · ${orderTotal} ر.س`}
-    </Button>;
+  
+  return (
+    <Button 
+      onClick={handleCheckout} 
+      className="w-full py-6 text-lg font-bold bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg" 
+      disabled={isSubmitting || items.length === 0}
+    >
+      {isSubmitting ? "جارٍ تأكيد الطلب..." : `تأكيد الطلب · ${orderTotal.toFixed(2)} ر.س`}
+    </Button>
+  );
 };
 
 // مكون ملخص الطلب
@@ -140,31 +150,40 @@ const OrderSummary = () => {
   const subtotal = items.reduce((total, item) => total + item.price * item.quantity, 0);
   const deliveryFee = 10;
   const total = subtotal + deliveryFee;
-  return <div className="space-y-4">
+  
+  return (
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-bold">ملخص الطلب</h3>
+        <h3 className="text-lg font-bold text-blue-800">ملخص الطلب</h3>
       </div>
       
       {/* عناصر السلة */}
       <div className="space-y-3">
-        {items.map(item => <div key={item.id} className="flex justify-between items-center py-2 border-b border-gray-100">
+        {items.map(item => (
+          <div key={item.id} className="flex justify-between items-center py-2 border-b border-blue-100">
             <div className="flex items-center gap-3">
-              <div className="bg-gray-100 w-12 h-12 rounded-md flex items-center justify-center overflow-hidden">
-                <img src={item.image} alt={item.name} className="w-full h-full object-cover" onError={e => {
-              (e.target as HTMLImageElement).src = 'https://via.placeholder.com/100';
-            }} />
+              <div className="bg-blue-50 w-12 h-12 rounded-md flex items-center justify-center overflow-hidden border border-blue-100 shadow-sm">
+                <img 
+                  src={item.image} 
+                  alt={item.name} 
+                  className="w-full h-full object-cover" 
+                  onError={e => {
+                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/100?text=صورة+غير+متوفرة';
+                  }} 
+                />
               </div>
               <div>
-                <p className="font-medium">{item.name}</p>
-                <p className="text-sm text-gray-500">الكمية: {item.quantity}</p>
+                <p className="font-medium text-blue-900">{item.name}</p>
+                <p className="text-sm text-gray-500">الكمية: <span className="text-blue-600 font-medium">{item.quantity}</span></p>
               </div>
             </div>
-            <p className="font-medium">{(item.price * item.quantity).toFixed(2)} ر.س</p>
-          </div>)}
+            <p className="font-medium text-blue-700">{(item.price * item.quantity).toFixed(2)} ر.س</p>
+          </div>
+        ))}
       </div>
       
       {/* ملخص الأسعار */}
-      <div className="space-y-2 pt-3">
+      <div className="space-y-2 pt-3 bg-blue-50 p-3 rounded-lg">
         <div className="flex justify-between text-sm">
           <span className="text-gray-600">المجموع الفرعي</span>
           <span>{subtotal.toFixed(2)} ر.س</span>
@@ -173,12 +192,13 @@ const OrderSummary = () => {
           <span className="text-gray-600">رسوم التوصيل</span>
           <span>{deliveryFee.toFixed(2)} ر.س</span>
         </div>
-        <div className="flex justify-between text-lg font-bold pt-2 border-t border-gray-200">
+        <div className="flex justify-between text-lg font-bold pt-2 border-t border-blue-200">
           <span>الإجمالي</span>
-          <span className="text-brand-500">{total.toFixed(2)} ر.س</span>
+          <span className="text-blue-600">{total.toFixed(2)} ر.س</span>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
 
 // المكون الرئيسي لصفحة الدفع في السوبرماركت
@@ -198,25 +218,34 @@ const MarketCheckoutContent = () => {
     setIsAddingAddress(false);
     setIsAddingNewAddress(false);
   };
+  
   if (items.length === 0) {
-    return <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-        <div className="w-16 h-16 mb-4 rounded-full bg-brand-100 flex items-center justify-center">
-          <MapPin className="w-8 h-8 text-brand-500" />
+    return (
+      <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+        <div className="w-16 h-16 mb-4 rounded-full bg-blue-100 flex items-center justify-center">
+          <ShoppingBag className="w-8 h-8 text-blue-600" />
         </div>
-        <h2 className="text-xl font-bold mb-2">سلة التسوق فارغة</h2>
+        <h2 className="text-xl font-bold mb-2 text-blue-800">سلة التسوق فارغة</h2>
         <p className="text-gray-600 mb-6">لم تقم بإضافة أي منتجات إلى سلة التسوق بعد</p>
         <Link to="/market">
-          <Button className="bg-brand-500 hover:bg-brand-600">
+          <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-sm">
             تصفح المنتجات
           </Button>
         </Link>
-      </div>;
+      </div>
+    );
   }
-  return <div className="space-y-6 pb-28">
+  
+  return (
+    <div className="space-y-6 pb-28">
       {/* قسم العناوين */}
       <Card className="border-none shadow-sm">
         <CardContent className="p-5">
-          {isAddingAddress ? <NewAddressForm onCancel={handleCancelAddAddress} /> : <AddressSelector onAddNewClick={handleAddNewAddress} />}
+          {isAddingAddress ? (
+            <NewAddressForm onCancel={handleCancelAddAddress} />
+          ) : (
+            <AddressSelector onAddNewClick={handleAddNewAddress} />
+          )}
         </CardContent>
       </Card>
       
@@ -245,17 +274,20 @@ const MarketCheckoutContent = () => {
       <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-10 max-w-md mx-auto mb-28">
         <CheckoutButton />
       </div>
-    </div>;
+    </div>
+  );
 };
+
 const MarketCheckout: React.FC = () => {
-  return <MarketCartProvider>
+  return (
+    <MarketCartProvider>
       <CheckoutProvider>
-        <div className="min-h-screen bg-gray-50" dir="rtl">
+        <div className="min-h-screen bg-blue-50" dir="rtl">
           <div className="max-w-md mx-auto bg-white pb-28">
             {/* الرأس */}
-            <div className="sticky top-0 bg-white border-b shadow-sm z-20">
+            <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-md z-20">
               <div className="flex items-center justify-between p-4">
-                <Link to="/market/cart" className="text-gray-700">
+                <Link to="/market/cart" className="text-white hover:text-blue-100">
                   <ArrowLeft className="w-6 h-6" />
                 </Link>
                 <h1 className="text-xl font-bold">الدفع والتوصيل</h1>
@@ -270,6 +302,8 @@ const MarketCheckout: React.FC = () => {
           </div>
         </div>
       </CheckoutProvider>
-    </MarketCartProvider>;
+    </MarketCartProvider>
+  );
 };
+
 export default MarketCheckout;
