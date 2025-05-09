@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Share2, Award, Users, CheckCircle, DollarSign, Clock } from 'lucide-react';
+import { ArrowLeft, Share2, Award, Users, CheckCircle, Clock, Star, Info, Gift } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
@@ -95,21 +95,11 @@ const DamBro: React.FC = () => {
               <div className="space-y-6">
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                    <CheckCircle className="w-6 h-6 text-blue-600" />
+                    <Star className="w-6 h-6 text-blue-600" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-lg text-blue-900 mb-1">توصيل مجاني لجميع الطلبات</h4>
-                    <p className="text-blue-800">استمتع بتوصيل مجاني لكافة طلباتك من أي خدمة في التطبيق</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                    <DollarSign className="w-6 h-6 text-blue-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-lg text-blue-900 mb-1">خصم 10% على جميع المنتجات</h4>
-                    <p className="text-blue-800">وفر المال مع خصم حصري بنسبة 10% على جميع منتجاتنا وخدماتنا</p>
+                    <h4 className="font-semibold text-lg text-blue-900 mb-1">عروض حصرية للمشتركين</h4>
+                    <p className="text-blue-800">احصل على عروض وخصومات حصرية بشكل دوري كعميل مميز</p>
                   </div>
                 </div>
                 
@@ -125,21 +115,41 @@ const DamBro: React.FC = () => {
                 
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                    <Award className="w-6 h-6 text-blue-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-lg text-blue-900 mb-1">عروض حصرية للمشتركين</h4>
-                    <p className="text-blue-800">احصل على عروض وخصومات حصرية بشكل دوري كعميل مميز</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
                     <Clock className="w-6 h-6 text-blue-600" />
                   </div>
                   <div>
                     <h4 className="font-semibold text-lg text-blue-900 mb-1">أولوية في الخدمة</h4>
                     <p className="text-blue-800">استمتع بأولوية في تنفيذ الطلبات والتوصيل قبل العملاء العاديين</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                    <Gift className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-lg text-blue-900 mb-1">هدايا شهرية</h4>
+                    <p className="text-blue-800">احصل على هدية مجانية شهرية مع كل تجديد للاشتراك</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                    <Info className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-lg text-blue-900 mb-1">إشعارات مسبقة بالعروض</h4>
+                    <p className="text-blue-800">كن أول من يعلم بالعروض والمنتجات الجديدة قبل الجميع</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                    <CheckCircle className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-lg text-blue-900 mb-1">ضمان استرداد الأموال</h4>
+                    <p className="text-blue-800">استرداد كامل قيمة المنتجات في حالة عدم الرضا خلال 30 يوم</p>
                   </div>
                 </div>
               </div>

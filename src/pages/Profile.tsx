@@ -168,19 +168,19 @@ const Profile: React.FC = () => {
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-center gap-2">
                     <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">✓</div>
-                    <span>توصيل مجاني لجميع الطلبات</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">✓</div>
-                    <span>خصم 10% على جميع المنتجات</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">✓</div>
                     <span>دعم فني على مدار الساعة</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">✓</div>
                     <span>عروض حصرية للمشتركين</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">✓</div>
+                    <span>هدايا شهرية</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">✓</div>
+                    <span>أولوية في الخدمة</span>
                   </li>
                 </ul>
               </div>
