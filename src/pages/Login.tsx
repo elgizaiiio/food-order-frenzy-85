@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, Navigate } from 'react-router-dom';
 import { Lock, Mail, Eye, EyeOff, Apple } from 'lucide-react';
@@ -11,6 +12,7 @@ import { useUser } from "@/context/UserContext";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { supabase } from "@/integrations/supabase/client";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // تعريف مخطط التحقق من البيانات
 const loginSchema = z.object({
@@ -21,7 +23,9 @@ const loginSchema = z.object({
     message: "كلمة المرور يجب أن تحتوي على 6 أحرف على الأقل"
   })
 });
+
 type LoginFormValues = z.infer<typeof loginSchema>;
+
 const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState({
@@ -30,6 +34,7 @@ const Login: React.FC = () => {
     apple: false
   });
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const {
     setUserName,
     setVerified,
@@ -141,10 +146,22 @@ const Login: React.FC = () => {
       console.error(error);
     }
   };
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-  return <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-white flex flex-col items-center justify-center p-4" dir="rtl">
+
+  return (
+    <div 
+      className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-white flex flex-col items-center justify-center p-4" 
+      dir="rtl"
+      style={{ 
+        paddingTop: 'env(safe-area-inset-top, 0px)',
+        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        paddingLeft: 'env(safe-area-inset-left, 0px)',
+        paddingRight: 'env(safe-area-inset-right, 0px)'
+      }}
+    >
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-block w-20 h-20 rounded-full bg-gradient-to-r from-blue-600 to-blue-800 text-white flex items-center justify-center mb-4 shadow-lg">
@@ -164,8 +181,14 @@ const Login: React.FC = () => {
                       <FormLabel className="text-gray-700 font-medium">البريد الإلكتروني</FormLabel>
                       <FormControl>
                         <div className="relative">
-                          <Input placeholder="أدخل بريدك الإلكتروني" className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-blue-500 focus:ring-blue-500" {...field} />
-                          
+                          <Input 
+                            placeholder="أدخل بريدك الإلكتروني" 
+                            className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-blue-500 focus:ring-blue-500" 
+                            {...field}
+                            autoComplete="email"
+                            inputMode="email"
+                          />
+                          <Mail className="absolute right-3 top-3.5 h-5 w-5 text-gray-400" />
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -177,10 +200,24 @@ const Login: React.FC = () => {
                       <FormLabel className="text-gray-700 font-medium">كلمة المرور</FormLabel>
                       <FormControl>
                         <div className="relative">
-                          <Input type={showPassword ? "text" : "password"} placeholder="أدخل كلمة المرور" className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-blue-500 focus:ring-blue-500" {...field} />
-                          
-                          <button type="button" onClick={togglePasswordVisibility} className="absolute left-3 top-3.5">
-                            {showPassword ? <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" /> : <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />}
+                          <Input 
+                            type={showPassword ? "text" : "password"} 
+                            placeholder="أدخل كلمة المرور" 
+                            className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                            autoComplete="current-password"
+                            {...field} 
+                          />
+                          <Lock className="absolute right-3 top-3.5 h-5 w-5 text-gray-400" />
+                          <button 
+                            type="button" 
+                            onClick={togglePasswordVisibility} 
+                            className="absolute left-3 top-3.5 touch-manipulation"
+                            aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
+                          >
+                            {showPassword ? 
+                              <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" /> : 
+                              <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                            }
                           </button>
                         </div>
                       </FormControl>
@@ -193,7 +230,11 @@ const Login: React.FC = () => {
                   </Link>
                 </div>
                 
-                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 rounded-lg font-medium shadow-md transition-all hover:shadow-lg" disabled={loading.email}>
+                <Button 
+                  type="submit" 
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 rounded-lg font-medium shadow-md transition-all hover:shadow-lg touch-manipulation" 
+                  disabled={loading.email}
+                >
                   {loading.email ? <span className="flex items-center">
                       <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -223,7 +264,12 @@ const Login: React.FC = () => {
         </div>
         
         <div className="grid grid-cols-2 gap-4">
-          <Button variant="outline" className="h-12 border-gray-300 hover:bg-gray-50 shadow-sm transition-all hover:shadow" onClick={handleGoogleLogin} disabled={loading.google}>
+          <Button 
+            variant="outline" 
+            className="h-12 border-gray-300 hover:bg-gray-50 shadow-sm transition-all hover:shadow touch-manipulation" 
+            onClick={handleGoogleLogin} 
+            disabled={loading.google}
+          >
             {loading.google ? <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -232,7 +278,12 @@ const Login: React.FC = () => {
                 <span>Google</span>
               </>}
           </Button>
-          <Button variant="outline" className="h-12 border-gray-300 hover:bg-gray-50 shadow-sm transition-all hover:shadow" onClick={handleAppleLogin} disabled={loading.apple}>
+          <Button 
+            variant="outline" 
+            className="h-12 border-gray-300 hover:bg-gray-50 shadow-sm transition-all hover:shadow touch-manipulation" 
+            onClick={handleAppleLogin} 
+            disabled={loading.apple}
+          >
             {loading.apple ? <svg className="animate-spin h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -243,6 +294,8 @@ const Login: React.FC = () => {
           </Button>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default Login;

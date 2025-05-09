@@ -46,10 +46,17 @@
     --gym-color: 45 90% 50%;
     --coffee-color: 25 75% 40%;
     --profile-color: 280 70% 60%;
+    
+    /* Safe area variables */
+    --safe-area-top: env(safe-area-inset-top, 0px);
+    --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-left: env(safe-area-inset-left, 0px);
+    --safe-area-right: env(safe-area-inset-right, 0px);
   }
 
   * {
     @apply border-border;
+    -webkit-tap-highlight-color: transparent;
   }
 
   html {
@@ -59,6 +66,36 @@
 
   body {
     @apply bg-background text-foreground;
+    overscroll-behavior-y: none;
+    touch-action: manipulation;
+  }
+  
+  /* تحسينات للأجهزة المحمولة */
+  input, textarea, select, button {
+    appearance: none;
+    -webkit-appearance: none;
+    border-radius: 0;
+    @apply rounded-md;
+  }
+  
+  /* تحسين نقرات اللمس */
+  a, button, [role="button"], input[type="submit"], input[type="button"], input[type="reset"] {
+    touch-action: manipulation;
+  }
+  
+  /* منع تحديد النص على الأزرار */
+  button, a {
+    @apply select-none;
+  }
+  
+  /* تحسين الزخارف المتحركة للأداء على الأجهزة المحمولة */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
   
   /* Custom styling for category icons */
@@ -67,14 +104,16 @@
   }
   
   .category-icon-circle {
-    @apply w-16 h-16 rounded-full flex items-center justify-center bg-white shadow-md border border-gray-100 transition-transform hover:scale-105;
+    @apply w-16 h-16 rounded-full flex items-center justify-center bg-white shadow-md border border-gray-100 transition-transform hover:active:scale-95;
   }
   
-  /* Horizontal scrolling containers */
+  /* Horizontal scrolling containers - تحسين للمس */
   .scroll-container {
-    @apply flex overflow-x-auto gap-4 pb-2 snap-x snap-mandatory;
+    @apply flex overflow-x-auto gap-4 pb-2 snap-x snap-mandatory touch-pan-x;
     -ms-overflow-style: none;
     scrollbar-width: none;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
   }
   
   .scroll-container::-webkit-scrollbar {
@@ -83,17 +122,17 @@
   
   /* Card styling */
   .place-card {
-    @apply bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 snap-start flex-shrink-0 transition-all hover:shadow-md;
+    @apply bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 snap-start flex-shrink-0 transition-all active:scale-[0.98];
   }
   
   /* Offer cards */
   .offer-card {
-    @apply relative rounded-2xl overflow-hidden shadow-md snap-start flex-shrink-0 transition-transform hover:scale-[1.02];
+    @apply relative rounded-2xl overflow-hidden shadow-md snap-start flex-shrink-0 transition-transform active:scale-[0.98];
   }
   
   /* Promo cards */
   .promo-card {
-    @apply p-6 rounded-2xl shadow-md transition-transform hover:scale-[1.02];
+    @apply p-6 rounded-2xl shadow-md transition-transform active:scale-[0.98];
   }
   
   /* Animations */
@@ -129,7 +168,7 @@
     @apply bg-white rounded-xl border border-gray-200 p-4 transition-all;
   }
   
-  .payment-card:hover {
+  .payment-card:hover, .payment-card:active {
     @apply shadow-md border-brand-200;
   }
   
@@ -141,7 +180,7 @@
     @apply bg-white rounded-xl border border-gray-200 p-4 transition-all;
   }
   
-  .address-card:hover {
+  .address-card:hover, .address-card:active {
     @apply shadow-md border-brand-200;
   }
   
@@ -156,17 +195,18 @@
 
   /* تحسين الأزرار */
   .btn-brand {
-    @apply bg-brand-500 hover:bg-brand-600 text-white font-medium py-2 px-4 rounded-lg transition-colors;
+    @apply bg-brand-500 hover:bg-brand-600 active:bg-brand-700 text-white font-medium py-2 px-4 rounded-lg transition-colors;
   }
 
   .btn-outline {
-    @apply border border-gray-300 hover:border-brand-400 hover:bg-brand-50 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors;
+    @apply border border-gray-300 hover:border-brand-400 hover:bg-brand-50 active:bg-brand-100 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors;
   }
 
   /* تحسين القوائم */
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+    overscroll-behavior: none;
   }
   
   .no-scrollbar::-webkit-scrollbar {
@@ -178,7 +218,25 @@
     @apply transition-shadow duration-300;
   }
 
-  .hover-shadow:hover {
+  .hover-shadow:hover, .hover-shadow:active {
     @apply shadow-md;
+  }
+  
+  /* تحسينات للهاتف المحمول */
+  .mobile-container {
+    @apply px-4 py-3;
+    padding-top: calc(var(--safe-area-top) + 0.75rem);
+    padding-bottom: calc(var(--safe-area-bottom) + 0.75rem);
+    padding-left: calc(var(--safe-area-left) + 1rem);
+    padding-right: calc(var(--safe-area-right) + 1rem);
+  }
+  
+  .mobile-bottom-nav-padding {
+    padding-bottom: calc(4rem + var(--safe-area-bottom));
+  }
+  
+  .mobile-swipe-item {
+    scroll-snap-align: start;
+    @apply flex-shrink-0;
   }
 }

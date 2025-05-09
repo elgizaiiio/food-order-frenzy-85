@@ -9,6 +9,8 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    // تمكين Hot Module Replacement لتحديثات سريعة
+    hmr: true
   },
   plugins: [
     react({
@@ -53,11 +55,19 @@ export default defineConfig(({ mode }) => ({
     assetsInlineLimit: 4096, // دمج الملفات الصغيرة كـ base64
     chunkSizeWarningLimit: 1000, // زيادة حد التحذير لحجم الملفات
     reportCompressedSize: false, // تسريع عملية البناء
+    // تحسينات للتطبيقات المحمولة
+    sourcemap: false, // تعطيل الـ sourcemaps للإنتاج لتقليل حجم الملفات
+    emptyOutDir: true, // إفراغ مجلد المخرجات قبل البناء
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom', 'framer-motion'],
     esbuildOptions: {
       target: 'esnext', // استخدام أحدث الميزات المتاحة
     }
+  },
+  // تحسينات خاصة بالهواتف المحمولة
+  preview: {
+    port: 4173,
+    host: true
   }
 }));
