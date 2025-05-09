@@ -1,10 +1,8 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Search, ShoppingCart, Tag, Percent, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-
 const Clothes: React.FC = () => {
   // Categories for clothes
   const categories = [{
@@ -60,7 +58,6 @@ const Clothes: React.FC = () => {
     image: 'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?auto=format&fit=crop&q=80&w=600',
     color: 'from-sky-500 to-blue-600'
   }];
-  
   return <div className="min-h-screen bg-blue-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-20">
         {/* Header */}
@@ -71,7 +68,7 @@ const Clothes: React.FC = () => {
           <h1 className="text-xl font-bold">dam Clothes</h1>
           <div className="flex items-center gap-4">
             <button className="text-white hover:text-blue-100 transition-colors">
-              <Search className="w-5 h-5" />
+              
             </button>
             <Link to="/clothes/cart" className="text-white hover:text-blue-100 transition-colors relative">
               <ShoppingCart className="w-5 h-5" />
