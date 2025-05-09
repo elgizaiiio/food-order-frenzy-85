@@ -114,7 +114,7 @@ const ClothesCart: React.FC = () => {
               </div>
               <p className="text-gray-500 mb-4">السلة فارغة</p>
               <Link to="/clothes">
-                <Button className="bg-gradient-to-r from-blue-700 to-blue-900 text-white shadow-md">
+                <Button variant="gradient" className="shadow-md">
                   تسوق الآن
                 </Button>
               </Link>
@@ -226,7 +226,7 @@ const ClothesCart: React.FC = () => {
         {cartItems.length > 0 && (
           <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 max-w-md mx-auto shadow-lg mb-16">
             <Link to="/clothes/checkout">
-              <Button className="w-full py-3 bg-gradient-to-r from-blue-700 to-blue-900 hover:from-blue-800 hover:to-blue-950 text-white text-lg font-medium shadow-md">
+              <Button variant="gradient" size="checkout" className="w-full">
                 إتمام الطلب ({total} جنيه)
               </Button>
             </Link>

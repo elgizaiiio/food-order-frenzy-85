@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, MapPin, Clock, CreditCard, Phone, Wallet, DollarSign, Apple, ShoppingBag } from 'lucide-react';
@@ -134,7 +133,9 @@ const CheckoutButton = () => {
   return (
     <Button 
       onClick={handleCheckout} 
-      className="w-full py-6 text-lg font-bold bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg" 
+      variant="gradient"
+      size="checkout"
+      className="w-full shadow-lg" 
       disabled={isSubmitting || items.length === 0}
     >
       {isSubmitting ? "جارٍ تأكيد الطلب..." : `تأكيد الطلب · ${orderTotal.toFixed(2)} ر.س`}
@@ -228,7 +229,7 @@ const MarketCheckoutContent = () => {
         <h2 className="text-xl font-bold mb-2 text-blue-800">سلة التسوق فارغة</h2>
         <p className="text-gray-600 mb-6">لم تقم بإضافة أي منتجات إلى سلة التسوق بعد</p>
         <Link to="/market">
-          <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-sm">
+          <Button variant="gradient" className="shadow-md">
             تصفح المنتجات
           </Button>
         </Link>

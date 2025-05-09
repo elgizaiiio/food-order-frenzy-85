@@ -129,7 +129,9 @@ const PharmacyCheckoutContent: React.FC = () => {
 
                 {/* Submit Order Button */}
                 <Button 
-                  className="w-full bg-brand-500 hover:bg-brand-600 mb-16"
+                  variant="gradient"
+                  size="checkout"
+                  className="w-full mb-16"
                   onClick={handleSubmitOrder}
                   disabled={isProcessing || !selectedAddressId}
                 >
@@ -141,11 +143,13 @@ const PharmacyCheckoutContent: React.FC = () => {
         </div>
       </div>
       
-      {/* Bottom fixed button container - Adding this to maintain consistency with other checkout pages */}
+      {/* Bottom fixed button container */}
       {!isAddingNewAddress && (
         <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-10 max-w-md mx-auto mb-28">
           <Button 
-            className="w-full bg-brand-500 hover:bg-brand-600"
+            variant="gradient"
+            size="checkout" 
+            className="w-full"
             onClick={handleSubmitOrder}
             disabled={isProcessing || !selectedAddressId}
           >

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Search, Share, ShoppingCart, MapPin, ChevronDown, Package, Clock } from 'lucide-react';
@@ -8,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useCategories, useOffers, usePopularProducts } from '@/hooks/useMarketData';
 import { MarketCartProvider, useMarketCart } from '@/context/MarketCartContext';
+
 const DamMarketContent: React.FC = () => {
   const {
     data: categories,
@@ -26,6 +28,7 @@ const DamMarketContent: React.FC = () => {
     itemCount,
     totalPrice
   } = useMarketCart();
+
   return <div className="min-h-screen bg-blue-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-24">
         {/* Header */}
@@ -170,7 +173,7 @@ const DamMarketContent: React.FC = () => {
                   </Button>
                 </Link>
                 <Link to="/market/cart" className="w-full">
-                  <Button className="w-full bg-green-600 hover:bg-green-700 text-white border-0 shadow-sm">
+                  <Button className="w-full bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white border-0 shadow-md transition-all">
                     إتمام الطلب
                   </Button>
                 </Link>
@@ -187,4 +190,5 @@ const DamMarket: React.FC = () => {
       <DamMarketContent />
     </MarketCartProvider>;
 };
+
 export default DamMarket;

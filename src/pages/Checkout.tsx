@@ -150,7 +150,9 @@ const CheckoutButton = () => {
     <Button 
       onClick={handleCheckout} 
       disabled={isSubmitting} 
-      className="w-full py-6 text-lg font-bold text-white shadow-lg bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
+      variant="gradient"
+      size="checkout"
+      className="w-full shadow-lg"
     >
       {isSubmitting ? "جارٍ تأكيد الطلب..." : `تأكيد الطلب · ${orderTotal} ر.س`}
     </Button>
