@@ -45,9 +45,9 @@ const MarketTracking: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50" dir="rtl">
-      <div className="max-w-md mx-auto bg-white pb-20">
+      <div className="max-w-md mx-auto bg-white pb-24">
         {/* الهيدر */}
-        <div className="flex items-center justify-between p-4 border-b">
+        <div className="sticky top-0 flex items-center justify-between p-4 border-b bg-white z-10">
           <Link to="/market" className="text-gray-700">
             <ArrowLeft className="w-6 h-6" />
           </Link>
@@ -57,42 +57,42 @@ const MarketTracking: React.FC = () => {
 
         <div className="p-4">
           {/* حالة الطلب */}
-          <Card className="p-4 mb-6 bg-brand-50">
+          <Card className="p-4 mb-6 bg-blue-50 border border-blue-100">
             <h2 className="text-lg font-bold mb-2">حالة الطلب #{order.id}</h2>
-            <Progress value={getProgress()} className="h-2 mb-4" />
+            <Progress value={getProgress()} className="h-2 mb-4 bg-blue-100" indicatorClassName="bg-blue-600" />
             <div className="flex justify-between text-sm">
               <div className="flex flex-col items-center gap-1">
-                <CheckCircle className={`w-6 h-6 ${getProgress() >= 33 ? 'text-brand-500' : 'text-gray-300'}`} />
+                <CheckCircle className={`w-6 h-6 ${getProgress() >= 33 ? 'text-blue-600' : 'text-gray-300'}`} />
                 <span>تم الاستلام</span>
               </div>
               <div className="flex flex-col items-center gap-1">
-                <Clock className={`w-6 h-6 ${getProgress() >= 33 && getProgress() < 66 ? 'text-brand-500' : 'text-gray-300'}`} />
+                <Clock className={`w-6 h-6 ${getProgress() >= 33 && getProgress() < 66 ? 'text-blue-600' : 'text-gray-300'}`} />
                 <span>جاري التحضير</span>
               </div>
               <div className="flex flex-col items-center gap-1">
-                <Truck className={`w-6 h-6 ${getProgress() >= 66 && getProgress() < 100 ? 'text-brand-500' : 'text-gray-300'}`} />
+                <Truck className={`w-6 h-6 ${getProgress() >= 66 && getProgress() < 100 ? 'text-blue-600' : 'text-gray-300'}`} />
                 <span>في الطريق</span>
               </div>
               <div className="flex flex-col items-center gap-1">
-                <CheckCircle className={`w-6 h-6 ${getProgress() === 100 ? 'text-brand-500' : 'text-gray-300'}`} />
+                <CheckCircle className={`w-6 h-6 ${getProgress() === 100 ? 'text-blue-600' : 'text-gray-300'}`} />
                 <span>تم التوصيل</span>
               </div>
             </div>
           </Card>
 
           {/* وقت التوصيل المقدر */}
-          <Card className="p-4 mb-6">
+          <Card className="p-4 mb-6 border border-gray-100">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-bold">وقت التوصيل المتوقع</h3>
                 <p className="text-gray-600">{order.estimatedTime} دقيقة</p>
               </div>
-              <Clock className="w-10 h-10 text-brand-500" />
+              <Clock className="w-10 h-10 text-blue-600" />
             </div>
           </Card>
 
           {/* مندوب التوصيل */}
-          <Card className="p-4 mb-6">
+          <Card className="p-4 mb-6 border border-gray-100">
             <h3 className="text-lg font-bold mb-2">مندوب التوصيل</h3>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -106,20 +106,20 @@ const MarketTracking: React.FC = () => {
                   <p className="text-sm text-gray-600">{order.driver.phone}</p>
                 </div>
               </div>
-              <Button size="sm" variant="outline" className="h-10 w-10 p-0">
+              <Button size="sm" variant="outline" className="h-10 w-10 p-0 rounded-full">
                 <PhoneCall className="h-5 w-5" />
               </Button>
             </div>
           </Card>
 
           {/* عنوان التوصيل */}
-          <Card className="p-4 mb-6">
+          <Card className="p-4 mb-6 border border-gray-100">
             <h3 className="text-lg font-bold mb-2">عنوان التوصيل</h3>
             <p className="text-gray-600">{order.address}</p>
           </Card>
 
           {/* تفاصيل الطلب */}
-          <Card className="p-4 mb-16"> {/* زيادة الهامش أسفل الكارت الأخير لمنع تداخله مع الزر العائم */}
+          <Card className="p-4 mb-16 border border-gray-100"> {/* زيادة الهامش أسفل الكارت الأخير لمنع تداخله مع الزر العائم */}
             <h3 className="text-lg font-bold mb-3">تفاصيل الطلب</h3>
             <div className="space-y-2 mb-4">
               {order.items.map((item, index) => (
@@ -149,10 +149,10 @@ const MarketTracking: React.FC = () => {
         </div>
 
         {/* تثبيت زر العودة أسفل الشاشة */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-50 max-w-md mx-auto shadow-lg">
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-50 max-w-md mx-auto shadow-lg" style={{paddingBottom: 'calc(env(safe-area-inset-bottom, 16px) + 16px)'}}>
           <Button 
             onClick={() => navigate('/market')}
-            className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
+            className="w-full h-12 text-base bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
           >
             العودة للرئيسية
           </Button>

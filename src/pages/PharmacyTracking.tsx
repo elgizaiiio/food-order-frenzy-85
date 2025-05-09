@@ -22,10 +22,10 @@ const PharmacyTracking: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-md mx-auto bg-white pb-24"> {/* زيادة المساحة السفلية لتجنب تداخل الزر العائم مع المحتوى */}
+      <div className="max-w-md mx-auto bg-white pb-24">
         {/* الهيدر */}
         <div className="sticky top-0 flex items-center justify-between p-4 bg-white shadow-sm z-10">
-          <Link to="/" className="text-gray-700">
+          <Link to="/pharmacy" className="text-gray-700">
             <ArrowLeft className="w-6 h-6" />
           </Link>
           <h1 className="text-xl font-bold">تتبع الطلب</h1>
@@ -36,7 +36,7 @@ const PharmacyTracking: React.FC = () => {
         <div className="px-4 py-6 border-b">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-lg font-bold">رقم الطلب:</h2>
-            <span className="text-brand-500 font-medium">{orderId}</span>
+            <span className="text-blue-600 font-medium">{orderId}</span>
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center text-gray-600">
@@ -55,16 +55,16 @@ const PharmacyTracking: React.FC = () => {
               <div key={step.id} className="flex">
                 {/* خط الحالة */}
                 <div className="relative">
-                  <div className={`w-10 h-10 rounded-full ${step.completed ? 'bg-brand-500' : 'bg-gray-200'} flex items-center justify-center z-10`}>
+                  <div className={`w-10 h-10 rounded-full ${step.completed ? 'bg-blue-600' : 'bg-gray-200'} flex items-center justify-center z-10`}>
                     {step.icon}
                   </div>
                   {index < trackingSteps.length - 1 && (
-                    <div className={`absolute left-5 top-10 w-0.5 h-16 ${trackingSteps[index+1].completed ? 'bg-brand-500' : 'bg-gray-200'}`}></div>
+                    <div className={`absolute left-5 top-10 w-0.5 h-16 ${trackingSteps[index+1].completed ? 'bg-blue-600' : 'bg-gray-200'}`}></div>
                   )}
                 </div>
                 <div className="mr-4 flex-1">
                   <h4 className="font-medium">{step.title}</h4>
-                  <p className={`text-sm ${step.completed ? 'text-brand-500' : 'text-gray-500'}`}>
+                  <p className={`text-sm ${step.completed ? 'text-blue-600' : 'text-gray-500'}`}>
                     {step.time}
                   </p>
                 </div>
@@ -73,18 +73,18 @@ const PharmacyTracking: React.FC = () => {
           </div>
         </div>
 
-        {/* أزرار العمليات */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-50 max-w-md mx-auto shadow-lg">
+        {/* أزرار العمليات - نجعلها ثابتة في أسفل الشاشة مع ظل لتحسين الوضوح */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-50 max-w-md mx-auto shadow-lg" style={{paddingBottom: 'calc(env(safe-area-inset-bottom, 16px) + 16px)'}}>
           <div className="grid grid-cols-2 gap-3">
             <Button 
               variant="outline" 
-              className="border-gray-300 flex items-center gap-2"
+              className="border-gray-300 flex items-center justify-center gap-2 h-12 text-base"
             >
               <Phone className="w-4 h-4" />
               <span>الاتصال بالصيدلية</span>
             </Button>
             <Button 
-              className="bg-brand-500 hover:bg-brand-600"
+              className="bg-blue-600 hover:bg-blue-700 h-12 text-base"
               onClick={() => navigate('/pharmacy')}
             >
               العودة للتسوق

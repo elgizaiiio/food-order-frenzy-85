@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Check, ArrowLeft } from 'lucide-react';
+import { Check, ArrowLeft, Phone } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
@@ -32,7 +32,7 @@ const OrderTracking: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50" dir="rtl">
-      <div className="max-w-md mx-auto bg-white min-h-screen pb-24"> {/* زيادة المساحة السفلية لمنع تداخل المحتوى مع الزر الثابت */}
+      <div className="max-w-md mx-auto bg-white min-h-screen pb-24"> 
         {/* الهيدر */}
         <div className="sticky top-0 flex items-center justify-between p-4 bg-white shadow-sm z-10">
           <Link to="/" className="text-gray-700">
@@ -53,7 +53,7 @@ const OrderTracking: React.FC = () => {
                   className="w-16 h-16 rounded-full object-cover"
                 />
               </div>
-              <div className="absolute -bottom-2 right-0 bg-brand-500 text-white text-xs rounded-full px-2 py-1">
+              <div className="absolute -bottom-2 right-0 bg-blue-600 text-white text-xs rounded-full px-2 py-1">
                 طلب #{order.id.split('-')[1]}
               </div>
             </div>
@@ -91,7 +91,7 @@ const OrderTracking: React.FC = () => {
                 
                 {/* الخطوة 2: جاري التحضير */}
                 <div className="flex items-center gap-4">
-                  <div className={`w-10 h-10 rounded-full ${order.status !== "preparing" ? "bg-green-500" : "bg-brand-500 animate-pulse"} flex items-center justify-center z-10`}>
+                  <div className={`w-10 h-10 rounded-full ${order.status !== "preparing" ? "bg-green-500" : "bg-blue-600 animate-pulse"} flex items-center justify-center z-10`}>
                     {order.status !== "preparing" ? 
                       <Check className="text-white w-5 h-5" /> : 
                       <div className="w-3 h-3 rounded-full bg-white"></div>
@@ -105,7 +105,7 @@ const OrderTracking: React.FC = () => {
                 
                 {/* الخطوة 3: في الطريق */}
                 <div className="flex items-center gap-4">
-                  <div className={`w-10 h-10 rounded-full ${order.status === "onway" ? "bg-brand-500 animate-pulse" : "bg-gray-200"} flex items-center justify-center z-10`}>
+                  <div className={`w-10 h-10 rounded-full ${order.status === "onway" ? "bg-blue-600 animate-pulse" : "bg-gray-200"} flex items-center justify-center z-10`}>
                     {order.status === "delivered" ? 
                       <Check className="text-white w-5 h-5" /> : 
                       <div className={`w-3 h-3 rounded-full ${order.status === "onway" ? "bg-white" : "bg-gray-400"}`}></div>
@@ -150,14 +150,23 @@ const OrderTracking: React.FC = () => {
           </div>
         </div>
         
-        {/* زر العودة ثابت في الأسفل */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-50 max-w-md mx-auto shadow-lg">
-          <Button 
-            onClick={() => navigate('/')}
-            className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
-          >
-            العودة للرئيسية
-          </Button>
+        {/* أزرار العمليات في الاسفل */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-50 max-w-md mx-auto shadow-lg" style={{paddingBottom: 'calc(env(safe-area-inset-bottom, 16px) + 16px)'}}>
+          <div className="grid grid-cols-2 gap-3">
+            <Button 
+              variant="outline" 
+              className="border-gray-300 flex items-center justify-center gap-2 h-12 text-base"
+            >
+              <Phone className="w-4 h-4" />
+              <span>اتصل بالمطعم</span>
+            </Button>
+            <Button 
+              onClick={() => navigate('/')}
+              className="h-12 text-base bg-blue-600 hover:bg-blue-700"
+            >
+              العودة للرئيسية
+            </Button>
+          </div>
         </div>
       </div>
     </div>
