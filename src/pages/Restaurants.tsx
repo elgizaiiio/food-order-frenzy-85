@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Star, Clock, Filter, ArrowLeft, MapPin, ChevronDown } from 'lucide-react';
@@ -6,7 +5,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-
 const Restaurants: React.FC = () => {
   const navigate = useNavigate();
 
@@ -131,7 +129,7 @@ const Restaurants: React.FC = () => {
   // Empty state handling
   const [isFiltering, setIsFiltering] = useState(false);
   const [filteredRestaurants, setFilteredRestaurants] = useState(restaurants);
-  
+
   // Filter and sorting functions
   const toggleCategoryFilter = (categoryId: number) => {
     if (activeFilterCategory === categoryId) {
@@ -148,7 +146,6 @@ const Restaurants: React.FC = () => {
       setIsFiltering(filtered.length === 0);
     }
   };
-  
   const handleSortFilter = (filterId: number) => {
     setActiveSortFilter(filterId);
 
@@ -171,7 +168,6 @@ const Restaurants: React.FC = () => {
         setFilteredRestaurants(restaurants);
     }
   };
-  
   const handleNavigateToRestaurant = (restaurantId: number) => {
     navigate(`/restaurant/${restaurantId}`);
   };
@@ -180,9 +176,7 @@ const Restaurants: React.FC = () => {
   const handleAddressSelect = (address: string) => {
     setAddress(address);
   };
-  
-  return (
-    <div className="min-h-screen bg-slate-50" dir="rtl">
+  return <div className="min-h-screen bg-slate-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-20">
         {/* Header with back button and address */}
         <div className="flex flex-col shadow-sm">
@@ -195,139 +189,60 @@ const Restaurants: React.FC = () => {
           </div>
           
           {/* Delivery Address */}
-          <div className="px-4 py-3 border-b bg-white">
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="ghost" className="w-full flex justify-between items-center text-right p-2 rounded-xl hover:bg-blue-50 border border-blue-100">
-                  <div className="flex items-center">
-                    <MapPin className="w-5 h-5 text-blue-600 ml-2" />
-                    <div>
-                      <p className="text-sm font-medium text-gray-700">توصيل إلى</p>
-                      <p className="font-bold text-blue-900">{address}</p>
-                    </div>
-                  </div>
-                  <ChevronDown className="w-5 h-5 text-blue-600" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[300px] p-2">
-                <div className="space-y-2">
-                  <p className="font-bold text-blue-900 mb-2">اختر موقع التوصيل</p>
-                  {savedAddresses.map((addr, index) => (
-                    <div 
-                      key={index}
-                      className={`p-3 rounded-lg cursor-pointer transition-all ${addr === address ? 'bg-blue-100 text-blue-800' : 'hover:bg-gray-50'}`}
-                      onClick={() => handleAddressSelect(addr)}
-                    >
-                      <div className="flex items-center">
-                        <MapPin className="w-4 h-4 ml-2 text-blue-600" />
-                        <span>{addr}</span>
-                      </div>
-                    </div>
-                  ))}
-                  <div className="pt-2 mt-2 border-t">
-                    <Button variant="outline" className="w-full text-blue-600 border-blue-200 hover:bg-blue-50 hover:text-blue-700">
-                      + إضافة عنوان جديد
-                    </Button>
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover>
-          </div>
+          
         </div>
 
         {/* Food Categories with blue theme */}
         <div className="px-4 py-3 border-b bg-white">
           <div className="flex overflow-x-auto gap-3 pb-3 no-scrollbar">
-            {foodCategories.map(category => (
-              <div 
-                key={category.id} 
-                className="flex-shrink-0 cursor-pointer transition-all" 
-                onClick={() => toggleCategoryFilter(category.id)}
-              >
+            {foodCategories.map(category => <div key={category.id} className="flex-shrink-0 cursor-pointer transition-all" onClick={() => toggleCategoryFilter(category.id)}>
                 <div className={`px-4 py-2 rounded-lg ${category.color} transition-colors shadow-sm ${activeFilterCategory === category.id ? 'ring-2 ring-blue-500 ring-offset-2' : ''}`}>
                   <span className="font-medium">{category.name}</span>
                 </div>
-              </div>
-            ))}
+              </div>)}
           </div>
         </div>
 
         {/* Filters with blue theme */}
         <div className="px-4 py-3 flex gap-2 overflow-x-auto no-scrollbar border-b bg-white">
-          {filters.map(filter => (
-            <Button 
-              key={filter.id} 
-              variant={activeSortFilter === filter.id ? "default" : "outline"} 
-              size="sm" 
-              className={`rounded-full whitespace-nowrap ${
-                activeSortFilter === filter.id 
-                  ? 'bg-gradient-to-r from-blue-500 to-sky-500 text-white shadow-md' 
-                  : 'text-blue-700 border-blue-200 hover:border-blue-300'
-              }`} 
-              onClick={() => handleSortFilter(filter.id)}
-            >
+          {filters.map(filter => <Button key={filter.id} variant={activeSortFilter === filter.id ? "default" : "outline"} size="sm" className={`rounded-full whitespace-nowrap ${activeSortFilter === filter.id ? 'bg-gradient-to-r from-blue-500 to-sky-500 text-white shadow-md' : 'text-blue-700 border-blue-200 hover:border-blue-300'}`} onClick={() => handleSortFilter(filter.id)}>
               {filter.name}
-            </Button>
-          ))}
+            </Button>)}
         </div>
 
         {/* Restaurant List or Empty State */}
         <div className="px-4 py-3">
-          {isFiltering ? (
-            <div className="flex flex-col items-center justify-center py-16 text-center">
+          {isFiltering ? <div className="flex flex-col items-center justify-center py-16 text-center">
               <div className="w-20 h-20 rounded-full bg-blue-50 flex items-center justify-center mb-4">
                 <div className="text-4xl">🍽️</div>
               </div>
               <h3 className="text-lg font-bold text-blue-900 mb-2">مفيش مطاعم بالشروط دي</h3>
               <p className="text-sm text-gray-600 mb-4">جرّب تشيل الفلاتر أو تدور على حاجة تانية</p>
-              <Button 
-                variant="outline"
-                className="border-blue-300 text-blue-700 hover:bg-blue-50" 
-                onClick={() => {
-                  setActiveFilterCategory(null);
-                  setFilteredRestaurants(restaurants);
-                  setIsFiltering(false);
-                }}
-              >
+              <Button variant="outline" className="border-blue-300 text-blue-700 hover:bg-blue-50" onClick={() => {
+            setActiveFilterCategory(null);
+            setFilteredRestaurants(restaurants);
+            setIsFiltering(false);
+          }}>
                 عرض كل المطاعم
               </Button>
-            </div>
-          ) : (
-            filteredRestaurants.map(restaurant => (
-              <div 
-                key={restaurant.id} 
-                className="block cursor-pointer hover:scale-[1.01] transition-transform animate-fade-in" 
-                onClick={() => handleNavigateToRestaurant(restaurant.id)}
-              >
+            </div> : filteredRestaurants.map(restaurant => <div key={restaurant.id} className="block cursor-pointer hover:scale-[1.01] transition-transform animate-fade-in" onClick={() => handleNavigateToRestaurant(restaurant.id)}>
                 <Card className="mb-4 overflow-hidden border-slate-100 shadow-md hover:shadow-lg transition-shadow rounded-xl">
                   <div className="relative">
-                    <img 
-                      src={restaurant.cover} 
-                      alt={restaurant.name} 
-                      className="w-full h-40 object-cover"
-                    />
-                    {restaurant.promo && (
-                      <Badge className="absolute top-2 right-2 bg-gradient-to-r from-blue-600 to-sky-500 text-white border-0 py-1 px-2 font-medium">
+                    <img src={restaurant.cover} alt={restaurant.name} className="w-full h-40 object-cover" />
+                    {restaurant.promo && <Badge className="absolute top-2 right-2 bg-gradient-to-r from-blue-600 to-sky-500 text-white border-0 py-1 px-2 font-medium">
                         {restaurant.promo}
-                      </Badge>
-                    )}
+                      </Badge>}
                   </div>
                   <div className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <img 
-                          src={restaurant.logo} 
-                          alt="logo" 
-                          className="w-14 h-14 rounded-full object-cover border-2 border-white shadow-lg"
-                        />
+                        <img src={restaurant.logo} alt="logo" className="w-14 h-14 rounded-full object-cover border-2 border-white shadow-lg" />
                         <div>
                           <h3 className="font-bold text-lg text-blue-900">{restaurant.name}</h3>
                           <div className="flex flex-wrap gap-1 mt-1">
-                            {restaurant.tags && restaurant.tags.map((tag, idx) => (
-                              <span key={idx} className="text-xs text-gray-500">
+                            {restaurant.tags && restaurant.tags.map((tag, idx) => <span key={idx} className="text-xs text-gray-500">
                                 {tag}{idx !== restaurant.tags.length - 1 && ' • '}
-                              </span>
-                            ))}
+                              </span>)}
                           </div>
                         </div>
                       </div>
@@ -346,13 +261,9 @@ const Restaurants: React.FC = () => {
                     </div>
                   </div>
                 </Card>
-              </div>
-            ))
-          )}
+              </div>)}
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Restaurants;
