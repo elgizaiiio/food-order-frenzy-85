@@ -60,6 +60,7 @@ import Coupons from "./pages/Coupons";
 import About from "./pages/About";
 import ChatSupport from "./pages/ChatSupport";
 import InviteFriends from "./pages/InviteFriends";
+import DamBro from "./pages/DamBro";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -175,6 +176,7 @@ const App = () => {
                     <Route path="/coupons" element={<Coupons />} />
                     <Route path="/chat-support" element={<ChatSupport />} />
                     <Route path="/invite-friends" element={<InviteFriends />} />
+                    <Route path="/dam-bro" element={<DamBro />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>

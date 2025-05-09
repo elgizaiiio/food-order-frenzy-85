@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Settings, Edit, Home, CreditCard, Clock, Gift, ChevronRight, User, Award, Users, Share2 } from 'lucide-react';
@@ -19,8 +18,7 @@ const Profile: React.FC = () => {
 
   const handleSubscribe = () => {
     // Navigate to the Dam Bro subscription page
-    // This would typically go to a payment page or subscription details page
-    navigate('/gym');
+    navigate('/dam-bro');
     toast.success('جاري تحويلك إلى صفحة الاشتراك');
   };
 
