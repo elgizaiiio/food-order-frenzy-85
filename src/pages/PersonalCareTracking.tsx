@@ -7,11 +7,11 @@ import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 
 const PersonalCareTracking: React.FC = () => {
-  // Order status simulation
+  // محاكاة حالة الطلب
   const [orderStatus, setOrderStatus] = useState<'preparing' | 'on_the_way' | 'delivered'>('preparing');
   const [progress, setProgress] = useState(33);
 
-  // Mock order data
+  // بيانات الطلب
   const order = {
     id: 'ORD-2354789',
     estimatedTime: '30-45',
@@ -22,29 +22,29 @@ const PersonalCareTracking: React.FC = () => {
     subtotal: 369,
     deliveryFee: 15,
     total: 384,
-    address: 'شارع الملك فهد، الرياض',
+    address: 'شارع الملك فهد، القاهرة',
     driver: {
       name: 'أحمد محمد',
-      phone: '+9665XXXXXXXX',
+      phone: '+2012XXXXXXXX',
       image: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?auto=format&fit=crop&q=80&w=100&h=100'
     }
   };
 
-  // Simulate order status changing
+  // محاكاة تغيير حالة الطلب
   useEffect(() => {
-    // First status change: preparing -> on_the_way
+    // التغيير الأول: من التجهيز إلى في الطريق
     const firstTimeout = setTimeout(() => {
       setOrderStatus('on_the_way');
       setProgress(66);
-    }, 10000); // 10 seconds
+    }, 10000); // 10 ثوان
 
-    // Second status change: on_the_way -> delivered
+    // التغيير الثاني: من في الطريق إلى تم التوصيل
     const secondTimeout = setTimeout(() => {
       setOrderStatus('delivered');
       setProgress(100);
-    }, 20000); // 20 seconds
+    }, 20000); // 20 ثانية
 
-    // Cleanup timeouts on component unmount
+    // تنظيف المؤقتات عند إلغاء تحميل المكون
     return () => {
       clearTimeout(firstTimeout);
       clearTimeout(secondTimeout);
@@ -54,17 +54,17 @@ const PersonalCareTracking: React.FC = () => {
   return (
     <div className="min-h-screen bg-blue-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-20">
-        {/* Header */}
+        {/* الهيدر */}
         <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-blue-600 to-blue-800 text-white">
           <Link to="/personal-care" className="text-white">
             <ArrowLeft className="w-6 h-6" />
           </Link>
           <h1 className="text-xl font-bold">تتبع الطلب</h1>
-          <div className="w-6"></div> {/* Empty div for flex balance */}
+          <div className="w-6"></div> {/* عنصر فارغ للتوازن */}
         </div>
 
         <div className="p-4">
-          {/* Order Status */}
+          {/* حالة الطلب */}
           <Card className="p-4 mb-6 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200">
             <h2 className="text-lg font-bold mb-2 text-blue-800">حالة الطلب #{order.id}</h2>
             <Progress 
@@ -88,18 +88,18 @@ const PersonalCareTracking: React.FC = () => {
             </div>
           </Card>
 
-          {/* Estimated Time */}
+          {/* وقت التوصيل المقدر */}
           <Card className="p-4 mb-6 border border-blue-200">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-bold text-blue-800">الوقت المتوقع للتوصيل</h3>
+                <h3 className="text-lg font-bold text-blue-800">وقت التوصيل المتوقع</h3>
                 <p className="text-gray-600">{order.estimatedTime} دقيقة</p>
               </div>
               <Clock className="w-10 h-10 text-blue-600" />
             </div>
           </Card>
 
-          {/* Delivery Person - Only show when status is on_the_way */}
+          {/* مندوب التوصيل - يظهر فقط عندما تكون الحالة في الطريق */}
           {orderStatus !== 'preparing' && (
             <Card className="p-4 mb-6 animate-fade-in border border-blue-200">
               <h3 className="text-lg font-bold mb-2 text-blue-800">مندوب التوصيل</h3>
@@ -126,14 +126,14 @@ const PersonalCareTracking: React.FC = () => {
             </Card>
           )}
 
-          {/* Status Message */}
+          {/* رسالة الحالة */}
           <Card className="p-4 mb-6 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200">
             <div className="text-center">
               {orderStatus === 'preparing' && (
-                <p className="text-blue-700">جاري تحضير منتجاتك. سيتم التوصيل قريبًا!</p>
+                <p className="text-blue-700">جاري تحضير منتجاتك. هيوصلك قريب!</p>
               )}
               {orderStatus === 'on_the_way' && (
-                <p className="text-blue-700">طلبك في الطريق إليك الآن مع المندوب {order.driver.name}</p>
+                <p className="text-blue-700">طلبك في الطريق إليك دلوقتي مع المندوب {order.driver.name}</p>
               )}
               {orderStatus === 'delivered' && (
                 <p className="text-green-600">تم توصيل طلبك بنجاح. نتمنى لك تجربة ممتعة!</p>
@@ -141,13 +141,13 @@ const PersonalCareTracking: React.FC = () => {
             </div>
           </Card>
 
-          {/* Delivery Address */}
+          {/* عنوان التوصيل */}
           <Card className="p-4 mb-6 border border-blue-200">
             <h3 className="text-lg font-bold mb-2 text-blue-800">عنوان التوصيل</h3>
             <p className="text-gray-600">{order.address}</p>
           </Card>
 
-          {/* Order Summary */}
+          {/* تفاصيل الطلب */}
           <Card className="p-4 mb-6 border border-blue-200">
             <h3 className="text-lg font-bold mb-3 text-blue-800">تفاصيل الطلب</h3>
             <div className="space-y-2 mb-4">
@@ -156,32 +156,34 @@ const PersonalCareTracking: React.FC = () => {
                   <span className="text-blue-900">
                     {item.name} × {item.quantity}
                   </span>
-                  <span className="text-blue-700 font-medium">{item.price * item.quantity} ريال</span>
+                  <span className="text-blue-700 font-medium">{item.price * item.quantity} جنيه</span>
                 </div>
               ))}
             </div>
             <div className="pt-2 border-t space-y-2 border-blue-100">
               <div className="flex justify-between">
                 <span className="text-gray-600">المجموع الفرعي</span>
-                <span className="text-blue-700">{order.subtotal} ريال</span>
+                <span className="text-blue-700">{order.subtotal} جنيه</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">رسوم التوصيل</span>
-                <span className="text-blue-700">{order.deliveryFee} ريال</span>
+                <span className="text-blue-700">{order.deliveryFee} جنيه</span>
               </div>
               <div className="flex justify-between font-bold pt-2 border-t border-blue-100">
                 <span className="text-blue-900">المبلغ الإجمالي</span>
-                <span className="text-blue-700">{order.total} ريال</span>
+                <span className="text-blue-700">{order.total} جنيه</span>
               </div>
             </div>
           </Card>
 
-          {/* Back to Home Button */}
-          <Link to="/personal-care">
-            <Button variant="personalCare" className="w-full">
-              العودة للرئيسية
-            </Button>
-          </Link>
+          {/* زر العودة للرئيسية */}
+          <div className="fixed bottom-0 left-0 right-0 bg-white p-4 border-t max-w-md mx-auto">
+            <Link to="/personal-care">
+              <Button variant="personalCare" className="w-full">
+                العودة للرئيسية
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     </div>

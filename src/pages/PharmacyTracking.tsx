@@ -16,14 +16,14 @@ const PharmacyTracking: React.FC = () => {
   const trackingSteps = [
     { id: 1, title: 'تم استلام الطلب', icon: <Check className="w-5 h-5" />, completed: true, time: 'منذ 5 دقائق' },
     { id: 2, title: 'جاري تجهيز الطلب', icon: <Package className="w-5 h-5" />, completed: true, time: 'منذ 2 دقائق' },
-    { id: 3, title: 'الطلب في الطريق', icon: <Truck className="w-5 h-5" />, completed: true, time: 'الآن' },
+    { id: 3, title: 'الطلب في الطريق', icon: <Truck className="w-5 h-5" />, completed: true, time: 'دلوقتي' },
     { id: 4, title: 'تم التوصيل', icon: <Home className="w-5 h-5" />, completed: false, time: 'قريباً' },
   ];
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-md mx-auto bg-white pb-20">
-        {/* Header */}
+        {/* الهيدر */}
         <div className="sticky top-0 flex items-center justify-between p-4 bg-white shadow-sm z-10">
           <Link to="/" className="text-gray-700">
             <ArrowLeft className="w-6 h-6" />
@@ -32,7 +32,7 @@ const PharmacyTracking: React.FC = () => {
           <div className="w-6"></div>
         </div>
 
-        {/* Order Info */}
+        {/* معلومات الطلب */}
         <div className="px-4 py-6 border-b">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-lg font-bold">رقم الطلب:</h2>
@@ -47,13 +47,13 @@ const PharmacyTracking: React.FC = () => {
           </div>
         </div>
 
-        {/* Tracking Status */}
+        {/* حالة الطلب */}
         <div className="px-4 py-6">
           <h3 className="font-bold mb-6">حالة الطلب</h3>
           <div className="space-y-6">
             {trackingSteps.map((step, index) => (
               <div key={step.id} className="flex">
-                {/* Status line */}
+                {/* خط الحالة */}
                 <div className="relative">
                   <div className={`w-10 h-10 rounded-full ${step.completed ? 'bg-brand-500' : 'bg-gray-200'} flex items-center justify-center z-10`}>
                     {step.icon}
@@ -73,8 +73,8 @@ const PharmacyTracking: React.FC = () => {
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="px-4 py-6 mt-6">
+        {/* أزرار العمليات */}
+        <div className="px-4 py-6 mt-6 fixed bottom-0 left-0 right-0 bg-white border-t max-w-md mx-auto">
           <div className="space-y-4">
             <Button 
               variant="outline" 

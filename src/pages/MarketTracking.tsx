@@ -7,7 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 
 const MarketTracking: React.FC = () => {
-  // Mock order data
+  // بيانات الطلب
   const order = {
     id: 'ORD-2354789',
     status: 'preparing', // preparing, on_the_way, delivered
@@ -20,15 +20,15 @@ const MarketTracking: React.FC = () => {
     subtotal: 36,
     deliveryFee: 10,
     total: 46,
-    address: 'شارع الملك فهد، الرياض',
+    address: 'شارع الملك فهد، القاهرة',
     driver: {
       name: 'أحمد محمد',
-      phone: '+9665XXXXXXXX',
+      phone: '+2012XXXXXXXX',
       image: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?auto=format&fit=crop&q=80&w=100&h=100'
     }
   };
 
-  // Calculate progress based on status
+  // حساب التقدم بناءً على الحالة
   const getProgress = () => {
     switch (order.status) {
       case 'preparing':
@@ -45,17 +45,17 @@ const MarketTracking: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-20">
-        {/* Header */}
+        {/* الهيدر */}
         <div className="flex items-center justify-between p-4 border-b">
           <Link to="/market" className="text-gray-700">
             <ArrowLeft className="w-6 h-6" />
           </Link>
           <h1 className="text-xl font-bold">تتبع الطلب</h1>
-          <div className="w-6"></div> {/* Empty div for flex balance */}
+          <div className="w-6"></div> {/* عنصر فارغ للتوازن */}
         </div>
 
         <div className="p-4">
-          {/* Order Status */}
+          {/* حالة الطلب */}
           <Card className="p-4 mb-6 bg-brand-50">
             <h2 className="text-lg font-bold mb-2">حالة الطلب #{order.id}</h2>
             <Progress value={getProgress()} className="h-2 mb-4" />
@@ -79,18 +79,18 @@ const MarketTracking: React.FC = () => {
             </div>
           </Card>
 
-          {/* Estimated Time */}
+          {/* وقت التوصيل المقدر */}
           <Card className="p-4 mb-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-bold">الوقت المتوقع للتوصيل</h3>
+                <h3 className="text-lg font-bold">وقت التوصيل المتوقع</h3>
                 <p className="text-gray-600">{order.estimatedTime} دقيقة</p>
               </div>
               <Clock className="w-10 h-10 text-brand-500" />
             </div>
           </Card>
 
-          {/* Delivery Person */}
+          {/* مندوب التوصيل */}
           <Card className="p-4 mb-6">
             <h3 className="text-lg font-bold mb-2">مندوب التوصيل</h3>
             <div className="flex items-center justify-between">
@@ -111,13 +111,13 @@ const MarketTracking: React.FC = () => {
             </div>
           </Card>
 
-          {/* Delivery Address */}
+          {/* عنوان التوصيل */}
           <Card className="p-4 mb-6">
             <h3 className="text-lg font-bold mb-2">عنوان التوصيل</h3>
             <p className="text-gray-600">{order.address}</p>
           </Card>
 
-          {/* Order Summary */}
+          {/* تفاصيل الطلب */}
           <Card className="p-4 mb-6">
             <h3 className="text-lg font-bold mb-3">تفاصيل الطلب</h3>
             <div className="space-y-2 mb-4">
@@ -126,27 +126,27 @@ const MarketTracking: React.FC = () => {
                   <span>
                     {item.name} × {item.quantity}
                   </span>
-                  <span>{item.price * item.quantity} ريال</span>
+                  <span>{item.price * item.quantity} جنيه</span>
                 </div>
               ))}
             </div>
             <div className="pt-2 border-t space-y-2">
               <div className="flex justify-between">
                 <span className="text-gray-600">المجموع الفرعي</span>
-                <span>{order.subtotal} ريال</span>
+                <span>{order.subtotal} جنيه</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">رسوم التوصيل</span>
-                <span>{order.deliveryFee} ريال</span>
+                <span>{order.deliveryFee} جنيه</span>
               </div>
               <div className="flex justify-between font-bold pt-2">
                 <span>المبلغ الإجمالي</span>
-                <span>{order.total} ريال</span>
+                <span>{order.total} جنيه</span>
               </div>
             </div>
           </Card>
 
-          {/* Back to Home Button */}
+          {/* زر العودة للرئيسية */}
           <Link to="/market">
             <Button variant="outline" className="w-full">
               العودة للرئيسية
