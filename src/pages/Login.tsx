@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import { useNavigate, Link, Navigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Lock, Mail, Eye, EyeOff, Apple } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +11,7 @@ import { useForm } from "react-hook-form";
 import { useUser } from "@/context/UserContext";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { supabase } from "@/integrations/supabase/client";
+import { Navigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 // تعريف مخطط التحقق من البيانات
@@ -152,7 +153,7 @@ const Login: React.FC = () => {
 
   return (
     <div 
-      className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-white flex flex-col items-center justify-center p-4" 
+      className="min-h-screen bg-gradient-to-br from-brand-500 via-brand-400 to-yellow-400 flex flex-col items-center justify-center p-4" 
       dir="rtl"
       style={{ 
         paddingTop: 'env(safe-area-inset-top, 0px)',
@@ -163,17 +164,18 @@ const Login: React.FC = () => {
     >
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="inline-block w-20 h-20 rounded-full bg-gradient-to-r from-blue-600 to-blue-800 text-white flex items-center justify-center mb-4 shadow-lg">
-            <span className="text-2xl font-bold">Dam</span>
+          <div className="inline-block w-24 h-24 rounded-2xl bg-white text-brand-600 flex items-center justify-center mb-5 shadow-xl animate-bounce-in transform rotate-12">
+            <span className="text-3xl font-bold">دام</span>
           </div>
-          <h1 className="text-3xl font-bold text-blue-900 mb-2">أهلاً بك في دام</h1>
-          <p className="text-gray-600 text-lg">قم بتسجيل الدخول للاستمرار واستمتع بتجربتنا</p>
+          <h1 className="text-3xl font-bold text-white mb-2">مرحباً بك مجدداً!</h1>
+          <p className="text-white/90 text-lg">يرجى تسجيل الدخول للاستمتاع بتجربتنا</p>
         </div>
         
-        <Card className="border-none shadow-xl bg-white/90 backdrop-blur-sm animate-fade-in">
-          <CardContent className="pt-6">
+        <Card className="border-none shadow-2xl bg-white/95 backdrop-blur-sm rounded-2xl overflow-hidden animate-fade-in">
+          <div className="h-2 bg-gradient-to-r from-brand-600 to-brand-400"></div>
+          <CardContent className="pt-6 px-6 pb-8">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
                 <FormField control={form.control} name="email" render={({
                 field
               }) => <FormItem>
@@ -182,7 +184,7 @@ const Login: React.FC = () => {
                         <div className="relative">
                           <Input 
                             placeholder="أدخل بريدك الإلكتروني" 
-                            className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-blue-500 focus:ring-blue-500" 
+                            className="pl-10 h-12 bg-gray-50 border-gray-200 rounded-xl focus:border-brand-500 focus:ring-brand-500" 
                             {...field}
                             autoComplete="email"
                             inputMode="email"
@@ -196,13 +198,18 @@ const Login: React.FC = () => {
                 <FormField control={form.control} name="password" render={({
                 field
               }) => <FormItem>
-                      <FormLabel className="text-gray-700 font-medium">كلمة المرور</FormLabel>
+                      <div className="flex justify-between">
+                        <FormLabel className="text-gray-700 font-medium">كلمة المرور</FormLabel>
+                        <Link to="/forgot-password" className="text-sm text-brand-600 hover:text-brand-700 font-medium">
+                          نسيت كلمة المرور؟
+                        </Link>
+                      </div>
                       <FormControl>
                         <div className="relative">
                           <Input 
                             type={showPassword ? "text" : "password"} 
                             placeholder="أدخل كلمة المرور" 
-                            className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                            className="pl-10 h-12 bg-gray-50 border-gray-200 rounded-xl focus:border-brand-500 focus:ring-brand-500"
                             autoComplete="current-password"
                             {...field} 
                           />
@@ -223,15 +230,11 @@ const Login: React.FC = () => {
                       <FormMessage />
                     </FormItem>} />
                 
-                <div className="flex justify-end">
-                  <Link to="/forgot-password" className="text-sm text-blue-600 hover:text-blue-800 font-medium">
-                    نسيت كلمة المرور؟
-                  </Link>
-                </div>
-                
                 <Button 
                   type="submit" 
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 rounded-lg font-medium shadow-md transition-all hover:shadow-lg touch-manipulation" 
+                  variant="gradient"
+                  size="lg"
+                  className="w-full h-14 rounded-xl font-bold shadow-lg transition-all hover:shadow-xl touch-manipulation" 
                   disabled={loading.email}
                 >
                   {loading.email ? <span className="flex items-center">
@@ -248,7 +251,7 @@ const Login: React.FC = () => {
             <div className="text-center mt-6">
               <p className="text-gray-600">
                 ليس لديك حساب؟{" "}
-                <Link to="/register" className="text-blue-600 hover:text-blue-800 font-medium">
+                <Link to="/register" className="text-brand-600 hover:text-brand-700 font-bold">
                   إنشاء حساب جديد
                 </Link>
               </p>
@@ -257,19 +260,19 @@ const Login: React.FC = () => {
         </Card>
         
         <div className="flex justify-center items-center my-6">
-          <hr className="flex-grow border-t border-gray-300" />
-          <span className="px-4 text-gray-500 text-sm font-medium">أو استمر بواسطة</span>
-          <hr className="flex-grow border-t border-gray-300" />
+          <hr className="flex-grow border-t border-white/30" />
+          <span className="px-4 text-white text-sm font-medium">أو استمر بواسطة</span>
+          <hr className="flex-grow border-t border-white/30" />
         </div>
         
         <div className="grid grid-cols-2 gap-4">
           <Button 
             variant="outline" 
-            className="h-12 border-gray-300 hover:bg-gray-50 shadow-sm transition-all hover:shadow touch-manipulation" 
+            className="h-12 border-white/30 bg-white/80 hover:bg-white text-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all touch-manipulation" 
             onClick={handleGoogleLogin} 
             disabled={loading.google}
           >
-            {loading.google ? <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            {loading.google ? <svg className="animate-spin h-5 w-5 text-brand-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg> : <>
@@ -279,7 +282,7 @@ const Login: React.FC = () => {
           </Button>
           <Button 
             variant="outline" 
-            className="h-12 border-gray-300 hover:bg-gray-50 shadow-sm transition-all hover:shadow touch-manipulation" 
+            className="h-12 border-white/30 bg-white/80 hover:bg-white text-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all touch-manipulation" 
             onClick={handleAppleLogin} 
             disabled={loading.apple}
           >
