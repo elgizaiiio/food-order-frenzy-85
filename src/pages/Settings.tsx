@@ -1,22 +1,19 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, User, Mail, Phone, Lock, Bell, Languages } from 'lucide-react';
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-
 const Settings: React.FC = () => {
-  const { toast } = useToast();
-  
+  const {
+    toast
+  } = useToast();
   const handleNotificationToggle = (checked: boolean) => {
     toast({
       title: checked ? "تم تفعيل الإشعارات" : "تم إلغاء الإشعارات",
-      description: "تم حفظ التفضيلات بنجاح",
+      description: "تم حفظ التفضيلات بنجاح"
     });
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white" dir="rtl">
+  return <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-20">
         {/* Header */}
         <div className="sticky top-0 flex items-center justify-between p-4 bg-white shadow-sm z-10">
@@ -115,28 +112,21 @@ const Settings: React.FC = () => {
           </Link>
           
           <Link to="/terms" className="block">
-            <div className="p-4 text-center bg-blue-50 rounded-lg mb-2 hover:bg-blue-100 transition-colors">
-              <span className="text-blue-600 font-medium">شروط الخدمة</span>
-            </div>
+            
           </Link>
           
           <div className="p-4 text-center">
-            <button 
-              className="text-red-500 font-medium"
-              onClick={() => {
-                toast({
-                  title: "تم تسجيل الخروج",
-                  description: "نتمنى رؤيتك مرة أخرى قريباً",
-                });
-              }}
-            >
+            <button className="text-red-500 font-medium" onClick={() => {
+            toast({
+              title: "تم تسجيل الخروج",
+              description: "نتمنى رؤيتك مرة أخرى قريباً"
+            });
+          }}>
               تسجيل الخروج
             </button>
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Settings;
