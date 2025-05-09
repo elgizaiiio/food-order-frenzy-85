@@ -69,7 +69,6 @@ const Splash: React.FC<SplashProps> = ({
           alt="دام" 
           className="w-32 h-32 rounded-full shadow-lg"
           loading="eager"
-          fetchPriority="high"
           decoding="async"
           onError={(e) => {
             e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80' fill='none'%3E%3Crect width='80' height='80' rx='40' fill='%239333EA'/%3E%3Cpath d='M24 40C24 35.5817 27.5817 32 32 32H48C52.4183 32 56 35.5817 56 40V40C56 44.4183 52.4183 48 48 48H32C27.5817 48 24 44.4183 24 40V40Z' fill='white'/%3E%3C/svg%3E";

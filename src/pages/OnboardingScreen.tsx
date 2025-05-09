@@ -166,7 +166,7 @@ const OnboardingScreen: React.FC = () => {
         )}
         
         <Button 
-          variant="gradient" 
+          variant="default" 
           onClick={isLastSlide ? completeOnboarding : nextSlide}
           className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-8 hover:from-purple-600 hover:to-indigo-700"
         >
