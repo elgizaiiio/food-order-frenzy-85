@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Lock, Mail, Eye, EyeOff, Apple } from 'lucide-react';
@@ -152,7 +153,7 @@ const Login: React.FC = () => {
 
   return (
     <div 
-      className="min-h-screen bg-gradient-to-b from-brand-400 to-brand-600 flex flex-col items-center justify-center p-4" 
+      className="min-h-screen bg-gradient-to-br from-brand-400/95 via-brand-500 to-brand-600 flex flex-col items-center justify-center p-4" 
       dir="rtl"
       style={{ 
         paddingTop: 'env(safe-area-inset-top, 0px)',
@@ -163,15 +164,15 @@ const Login: React.FC = () => {
     >
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="inline-block w-24 h-24 rounded-full bg-white/90 text-brand-600 flex items-center justify-center mb-5 shadow-2xl animate-fade-in transform rotate-12">
+          <div className="inline-block w-24 h-24 rounded-full bg-gradient-to-br from-white to-white/90 text-brand-600 flex items-center justify-center mb-6 shadow-2xl shadow-brand-700/20 animate-bounce-in">
             <span className="text-3xl font-bold">دام</span>
           </div>
-          <h1 className="text-4xl font-bold text-white mb-3 animate-fade-in">مرحباً بك مجدداً!</h1>
+          <h1 className="text-4xl font-bold text-white mb-3 animate-fade-in drop-shadow-md">مرحباً بك مجدداً!</h1>
           <p className="text-white/90 text-lg animate-fade-in delay-100">يرجى تسجيل الدخول للاستمتاع بتجربتنا</p>
         </div>
         
-        <Card className="border-none shadow-2xl bg-white/95 backdrop-blur-sm rounded-3xl overflow-hidden animate-fade-in delay-200">
-          <div className="h-2 bg-gradient-to-l from-brand-300 to-brand-500"></div>
+        <Card className="border-none shadow-[0_15px_35px_-15px_rgba(0,0,0,0.3)] bg-white/95 backdrop-blur-md rounded-3xl overflow-hidden transform transition-transform hover:scale-[1.01] animate-fade-in delay-200">
+          <div className="h-2.5 bg-gradient-to-l from-brand-300 to-brand-500"></div>
           <CardContent className="pt-8 px-8 pb-10">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
@@ -179,10 +180,10 @@ const Login: React.FC = () => {
                   <FormItem>
                     <FormLabel className="text-gray-700 font-semibold">البريد الإلكتروني</FormLabel>
                     <FormControl>
-                      <div className="relative">
+                      <div className="relative group">
                         <Input 
                           placeholder="أدخل بريدك الإلكتروني" 
-                          className="pl-10 h-14 bg-gray-50/80 border-gray-200 rounded-xl focus:border-brand-400 focus:ring-brand-400 transition-all" 
+                          className="pl-10 h-14 bg-gray-50/80 border-gray-200 rounded-xl group-hover:border-brand-400 group-hover:shadow-md focus:border-brand-400 focus:ring-brand-400 transition-all" 
                           {...field}
                           autoComplete="email"
                           inputMode="email"
@@ -204,11 +205,11 @@ const Login: React.FC = () => {
                       </Link>
                     </div>
                     <FormControl>
-                      <div className="relative">
+                      <div className="relative group">
                         <Input 
                           type={showPassword ? "text" : "password"} 
                           placeholder="أدخل كلمة المرور" 
-                          className="pl-10 h-14 bg-gray-50/80 border-gray-200 rounded-xl focus:border-brand-400 focus:ring-brand-400 transition-all"
+                          className="pl-10 h-14 bg-gray-50/80 border-gray-200 rounded-xl group-hover:border-brand-400 group-hover:shadow-md focus:border-brand-400 focus:ring-brand-400 transition-all"
                           autoComplete="current-password"
                           {...field} 
                         />
@@ -232,7 +233,7 @@ const Login: React.FC = () => {
                 
                 <Button 
                   type="submit" 
-                  className="w-full h-14 mt-6 bg-gradient-to-l from-brand-500 to-brand-400 hover:from-brand-600 hover:to-brand-500 rounded-xl font-bold text-lg shadow-lg shadow-brand-500/30 hover:shadow-xl hover:shadow-brand-500/40 transition-all" 
+                  className="w-full h-14 mt-6 bg-gradient-to-l from-brand-500 to-brand-400 hover:from-brand-600 hover:to-brand-500 rounded-xl font-bold text-lg shadow-lg shadow-brand-500/20 hover:shadow-xl hover:shadow-brand-500/30 active:scale-[0.99] transition-all" 
                   disabled={loading.email}
                 >
                   {loading.email ? (
@@ -268,7 +269,7 @@ const Login: React.FC = () => {
         <div className="grid grid-cols-2 gap-4">
           <Button 
             variant="outline" 
-            className="h-12 border-white/40 bg-white/90 hover:bg-white text-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all touch-manipulation" 
+            className="h-12 border-white/50 bg-white/90 hover:bg-white text-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all touch-manipulation active:scale-[0.98]" 
             onClick={handleGoogleLogin} 
             disabled={loading.google}
           >
@@ -278,15 +279,15 @@ const Login: React.FC = () => {
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
             ) : (
-              <>
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" className="w-5 h-5 mr-2" />
+              <div className="flex items-center justify-center gap-2">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" className="w-5 h-5" />
                 <span>Google</span>
-              </>
+              </div>
             )}
           </Button>
           <Button 
             variant="outline" 
-            className="h-12 border-white/40 bg-white/90 hover:bg-white text-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all touch-manipulation" 
+            className="h-12 border-white/50 bg-white/90 hover:bg-white text-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all touch-manipulation active:scale-[0.98]" 
             onClick={handleAppleLogin} 
             disabled={loading.apple}
           >
@@ -296,10 +297,10 @@ const Login: React.FC = () => {
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
             ) : (
-              <>
-                <Apple className="w-5 h-5 mr-2" />
+              <div className="flex items-center justify-center gap-2">
+                <Apple className="w-5 h-5" />
                 <span>Apple</span>
-              </>
+              </div>
             )}
           </Button>
         </div>
