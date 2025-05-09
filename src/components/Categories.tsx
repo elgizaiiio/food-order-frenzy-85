@@ -15,37 +15,37 @@ const Categories: React.FC = () => {
     { 
       name: "مطاعم", 
       icon: <UtensilsCrossed className="w-6 h-6" />, 
-      color: "bg-red-50 text-red-500",
+      color: "bg-blue-50 text-blue-600",
       link: "/restaurants"
     },
     { 
       name: "سوبر ماركت", 
       icon: <ShoppingCart className="w-6 h-6" />, 
-      color: "bg-green-50 text-green-600",
+      color: "bg-cyan-50 text-cyan-700",
       link: "/market" 
     },
     { 
       name: "هدوم", 
       icon: <Shirt className="w-6 h-6" />, 
-      color: "bg-blue-50 text-blue-500",
+      color: "bg-sky-50 text-sky-600",
       link: "/clothes" 
     },
     { 
       name: "صيدليات", 
       icon: <Pill className="w-6 h-6" />, 
-      color: "bg-indigo-50 text-indigo-500",
+      color: "bg-indigo-50 text-indigo-600",
       link: "/pharmacy" 
     },
     { 
       name: "العناية الشخصية", 
       icon: <Brush className="w-6 h-6" />, 
-      color: "bg-pink-50 text-pink-500",
+      color: "bg-blue-100 text-blue-700",
       link: "/personal-care" 
     },
     { 
       name: "جيم", 
       icon: <Dumbbell className="w-6 h-6" />, 
-      color: "bg-yellow-50 text-yellow-600",
+      color: "bg-sky-100 text-sky-700",
       link: "/gym" 
     },
   ];
@@ -55,10 +55,10 @@ const Categories: React.FC = () => {
       <div className="flex overflow-x-auto gap-4 pb-2 no-scrollbar">
         {categories.map((category, index) => (
           <Link to={category.link} key={index} className="category-icon flex-shrink-0">
-            <div className={`category-icon-circle ${category.color}`}>
+            <div className={`category-icon-circle ${category.color} hover:shadow-md hover:scale-105 transition-all`}>
               {category.icon}
             </div>
-            <span className="text-xs font-medium text-gray-700">{category.name}</span>
+            <span className="text-xs font-medium text-blue-900 mt-2">{category.name}</span>
           </Link>
         ))}
       </div>

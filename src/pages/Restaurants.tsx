@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Star, Clock, Filter, ArrowLeft, MapPin, ChevronDown } from 'lucide-react';
@@ -5,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+
 const Restaurants: React.FC = () => {
   const navigate = useNavigate();
 
@@ -14,58 +16,58 @@ const Restaurants: React.FC = () => {
   const [activeFilterCategory, setActiveFilterCategory] = useState<number | null>(null);
   const [activeSortFilter, setActiveSortFilter] = useState(1);
 
-  // Food category data with colors
+  // Food category data with blue colors
   const foodCategories = [{
     id: 1,
     name: "حلويات",
-    color: "bg-pink-500 text-white"
+    color: "bg-blue-100 text-blue-700"
   }, {
     id: 2,
     name: "شاورما",
-    color: "bg-amber-500 text-white"
+    color: "bg-blue-200 text-blue-800"
   }, {
     id: 3,
     name: "برجر",
-    color: "bg-red-500 text-white"
+    color: "bg-blue-300 text-blue-900"
   }, {
     id: 4,
     name: "ساندوتشات",
-    color: "bg-green-500 text-white"
+    color: "bg-cyan-100 text-cyan-800"
   }, {
     id: 5,
     name: "بيتزا",
-    color: "bg-blue-500 text-white"
+    color: "bg-sky-100 text-sky-800"
   }, {
     id: 6,
     name: "كافيه",
-    color: "bg-purple-500 text-white"
+    color: "bg-indigo-100 text-indigo-800"
   }, {
     id: 7,
     name: "دجاج",
-    color: "bg-orange-500 text-white"
+    color: "bg-blue-50 text-blue-600"
   }, {
     id: 8,
     name: "عصائر",
-    color: "bg-cyan-500 text-white"
+    color: "bg-cyan-200 text-cyan-900"
   }, {
     id: 9,
     name: "كريب",
-    color: "bg-indigo-500 text-white"
+    color: "bg-indigo-200 text-indigo-900"
   }, {
     id: 10,
     name: "دجاج مقلي",
-    color: "bg-lime-500 text-white"
+    color: "bg-sky-200 text-sky-900"
   }, {
     id: 11,
     name: "إفطار",
-    color: "bg-yellow-500 text-black"
+    color: "bg-blue-400 text-white"
   }, {
     id: 12,
     name: "أخرى",
-    color: "bg-gray-500 text-white"
+    color: "bg-slate-200 text-slate-800"
   }];
 
-  // Filter options
+  // Filter options with blue theme
   const filters = [{
     id: 1,
     name: "العروض",
@@ -129,6 +131,8 @@ const Restaurants: React.FC = () => {
   // Empty state handling
   const [isFiltering, setIsFiltering] = useState(false);
   const [filteredRestaurants, setFilteredRestaurants] = useState(restaurants);
+  
+  // Filter and sorting functions
   const toggleCategoryFilter = (categoryId: number) => {
     if (activeFilterCategory === categoryId) {
       setActiveFilterCategory(null);
@@ -144,6 +148,7 @@ const Restaurants: React.FC = () => {
       setIsFiltering(filtered.length === 0);
     }
   };
+  
   const handleSortFilter = (filterId: number) => {
     setActiveSortFilter(filterId);
 
@@ -166,97 +171,188 @@ const Restaurants: React.FC = () => {
         setFilteredRestaurants(restaurants);
     }
   };
+  
   const handleNavigateToRestaurant = (restaurantId: number) => {
     navigate(`/restaurant/${restaurantId}`);
   };
-  return <div className="min-h-screen bg-gray-50" dir="rtl">
+
+  // Added delivery address selection
+  const handleAddressSelect = (address: string) => {
+    setAddress(address);
+  };
+  
+  return (
+    <div className="min-h-screen bg-slate-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-20">
         {/* Header with back button and address */}
-        <div className="flex flex-col">
-          <div className="flex items-center justify-between p-4 border-b">
-            <button onClick={() => navigate('/')} className="text-gray-700">
-              <ArrowLeft className="w-6 h-6" />
+        <div className="flex flex-col shadow-sm">
+          <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-sky-50">
+            <button onClick={() => navigate('/')} className="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-sm text-blue-700 hover:bg-blue-50 transition-colors">
+              <ArrowLeft className="w-5 h-5" />
             </button>
-            <h1 className="text-xl font-bold mx-[92px] px-[5px]">كل المطاعم</h1>
-            
+            <h1 className="text-xl font-bold text-blue-900">كل المطاعم</h1>
+            <div className="w-10"></div>
           </div>
           
           {/* Delivery Address */}
-          
-        </div>
-
-        {/* Food Categories - Updated to text-only with different colors */}
-        <div className="px-4 py-3 border-b">
-          <div className="flex overflow-x-auto gap-4 pb-3 no-scrollbar">
-            {foodCategories.map(category => <div key={category.id} className="flex-shrink-0 cursor-pointer transition-all" onClick={() => toggleCategoryFilter(category.id)}>
-                <div className={`px-4 py-2 rounded-lg ${category.color} transition-colors ${activeFilterCategory === category.id ? 'ring-2 ring-primary ring-offset-2' : ''}`}>
-                  <span className="font-medium">{category.name}</span>
+          <div className="px-4 py-3 border-b bg-white">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" className="w-full flex justify-between items-center text-right p-2 rounded-xl hover:bg-blue-50 border border-blue-100">
+                  <div className="flex items-center">
+                    <MapPin className="w-5 h-5 text-blue-600 ml-2" />
+                    <div>
+                      <p className="text-sm font-medium text-gray-700">توصيل إلى</p>
+                      <p className="font-bold text-blue-900">{address}</p>
+                    </div>
+                  </div>
+                  <ChevronDown className="w-5 h-5 text-blue-600" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[300px] p-2">
+                <div className="space-y-2">
+                  <p className="font-bold text-blue-900 mb-2">اختر موقع التوصيل</p>
+                  {savedAddresses.map((addr, index) => (
+                    <div 
+                      key={index}
+                      className={`p-3 rounded-lg cursor-pointer transition-all ${addr === address ? 'bg-blue-100 text-blue-800' : 'hover:bg-gray-50'}`}
+                      onClick={() => handleAddressSelect(addr)}
+                    >
+                      <div className="flex items-center">
+                        <MapPin className="w-4 h-4 ml-2 text-blue-600" />
+                        <span>{addr}</span>
+                      </div>
+                    </div>
+                  ))}
+                  <div className="pt-2 mt-2 border-t">
+                    <Button variant="outline" className="w-full text-blue-600 border-blue-200 hover:bg-blue-50 hover:text-blue-700">
+                      + إضافة عنوان جديد
+                    </Button>
+                  </div>
                 </div>
-              </div>)}
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
 
-        {/* Filters */}
-        <div className="px-4 py-3 flex gap-2 overflow-x-auto no-scrollbar border-b">
-          {filters.map(filter => <Button key={filter.id} variant={activeSortFilter === filter.id ? "default" : "outline"} size="sm" className={`rounded-full whitespace-nowrap ${activeSortFilter === filter.id ? 'bg-primary' : ''}`} onClick={() => handleSortFilter(filter.id)}>
+        {/* Food Categories with blue theme */}
+        <div className="px-4 py-3 border-b bg-white">
+          <div className="flex overflow-x-auto gap-3 pb-3 no-scrollbar">
+            {foodCategories.map(category => (
+              <div 
+                key={category.id} 
+                className="flex-shrink-0 cursor-pointer transition-all" 
+                onClick={() => toggleCategoryFilter(category.id)}
+              >
+                <div className={`px-4 py-2 rounded-lg ${category.color} transition-colors shadow-sm ${activeFilterCategory === category.id ? 'ring-2 ring-blue-500 ring-offset-2' : ''}`}>
+                  <span className="font-medium">{category.name}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Filters with blue theme */}
+        <div className="px-4 py-3 flex gap-2 overflow-x-auto no-scrollbar border-b bg-white">
+          {filters.map(filter => (
+            <Button 
+              key={filter.id} 
+              variant={activeSortFilter === filter.id ? "default" : "outline"} 
+              size="sm" 
+              className={`rounded-full whitespace-nowrap ${
+                activeSortFilter === filter.id 
+                  ? 'bg-gradient-to-r from-blue-500 to-sky-500 text-white shadow-md' 
+                  : 'text-blue-700 border-blue-200 hover:border-blue-300'
+              }`} 
+              onClick={() => handleSortFilter(filter.id)}
+            >
               {filter.name}
-            </Button>)}
+            </Button>
+          ))}
         </div>
 
         {/* Restaurant List or Empty State */}
         <div className="px-4 py-3">
-          {isFiltering ? <div className="flex flex-col items-center justify-center py-16 text-center">
-              <div className="text-6xl mb-4">🍽️</div>
-              <h3 className="text-lg font-bold text-gray-800 mb-2">مفيش مطاعم بالشروط دي</h3>
+          {isFiltering ? (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <div className="w-20 h-20 rounded-full bg-blue-50 flex items-center justify-center mb-4">
+                <div className="text-4xl">🍽️</div>
+              </div>
+              <h3 className="text-lg font-bold text-blue-900 mb-2">مفيش مطاعم بالشروط دي</h3>
               <p className="text-sm text-gray-600 mb-4">جرّب تشيل الفلاتر أو تدور على حاجة تانية</p>
-              <Button variant="outline" onClick={() => {
-            setActiveFilterCategory(null);
-            setFilteredRestaurants(restaurants);
-            setIsFiltering(false);
-          }}>
+              <Button 
+                variant="outline"
+                className="border-blue-300 text-blue-700 hover:bg-blue-50" 
+                onClick={() => {
+                  setActiveFilterCategory(null);
+                  setFilteredRestaurants(restaurants);
+                  setIsFiltering(false);
+                }}
+              >
                 عرض كل المطاعم
               </Button>
-            </div> : filteredRestaurants.map(restaurant => <div key={restaurant.id} className="block cursor-pointer hover:scale-[1.01] transition-transform" onClick={() => handleNavigateToRestaurant(restaurant.id)}>
-                <Card className="mb-4 overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+            </div>
+          ) : (
+            filteredRestaurants.map(restaurant => (
+              <div 
+                key={restaurant.id} 
+                className="block cursor-pointer hover:scale-[1.01] transition-transform animate-fade-in" 
+                onClick={() => handleNavigateToRestaurant(restaurant.id)}
+              >
+                <Card className="mb-4 overflow-hidden border-slate-100 shadow-md hover:shadow-lg transition-shadow rounded-xl">
                   <div className="relative">
-                    <img src={restaurant.cover} alt={restaurant.name} className="w-full h-40 object-cover" />
-                    {restaurant.promo && <Badge className="absolute top-2 right-2 bg-red-500 text-white">
+                    <img 
+                      src={restaurant.cover} 
+                      alt={restaurant.name} 
+                      className="w-full h-40 object-cover"
+                    />
+                    {restaurant.promo && (
+                      <Badge className="absolute top-2 right-2 bg-gradient-to-r from-blue-600 to-sky-500 text-white border-0 py-1 px-2 font-medium">
                         {restaurant.promo}
-                      </Badge>}
+                      </Badge>
+                    )}
                   </div>
                   <div className="p-4">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <img src={restaurant.logo} alt="logo" className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" />
+                      <div className="flex items-center gap-3">
+                        <img 
+                          src={restaurant.logo} 
+                          alt="logo" 
+                          className="w-14 h-14 rounded-full object-cover border-2 border-white shadow-lg"
+                        />
                         <div>
-                          <h3 className="font-bold text-lg">{restaurant.name}</h3>
+                          <h3 className="font-bold text-lg text-blue-900">{restaurant.name}</h3>
                           <div className="flex flex-wrap gap-1 mt-1">
-                            {restaurant.tags && restaurant.tags.map((tag, idx) => <span key={idx} className="text-xs text-gray-500">
+                            {restaurant.tags && restaurant.tags.map((tag, idx) => (
+                              <span key={idx} className="text-xs text-gray-500">
                                 {tag}{idx !== restaurant.tags.length - 1 && ' • '}
-                              </span>)}
+                              </span>
+                            ))}
                           </div>
                         </div>
                       </div>
                     </div>
                     <div className="flex items-center justify-between mt-4">
                       <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-1">
-                          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        <div className="flex items-center gap-1 bg-amber-50 px-2 py-1 rounded-full">
+                          <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
                           <span className="text-sm font-medium">{restaurant.rating}</span>
                         </div>
-                        <div className="flex items-center gap-1">
-                          <Clock className="w-4 h-4 text-gray-500" />
-                          <span className="text-sm text-gray-500">{restaurant.deliveryTime} دقيقة</span>
+                        <div className="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-full">
+                          <Clock className="w-4 h-4 text-blue-500" />
+                          <span className="text-sm text-gray-700">{restaurant.deliveryTime} دقيقة</span>
                         </div>
                       </div>
-                      
                     </div>
-                    
                   </div>
                 </Card>
-              </div>)}
+              </div>
+            ))
+          )}
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default Restaurants;

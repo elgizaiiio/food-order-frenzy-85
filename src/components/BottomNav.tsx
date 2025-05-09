@@ -37,17 +37,17 @@ const BottomNav: React.FC = () => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white shadow-lg border-t border-gray-200">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white shadow-lg border-t border-slate-200">
       <div className="flex justify-around items-center h-16 px-3">
         {navItems.map((item) => (
           <Link
             key={item.path}
             to={item.path}
             className={`flex flex-col items-center justify-center w-full h-full ${
-              item.active ? 'text-brand-500 font-medium' : 'text-gray-500'
+              item.active ? 'text-blue-600 font-medium' : 'text-gray-500'
             }`}
           >
-            <div className={item.active ? 'text-brand-500' : 'text-gray-500'}>
+            <div className={item.active ? 'text-blue-600' : 'text-gray-500'}>
               {item.icon}
             </div>
             <span className="text-xs mt-1">{item.name}</span>
