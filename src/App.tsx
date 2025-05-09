@@ -49,6 +49,9 @@ import GymSubscriptions from "./pages/GymSubscriptions";
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
 import Settings from "./pages/Settings";
+import EditContactInfo from "./pages/EditContactInfo";
+import ChangePassword from "./pages/ChangePassword";
+import NotificationSettings from "./pages/NotificationSettings";
 import Addresses from "./pages/Addresses";
 import PaymentMethods from "./pages/PaymentMethods";
 import AddPaymentMethod from "./pages/AddPaymentMethod";
@@ -160,6 +163,9 @@ const App = () => {
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/edit-profile" element={<EditProfile />} />
                     <Route path="/settings" element={<Settings />} />
+                    <Route path="/edit-contact-info" element={<EditContactInfo />} />
+                    <Route path="/change-password" element={<ChangePassword />} />
+                    <Route path="/notification-settings" element={<NotificationSettings />} />
                     <Route path="/addresses" element={<Addresses />} />
                     <Route path="/payment-methods" element={<PaymentMethods />} />
                     <Route path="/add-payment-method" element={<AddPaymentMethod />} />
