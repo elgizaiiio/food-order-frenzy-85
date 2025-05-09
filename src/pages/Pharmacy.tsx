@@ -56,7 +56,7 @@ const Pharmacy: React.FC = () => {
 
   const getCategoryIcon = (iconName: string) => {
     // تنفيذ بسيط للأيقونات، في تطبيق حقيقي يمكن استخدام مكتبة أيقونات كاملة
-    return <Pill className="h-5 w-5" />;
+    return <Pill className="h-5 w-5 text-blue-600" />;
   };
 
   return (
@@ -64,7 +64,7 @@ const Pharmacy: React.FC = () => {
       <div className="max-w-md mx-auto bg-white pb-20">
         {/* Header with gradient - now with transition for showing/hiding */}
         <div 
-          className={`sticky top-0 bg-gradient-to-r from-blue-500 to-indigo-600 z-10 shadow-md rounded-b-2xl transition-transform duration-300 ${
+          className={`sticky top-0 bg-gradient-to-r from-blue-600 to-indigo-700 z-10 shadow-md rounded-b-2xl transition-transform duration-300 ${
             headerVisible ? 'translate-y-0' : '-translate-y-full'
           }`}
         >
@@ -76,7 +76,7 @@ const Pharmacy: React.FC = () => {
             <Link to="/pharmacy/cart" className="relative">
               <ShoppingCart className="w-6 h-6 text-white" />
               {itemCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-white text-blue-600 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
+                <span className="absolute -top-2 -right-2 bg-white text-blue-700 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-md">
                   {itemCount}
                 </span>
               )}
@@ -89,20 +89,20 @@ const Pharmacy: React.FC = () => {
               <Input 
                 type="search" 
                 placeholder="ابحث عن الأدوية والمنتجات" 
-                className="pl-10 pr-4 py-2 rounded-full border-gray-300 bg-white/90 backdrop-blur-sm text-gray-700 shadow-md" 
+                className="pl-10 pr-4 py-2 rounded-full border-blue-100 bg-white/90 backdrop-blur-sm text-gray-700 shadow-md" 
                 value={searchTerm} 
                 onChange={e => setSearchTerm(e.target.value)} 
               />
               <div className="absolute inset-y-0 right-4 flex items-center">
-                <Search className="h-4 w-4 text-gray-500" />
+                <Search className="h-4 w-4 text-blue-500" />
               </div>
             </div>
             
             {/* زر "عايز حاجة معينة؟" */}
             <Button 
-              variant="outline" 
+              variant="outlineBlue"
               onClick={() => setShowCategories(!showCategories)} 
-              className="w-full mt-3 flex items-center justify-between border-white text-white backdrop-blur-sm bg-blue-700 hover:bg-blue-600"
+              className="w-full mt-3 flex items-center justify-between text-blue-700 backdrop-blur-sm bg-white/90 hover:bg-blue-50"
             >
               <span>عايز حاجة معينة؟</span>
               {showCategories ? (
@@ -116,11 +116,11 @@ const Pharmacy: React.FC = () => {
 
         {/* Categories - تظهر فقط عند الضغط على الزر */}
         {showCategories && (
-          <div className="px-4 py-4 border-b bg-white/80 backdrop-blur-sm animate-fade-in">
-            <h2 className="text-lg font-bold mb-4">الفئات</h2>
+          <div className="px-4 py-4 border-b bg-white/95 backdrop-blur-sm animate-fade-in">
+            <h2 className="text-lg font-bold mb-4 text-blue-800">الفئات</h2>
             {categoriesLoading ? (
               <div className="flex justify-center py-4">
-                <p>جاري التحميل...</p>
+                <p className="text-blue-600">جاري التحميل...</p>
               </div>
             ) : (
               <div className="grid grid-cols-4 gap-3">
@@ -130,10 +130,10 @@ const Pharmacy: React.FC = () => {
                     to={`/pharmacy/category/${category.id}`} 
                     className="flex flex-col items-center"
                   >
-                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-100 to-indigo-200 flex items-center justify-center mb-1 shadow-sm hover:shadow-md transition-all">
+                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center mb-1 shadow-sm hover:shadow-md transition-all hover:scale-105 border border-blue-100">
                       {getCategoryIcon(category.icon)}
                     </div>
-                    <span className="text-xs text-center">{category.name}</span>
+                    <span className="text-xs text-center text-blue-800">{category.name}</span>
                   </Link>
                 ))}
               </div>
@@ -143,36 +143,37 @@ const Pharmacy: React.FC = () => {
 
         {/* Recommended Products */}
         <div className="px-4 py-4">
-          <h2 className="text-lg font-bold mb-4">منتجات موصى بها</h2>
+          <h2 className="text-lg font-bold mb-4 text-blue-800">منتجات موصى بها</h2>
           {productsLoading ? (
             <div className="flex justify-center py-8">
-              <p>جاري التحميل...</p>
+              <p className="text-blue-600">جاري التحميل...</p>
             </div>
           ) : !recommendedProducts || recommendedProducts.length === 0 ? (
-            <div className="text-center py-8 border rounded-lg border-dashed border-gray-300">
-              <p className="text-gray-500">لا توجد منتجات حالياً</p>
-              <p className="text-gray-500 text-sm mt-2">يمكنك إضافة منتجات من لوحة التحكم</p>
+            <div className="text-center py-8 border rounded-lg border-dashed border-blue-200">
+              <p className="text-blue-500">لا توجد منتجات حالياً</p>
+              <p className="text-blue-400 text-sm mt-2">يمكنك إضافة منتجات من لوحة التحكم</p>
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-4">
               {recommendedProducts?.map((product: PharmacyProduct) => (
-                <Card key={product.id} className="overflow-hidden border-none shadow-md hover:shadow-lg transition-all">
+                <Card key={product.id} className="overflow-hidden border border-blue-100 shadow-md hover:shadow-lg transition-all hover:scale-[1.02]">
                   <div className="p-3">
-                    <div className="bg-gray-50 rounded-lg overflow-hidden">
+                    <div className="bg-blue-50 rounded-lg overflow-hidden">
                       <img 
                         src={product.image_url || 'https://via.placeholder.com/200?text=Medicine'} 
                         alt={product.name} 
                         className="w-full h-32 object-cover hover:scale-105 transition-transform duration-300" 
                       />
                     </div>
-                    <h3 className="font-medium mt-2 line-clamp-1">{product.name}</h3>
-                    <p className="text-xs text-gray-500 line-clamp-2 h-8">{product.description}</p>
+                    <h3 className="font-medium mt-2 line-clamp-1 text-blue-800">{product.name}</h3>
+                    <p className="text-xs text-blue-600 line-clamp-2 h-8">{product.description}</p>
                     <div className="flex items-center justify-between mt-3">
-                      <span className="font-bold text-blue-600">{product.price} ج.م</span>
+                      <span className="font-bold text-blue-700">{product.price} ج.م</span>
                       <Button 
                         size="sm" 
+                        variant="pharmacy"
                         onClick={() => addToCart(product as any)} 
-                        className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-xs px-3"
+                        className="text-xs px-3"
                       >
                         إضافة
                       </Button>
@@ -188,7 +189,11 @@ const Pharmacy: React.FC = () => {
         {itemCount > 0 && (
           <div className="fixed bottom-20 left-0 right-0 max-w-md z-10 mb-16 px-4 mx-auto">
             <Link to="/pharmacy/cart">
-              <Button className="w-full py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-lg rounded-lg">
+              <Button 
+                variant="pharmacy" 
+                size="checkout"
+                className="w-full py-3 shadow-lg rounded-xl font-bold"
+              >
                 إتمام الطلب ({totalPrice.toFixed(2)} ج.م)
               </Button>
             </Link>

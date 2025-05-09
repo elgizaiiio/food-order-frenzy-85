@@ -62,12 +62,18 @@ export const PharmacyCartProvider: React.FC<{ children: React.ReactNode }> = ({ 
         const updatedItems = prevItems.map(item => 
           item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
         );
-        toast(`تمت زيادة كمية ${product.name} في سلة التسوق`);
+        toast(`تمت زيادة كمية ${product.name} في سلة التسوق`, {
+          position: "top-center",
+          className: "bg-blue-600 text-white border-blue-700"
+        });
         return updatedItems;
       } else {
         // إضافة منتج جديد بكمية 1
-        toast(`تمت إضافة ${product.name} إلى سلة التسوق`);
-        return [...prevItems, { ...product, quantity: 1 }];
+        toast(`تمت إضافة ${product.name} إلى سلة التسوق`, {
+          position: "top-center",
+          className: "bg-blue-600 text-white border-blue-700"
+        });
+        return [...prevItems, { ...product, quantity: 1, image: product.image_url }];
       }
     });
   };
@@ -77,7 +83,10 @@ export const PharmacyCartProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setItems(prevItems => {
       const itemToRemove = prevItems.find(item => item.id === productId);
       if (itemToRemove) {
-        toast(`تمت إزالة ${itemToRemove.name} من سلة التسوق`);
+        toast(`تمت إزالة ${itemToRemove.name} من سلة التسوق`, {
+          position: "top-center",
+          className: "bg-red-500 text-white"
+        });
       }
       return prevItems.filter(item => item.id !== productId);
     });
@@ -99,7 +108,10 @@ export const PharmacyCartProvider: React.FC<{ children: React.ReactNode }> = ({ 
       
       if (existingItem && existingItem.quantity === 1) {
         // إزالة المنتج إذا كانت الكمية ستصبح صفر
-        toast(`تمت إزالة ${existingItem.name} من سلة التسوق`);
+        toast(`تمت إزالة ${existingItem.name} من سلة التسوق`, {
+          position: "top-center",
+          className: "bg-red-500 text-white"
+        });
         return prevItems.filter(item => item.id !== productId);
       }
       
@@ -113,7 +125,10 @@ export const PharmacyCartProvider: React.FC<{ children: React.ReactNode }> = ({ 
   // تفريغ السلة بالكامل
   const clearCart = () => {
     setItems([]);
-    toast('تم تفريغ سلة التسوق بالكامل');
+    toast('تم تفريغ سلة التسوق بالكامل', {
+      position: "top-center",
+      className: "bg-blue-600 text-white border-blue-700"
+    });
   };
 
   return (

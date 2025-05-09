@@ -24,6 +24,9 @@ const buttonVariants = cva(
         blue: "bg-blue-600 text-white hover:bg-blue-700 shadow-sm",
         indigo: "bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm",
         lightBlue: "bg-blue-100 text-blue-800 hover:bg-blue-200",
+        pharmacy: "bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-md",
+        pillBlue: "bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 rounded-full font-medium",
+        outlineBlue: "border border-blue-300 text-blue-700 bg-white hover:bg-blue-50 hover:border-blue-400",
       },
       size: {
         default: "h-10 px-4 py-2",
@@ -31,7 +34,8 @@ const buttonVariants = cva(
         lg: "h-11 rounded-md px-8",
         xl: "h-14 rounded-md px-8 text-lg",
         icon: "h-10 w-10",
-        checkout: "h-14 px-6 rounded-xl text-lg font-bold"
+        checkout: "h-14 px-6 rounded-xl text-lg font-bold",
+        pill: "h-8 px-4 rounded-full text-sm"
       },
     },
     defaultVariants: {

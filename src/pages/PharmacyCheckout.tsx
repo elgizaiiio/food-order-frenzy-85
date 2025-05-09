@@ -81,11 +81,11 @@ const PharmacyCheckoutContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-28">
+    <div className="min-h-screen bg-blue-50 pb-28">
       <div className="max-w-md mx-auto bg-white">
         {/* Header */}
-        <div className="sticky top-0 flex items-center justify-between p-4 bg-white shadow-sm z-10">
-          <Link to="/pharmacy/cart" className="text-gray-700">
+        <div className="sticky top-0 flex items-center justify-between p-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-sm z-10 rounded-b-xl">
+          <Link to="/pharmacy/cart" className="text-white hover:text-blue-100">
             <ArrowLeft className="w-6 h-6" />
           </Link>
           <h1 className="text-xl font-bold">إتمام الطلب</h1>
@@ -99,28 +99,34 @@ const PharmacyCheckoutContent: React.FC = () => {
             <>
               <div className="space-y-6">
                 {/* Address Section */}
-                <AddressSelector onAddNewClick={() => setIsAddingNewAddress(true)} />
+                <div className="space-y-2">
+                  <h2 className="text-lg font-bold text-blue-800">عنوان التوصيل</h2>
+                  <AddressSelector onAddNewClick={() => setIsAddingNewAddress(true)} />
+                </div>
 
                 {/* Payment Method Section */}
-                <PaymentMethods />
+                <div className="space-y-2">
+                  <h2 className="text-lg font-bold text-blue-800">طريقة الدفع</h2>
+                  <PaymentMethods />
+                </div>
 
                 {/* Order Summary */}
                 <div className="space-y-3">
-                  <h3 className="text-lg font-bold">ملخص الطلب</h3>
-                  <Card className="bg-gray-50">
+                  <h3 className="text-lg font-bold text-blue-800">ملخص الطلب</h3>
+                  <Card className="bg-blue-50 border border-blue-100">
                     <CardContent className="p-4">
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
-                          <span>المنتجات ({items.length})</span>
-                          <span>{totalPrice.toFixed(2)} ج.م</span>
+                          <span className="text-blue-700">المنتجات ({items.length})</span>
+                          <span className="text-blue-800 font-medium">{totalPrice.toFixed(2)} ج.م</span>
                         </div>
                         <div className="flex justify-between">
-                          <span>رسوم التوصيل</span>
-                          <span>{deliveryFee.toFixed(2)} ج.م</span>
+                          <span className="text-blue-700">رسوم التوصيل</span>
+                          <span className="text-blue-800 font-medium">{deliveryFee.toFixed(2)} ج.م</span>
                         </div>
-                        <div className="border-t pt-2 mt-2 font-bold flex justify-between">
-                          <span>المجموع</span>
-                          <span>{orderTotal.toFixed(2)} ج.م</span>
+                        <div className="border-t border-blue-200 pt-2 mt-2 font-bold flex justify-between">
+                          <span className="text-blue-800">المجموع</span>
+                          <span className="text-blue-700">{orderTotal.toFixed(2)} ج.م</span>
                         </div>
                       </div>
                     </CardContent>
@@ -129,9 +135,9 @@ const PharmacyCheckoutContent: React.FC = () => {
 
                 {/* Submit Order Button */}
                 <Button 
-                  variant="gradient"
+                  variant="pharmacy"
                   size="checkout"
-                  className="w-full mb-16"
+                  className="w-full mb-16 mt-4"
                   onClick={handleSubmitOrder}
                   disabled={isProcessing || !selectedAddressId}
                 >
@@ -145,9 +151,9 @@ const PharmacyCheckoutContent: React.FC = () => {
       
       {/* Bottom fixed button container */}
       {!isAddingNewAddress && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-10 max-w-md mx-auto mb-28">
+        <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t border-blue-100 p-4 z-10 max-w-md mx-auto mb-28">
           <Button 
-            variant="gradient"
+            variant="pharmacy"
             size="checkout" 
             className="w-full"
             onClick={handleSubmitOrder}

@@ -39,9 +39,9 @@ const PharmacyCart: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-blue-50">
-      <div className="max-w-md mx-auto bg-white pb-20 shadow-md">
+      <div className="max-w-md mx-auto bg-white pb-20 shadow-sm">
         {/* Header */}
-        <div className="sticky top-0 flex items-center justify-between p-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md z-10">
+        <div className="sticky top-0 flex items-center justify-between p-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-md z-10">
           <Link to="/pharmacy" className="text-white hover:text-blue-100 transition-colors">
             <ArrowLeft className="w-6 h-6" />
           </Link>
@@ -57,10 +57,11 @@ const PharmacyCart: React.FC = () => {
                 <ShoppingBag className="w-8 h-8 text-blue-600" />
               </div>
               <h3 className="font-bold text-lg mb-2 text-blue-800">السلة فارغة</h3>
-              <p className="text-gray-500 mb-6">لم تُضِف أي منتجات إلى سلة المشتريات بعد</p>
+              <p className="text-blue-600 mb-6">لم تُضِف أي منتجات إلى سلة المشتريات بعد</p>
               <Button 
                 onClick={() => navigate('/pharmacy')}
-                className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md"
+                variant="pharmacy"
+                className="shadow-md"
               >
                 تصفح المنتجات
               </Button>
@@ -68,11 +69,11 @@ const PharmacyCart: React.FC = () => {
           ) : (
             <>
               {/* Items list */}
-              <div className="divide-y divide-blue-100">
+              <div className="space-y-2">
                 {items.map((item) => (
-                  <div key={item.id} className="py-4 flex items-center hover:bg-blue-50 rounded-lg px-2 animate-fade-in">
+                  <div key={item.id} className="py-3 px-3 flex items-center hover:bg-blue-50 rounded-lg animate-fade-in border border-blue-100">
                     <img 
-                      src={item.image} 
+                      src={item.image || item.image_url} 
                       alt={item.name} 
                       className="w-16 h-16 object-cover rounded-lg shadow-sm border border-blue-100"
                       onError={(e) => {
@@ -85,18 +86,18 @@ const PharmacyCart: React.FC = () => {
                     </div>
                     <div className="flex items-center ml-2">
                       <Button 
-                        variant="outline" 
+                        variant="outlineBlue"
                         size="icon"
-                        className="h-8 w-8 rounded-full border border-blue-200 hover:bg-blue-100"
+                        className="h-8 w-8 rounded-full"
                         onClick={() => decreaseQuantity(item.id)}
                       >
                         <Minus className="h-3 w-3 text-blue-700" />
                       </Button>
-                      <span className="mx-2 w-6 text-center font-medium">{item.quantity}</span>
+                      <span className="mx-2 w-6 text-center font-medium text-blue-800">{item.quantity}</span>
                       <Button 
-                        variant="outline" 
+                        variant="blue"
                         size="icon"
-                        className="h-8 w-8 rounded-full bg-blue-600 text-white hover:bg-blue-700 border-blue-600"
+                        className="h-8 w-8 rounded-full"
                         onClick={() => increaseQuantity(item.id)}
                       >
                         <Plus className="h-3 w-3" />
@@ -136,8 +137,9 @@ const PharmacyCart: React.FC = () => {
                         <div className="flex justify-between items-center mt-1">
                           <span className="text-xs text-blue-600 font-bold">{product.price} ج.م</span>
                           <Button 
+                            variant="blue"
                             size="sm" 
-                            className="h-6 w-6 p-0 rounded-full bg-blue-600 hover:bg-blue-700 text-white"
+                            className="h-6 w-6 p-0 rounded-full"
                           >
                             <Plus className="h-3 w-3" />
                           </Button>
@@ -154,16 +156,16 @@ const PharmacyCart: React.FC = () => {
                   <h3 className="font-bold mb-3 text-blue-800">ملخص الطلب</h3>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">المجموع الفرعي</span>
-                      <span className="font-medium">{totalPrice.toFixed(2)} ج.م</span>
+                      <span className="text-blue-700">المجموع الفرعي</span>
+                      <span className="font-medium text-blue-800">{totalPrice.toFixed(2)} ج.م</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">رسوم التوصيل</span>
-                      <span className="font-medium">{deliveryFee.toFixed(2)} ج.م</span>
+                      <span className="text-blue-700">رسوم التوصيل</span>
+                      <span className="font-medium text-blue-800">{deliveryFee.toFixed(2)} ج.م</span>
                     </div>
                     <Separator className="my-2 bg-blue-200" />
                     <div className="pt-2 font-bold flex justify-between">
-                      <span>المجموع</span>
+                      <span className="text-blue-800">المجموع</span>
                       <span className="text-blue-700">{orderTotal.toFixed(2)} ج.م</span>
                     </div>
                   </div>
@@ -173,14 +175,16 @@ const PharmacyCart: React.FC = () => {
               {/* Action buttons */}
               <div className="mt-6 space-y-3 mb-16">
                 <Button 
-                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md py-6"
+                  variant="pharmacy"
+                  size="checkout"
+                  className="w-full"
                   onClick={() => navigate('/pharmacy/checkout')}
                 >
                   متابعة الطلب
                 </Button>
                 <Button 
-                  variant="outline" 
-                  className="w-full border-gray-300 text-gray-600 hover:bg-blue-50 hover:text-blue-700"
+                  variant="outlineBlue" 
+                  className="w-full"
                   onClick={clearCart}
                 >
                   تفريغ السلة
