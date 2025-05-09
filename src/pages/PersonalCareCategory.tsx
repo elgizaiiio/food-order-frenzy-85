@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, Search, ShoppingCart, Star, Plus, Filter, ChevronDown } from 'lucide-react';
@@ -7,10 +6,17 @@ import { Button } from '@/components/ui/button';
 import { usePersonalCareCart } from '@/context/PersonalCareCartContext';
 import { toast } from 'sonner';
 import { PersonalCareProduct } from '@/context/PersonalCareCartContext';
-
 const PersonalCareCategory: React.FC = () => {
-  const { categoryId } = useParams<{ categoryId: string }>();
-  const { addToCart, itemCount, totalPrice } = usePersonalCareCart();
+  const {
+    categoryId
+  } = useParams<{
+    categoryId: string;
+  }>();
+  const {
+    addToCart,
+    itemCount,
+    totalPrice
+  } = usePersonalCareCart();
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState<PersonalCareProduct[]>([]);
   const [showFilters, setShowFilters] = useState(false);
@@ -90,14 +96,12 @@ const PersonalCareCategory: React.FC = () => {
       image: 'https://images.unsplash.com/photo-1626818590338-bed90abab6fe?q=80&w=400&auto=format&fit=crop'
     }
   };
-
   const currentCategory = categoryMap[categoryId || ''] || {
     name: 'القسم',
     gender: 'women',
     color: 'from-blue-500 to-blue-700',
     image: 'https://images.unsplash.com/photo-1619451683204-a4bcd6ad008a?q=80&w=400&auto=format&fit=crop'
   };
-
   useEffect(() => {
     // Simulate API call to fetch products
     setLoading(true);
@@ -131,9 +135,7 @@ const PersonalCareCategory: React.FC = () => {
       'menperfumes': ['عطر رجالي فاخر', 'عطر كلاسيكي', 'عطر رياضي', 'عطر خشبي'],
       'default': [`${currentCategory.name} منتج`]
     };
-    
     const names = nameMap[categoryId || ''] || nameMap['default'];
-    
     for (let i = 1; i <= count; i++) {
       const imageIndex = (i - 1) % categoryImages.length;
       const nameIndex = (i - 1) % names.length;
@@ -145,10 +147,8 @@ const PersonalCareCategory: React.FC = () => {
       };
       products.push(product);
     }
-    
     return products;
   };
-
   const handleAddToCart = (product: PersonalCareProduct) => {
     addToCart(product);
     toast.success(`تمت إضافة ${product.name} إلى السلة`, {
@@ -156,17 +156,23 @@ const PersonalCareCategory: React.FC = () => {
       className: "bg-blue-600 text-white border-blue-700"
     });
   };
-
-  const filterOptions = [
-    { id: 'all', name: 'الكل' },
-    { id: 'best-seller', name: 'الأكثر مبيعًا' },
-    { id: 'top-rated', name: 'الأعلى تقييمًا' },
-    { id: 'price-low', name: 'الأقل سعرًا' },
-    { id: 'price-high', name: 'الأعلى سعرًا' }
-  ];
-
-  return (
-    <div className="min-h-screen bg-blue-50" dir="rtl">
+  const filterOptions = [{
+    id: 'all',
+    name: 'الكل'
+  }, {
+    id: 'best-seller',
+    name: 'الأكثر مبيعًا'
+  }, {
+    id: 'top-rated',
+    name: 'الأعلى تقييمًا'
+  }, {
+    id: 'price-low',
+    name: 'الأقل سعرًا'
+  }, {
+    id: 'price-high',
+    name: 'الأعلى سعرًا'
+  }];
+  return <div className="min-h-screen bg-blue-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-20">
         {/* Header */}
         <div className="flex items-center justify-between p-4 bg-white shadow-sm sticky top-0 z-10">
@@ -176,15 +182,13 @@ const PersonalCareCategory: React.FC = () => {
           <h1 className="text-xl font-bold">{currentCategory.name}</h1>
           <div className="flex items-center gap-4">
             <button className="text-blue-700">
-              <Search className="w-5 h-5" />
+              
             </button>
             <Link to="/personal-care/cart" className="relative text-blue-700">
               <ShoppingCart className="w-5 h-5" />
-              {itemCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+              {itemCount > 0 && <span className="absolute -top-2 -right-2 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
                   {itemCount}
-                </span>
-              )}
+                </span>}
             </Link>
           </div>
         </div>
@@ -192,11 +196,7 @@ const PersonalCareCategory: React.FC = () => {
         {/* Category Banner */}
         <div className="relative h-40 overflow-hidden">
           <div className={`absolute inset-0 bg-gradient-to-r ${currentCategory.color} opacity-80`}></div>
-          <img 
-            src={currentCategory.image} 
-            alt={currentCategory.name}
-            className="w-full h-full object-cover"
-          />
+          <img src={currentCategory.image} alt={currentCategory.name} className="w-full h-full object-cover" />
           <div className="absolute inset-0 flex flex-col justify-center p-6">
             <h2 className="text-2xl font-bold text-white mb-1">{currentCategory.name}</h2>
             <p className="text-sm text-white opacity-90">اختر من بين أفضل منتجات {currentCategory.name} المتوفرة</p>
@@ -207,21 +207,13 @@ const PersonalCareCategory: React.FC = () => {
         <div className="p-4 space-y-4">
           {/* Search bar */}
           <div className="relative">
-            <input 
-              type="text" 
-              placeholder={`ابحث في ${currentCategory.name}...`} 
-              className="w-full p-3 pl-10 pr-4 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <input type="text" placeholder={`ابحث في ${currentCategory.name}...`} className="w-full p-3 pl-10 pr-4 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
             <Search className="absolute left-3 top-3 text-blue-400 w-5 h-5" />
           </div>
           
           {/* Filter button */}
           <div className="flex justify-between items-center">
-            <Button 
-              variant="personalCareOutline" 
-              className="flex items-center gap-2" 
-              onClick={() => setShowFilters(!showFilters)}
-            >
+            <Button variant="personalCareOutline" className="flex items-center gap-2" onClick={() => setShowFilters(!showFilters)}>
               <Filter className="w-4 h-4" />
               <span>تصفية</span>
               <ChevronDown className={`w-4 h-4 transform transition-transform ${showFilters ? 'rotate-180' : ''}`} />
@@ -231,20 +223,12 @@ const PersonalCareCategory: React.FC = () => {
           </div>
 
           {/* Filter options */}
-          {showFilters && (
-            <div className="bg-blue-50 p-4 rounded-lg animate-fade-in border border-blue-100">
+          {showFilters && <div className="bg-blue-50 p-4 rounded-lg animate-fade-in border border-blue-100">
               <h3 className="font-medium mb-3 text-blue-800">ترتيب حسب:</h3>
               <div className="flex flex-wrap gap-2">
-                {filterOptions.map(option => (
-                  <Button 
-                    key={option.id} 
-                    variant={activeFilter === option.id ? "personalCare" : "personalCareOutline"} 
-                    size="sm" 
-                    onClick={() => setActiveFilter(option.id)}
-                  >
+                {filterOptions.map(option => <Button key={option.id} variant={activeFilter === option.id ? "personalCare" : "personalCareOutline"} size="sm" onClick={() => setActiveFilter(option.id)}>
                     {option.name}
-                  </Button>
-                ))}
+                  </Button>)}
               </div>
               
               <h3 className="font-medium mb-3 mt-4 text-blue-800">السعر:</h3>
@@ -253,50 +237,28 @@ const PersonalCareCategory: React.FC = () => {
                 <Button variant="personalCareOutline" size="sm">50 - 100 ريال</Button>
                 <Button variant="personalCareOutline" size="sm">100+ ريال</Button>
               </div>
-            </div>
-          )}
+            </div>}
           
           {/* Horizontal Filter Tabs */}
           <div className="flex overflow-x-auto gap-2 pb-2 no-scrollbar -mx-1 px-1">
-            {filterOptions.map(option => (
-              <Button 
-                key={option.id} 
-                variant={activeFilter === option.id ? "personalCare" : "personalCareOutline"} 
-                size="sm" 
-                className={`whitespace-nowrap`}
-                onClick={() => setActiveFilter(option.id)}
-              >
+            {filterOptions.map(option => <Button key={option.id} variant={activeFilter === option.id ? "personalCare" : "personalCareOutline"} size="sm" className={`whitespace-nowrap`} onClick={() => setActiveFilter(option.id)}>
                 {option.name}
-              </Button>
-            ))}
+              </Button>)}
           </div>
         </div>
 
         {/* Products Grid */}
         <div className="p-4">
-          {loading ? (
-            <div className="grid grid-cols-2 gap-4">
-              {[1, 2, 3, 4].map(i => (
-                <div key={i} className="animate-pulse">
+          {loading ? <div className="grid grid-cols-2 gap-4">
+              {[1, 2, 3, 4].map(i => <div key={i} className="animate-pulse">
                   <div className="bg-blue-100 h-40 rounded-lg mb-2"></div>
                   <div className="bg-blue-100 h-4 w-3/4 rounded mb-2"></div>
                   <div className="bg-blue-100 h-4 w-1/2 rounded"></div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-4">
-              {products.map(product => (
-                <Card 
-                  key={product.id} 
-                  className="overflow-hidden border border-blue-100 hover:shadow-md transition-shadow"
-                >
+                </div>)}
+            </div> : <div className="grid grid-cols-2 gap-4">
+              {products.map(product => <Card key={product.id} className="overflow-hidden border border-blue-100 hover:shadow-md transition-shadow">
                   <Link to={`/personal-care/product/${product.id}`}>
-                    <img 
-                      src={product.image} 
-                      alt={product.name}
-                      className="w-full h-36 object-cover"
-                    />
+                    <img src={product.image} alt={product.name} className="w-full h-36 object-cover" />
                   </Link>
                   <div className="p-3">
                     <Link to={`/personal-care/product/${product.id}`}>
@@ -308,24 +270,17 @@ const PersonalCareCategory: React.FC = () => {
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="font-bold text-blue-700">{product.price} ريال</span>
-                      <Button 
-                        size="sm" 
-                        className="rounded-full h-7 w-7 p-0 bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 shadow-sm" 
-                        onClick={() => handleAddToCart(product)}
-                      >
+                      <Button size="sm" className="rounded-full h-7 w-7 p-0 bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 shadow-sm" onClick={() => handleAddToCart(product)}>
                         <Plus className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>
-                </Card>
-              ))}
-            </div>
-          )}
+                </Card>)}
+            </div>}
         </div>
 
         {/* Cart Floating Button */}
-        {itemCount > 0 && (
-          <Link to="/personal-care/cart">
+        {itemCount > 0 && <Link to="/personal-care/cart">
             <div className="fixed bottom-5 left-0 right-0 mx-auto w-4/5 max-w-md bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-full py-3 px-5 flex items-center justify-between shadow-lg my-[51px]">
               <div className="flex items-center gap-2">
                 <ShoppingCart className="h-6 w-6" />
@@ -335,11 +290,8 @@ const PersonalCareCategory: React.FC = () => {
                 {totalPrice} ريال
               </span>
             </div>
-          </Link>
-        )}
+          </Link>}
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default PersonalCareCategory;
