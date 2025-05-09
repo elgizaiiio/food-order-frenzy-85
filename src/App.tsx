@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -9,9 +8,11 @@ import { UserProvider } from "@/context/UserContext";
 import { MarketCartProvider } from "@/context/MarketCartContext";
 import { PharmacyCartProvider } from "@/context/PharmacyCartContext";
 import { PersonalCareCartProvider } from "@/context/PersonalCareCartContext";
+import { useOnboarding } from "./hooks/use-onboarding";
 import BottomNav from "./components/BottomNav";
 import Splash from "./components/Splash";
 import AuthGuard from "./components/AuthGuard";
+import OnboardingScreen from "./pages/OnboardingScreen";
 import Index from "./pages/Index";
 import Restaurants from "./pages/Restaurants";
 import RestaurantMenu from "./pages/RestaurantMenu";
@@ -115,15 +116,23 @@ const PersonalCareRoutes = () => (
 
 const App = () => {
   const [showSplash, setShowSplash] = useState(true);
+  const { isLoaded, isNewUser } = useOnboarding();
 
   // Use useEffect to manage the splash screen timing
   useEffect(() => {
+    if (!isLoaded) return; // انتظر حتى يتم تحميل حالة المستخدم
+
     const timer = setTimeout(() => {
       setShowSplash(false);
-    }, 5000); // 5 seconds splash screen
+    }, 2500); // تقليل مدة شاشة السبلاش إلى 2.5 ثانية
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [isLoaded]);
+
+  // إذا لم يتم تحميل حالة المستخدم بعد، عرض شاشة السبلاش
+  if (!isLoaded) {
+    return <Splash />; 
+  }
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -134,6 +143,8 @@ const App = () => {
           <BrowserRouter>
             {showSplash ? (
               <Splash onComplete={() => setShowSplash(false)} />
+            ) : isNewUser ? (
+              <OnboardingScreen />  // عرض شاشة Onboarding للمستخدمين الجدد
             ) : (
               <>
                 <div className="pb-16"> {/* Add padding to the bottom to prevent content from being hidden by the navigation bar */}
@@ -146,6 +157,7 @@ const App = () => {
                     {/* Protected Routes */}
                     <Route path="/" element={<AuthGuard><Index /></AuthGuard>} />
                     <Route path="/splash" element={<Splash />} />
+                    <Route path="/onboarding" element={<OnboardingScreen />} />
                     <Route path="/restaurants" element={<AuthGuard><Restaurants /></AuthGuard>} />
                     <Route path="/restaurant/:id" element={<AuthGuard><RestaurantMenu /></AuthGuard>} />
                     <Route path="/cart" element={<AuthGuard><Cart /></AuthGuard>} />
