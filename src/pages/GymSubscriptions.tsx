@@ -27,6 +27,34 @@ type Subscription = {
   features: string[];
 };
 
+// تحديد لون حالة الاشتراك
+const getStatusColor = (status: 'active' | 'expired' | 'pending') => {
+  switch (status) {
+    case 'active':
+      return 'text-green-700 bg-green-50 border-green-200';
+    case 'expired':
+      return 'text-gray-600 bg-gray-50 border-gray-200';
+    case 'pending':
+      return 'text-amber-700 bg-amber-50 border-amber-200';
+    default:
+      return 'text-gray-600 bg-gray-50 border-gray-200';
+  }
+};
+
+// تحديد نص حالة الاشتراك
+const getStatusText = (status: 'active' | 'expired' | 'pending') => {
+  switch (status) {
+    case 'active':
+      return 'نشط';
+    case 'expired':
+      return 'منتهي';
+    case 'pending':
+      return 'قيد التفعيل';
+    default:
+      return '';
+  }
+};
+
 const GymSubscriptions = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -100,34 +128,6 @@ const GymSubscriptions = () => {
       month: 'short',
       day: 'numeric',
     });
-  };
-  
-  // تحديد لون حالة الاشتراك
-  const getStatusColor = (status: 'active' | 'expired' | 'pending') => {
-    switch (status) {
-      case 'active':
-        return 'text-green-700 bg-green-50 border-green-200';
-      case 'expired':
-        return 'text-gray-600 bg-gray-50 border-gray-200';
-      case 'pending':
-        return 'text-amber-700 bg-amber-50 border-amber-200';
-      default:
-        return 'text-gray-600 bg-gray-50 border-gray-200';
-    }
-  };
-  
-  // تحديد نص حالة الاشتراك
-  const getStatusText = (status: 'active' | 'expired' | 'pending') => {
-    switch (status) {
-      case 'active':
-        return 'نشط';
-      case 'expired':
-        return 'منتهي';
-      case 'pending':
-        return 'قيد التفعيل';
-      default:
-        return '';
-    }
   };
   
   // إلغاء الاشتراك
