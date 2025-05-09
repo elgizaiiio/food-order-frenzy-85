@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Settings, Edit, Home, CreditCard, Clock, Gift, ChevronRight, User, Award, Users, Share2 } from 'lucide-react';
@@ -6,7 +5,6 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import TopBar from "@/components/TopBar";
-
 const Profile: React.FC = () => {
   const [user, setUser] = useState({
     name: 'أحمد محمد',
@@ -189,15 +187,7 @@ const Profile: React.FC = () => {
         animationDelay: "300ms"
       }}>
           <Card className="border border-dashed border-blue-300 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl">
-            <CardContent className="p-5 flex items-center justify-between">
-              <div>
-                <h3 className="font-bold text-lg mb-1 text-zinc-950">Dam Bro</h3>
-                <p className="text-sm text-zinc-950">ميزات حصرية قريباً</p>
-              </div>
-              <Button variant="secondary" disabled className="text-xs bg-white/70 shadow-sm text-blue-700 border border-blue-200">
-                قريباً
-              </Button>
-            </CardContent>
+            
           </Card>
         </div>
       </div>
