@@ -1,8 +1,10 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Search, ShoppingCart, Tag, Percent, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+
 const Clothes: React.FC = () => {
   // Categories for clothes
   const categories = [{
@@ -58,7 +60,9 @@ const Clothes: React.FC = () => {
     image: 'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?auto=format&fit=crop&q=80&w=600',
     color: 'from-sky-500 to-blue-600'
   }];
-  return <div className="min-h-screen bg-blue-50" dir="rtl">
+  
+  return (
+    <div className="min-h-screen bg-blue-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-20">
         {/* Header */}
         <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-700 to-indigo-600 text-white sticky top-0 z-10 shadow-md">
@@ -67,9 +71,6 @@ const Clothes: React.FC = () => {
           </Link>
           <h1 className="text-xl font-bold">dam Clothes</h1>
           <div className="flex items-center gap-4">
-            <button className="text-white hover:text-blue-100 transition-colors">
-              
-            </button>
             <Link to="/clothes/cart" className="text-white hover:text-blue-100 transition-colors relative">
               <ShoppingCart className="w-5 h-5" />
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
@@ -85,7 +86,9 @@ const Clothes: React.FC = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 to-indigo-800/60 flex flex-col justify-center p-6">
             <h2 className="text-3xl font-bold text-white mb-2 animate-fade-in">تسوق بأناقة</h2>
             <p className="text-white/90 mb-4 max-w-xs animate-fade-in">أحدث صيحات الموضة العالمية وبأفضل الأسعار</p>
-            
+            <Button size="sm" variant="gradient" className="w-auto shadow-md bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600">
+              تسوق الآن
+            </Button>
           </div>
         </div>
 
@@ -104,17 +107,27 @@ const Clothes: React.FC = () => {
               <Percent className="w-5 h-5 text-red-500" />
               <h2 className="text-lg font-bold text-blue-900">تخفيضات حصرية</h2>
             </div>
+            <Link to="/clothes/sales" className="text-sm text-blue-600 font-medium hover:underline">
+              عرض الكل
+            </Link>
           </div>
           
           <div className="flex overflow-x-auto gap-3 pb-3 no-scrollbar">
-            {promotions.map(promo => <div key={promo.id} className="relative min-w-[280px] h-32 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
+            {promotions.map(promo => (
+              <div 
+                key={promo.id} 
+                className="relative min-w-[280px] h-32 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
+              >
                 <div className={`absolute inset-0 bg-gradient-to-r ${promo.color} opacity-90`}></div>
                 <img src={promo.image} alt={promo.title} className="w-full h-full object-cover" />
                 <div className="absolute inset-0 flex flex-col justify-center p-4">
                   <h3 className="text-lg font-bold text-white">{promo.title}</h3>
-                  
+                  <Button size="sm" variant="outline" className="mt-2 bg-white/20 border-white text-white hover:bg-white/30 w-auto">
+                    تسوق الآن
+                  </Button>
                 </div>
-              </div>)}
+              </div>
+            ))}
           </div>
         </div>
 
@@ -125,17 +138,26 @@ const Clothes: React.FC = () => {
               <Tag className="w-5 h-5 text-blue-600" />
               <h2 className="text-lg font-bold text-blue-900">التصنيفات</h2>
             </div>
+            <Link to="/clothes/categories" className="text-sm text-blue-600 font-medium hover:underline">
+              عرض الكل
+            </Link>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            {categories.map(category => <Link key={category.id} to={`/clothes/category/${category.id}`} className="relative rounded-xl overflow-hidden h-36 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.03]">
+            {categories.map(category => (
+              <Link 
+                key={category.id} 
+                to={`/clothes/category/${category.id}`} 
+                className="relative rounded-xl overflow-hidden h-36 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.03]"
+              >
                 <div className={`absolute inset-0 bg-gradient-to-t from-blue-900/80 to-transparent`}></div>
                 <img src={category.image} alt={category.name} className="w-full h-full object-cover" />
                 <div className="absolute inset-0 flex flex-col justify-end p-4">
                   <span className={`w-12 h-1 mb-2 bg-gradient-to-r ${category.color} rounded-full`}></span>
                   <h3 className="text-lg font-bold text-white">{category.name}</h3>
                 </div>
-              </Link>)}
+              </Link>
+            ))}
           </div>
         </div>
 
@@ -150,15 +172,18 @@ const Clothes: React.FC = () => {
           </div>
           
           <div className="grid grid-cols-2 gap-4">
-            {featuredProducts.map(product => <Card key={product.id} className="overflow-hidden border border-blue-100 hover:shadow-lg transition-all duration-300 hover:scale-[1.02] group">
+            {featuredProducts.map((product) => (
+              <Card key={product.id} className="overflow-hidden border border-blue-100 hover:shadow-lg transition-all hover:scale-[1.02] group">
                 <Link to={`/clothes/product/${product.id}`}>
                   <div className="relative">
                     <img src={product.image} alt={product.name} className="w-full h-36 object-cover group-hover:brightness-105 transition-all" />
-                    {product.discount && <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-medium px-2 py-1 rounded-full">
+                    {product.discount && (
+                      <div className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
                         خصم
-                      </div>}
-                    <button className="absolute top-2 left-2 bg-white/80 p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Heart className="w-4 h-4 text-gray-600" />
+                      </div>
+                    )}
+                    <button className="absolute top-2 left-2 bg-white/80 p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Heart className={`w-4 h-4 text-gray-600`} />
                     </button>
                   </div>
                 </Link>
@@ -167,16 +192,21 @@ const Clothes: React.FC = () => {
                     <h3 className="font-medium text-blue-900 group-hover:text-blue-600 transition-colors">{product.name}</h3>
                   </Link>
                   <div className="flex items-center justify-between mt-2">
-                    {product.discount ? <div className="flex flex-col">
-                        <span className="font-bold text-blue-700">{product.price} ريال</span>
-                        <span className="text-xs text-gray-500 line-through">{product.discount} ريال</span>
-                      </div> : <span className="font-bold text-blue-700">{product.price} ريال</span>}
+                    {product.discount ? (
+                      <div className="flex flex-col">
+                        <span className="font-bold text-blue-700">{product.price} ج.م</span>
+                        <span className="text-xs text-gray-500 line-through">{product.discount} ج.م</span>
+                      </div>
+                    ) : (
+                      <span className="font-bold text-blue-700">{product.price} ج.م</span>
+                    )}
                     <Button size="sm" variant="gradient" className="rounded-full h-8 w-8 p-0 bg-gradient-to-r from-blue-600 to-indigo-600 shadow-sm hover:shadow-md transition-shadow">
                       +
                     </Button>
                   </div>
                 </div>
-              </Card>)}
+              </Card>
+            ))}
           </div>
         </div>
         
@@ -209,7 +239,19 @@ const Clothes: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Fixed Cart Button */}
+        <div className="fixed bottom-20 left-0 right-0 max-w-md mx-auto z-50 px-4">
+          <Link to="/clothes/cart">
+            <Button variant="gradient" className="w-full shadow-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
+              <ShoppingCart className="w-5 h-5 mr-2" />
+              عرض سلة التسوق
+            </Button>
+          </Link>
+        </div>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default Clothes;
