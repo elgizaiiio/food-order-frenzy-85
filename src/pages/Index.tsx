@@ -61,7 +61,7 @@ const Index: React.FC = () => {
           </Suspense>
           
           {/* Extra padding at bottom to ensure content doesn't get hidden under bottom nav */}
-          <div className="h-16"></div>
+          
         </div>
       </div>
     </div>;
