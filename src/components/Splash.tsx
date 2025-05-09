@@ -25,7 +25,7 @@ const Splash: React.FC<SplashProps> = ({ duration = 2000, onComplete }) => {
 
   return (
     <motion.div 
-      className="fixed inset-0 flex flex-col items-center justify-center bg-purple-500 z-50"
+      className="fixed inset-0 flex flex-col items-center justify-center bg-brand-500 z-50"
       initial={{ opacity: 1 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -35,12 +35,12 @@ const Splash: React.FC<SplashProps> = ({ duration = 2000, onComplete }) => {
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 0.1, duration: 0.3 }}
-        className="relative w-40 h-40 flex items-center justify-center"
+        className="relative"
       >
         <img 
-          src="/lovable-uploads/02c12e04-77e6-4c02-8600-d12cf723d7b8.png" 
+          src="/dam-logo.png" 
           alt="Dam Logo" 
-          className="w-36 h-36"
+          className="w-32 h-32"
           loading="eager"
           onError={(e) => {
             // Fallback if logo doesn't exist
