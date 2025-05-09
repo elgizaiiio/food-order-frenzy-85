@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, Navigate } from 'react-router-dom';
 import { Lock, Mail, Eye, EyeOff, Apple } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -146,7 +145,7 @@ const Login: React.FC = () => {
     setShowPassword(!showPassword);
   };
 
-  // Render a redirect if user is already logged in
+  // Make sure we put this after all hooks are called
   if (isLoggedIn) {
     return <Navigate to="/" />;
   }
