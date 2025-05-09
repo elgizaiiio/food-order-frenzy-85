@@ -1,11 +1,12 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
 interface UserContextType {
   userName: string;
   userAddress: string;
   isVerified: boolean;
   isBroMember: boolean;
+  isLoggedIn: boolean;
   setUserName: (name: string) => void;
   setUserAddress: (address: string) => void;
   setVerified: (status: boolean) => void;
@@ -31,12 +32,16 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [userAddress, setUserAddress] = useState<string>("شارع مصطفى النحاس، مدينة نصر");
   const [isVerified, setVerified] = useState<boolean>(false);
   const [isBroMember, setBroMember] = useState<boolean>(false);
+  
+  // تحديد ما إذا كان المستخدم قد سجل دخوله بناءً على اسم المستخدم
+  const isLoggedIn = userName !== "محمد";
 
   const value = {
     userName,
     userAddress,
     isVerified,
     isBroMember,
+    isLoggedIn,
     setUserName,
     setUserAddress,
     setVerified,

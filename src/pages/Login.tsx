@@ -1,7 +1,7 @@
 
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { User, Lock, Mail, Eye, EyeOff } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link, Navigate } from 'react-router-dom';
+import { Lock, Mail, Eye, EyeOff, Apple } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form";
 import { useUser } from "@/context/UserContext";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { supabase } from "@/integrations/supabase/client";
 
 // تعريف مخطط التحقق من البيانات
 const loginSchema = z.object({
@@ -22,8 +23,18 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState({
+    email: false,
+    google: false,
+    apple: false
+  });
   const navigate = useNavigate();
-  const { setUserName, setVerified, setBroMember } = useUser();
+  const { setUserName, setVerified, setBroMember, isLoggedIn } = useUser();
+  
+  // إذا كان المستخدم مسجل دخول بالفعل، فإننا نقوم بتوجيهه إلى الصفحة الرئيسية
+  if (isLoggedIn) {
+    return <Navigate to="/" />;
+  }
   
   // إعداد نموذج تسجيل الدخول باستخدام React Hook Form
   const form = useForm<LoginFormValues>({
@@ -34,17 +45,68 @@ const Login: React.FC = () => {
     },
   });
 
-  // معالجة تسجيل الدخول
-  const onSubmit = (data: LoginFormValues) => {
-    // هنا يمكن إضافة معالجة تسجيل الدخول الفعلي عند ربط التطبيق بقاعدة بيانات
-    console.log("بيانات تسجيل الدخول:", data);
-    
-    // محاكاة تسجيل الدخول الناجح
-    toast.success("تم تسجيل الدخول بنجاح");
-    setUserName("أحمد محمد"); // تعيين اسم المستخدم
-    setVerified(true); // تعيين حالة التوثيق
-    setBroMember(true); // تعيين حالة العضوية
-    navigate("/"); // التوجيه إلى الصفحة الرئيسية
+  // معالجة تسجيل الدخول بالبريد الإلكتروني
+  const onSubmit = async (data: LoginFormValues) => {
+    try {
+      setLoading({...loading, email: true});
+      
+      // هنا يمكن إضافة معالجة تسجيل الدخول الفعلي عند ربط التطبيق بقاعدة بيانات
+      console.log("بيانات تسجيل الدخول:", data);
+      
+      // محاكاة تسجيل الدخول الناجح - في التطبيق الحقيقي سيتم استبدالها بـ API
+      setTimeout(() => {
+        toast.success("تم تسجيل الدخول بنجاح");
+        setUserName("أحمد محمد"); // تعيين اسم المستخدم
+        setVerified(true); // تعيين حالة التوثيق
+        setBroMember(true); // تعيين حالة العضوية
+        setLoading({...loading, email: false});
+        navigate("/"); // التوجيه إلى الصفحة الرئيسية
+      }, 1000);
+    } catch (error) {
+      setLoading({...loading, email: false});
+      toast.error("حدث خطأ أثناء تسجيل الدخول");
+      console.error(error);
+    }
+  };
+
+  // تسجيل الدخول باستخدام جوجل
+  const handleGoogleLogin = async () => {
+    try {
+      setLoading({...loading, google: true});
+      // استخدام supabase في المستقبل
+      // محاكاة تسجيل الدخول الناجح
+      setTimeout(() => {
+        toast.success("تم تسجيل الدخول بنجاح باستخدام Google");
+        setUserName("مستخدم Google");
+        setVerified(true);
+        setLoading({...loading, google: false});
+        navigate("/");
+      }, 1000);
+    } catch (error) {
+      setLoading({...loading, google: false});
+      toast.error("حدث خطأ أثناء تسجيل الدخول باستخدام Google");
+      console.error(error);
+    }
+  };
+
+  // تسجيل الدخول باستخدام أبل
+  const handleAppleLogin = async () => {
+    try {
+      setLoading({...loading, apple: true});
+      // استخدام supabase في المستقبل
+      // محاكاة تسجيل الدخول الناجح
+      setTimeout(() => {
+        toast.success("تم تسجيل الدخول بنجاح باستخدام Apple");
+        setUserName("مستخدم Apple");
+        setVerified(true);
+        setLoading({...loading, apple: false});
+        navigate("/");
+      }, 1000);
+    } catch (error) {
+      setLoading({...loading, apple: false});
+      toast.error("حدث خطأ أثناء تسجيل الدخول باستخدام Apple");
+      console.error(error);
+    }
   };
 
   const togglePasswordVisibility = () => {
@@ -129,8 +191,17 @@ const Login: React.FC = () => {
                 <Button
                   type="submit"
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 rounded-lg font-medium"
+                  disabled={loading.email}
                 >
-                  تسجيل الدخول
+                  {loading.email ? (
+                    <span className="flex items-center">
+                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      جاري تسجيل الدخول...
+                    </span>
+                  ) : "تسجيل الدخول"}
                 </Button>
               </form>
             </Form>
@@ -153,15 +224,41 @@ const Login: React.FC = () => {
         </div>
         
         <div className="grid grid-cols-2 gap-4">
-          <Button variant="outline" className="h-12 border-gray-300 hover:bg-gray-50">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" className="w-5 h-5 mr-2" />
-            <span>Google</span>
+          <Button 
+            variant="outline" 
+            className="h-12 border-gray-300 hover:bg-gray-50"
+            onClick={handleGoogleLogin}
+            disabled={loading.google}
+          >
+            {loading.google ? (
+              <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            ) : (
+              <>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" className="w-5 h-5 mr-2" />
+                <span>Google</span>
+              </>
+            )}
           </Button>
-          <Button variant="outline" className="h-12 border-gray-300 hover:bg-gray-50">
-            <svg className="w-5 h-5 mr-2 text-[#1877F2]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-              <path fill="currentColor" d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"/>
-            </svg>
-            <span>Facebook</span>
+          <Button 
+            variant="outline" 
+            className="h-12 border-gray-300 hover:bg-gray-50"
+            onClick={handleAppleLogin}
+            disabled={loading.apple}
+          >
+            {loading.apple ? (
+              <svg className="animate-spin h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            ) : (
+              <>
+                <Apple className="w-5 h-5 mr-2" />
+                <span>Apple</span>
+              </>
+            )}
           </Button>
         </div>
       </div>

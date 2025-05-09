@@ -11,6 +11,7 @@ import { PharmacyCartProvider } from "@/context/PharmacyCartContext";
 import { PersonalCareCartProvider } from "@/context/PersonalCareCartContext";
 import BottomNav from "./components/BottomNav";
 import Splash from "./components/Splash";
+import AuthGuard from "./components/AuthGuard";
 import Index from "./pages/Index";
 import Restaurants from "./pages/Restaurants";
 import RestaurantMenu from "./pages/RestaurantMenu";
@@ -79,10 +80,10 @@ const queryClient = new QueryClient({
 const PharmacyCartRoutes = () => (
   <PharmacyCartProvider>
     <Routes>
-      <Route path="/" element={<Pharmacy />} />
-      <Route path="/cart" element={<PharmacyCart />} />
-      <Route path="/checkout" element={<PharmacyCheckout />} />
-      <Route path="/tracking" element={<PharmacyTracking />} />
+      <Route path="/" element={<AuthGuard><Pharmacy /></AuthGuard>} />
+      <Route path="/cart" element={<AuthGuard><PharmacyCart /></AuthGuard>} />
+      <Route path="/checkout" element={<AuthGuard><PharmacyCheckout /></AuthGuard>} />
+      <Route path="/tracking" element={<AuthGuard><PharmacyTracking /></AuthGuard>} />
     </Routes>
   </PharmacyCartProvider>
 );
@@ -90,11 +91,11 @@ const PharmacyCartRoutes = () => (
 const MarketCartRoutes = () => (
   <MarketCartProvider>
     <Routes>
-      <Route path="/" element={<DamMarket />} />
-      <Route path="/category/:id" element={<MarketCategory />} />
-      <Route path="/cart" element={<MarketCart />} />
-      <Route path="/checkout" element={<MarketCheckout />} />
-      <Route path="/tracking" element={<MarketTracking />} />
+      <Route path="/" element={<AuthGuard><DamMarket /></AuthGuard>} />
+      <Route path="/category/:id" element={<AuthGuard><MarketCategory /></AuthGuard>} />
+      <Route path="/cart" element={<AuthGuard><MarketCart /></AuthGuard>} />
+      <Route path="/checkout" element={<AuthGuard><MarketCheckout /></AuthGuard>} />
+      <Route path="/tracking" element={<AuthGuard><MarketTracking /></AuthGuard>} />
     </Routes>
   </MarketCartProvider>
 );
@@ -102,12 +103,12 @@ const MarketCartRoutes = () => (
 const PersonalCareRoutes = () => (
   <PersonalCareCartProvider>
     <Routes>
-      <Route path="/" element={<PersonalCare />} />
-      <Route path="/category/:categoryId" element={<PersonalCareCategory />} />
-      <Route path="/product/:productId" element={<PersonalCareProduct />} />
-      <Route path="/cart" element={<PersonalCareCart />} />
-      <Route path="/checkout" element={<PersonalCareCheckout />} />
-      <Route path="/tracking" element={<PersonalCareTracking />} />
+      <Route path="/" element={<AuthGuard><PersonalCare /></AuthGuard>} />
+      <Route path="/category/:categoryId" element={<AuthGuard><PersonalCareCategory /></AuthGuard>} />
+      <Route path="/product/:productId" element={<AuthGuard><PersonalCareProduct /></AuthGuard>} />
+      <Route path="/cart" element={<AuthGuard><PersonalCareCart /></AuthGuard>} />
+      <Route path="/checkout" element={<AuthGuard><PersonalCareCheckout /></AuthGuard>} />
+      <Route path="/tracking" element={<AuthGuard><PersonalCareTracking /></AuthGuard>} />
     </Routes>
   </PersonalCareCartProvider>
 );
@@ -137,20 +138,20 @@ const App = () => {
               <>
                 <div className="pb-16"> {/* Add padding to the bottom to prevent content from being hidden by the navigation bar */}
                   <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/splash" element={<Splash />} />
-                    
-                    {/* Authentication Routes */}
+                    {/* Authentication Routes - Not Protected */}
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/forgot-password" element={<ForgotPassword />} />
                     
-                    <Route path="/restaurants" element={<Restaurants />} />
-                    <Route path="/restaurant/:id" element={<RestaurantMenu />} />
-                    <Route path="/cart" element={<Cart />} />
-                    <Route path="/checkout" element={<Checkout />} />
-                    <Route path="/tracking" element={<OrderTracking />} />
-                    <Route path="/about" element={<About />} />
+                    {/* Protected Routes */}
+                    <Route path="/" element={<AuthGuard><Index /></AuthGuard>} />
+                    <Route path="/splash" element={<Splash />} />
+                    <Route path="/restaurants" element={<AuthGuard><Restaurants /></AuthGuard>} />
+                    <Route path="/restaurant/:id" element={<AuthGuard><RestaurantMenu /></AuthGuard>} />
+                    <Route path="/cart" element={<AuthGuard><Cart /></AuthGuard>} />
+                    <Route path="/checkout" element={<AuthGuard><Checkout /></AuthGuard>} />
+                    <Route path="/tracking" element={<AuthGuard><OrderTracking /></AuthGuard>} />
+                    <Route path="/about" element={<AuthGuard><About /></AuthGuard>} />
                     
                     {/* Pharmacy routes with PharmacyCartProvider */}
                     <Route path="/pharmacy/*" element={<PharmacyCartRoutes />} />
@@ -162,31 +163,34 @@ const App = () => {
                     <Route path="/personal-care/*" element={<PersonalCareRoutes />} />
                     
                     {/* Clothes Routes */}
-                    <Route path="/clothes" element={<Clothes />} />
-                    <Route path="/clothes/category/:categoryId" element={<ClothesCategory />} />
-                    <Route path="/clothes/cart" element={<ClothesCart />} />
-                    <Route path="/clothes/checkout" element={<ClothesCheckout />} />
+                    <Route path="/clothes" element={<AuthGuard><Clothes /></AuthGuard>} />
+                    <Route path="/clothes/category/:categoryId" element={<AuthGuard><ClothesCategory /></AuthGuard>} />
+                    <Route path="/clothes/cart" element={<AuthGuard><ClothesCart /></AuthGuard>} />
+                    <Route path="/clothes/checkout" element={<AuthGuard><ClothesCheckout /></AuthGuard>} />
+                    
                     {/* Gym Routes */}
-                    <Route path="/gym" element={<Gym />} />
-                    <Route path="/gym/:id/subscribe" element={<GymSubscription />} />
-                    <Route path="/gym/payment" element={<GymPayment />} />
-                    <Route path="/gym/success" element={<GymSuccess />} />
-                    <Route path="/gym/subscriptions" element={<GymSubscriptions />} />
+                    <Route path="/gym" element={<AuthGuard><Gym /></AuthGuard>} />
+                    <Route path="/gym/:id/subscribe" element={<AuthGuard><GymSubscription /></AuthGuard>} />
+                    <Route path="/gym/payment" element={<AuthGuard><GymPayment /></AuthGuard>} />
+                    <Route path="/gym/success" element={<AuthGuard><GymSuccess /></AuthGuard>} />
+                    <Route path="/gym/subscriptions" element={<AuthGuard><GymSubscriptions /></AuthGuard>} />
+                    
                     {/* Profile Routes */}
-                    <Route path="/profile" element={<Profile />} />
-                    <Route path="/edit-profile" element={<EditProfile />} />
-                    <Route path="/settings" element={<Settings />} />
-                    <Route path="/edit-contact-info" element={<EditContactInfo />} />
-                    <Route path="/change-password" element={<ChangePassword />} />
-                    <Route path="/notification-settings" element={<NotificationSettings />} />
-                    <Route path="/addresses" element={<Addresses />} />
-                    <Route path="/payment-methods" element={<PaymentMethods />} />
-                    <Route path="/add-payment-method" element={<AddPaymentMethod />} />
-                    <Route path="/orders" element={<Orders />} />
-                    <Route path="/coupons" element={<Coupons />} />
-                    <Route path="/chat-support" element={<ChatSupport />} />
-                    <Route path="/invite-friends" element={<InviteFriends />} />
-                    <Route path="/dam-bro" element={<DamBro />} />
+                    <Route path="/profile" element={<AuthGuard><Profile /></AuthGuard>} />
+                    <Route path="/edit-profile" element={<AuthGuard><EditProfile /></AuthGuard>} />
+                    <Route path="/settings" element={<AuthGuard><Settings /></AuthGuard>} />
+                    <Route path="/edit-contact-info" element={<AuthGuard><EditContactInfo /></AuthGuard>} />
+                    <Route path="/change-password" element={<AuthGuard><ChangePassword /></AuthGuard>} />
+                    <Route path="/notification-settings" element={<AuthGuard><NotificationSettings /></AuthGuard>} />
+                    <Route path="/addresses" element={<AuthGuard><Addresses /></AuthGuard>} />
+                    <Route path="/payment-methods" element={<AuthGuard><PaymentMethods /></AuthGuard>} />
+                    <Route path="/add-payment-method" element={<AuthGuard><AddPaymentMethod /></AuthGuard>} />
+                    <Route path="/orders" element={<AuthGuard><Orders /></AuthGuard>} />
+                    <Route path="/coupons" element={<AuthGuard><Coupons /></AuthGuard>} />
+                    <Route path="/chat-support" element={<AuthGuard><ChatSupport /></AuthGuard>} />
+                    <Route path="/invite-friends" element={<AuthGuard><InviteFriends /></AuthGuard>} />
+                    <Route path="/dam-bro" element={<AuthGuard><DamBro /></AuthGuard>} />
+                    
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, MapPin, User, LogIn } from 'lucide-react';
+import { User, LogIn } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/context/UserContext";
 import { toast } from "sonner";
@@ -15,10 +15,9 @@ const TopBar: React.FC<TopBarProps> = ({
   userName,
   address = "شارع مصطفى النحاس، مدينة نصر"
 }) => {
-  const { userName: contextUserName, isVerified, setBroMember, setVerified, setUserName } = useUser();
+  const { userName: contextUserName, isVerified, isBroMember, isLoggedIn, setBroMember, setVerified, setUserName } = useUser();
   const navigate = useNavigate();
   const displayName = contextUserName || userName;
-  const isLoggedIn = !!displayName && displayName !== "محمد"; // افتراض أن المستخدم مسجل دخول إذا كان لديه اسم غير الاسم الافتراضي
 
   const handleLogout = () => {
     // تنفيذ عملية تسجيل الخروج
@@ -26,7 +25,7 @@ const TopBar: React.FC<TopBarProps> = ({
     setVerified(false);
     setBroMember(false);
     toast.success("تم تسجيل الخروج بنجاح");
-    navigate('/');
+    navigate('/login');
   };
   
   const handleLogin = () => {
@@ -48,6 +47,9 @@ const TopBar: React.FC<TopBarProps> = ({
               </span>
               {isVerified && (
                 <span className="text-xs text-blue-200">حساب موثق</span>
+              )}
+              {isBroMember && (
+                <span className="text-xs text-yellow-300">Bro</span>
               )}
             </div>
           </Link>
