@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Clock, ShoppingBag } from 'lucide-react';
@@ -84,7 +83,8 @@ const CheckoutButton = () => {
           id: item.id,
           quantity: item.quantity
         })),
-        total: orderTotal
+        total: orderTotal,
+        orderType: 'market' as const
       };
 
       // إرسال الطلب إلى واجهة برمجة التطبيقات

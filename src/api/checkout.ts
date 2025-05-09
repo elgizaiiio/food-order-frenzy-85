@@ -11,7 +11,7 @@ export interface OrderDetails {
     quantity: number;
   }>;
   total: number;
-  orderType: 'restaurant' | 'market' | 'pharmacy' | 'personal_care';
+  orderType: 'restaurant' | 'market' | 'pharmacy' | 'personal_care' | 'gym';
 }
 
 // واجهة استجابة الطلب
@@ -60,6 +60,8 @@ export async function submitOrder(orderDetails: OrderDetails): Promise<OrderResp
       trackingUrl = '/pharmacy/tracking';
     } else if (orderDetails.orderType === 'personal_care') {
       trackingUrl = '/personal-care/tracking';
+    } else if (orderDetails.orderType === 'gym') {
+      trackingUrl = '/gym/tracking';
     }
     
     return {
