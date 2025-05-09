@@ -1,10 +1,11 @@
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Clock, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { toast } from 'sonner';
+import { toast } from "sonner";
 import { CheckoutProvider, useCheckout } from '@/context/CheckoutContext';
 import AddressSelector from '@/components/AddressSelector';
 import NewAddressForm from '@/components/NewAddressForm';
@@ -54,7 +55,7 @@ const DeliveryTime = () => {
     min: 30,
     max: 45
   });
-  return <div className="space-y-4">
+  return <div className="space-y-3">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-bold flex items-center gap-2 text-blue-800">
           <Clock className="w-5 h-5 text-blue-600" />
@@ -153,7 +154,7 @@ const CheckoutContent = () => {
     setIsAddingAddress(false);
     setIsAddingNewAddress(false);
   };
-  return <div className="space-y-6 pb-32">
+  return <div className="space-y-5">
       {/* قسم العناوين */}
       <Card className="border border-blue-100 shadow-sm">
         <CardContent className="p-5">
@@ -201,17 +202,12 @@ const CheckoutContent = () => {
           </div>
         </CardContent>
       </Card>
-      
-      {/* شريط الدفع السفلي الثابت */}
-      <div className="fixed bottom-0 left-0 right-0 shadow-lg border-t p-4 z-50 max-w-md mx-auto py-[18px] my-[220px] bg-transparent">
-        <CheckoutButton />
-      </div>
     </div>;
 };
 const Checkout: React.FC = () => {
   return <CheckoutProvider>
       <div className="min-h-screen bg-blue-50" dir="rtl">
-        <div className="max-w-md mx-auto bg-white pb-32">
+        <div className="max-w-md mx-auto bg-white pb-24">
           {/* الرأس */}
           <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-md z-20">
             <div className="flex items-center justify-between p-4">
@@ -227,6 +223,11 @@ const Checkout: React.FC = () => {
           <div className="p-4">
             <CheckoutContent />
           </div>
+        </div>
+        
+        {/* شريط الدفع السفلي الثابت */}
+        <div className="fixed bottom-0 left-0 right-0 shadow-lg border-t p-4 z-50 max-w-md mx-auto bg-white">
+          <CheckoutButton />
         </div>
       </div>
     </CheckoutProvider>;

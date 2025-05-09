@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, MapPin, Clock, CreditCard, Phone, Wallet, DollarSign, Apple, ShoppingBag } from 'lucide-react';
+import { ArrowLeft, Clock, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useMarketCart, MarketCartProvider } from '@/context/MarketCartContext';
 import { Card, CardContent } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { useMarketCart, MarketCartProvider } from '@/context/MarketCartContext';
 import { CheckoutProvider, useCheckout } from '@/context/CheckoutContext';
 import { submitOrder } from '@/api/checkout';
 import { useToast } from '@/hooks/use-toast';
@@ -19,7 +18,7 @@ const DeliveryTime = () => {
     min: 30,
     max: 45
   });
-  return <div className="space-y-4">
+  return <div className="space-y-3">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-bold flex items-center gap-2 text-blue-800">
           <Clock className="w-5 h-5 text-blue-600" />
@@ -202,8 +201,8 @@ const MarketCheckoutContent = () => {
         <div className="w-16 h-16 mb-4 rounded-full bg-blue-100 flex items-center justify-center">
           <ShoppingBag className="w-8 h-8 text-blue-600" />
         </div>
-        <h2 className="text-xl font-bold mb-2 text-blue-800">السلة فاضية</h2>
-        <p className="text-gray-600 mb-6">لسه مضفتش أي منتجات للسلة</p>
+        <h2 className="text-xl font-bold mb-2 text-blue-800">السلة فارغة</h2>
+        <p className="text-gray-600 mb-6">لم تقم بإضافة أي منتجات للسلة بعد</p>
         <Link to="/market">
           <Button variant="gradient" className="shadow-md">
             تصفح المنتجات
@@ -211,7 +210,7 @@ const MarketCheckoutContent = () => {
         </Link>
       </div>;
   }
-  return <div className="space-y-6 pb-32">
+  return <div className="space-y-5">
       {/* قسم العناوين */}
       <Card className="border-none shadow-sm">
         <CardContent className="p-5">
@@ -241,11 +240,12 @@ const MarketCheckoutContent = () => {
       </Card>
     </div>;
 };
+
 const MarketCheckout: React.FC = () => {
   return <MarketCartProvider>
       <CheckoutProvider>
         <div className="min-h-screen bg-blue-50" dir="rtl">
-          <div className="max-w-md mx-auto bg-white pb-32">
+          <div className="max-w-md mx-auto bg-white pb-24">
             {/* الرأس */}
             <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-md z-20">
               <div className="flex items-center justify-between p-4">
@@ -265,10 +265,11 @@ const MarketCheckout: React.FC = () => {
         </div>
         
         {/* زر تأكيد الطلب العائم */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-50 max-w-md mx-auto my-[240px]">
+        <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-50 max-w-md mx-auto">
           <CheckoutButton />
         </div>
       </CheckoutProvider>
     </MarketCartProvider>;
 };
+
 export default MarketCheckout;

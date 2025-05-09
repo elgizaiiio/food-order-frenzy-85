@@ -1,3 +1,4 @@
+
 import React, { Suspense, lazy } from 'react';
 import { useUser } from '@/context/UserContext';
 import TopBar from '@/components/TopBar';
@@ -15,6 +16,7 @@ const Promos = lazy(() => import('@/components/ui/Promos'));
 const LoadingFallback = () => <div className="p-6 flex justify-center items-center">
     <div className="w-10 h-10 border-3 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
   </div>;
+
 const HeroSection = () => <div className="relative px-4 pt-6 pb-8 mb-4 bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-b-3xl overflow-hidden">
     <div className="absolute top-0 right-0 w-full h-full opacity-10">
       <div className="absolute top-0 right-0 w-24 h-24 bg-white rounded-full -mr-6 -mt-6"></div>
@@ -26,16 +28,26 @@ const HeroSection = () => <div className="relative px-4 pt-6 pb-8 mb-4 bg-gradie
     </p>
     <div className="relative z-10 animate-fade-in animate-delay-2">
       <div className="relative">
-        
-        
+        <div className="relative bg-white/20 backdrop-blur-sm rounded-xl overflow-hidden">
+          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            <Search className="w-5 h-5 text-white" />
+          </div>
+          <Input 
+            type="search" 
+            className="block w-full p-3 pr-10 bg-transparent border-none text-white placeholder:text-white/70 focus:outline-none focus:ring-0" 
+            placeholder="ابحث عن مطاعم، منتجات، أدوية..."
+          />
+        </div>
       </div>
     </div>
   </div>;
+
 const Index: React.FC = () => {
   const {
     userName,
     userAddress
   } = useUser();
+  
   return <div className="min-h-screen bg-blue-50/30">
       <div className="max-w-md mx-auto bg-white pb-20">
         {/* Top Bar */}
@@ -45,7 +57,7 @@ const Index: React.FC = () => {
         <HeroSection />
         
         {/* Main Content */}
-        <div className="px-4 pt-4">
+        <div className="px-4 pt-2">
           <Categories />
           
           <Suspense fallback={<LoadingFallback />}>
@@ -59,11 +71,9 @@ const Index: React.FC = () => {
           <Suspense fallback={<LoadingFallback />}>
             <Promos />
           </Suspense>
-          
-          {/* Extra padding at bottom to ensure content doesn't get hidden under bottom nav */}
-          
         </div>
       </div>
     </div>;
 };
+
 export default Index;

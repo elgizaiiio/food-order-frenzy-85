@@ -52,7 +52,7 @@ const PersonalCareCart: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-blue-50" dir="rtl">
-      <div className="max-w-md mx-auto bg-white pb-32 shadow-md">
+      <div className="max-w-md mx-auto bg-white pb-24 shadow-md">
         {/* الهيدر */}
         <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-md sticky top-0 z-10">
           <Link to="/personal-care" className="text-white hover:text-blue-100 transition-colors">
@@ -63,8 +63,8 @@ const PersonalCareCart: React.FC = () => {
         </div>
 
         {/* محتويات السلة */}
-        <div className="p-5">
-          <div className="mb-6">
+        <div className="p-4">
+          <div className="mb-4">
             {items.length > 0 ? (
               items.map((item) => (
                 <div key={item.id} className="flex items-center justify-between py-3 border-b border-blue-100 hover:bg-blue-50 transition-colors rounded-lg px-2 my-2 animate-fade-in">
@@ -107,7 +107,7 @@ const PersonalCareCart: React.FC = () => {
                 <div className="bg-blue-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4">
                   <ShoppingBag className="w-12 h-12 text-blue-600" />
                 </div>
-                <p className="text-gray-500 mb-4">السلة فاضية</p>
+                <p className="text-gray-500 mb-4">السلة فارغة</p>
                 <Link to="/personal-care">
                   <Button 
                     variant="personalCare" 
@@ -126,14 +126,14 @@ const PersonalCareCart: React.FC = () => {
               <Link to="/personal-care">
                 <Button 
                   variant="personalCareOutline" 
-                  className="w-full mb-8"
+                  className="w-full mb-4"
                 >
                   إضافة منتجات تانية
                 </Button>
               </Link>
 
               {/* منتجات مقترحة */}
-              <div className="mb-8 animate-fade-in">
+              <div className="mb-4 animate-fade-in">
                 <h2 className="text-lg font-bold mb-3 flex items-center gap-2 text-blue-800">
                   <span className="h-5 w-1.5 rounded-full bg-gradient-to-b from-blue-600 to-blue-800"></span>
                   منتجات ممكن تعجبك
