@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Settings, Edit, Home, CreditCard, Clock, Gift, ChevronRight, User, Award, Users, Share2 } from 'lucide-react';
@@ -154,16 +155,21 @@ const Profile: React.FC = () => {
         <div className="px-4 py-6 animate-fade-in" style={{
         animationDelay: "200ms"
       }}>
-          <Card className="overflow-hidden border-none shadow-md bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-2xl">
+          <Card className="overflow-hidden border-none shadow-md bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-2xl">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-xl font-bold">Dam Bro</h3>
-                <div className="bg-white/20 px-3 py-1 rounded-full text-sm">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mr-3">
+                    <span className="text-lg font-bold">Dam</span>
+                  </div>
+                  <h3 className="text-xl font-bold">Dam Bro</h3>
+                </div>
+                <div className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm">
                   <span>99 جنيه / شهرياً</span>
                 </div>
               </div>
               
-              <div className="bg-white/10 rounded-xl p-4 mb-4">
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-4">
                 <h4 className="font-medium mb-3">مميزات الاشتراك:</h4>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-center gap-2">
@@ -186,7 +192,7 @@ const Profile: React.FC = () => {
               </div>
               
               <Button 
-                className="w-full bg-white text-blue-600 hover:bg-blue-50"
+                className="w-full bg-white text-blue-700 hover:bg-blue-50 font-bold transition-colors"
                 onClick={handleSubscribe}
               >
                 اشترك الآن
