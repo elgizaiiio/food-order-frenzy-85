@@ -112,9 +112,7 @@ const Clothes: React.FC = () => {
                 <img src={promo.image} alt={promo.title} className="w-full h-full object-cover" />
                 <div className="absolute inset-0 flex flex-col justify-center p-4">
                   <h3 className="text-lg font-bold text-white">{promo.title}</h3>
-                  <Button variant="default" className="bg-white text-blue-600 hover:bg-blue-50 mt-2 w-max px-4 shadow-md" size="sm">
-                    تسوق الآن
-                  </Button>
+                  
                 </div>
               </div>)}
           </div>
