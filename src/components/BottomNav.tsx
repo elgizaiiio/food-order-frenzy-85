@@ -16,10 +16,15 @@ const BottomNav: React.FC = () => {
   const isCheckoutPage = path.includes('checkout');
   const isAuthPage = path === '/login' || path === '/register' || path === '/forgot-password';
 
-  // إذا كانت الصفحة الحالية هي صفحة دفع أو صفحة مصادقة، فلا نعرض شريط التنقل السفلي
-  if (isCheckoutPage || isAuthPage) {
-    return null;
-  }
+  // استخدام مستشعر السحب لإعادة إظهار الشريط عند السحب للأعلى
+  const { handlers } = useTouch({
+    onSwipeUp: () => {
+      setIsVisible(false);
+    },
+    onSwipeDown: () => {
+      setIsVisible(true);
+    }
+  });
 
   // إخفاء/إظهار الشريط عند التمرير
   useEffect(() => {
@@ -44,15 +49,10 @@ const BottomNav: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
 
-  // استخدام مستشعر السحب لإعادة إظهار الشريط عند السحب للأعلى
-  const { handlers } = useTouch({
-    onSwipeUp: () => {
-      setIsVisible(false);
-    },
-    onSwipeDown: () => {
-      setIsVisible(true);
-    }
-  });
+  // إذا كانت الصفحة الحالية هي صفحة دفع أو صفحة مصادقة، فلا نعرض شريط التنقل السفلي
+  if (isCheckoutPage || isAuthPage) {
+    return null;
+  }
 
   const navItems = [
     {
