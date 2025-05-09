@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,7 +10,6 @@ import { MarketCartProvider } from "@/context/MarketCartContext";
 import { PharmacyCartProvider } from "@/context/PharmacyCartContext";
 import { PersonalCareCartProvider } from "@/context/PersonalCareCartContext";
 import BottomNav from "./components/BottomNav";
-import Splash from "./components/Splash";
 import AuthGuard from "./components/AuthGuard";
 // Personal Care Section
 import PersonalCare from "./pages/PersonalCare";
@@ -113,24 +113,6 @@ const PersonalCareRoutes = () => (
 );
 
 const AppContent = () => {
-  const [showSplash, setShowSplash] = useState(true);
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  // Use useEffect to manage the splash screen timing
-  useEffect(() => {
-    // Show splash screen for 2.5 seconds
-    const timer = setTimeout(() => {
-      setShowSplash(false);
-    }, 2500);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (showSplash) {
-    return <Splash onComplete={() => setShowSplash(false)} />; 
-  }
-
   return (
     <>
       <div className="pb-16"> {/* Add padding to the bottom to prevent content from being hidden by the navigation bar */}
@@ -142,7 +124,6 @@ const AppContent = () => {
           
           {/* Protected Routes */}
           <Route path="/" element={<AuthGuard><Index /></AuthGuard>} />
-          <Route path="/splash" element={<Splash />} />
           <Route path="/restaurants" element={<AuthGuard><Restaurants /></AuthGuard>} />
           <Route path="/restaurant/:id" element={<AuthGuard><RestaurantMenu /></AuthGuard>} />
           <Route path="/cart" element={<AuthGuard><Cart /></AuthGuard>} />
