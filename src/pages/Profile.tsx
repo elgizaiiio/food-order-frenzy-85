@@ -1,17 +1,29 @@
+
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Settings, Edit, Home, CreditCard, Clock, Gift, ChevronRight, User, Award, Users, Share2 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import TopBar from "@/components/TopBar";
+import { toast } from "sonner";
+
 const Profile: React.FC = () => {
+  const navigate = useNavigate();
   const [user, setUser] = useState({
     name: 'أحمد محمد',
     username: '@ahmed_dam',
     profilePicture: undefined,
     points: 235
   });
+
+  const handleSubscribe = () => {
+    // Navigate to the Dam Bro subscription page
+    // This would typically go to a payment page or subscription details page
+    navigate('/gym');
+    toast.success('جاري تحويلك إلى صفحة الاشتراك');
+  };
+
   return <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-20">
         {/* Header */}
@@ -175,7 +187,10 @@ const Profile: React.FC = () => {
                 </ul>
               </div>
               
-              <Button className="w-full bg-white text-blue-600 hover:bg-blue-50">
+              <Button 
+                className="w-full bg-white text-blue-600 hover:bg-blue-50"
+                onClick={handleSubscribe}
+              >
                 اشترك الآن
               </Button>
             </CardContent>
