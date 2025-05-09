@@ -132,13 +132,7 @@ const Profile: React.FC = () => {
         animationDelay: "200ms"
       }}>
           <Card className="overflow-hidden border-none shadow-md bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-2xl">
-            <CardContent className="p-6">
-              <h3 className="font-bold text-xl mb-2">ادعو أصحابك واربح خصومات</h3>
-              <p className="text-sm text-blue-100 mb-6">اكسب 50 نقطة لكل صديق يستخدم رمز الإحالة الخاص بك</p>
-              <Button variant="outline" className="bg-white border-blue-200 hover:bg-blue-50 text-blue-700 shadow-sm font-medium">
-                مشاركة الرمز
-              </Button>
-            </CardContent>
+            
           </Card>
         </div>
 
