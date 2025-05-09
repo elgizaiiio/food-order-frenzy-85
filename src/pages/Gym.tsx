@@ -1,36 +1,26 @@
 
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Share, Search, MapPin, Star, Clock, DollarSign, Users, Dumbbell } from 'lucide-react';
+import { ArrowLeft, Search, Share, MapPin, Star, Clock, DollarSign, Users, Dumbbell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { fetchGyms, GymItem } from '@/services/gymService';
+import { useGyms } from '@/hooks/useGymData';
 import { useAuth } from '@/context/AuthContext';
+import { GymItem } from '@/services/gymService';
 
 const Gym: React.FC = () => {
-  const [gyms, setGyms] = useState<GymItem[]>([]);
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const { user } = useAuth(); // Get the authenticated user
+  const { user } = useAuth(); 
+  const { data: gyms, isLoading: loading, error } = useGyms();
   
-  // Fetch gym data from Supabase
+  // Show error toast if fetching fails
   useEffect(() => {
-    const getGyms = async () => {
-      try {
-        setLoading(true);
-        const data = await fetchGyms();
-        setGyms(data);
-      } catch (error) {
-        console.error('Error fetching gyms:', error);
-        toast.error('حدث خطأ أثناء تحميل بيانات النوادي');
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    getGyms();
-  }, []);
+    if (error) {
+      console.error('Error fetching gyms:', error);
+      toast.error('حدث خطأ أثناء تحميل بيانات النوادي');
+    }
+  }, [error]);
 
   return (
     <div className="min-h-screen bg-gray-50" dir="rtl">
@@ -93,7 +83,7 @@ const Gym: React.FC = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              {gyms.map((gym) => (
+              {gyms?.map((gym) => (
                 <Card 
                   key={gym.id} 
                   className="overflow-hidden border border-blue-100 rounded-xl shadow-md transition-all hover:shadow-lg hover:border-blue-300"
@@ -122,7 +112,7 @@ const Gym: React.FC = () => {
                       <span>{gym.location}</span>
                     </div>
                     
-                    {gym.features && (
+                    {gym.features && gym.features.length > 0 && (
                       <div className="flex flex-wrap gap-2 mb-4">
                         {gym.features.map((feature, idx) => (
                           <span 
