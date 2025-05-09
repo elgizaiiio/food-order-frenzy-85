@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Home, Dumbbell, Brush, ShoppingBag, ArrowRight } from 'lucide-react';
+import { Home, Dumbbell, Brush } from 'lucide-react';
 type Promo = {
   id: number;
   title: string;
@@ -40,16 +41,8 @@ const Promos: React.FC = () => {
     iconBg: "bg-white/20",
     textColor: "text-white",
     link: "/personal-care"
-  }, {
-    id: 4,
-    title: "ملابس وأزياء",
-    description: "أحدث التشكيلات بأفضل الأسعار",
-    icon: <ShoppingBag className="h-8 w-8" />,
-    gradient: "from-blue-600 to-indigo-500",
-    iconBg: "bg-white/20",
-    textColor: "text-white",
-    link: "/clothes"
   }];
+  
   const handleNavigate = (path: string) => {
     navigate(path);
   };

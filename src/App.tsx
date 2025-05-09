@@ -18,11 +18,6 @@ import PersonalCareProduct from "./pages/PersonalCareProduct";
 import PersonalCareCart from "./pages/PersonalCareCart";
 import PersonalCareCheckout from "./pages/PersonalCareCheckout";
 import PersonalCareTracking from "./pages/PersonalCareTracking";
-// Clothes Section
-import Clothes from "./pages/Clothes";
-import ClothesCategory from "./pages/ClothesCategory";
-import ClothesCart from "./pages/ClothesCart";
-import ClothesCheckout from "./pages/ClothesCheckout";
 // Gym Section
 import Gym from "./pages/Gym";
 import GymSubscription from "./pages/GymSubscription";
@@ -135,12 +130,6 @@ const AppContent = () => {
           <Route path="/pharmacy/*" element={<PharmacyRoutes />} />
           <Route path="/market/*" element={<MarketRoutes />} />
           <Route path="/personal-care/*" element={<PersonalCareRoutes />} />
-          
-          {/* Clothes Routes */}
-          <Route path="/clothes" element={<AuthGuard><Clothes /></AuthGuard>} />
-          <Route path="/clothes/category/:categoryId" element={<AuthGuard><ClothesCategory /></AuthGuard>} />
-          <Route path="/clothes/cart" element={<AuthGuard><ClothesCart /></AuthGuard>} />
-          <Route path="/clothes/checkout" element={<AuthGuard><ClothesCheckout /></AuthGuard>} />
           
           {/* Gym Routes */}
           <Route path="/gym" element={<AuthGuard><Gym /></AuthGuard>} />

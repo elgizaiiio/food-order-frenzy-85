@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { UtensilsCrossed, ShoppingCart, Shirt, Pill, Brush, Dumbbell } from 'lucide-react';
+import { UtensilsCrossed, ShoppingCart, Pill, Brush, Dumbbell } from 'lucide-react';
 
 type Category = {
   name: string;
@@ -26,13 +26,6 @@ const Categories: React.FC = () => {
       color: "bg-gradient-to-br from-cyan-500 to-blue-500 text-white",
       shadow: "shadow-cyan-200",
       link: "/market" 
-    },
-    { 
-      name: "هدوم", 
-      icon: <Shirt className="w-6 h-6" />, 
-      color: "bg-gradient-to-br from-indigo-500 to-blue-600 text-white",
-      shadow: "shadow-indigo-200",
-      link: "/clothes" 
     },
     { 
       name: "صيدليات", 

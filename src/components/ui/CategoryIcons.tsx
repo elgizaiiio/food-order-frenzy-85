@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 const CategoryIcons: React.FC = () => {
@@ -20,11 +21,6 @@ const CategoryIcons: React.FC = () => {
     name: 'العناية الشخصية',
     path: '/personal-care',
     bgColor: 'bg-purple-500',
-    textColor: 'text-white'
-  }, {
-    name: 'ملابس',
-    path: '/clothes',
-    bgColor: 'bg-yellow-500',
     textColor: 'text-white'
   }, {
     name: 'جيم',
