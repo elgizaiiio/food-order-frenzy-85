@@ -1,5 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
+import { Json } from "@/integrations/supabase/types";
 
 export interface GymItem {
   id: string;
@@ -42,7 +43,7 @@ export async function fetchGyms(): Promise<GymItem[]> {
       image: gym.image || 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&q=80&w=500&h=300',
       location: gym.location || '',
       rating: parseFloat(gym.rating) || 4.5,
-      features: Array.isArray(gym.features) ? gym.features : [],
+      features: Array.isArray(gym.features) ? (gym.features as string[]) : [],
       openHours: gym.open_hours || '24 ساعة',
       price: gym.price || 'من 1999 جنيه/شهر'
     }));
@@ -72,7 +73,7 @@ export async function fetchGymById(id: string): Promise<GymItem> {
       image: data.image || 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&q=80&w=500&h=300',
       location: data.location || '',
       rating: parseFloat(data.rating) || 4.5,
-      features: Array.isArray(data.features) ? data.features : [],
+      features: Array.isArray(data.features) ? (data.features as string[]) : [],
       openHours: data.open_hours || '24 ساعة',
       price: data.price || 'من 1999 جنيه/شهر'
     };
