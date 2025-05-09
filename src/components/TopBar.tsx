@@ -23,8 +23,8 @@ const TopBar: React.FC<TopBarProps> = ({
         
         {/* Address */}
         <div className="flex items-center text-sm text-blue-100">
-          <MapPin className="w-4 h-4 mr-1" />
-          <span className="truncate max-w-[150px]">{address}</span>
+          
+          
         </div>
       </div>
     </div>;
