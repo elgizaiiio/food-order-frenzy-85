@@ -133,6 +133,27 @@ export type Database = {
         }
         Relationships: []
       }
+      pharmacy_categories: {
+        Row: {
+          created_at: string | null
+          icon: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          icon?: string | null
+          id: string
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       pharmacy_products: {
         Row: {
           category: string
@@ -140,6 +161,7 @@ export type Database = {
           description: string | null
           id: string
           image_url: string | null
+          is_recommended: boolean | null
           name: string
           price: number
           requires_prescription: boolean | null
@@ -151,6 +173,7 @@ export type Database = {
           description?: string | null
           id?: string
           image_url?: string | null
+          is_recommended?: boolean | null
           name: string
           price: number
           requires_prescription?: boolean | null
@@ -162,6 +185,7 @@ export type Database = {
           description?: string | null
           id?: string
           image_url?: string | null
+          is_recommended?: boolean | null
           name?: string
           price?: number
           requires_prescription?: boolean | null
@@ -243,35 +267,95 @@ export type Database = {
         }
         Relationships: []
       }
+      supermarket_categories: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: number
+          image_url: string | null
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: number
+          image_url?: string | null
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: number
+          image_url?: string | null
+          name?: string
+        }
+        Relationships: []
+      }
+      supermarket_offers: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          discount: number
+          id: number
+          image_url: string | null
+          title: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          discount?: number
+          id?: number
+          image_url?: string | null
+          title: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          discount?: number
+          id?: number
+          image_url?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
       supermarket_products: {
         Row: {
           category: string
+          category_id: number | null
           created_at: string | null
           description: string | null
           id: string
           image_url: string | null
+          is_popular: boolean | null
           name: string
           price: number
+          quantity: string | null
           stock: number
         }
         Insert: {
           category: string
+          category_id?: number | null
           created_at?: string | null
           description?: string | null
           id?: string
           image_url?: string | null
+          is_popular?: boolean | null
           name: string
           price: number
+          quantity?: string | null
           stock?: number
         }
         Update: {
           category?: string
+          category_id?: number | null
           created_at?: string | null
           description?: string | null
           id?: string
           image_url?: string | null
+          is_popular?: boolean | null
           name?: string
           price?: number
+          quantity?: string | null
           stock?: number
         }
         Relationships: []

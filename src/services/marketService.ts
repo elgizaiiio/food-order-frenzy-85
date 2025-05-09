@@ -45,7 +45,7 @@ export async function fetchProductsByCategory(categoryId: number): Promise<Produ
       price: item.price,
       quantity: item.quantity || '',
       image: item.image_url || 'https://via.placeholder.com/400?text=صورة+غير+متوفرة',
-      categoryId: parseInt(item.category_id),
+      categoryId: item.category_id ? parseInt(item.category_id) : 0,
       description: item.description || '',
       inStock: item.stock > 0
     }));
@@ -100,7 +100,7 @@ export async function fetchPopularProducts(): Promise<Product[]> {
       price: item.price,
       quantity: item.quantity || '',
       image: item.image_url || 'https://via.placeholder.com/400?text=صورة+غير+متوفرة',
-      categoryId: parseInt(item.category_id),
+      categoryId: item.category_id ? parseInt(item.category_id) : 0,
       description: item.description || '',
       inStock: item.stock > 0
     }));

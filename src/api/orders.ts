@@ -47,16 +47,21 @@ export async function fetchUserOrders(): Promise<Order[]> {
       let restaurantName = "الدكان";
       let restaurantLogo = "https://images.unsplash.com/photo-1599059813005-11265ba4b4ce?auto=format&fit=crop&q=80&w=200&h=200";
       
-      if (order.order_type === 'restaurant' && order.items && order.items[0]?.restaurant_id) {
-        const { data: restaurantData } = await supabase
-          .from('restaurants')
-          .select('name, logo_url')
-          .eq('id', order.items[0].restaurant_id)
-          .single();
-          
-        if (restaurantData) {
-          restaurantName = restaurantData.name;
-          restaurantLogo = restaurantData.logo_url;
+      if (order.order_type === 'restaurant' && order.items && typeof order.items === 'object') {
+        const orderItems = Array.isArray(order.items) ? order.items : [order.items];
+        const firstItem = orderItems[0];
+        
+        if (firstItem && firstItem.restaurant_id) {
+          const { data: restaurantData } = await supabase
+            .from('restaurants')
+            .select('name, logo_url')
+            .eq('id', firstItem.restaurant_id)
+            .single();
+            
+          if (restaurantData) {
+            restaurantName = restaurantData.name;
+            restaurantLogo = restaurantData.logo_url;
+          }
         }
       }
       
@@ -77,8 +82,14 @@ export async function fetchUserOrders(): Promise<Order[]> {
         case 'cancelled': status = 'تم الإلغاء'; break;
       }
       
-      // Format order items
-      const items: OrderItem[] = order.items.map((item: any) => ({
+      // Format order items - safely handle potential JSON structure
+      const itemsArray = typeof order.items === 'object' && Array.isArray(order.items) 
+        ? order.items 
+        : typeof order.items === 'string' 
+          ? JSON.parse(order.items) 
+          : [];
+      
+      const items: OrderItem[] = itemsArray.map((item: any) => ({
         id: item.id,
         name: item.name,
         quantity: item.quantity,
@@ -98,8 +109,7 @@ export async function fetchUserOrders(): Promise<Order[]> {
         address: order.user_addresses?.full_address || 'عنوان غير معروف',
         paymentMethod: order.user_payment_methods?.type || 'كاش',
         estimatedDelivery: status === 'جاري التوصيل' ? '١٥ دقيقة' : undefined,
-        trackingUrl: status === 'جاري التوصيل' || status === 'قيد التجهيز' ? '/tracking' : undefined,
-        rating: order.rating
+        trackingUrl: status === 'جاري التوصيل' || status === 'قيد التجهيز' ? '/tracking' : undefined
       };
     }));
     
