@@ -211,7 +211,7 @@ const MarketCategoryContent: React.FC = () => {
                     <h4 className="font-medium text-sm mb-1 text-blue-800">{product.name}</h4>
                     <p className="text-xs text-gray-500 mb-2">{product.quantity}</p>
                     <div className="flex justify-between items-center">
-                      <span className="font-bold text-blue-700">{product.price} جنيه</span>
+                      <span className="font-bold text-blue-700">{product.price} ج.م</span>
                       
                       {getCartItemQuantity(product.id) > 0 ? (
                         <div className="flex items-center gap-2">
@@ -262,7 +262,7 @@ const MarketCategoryContent: React.FC = () => {
                   <span className="font-bold">{itemCount} منتج</span>
                 </div>
                 <span className="font-bold">
-                  {totalPrice.toFixed(2)} جنيه
+                  {totalPrice.toFixed(2)} ج.م
                 </span>
               </div>
               <div className="grid grid-cols-2 gap-3">

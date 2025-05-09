@@ -37,7 +37,7 @@ const RestaurantMenu: React.FC = () => {
     cover: "https://images.unsplash.com/photo-1552566626-52f8b828add9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1000&q=80",
     rating: 4.8,
     deliveryTime: "25-35",
-    deliveryFee: "10 جنيه",
+    deliveryFee: "10 ج.م",
     cuisine: "شرقي، عربي، مشويات",
     categories: [
       { id: "popular", name: "الأكثر طلبًا" },
@@ -249,7 +249,7 @@ const RestaurantMenu: React.FC = () => {
                   <h3 className="font-bold text-blue-900">{item.name}</h3>
                   <p className="text-sm text-gray-600 mt-1 line-clamp-2">{item.description}</p>
                   <div className="flex items-center justify-between mt-3">
-                    <span className="font-bold text-blue-800">{item.price} جنيه</span>
+                    <span className="font-bold text-blue-800">{item.price} ج.م</span>
                     <Button 
                       size="sm" 
                       onClick={() => addToCart(item)} 
@@ -297,7 +297,7 @@ const RestaurantMenu: React.FC = () => {
                   <ShoppingBag className="mr-2" />
                   <span>{getTotalItems()} عناصر</span>
                 </div>
-                <span className="font-bold">{getTotalPrice()} جنيه</span>
+                <span className="font-bold">{getTotalPrice()} ج.م</span>
               </div>
             </Button>
           </div>
