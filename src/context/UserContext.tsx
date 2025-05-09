@@ -4,8 +4,12 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 interface UserContextType {
   userName: string;
   userAddress: string;
+  isVerified: boolean;
+  isBroMember: boolean;
   setUserName: (name: string) => void;
   setUserAddress: (address: string) => void;
+  setVerified: (status: boolean) => void;
+  setBroMember: (status: boolean) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -25,12 +29,18 @@ interface UserProviderProps {
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [userName, setUserName] = useState<string>("محمد");
   const [userAddress, setUserAddress] = useState<string>("شارع مصطفى النحاس، مدينة نصر");
+  const [isVerified, setVerified] = useState<boolean>(false);
+  const [isBroMember, setBroMember] = useState<boolean>(false);
 
   const value = {
     userName,
     userAddress,
+    isVerified,
+    isBroMember,
     setUserName,
-    setUserAddress
+    setUserAddress,
+    setVerified,
+    setBroMember
   };
 
   return (

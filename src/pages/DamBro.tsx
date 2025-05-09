@@ -1,10 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Share2, Award, Users, Clock, Star, Info, CreditCard } from 'lucide-react';
+import { ArrowLeft, Share2, Award, Users, Clock, Star, Info, CreditCard, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
+import { useUser } from '@/context/UserContext';
 
 // Import Apple logo SVG with better styling
 const AppleLogo = () => (
@@ -15,6 +16,7 @@ const AppleLogo = () => (
 
 const DamBro: React.FC = () => {
   const navigate = useNavigate();
+  const { setVerified, setBroMember } = useUser();
   const [currentTab, setCurrentTab] = useState<'features' | 'faq'>('features');
   const [selectedPayment, setSelectedPayment] = useState<'visa' | 'vodafone' | 'apple' | null>(null);
   const [animatedElements, setAnimatedElements] = useState<boolean>(false);
@@ -34,6 +36,10 @@ const DamBro: React.FC = () => {
       });
       return;
     }
+    
+    // Set user as verified and as a bro member
+    setVerified(true);
+    setBroMember(true);
     
     toast.success('تم الاشتراك بنجاح! شكراً لاختيارك Dam Bro', {
       position: 'top-center',

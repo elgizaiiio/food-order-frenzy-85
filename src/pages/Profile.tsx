@@ -1,15 +1,17 @@
 
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Settings, Edit, Home, CreditCard, Clock, Gift, ChevronRight, User, Award, Users, Share2 } from 'lucide-react';
+import { ArrowLeft, Settings, Edit, Home, CreditCard, Clock, Gift, ChevronRight, User, Award, Users, Share2, CheckCircle } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import TopBar from "@/components/TopBar";
 import { toast } from "sonner";
+import { useUser } from "@/context/UserContext";
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
+  const { isVerified, isBroMember } = useUser();
   const [user, setUser] = useState({
     name: 'أحمد محمد',
     username: '@ahmed_dam',
@@ -48,7 +50,19 @@ const Profile: React.FC = () => {
                 </Avatar>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-bold text-zinc-950">{user.name}</h2>
+                    <div className="flex items-center">
+                      <h2 className="text-2xl font-bold text-zinc-950">{user.name}</h2>
+                      {isVerified && (
+                        <span className="ml-2 text-blue-600">
+                          <CheckCircle className="w-5 h-5 fill-blue-500 text-white" />
+                        </span>
+                      )}
+                      {isBroMember && (
+                        <span className="ml-2 text-sm font-bold bg-gradient-to-r from-indigo-600 to-blue-600 text-transparent bg-clip-text">
+                          Bro
+                        </span>
+                      )}
+                    </div>
                     <Link to="/edit-profile" className="text-blue-500 bg-blue-50 p-2 rounded-full hover:bg-blue-100 transition-colors">
                       <Edit className="w-5 h-5" />
                     </Link>
@@ -58,7 +72,7 @@ const Profile: React.FC = () => {
                     <Award className="w-4 h-4 text-blue-600 mr-1" />
                     <span className="text-sm font-medium text-zinc-950">النقاط: {user.points}</span>
                     <span className="mx-2 text-blue-300">•</span>
-                    <span className="text-sm text-zinc-950">مستخدم فضي</span>
+                    <span className="text-sm text-zinc-950">{isBroMember ? 'مستخدم ذهبي' : 'مستخدم فضي'}</span>
                   </div>
                 </div>
               </div>
@@ -182,10 +196,6 @@ const Profile: React.FC = () => {
                   </li>
                   <li className="flex items-center gap-2">
                     <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">✓</div>
-                    <span>هدايا شهرية</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">✓</div>
                     <span>أولوية في الخدمة</span>
                   </li>
                 </ul>
@@ -195,7 +205,7 @@ const Profile: React.FC = () => {
                 className="w-full bg-white text-blue-700 hover:bg-blue-50 font-bold transition-colors"
                 onClick={handleSubscribe}
               >
-                اشترك الآن
+                {isBroMember ? 'تم الاشتراك' : 'اشترك الآن'}
               </Button>
             </CardContent>
           </Card>
