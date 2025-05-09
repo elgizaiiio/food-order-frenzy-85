@@ -189,15 +189,9 @@ const Clothes: React.FC = () => {
                 <img src="https://img.icons8.com/color/48/truck--v1.png" alt="Delivery" className="w-6 h-6" />
               </div>
               <h3 className="font-bold text-sm mb-1">توصيل سريع</h3>
-              <p className="text-xs text-gray-500">توصيل خلال 24 ساعة</p>
+              <p className="text-xs text-gray-500">توصيل خلال 1  ساعة</p>
             </div>
-            <div className="bg-white rounded-lg p-4 text-center shadow-sm">
-              <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
-                <img src="https://img.icons8.com/color/48/refund-2--v1.png" alt="Return" className="w-6 h-6" />
-              </div>
-              <h3 className="font-bold text-sm mb-1">إرجاع مجاني</h3>
-              <p className="text-xs text-gray-500">خلال 14 يوم من الشراء</p>
-            </div>
+            
             <div className="bg-white rounded-lg p-4 text-center shadow-sm">
               <div className="bg-purple-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
                 <img src="https://img.icons8.com/color/48/card-security.png" alt="Secure" className="w-6 h-6" />
