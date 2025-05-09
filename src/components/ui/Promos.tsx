@@ -84,9 +84,7 @@ const Promos: React.FC = () => {
         <div className="p-6">
           <h3 className="text-xl font-bold mb-2">انضم إلى عائلة dam</h3>
           <p className="text-blue-100 mb-4">احصل على خصومات حصرية وتجربة تسوق مميزة</p>
-          <button className="bg-white text-blue-800 font-medium px-5 py-2 rounded-lg shadow-md hover:shadow-lg transition-all">
-            اشترك الآن
-          </button>
+          
         </div>
       </div>
     </div>;
