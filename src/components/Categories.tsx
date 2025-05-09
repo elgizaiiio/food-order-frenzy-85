@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { UtensilsCrossed, ShoppingCart, Shirt, Pill, Brush, Dumbbell, Coffee, User } from 'lucide-react';
+import { UtensilsCrossed, ShoppingCart, Shirt, Pill, Brush, Dumbbell } from 'lucide-react';
 
 type Category = {
   name: string;
@@ -47,18 +47,6 @@ const Categories: React.FC = () => {
       icon: <Dumbbell className="w-6 h-6" />, 
       color: "bg-yellow-50 text-yellow-600",
       link: "/gym" 
-    },
-    { 
-      name: "كافيهات", 
-      icon: <Coffee className="w-6 h-6" />, 
-      color: "bg-amber-50 text-amber-700",
-      link: "/cafes" 
-    },
-    { 
-      name: "حسابي", 
-      icon: <User className="w-6 h-6" />, 
-      color: "bg-purple-50 text-purple-500",
-      link: "/profile" 
     },
   ];
 
