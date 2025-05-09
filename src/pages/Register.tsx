@@ -180,9 +180,11 @@ const Register: React.FC = () => {
           <CardContent className="pt-6 px-6 pb-8">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField control={form.control} name="name" render={({
-                field
-              }) => <FormItem>
+                <FormField 
+                  control={form.control} 
+                  name="name" 
+                  render={({ field }) => (
+                    <FormItem>
                       <FormLabel className="text-gray-700 font-medium">الاسم الكامل</FormLabel>
                       <FormControl>
                         <div className="relative">
@@ -191,11 +193,15 @@ const Register: React.FC = () => {
                         </div>
                       </FormControl>
                       <FormMessage />
-                    </FormItem>} />
+                    </FormItem>
+                  )} 
+                />
                 
-                <FormField control={form.control} name="email" render={({
-                field
-              }) => <FormItem>
+                <FormField 
+                  control={form.control} 
+                  name="email" 
+                  render={({ field }) => (
+                    <FormItem>
                       <FormLabel className="text-gray-700 font-medium">البريد الإلكتروني</FormLabel>
                       <FormControl>
                         <div className="relative">
@@ -204,11 +210,15 @@ const Register: React.FC = () => {
                         </div>
                       </FormControl>
                       <FormMessage />
-                    </FormItem>} />
+                    </FormItem>
+                  )} 
+                />
                 
-                <FormField control={form.control} name="password" render={({
-                field
-              }) => <FormItem>
+                <FormField 
+                  control={form.control} 
+                  name="password" 
+                  render={({ field }) => (
+                    <FormItem>
                       <FormLabel className="text-gray-700 font-medium">كلمة المرور</FormLabel>
                       <FormControl>
                         <div className="relative">
@@ -220,11 +230,15 @@ const Register: React.FC = () => {
                         </div>
                       </FormControl>
                       <FormMessage />
-                    </FormItem>} />
+                    </FormItem>
+                  )} 
+                />
                 
-                <FormField control={form.control} name="confirmPassword" render={({
-                field
-              }) => <FormItem>
+                <FormField 
+                  control={form.control} 
+                  name="confirmPassword" 
+                  render={({ field }) => (
+                    <FormItem>
                       <FormLabel className="text-gray-700 font-medium">تأكيد كلمة المرور</FormLabel>
                       <FormControl>
                         <div className="relative">
@@ -236,20 +250,24 @@ const Register: React.FC = () => {
                         </div>
                       </FormControl>
                       <FormMessage />
-                    </FormItem>} />
+                    </FormItem>
+                  )} 
+                />
                 
                 <Button type="submit" 
                   variant="gradient"
                   size="lg"
                   className="w-full h-14 rounded-xl font-bold shadow-lg transition-all hover:shadow-xl mt-4" 
                   disabled={loading.email}>
-                  {loading.email ? <span className="flex items-center">
+                  {loading.email ? (
+                    <span className="flex items-center">
                       <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
                       جاري إنشاء الحساب...
-                    </span> : "إنشاء حساب"}
+                    </span>
+                  ) : "إنشاء حساب"}
                 </Button>
               </form>
             </Form>
@@ -275,24 +293,32 @@ const Register: React.FC = () => {
           <Button variant="outline" 
             className="h-12 border-white/30 bg-white/80 hover:bg-white text-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all" 
             onClick={handleGoogleLogin} disabled={loading.google}>
-            {loading.google ? <svg className="animate-spin h-5 w-5 text-brand-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            {loading.google ? (
+              <svg className="animate-spin h-5 w-5 text-brand-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg> : <>
+              </svg>
+            ) : (
+              <>
                 <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" className="w-5 h-5 mr-2" />
                 <span>Google</span>
-              </>}
+              </>
+            )}
           </Button>
           <Button variant="outline" 
             className="h-12 border-white/30 bg-white/80 hover:bg-white text-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all" 
             onClick={handleAppleLogin} disabled={loading.apple}>
-            {loading.apple ? <svg className="animate-spin h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            {loading.apple ? (
+              <svg className="animate-spin h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg> : <>
+              </svg>
+            ) : (
+              <>
                 <Apple className="w-5 h-5 mr-2" />
                 <span>Apple</span>
-              </>}
+              </>
+            )}
           </Button>
         </div>
       </div>
