@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Lock, Mail, Eye, EyeOff, Apple } from 'lucide-react';
@@ -153,7 +152,7 @@ const Login: React.FC = () => {
 
   return (
     <div 
-      className="min-h-screen bg-gradient-to-br from-brand-500 via-brand-400 to-yellow-400 flex flex-col items-center justify-center p-4" 
+      className="min-h-screen bg-gradient-to-b from-brand-400 to-brand-600 flex flex-col items-center justify-center p-4" 
       dir="rtl"
       style={{ 
         paddingTop: 'env(safe-area-inset-top, 0px)',
@@ -164,94 +163,95 @@ const Login: React.FC = () => {
     >
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="inline-block w-24 h-24 rounded-2xl bg-white text-brand-600 flex items-center justify-center mb-5 shadow-xl animate-bounce-in transform rotate-12">
+          <div className="inline-block w-24 h-24 rounded-full bg-white/90 text-brand-600 flex items-center justify-center mb-5 shadow-2xl animate-fade-in transform rotate-12">
             <span className="text-3xl font-bold">دام</span>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">مرحباً بك مجدداً!</h1>
-          <p className="text-white/90 text-lg">يرجى تسجيل الدخول للاستمتاع بتجربتنا</p>
+          <h1 className="text-4xl font-bold text-white mb-3 animate-fade-in">مرحباً بك مجدداً!</h1>
+          <p className="text-white/90 text-lg animate-fade-in delay-100">يرجى تسجيل الدخول للاستمتاع بتجربتنا</p>
         </div>
         
-        <Card className="border-none shadow-2xl bg-white/95 backdrop-blur-sm rounded-2xl overflow-hidden animate-fade-in">
-          <div className="h-2 bg-gradient-to-r from-brand-600 to-brand-400"></div>
-          <CardContent className="pt-6 px-6 pb-8">
+        <Card className="border-none shadow-2xl bg-white/95 backdrop-blur-sm rounded-3xl overflow-hidden animate-fade-in delay-200">
+          <div className="h-2 bg-gradient-to-l from-brand-300 to-brand-500"></div>
+          <CardContent className="pt-8 px-8 pb-10">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-                <FormField control={form.control} name="email" render={({
-                field
-              }) => <FormItem>
-                      <FormLabel className="text-gray-700 font-medium">البريد الإلكتروني</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Input 
-                            placeholder="أدخل بريدك الإلكتروني" 
-                            className="pl-10 h-12 bg-gray-50 border-gray-200 rounded-xl focus:border-brand-500 focus:ring-brand-500" 
-                            {...field}
-                            autoComplete="email"
-                            inputMode="email"
-                          />
-                          <Mail className="absolute right-3 top-3.5 h-5 w-5 text-gray-400" />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>} />
-                
-                <FormField control={form.control} name="password" render={({
-                field
-              }) => <FormItem>
-                      <div className="flex justify-between">
-                        <FormLabel className="text-gray-700 font-medium">كلمة المرور</FormLabel>
-                        <Link to="/forgot-password" className="text-sm text-brand-600 hover:text-brand-700 font-medium">
-                          نسيت كلمة المرور؟
-                        </Link>
+                <FormField control={form.control} name="email" render={({field}) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-700 font-semibold">البريد الإلكتروني</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Input 
+                          placeholder="أدخل بريدك الإلكتروني" 
+                          className="pl-10 h-14 bg-gray-50/80 border-gray-200 rounded-xl focus:border-brand-400 focus:ring-brand-400 transition-all" 
+                          {...field}
+                          autoComplete="email"
+                          inputMode="email"
+                          type="email"
+                        />
+                        <Mail className="absolute right-4 top-4.5 h-5 w-5 text-brand-500/70" />
                       </div>
-                      <FormControl>
-                        <div className="relative">
-                          <Input 
-                            type={showPassword ? "text" : "password"} 
-                            placeholder="أدخل كلمة المرور" 
-                            className="pl-10 h-12 bg-gray-50 border-gray-200 rounded-xl focus:border-brand-500 focus:ring-brand-500"
-                            autoComplete="current-password"
-                            {...field} 
-                          />
-                          <Lock className="absolute right-3 top-3.5 h-5 w-5 text-gray-400" />
-                          <button 
-                            type="button" 
-                            onClick={togglePasswordVisibility} 
-                            className="absolute left-3 top-3.5 touch-manipulation"
-                            aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
-                          >
-                            {showPassword ? 
-                              <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" /> : 
-                              <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                            }
-                          </button>
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>} />
+                    </FormControl>
+                    <FormMessage className="text-right mr-1" />
+                  </FormItem>
+                )} />
+                
+                <FormField control={form.control} name="password" render={({field}) => (
+                  <FormItem>
+                    <div className="flex justify-between">
+                      <FormLabel className="text-gray-700 font-semibold">كلمة المرور</FormLabel>
+                      <Link to="/forgot-password" className="text-sm text-brand-600 hover:text-brand-700 font-medium transition-colors">
+                        نسيت كلمة المرور؟
+                      </Link>
+                    </div>
+                    <FormControl>
+                      <div className="relative">
+                        <Input 
+                          type={showPassword ? "text" : "password"} 
+                          placeholder="أدخل كلمة المرور" 
+                          className="pl-10 h-14 bg-gray-50/80 border-gray-200 rounded-xl focus:border-brand-400 focus:ring-brand-400 transition-all"
+                          autoComplete="current-password"
+                          {...field} 
+                        />
+                        <Lock className="absolute right-4 top-4.5 h-5 w-5 text-brand-500/70" />
+                        <button 
+                          type="button" 
+                          onClick={togglePasswordVisibility} 
+                          className="absolute left-3 top-4.5 text-gray-500 hover:text-brand-500 transition-colors touch-manipulation"
+                          aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
+                        >
+                          {showPassword ? 
+                            <EyeOff className="h-5 w-5" /> : 
+                            <Eye className="h-5 w-5" />
+                          }
+                        </button>
+                      </div>
+                    </FormControl>
+                    <FormMessage className="text-right mr-1" />
+                  </FormItem>
+                )} />
                 
                 <Button 
                   type="submit" 
-                  variant="gradient"
-                  size="lg"
-                  className="w-full h-14 rounded-xl font-bold shadow-lg transition-all hover:shadow-xl touch-manipulation" 
+                  className="w-full h-14 mt-6 bg-gradient-to-l from-brand-500 to-brand-400 hover:from-brand-600 hover:to-brand-500 rounded-xl font-bold text-lg shadow-lg shadow-brand-500/30 hover:shadow-xl hover:shadow-brand-500/40 transition-all" 
                   disabled={loading.email}
                 >
-                  {loading.email ? <span className="flex items-center">
+                  {loading.email ? (
+                    <span className="flex items-center justify-center">
                       <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
                       جاري تسجيل الدخول...
-                    </span> : "تسجيل الدخول"}
+                    </span>
+                  ) : "تسجيل الدخول"}
                 </Button>
               </form>
             </Form>
             
-            <div className="text-center mt-6">
+            <div className="text-center mt-8">
               <p className="text-gray-600">
                 ليس لديك حساب؟{" "}
-                <Link to="/register" className="text-brand-600 hover:text-brand-700 font-bold">
+                <Link to="/register" className="text-brand-600 hover:text-brand-700 font-bold transition-colors">
                   إنشاء حساب جديد
                 </Link>
               </p>
@@ -259,40 +259,48 @@ const Login: React.FC = () => {
           </CardContent>
         </Card>
         
-        <div className="flex justify-center items-center my-6">
-          <hr className="flex-grow border-t border-white/30" />
+        <div className="flex justify-center items-center my-8">
+          <hr className="flex-grow border-t border-white/40" />
           <span className="px-4 text-white text-sm font-medium">أو استمر بواسطة</span>
-          <hr className="flex-grow border-t border-white/30" />
+          <hr className="flex-grow border-t border-white/40" />
         </div>
         
         <div className="grid grid-cols-2 gap-4">
           <Button 
             variant="outline" 
-            className="h-12 border-white/30 bg-white/80 hover:bg-white text-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all touch-manipulation" 
+            className="h-12 border-white/40 bg-white/90 hover:bg-white text-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all touch-manipulation" 
             onClick={handleGoogleLogin} 
             disabled={loading.google}
           >
-            {loading.google ? <svg className="animate-spin h-5 w-5 text-brand-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            {loading.google ? (
+              <svg className="animate-spin h-5 w-5 text-brand-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg> : <>
+              </svg>
+            ) : (
+              <>
                 <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" className="w-5 h-5 mr-2" />
                 <span>Google</span>
-              </>}
+              </>
+            )}
           </Button>
           <Button 
             variant="outline" 
-            className="h-12 border-white/30 bg-white/80 hover:bg-white text-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all touch-manipulation" 
+            className="h-12 border-white/40 bg-white/90 hover:bg-white text-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all touch-manipulation" 
             onClick={handleAppleLogin} 
             disabled={loading.apple}
           >
-            {loading.apple ? <svg className="animate-spin h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            {loading.apple ? (
+              <svg className="animate-spin h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg> : <>
+              </svg>
+            ) : (
+              <>
                 <Apple className="w-5 h-5 mr-2" />
                 <span>Apple</span>
-              </>}
+              </>
+            )}
           </Button>
         </div>
       </div>
