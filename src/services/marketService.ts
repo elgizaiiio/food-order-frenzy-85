@@ -31,11 +31,11 @@ export async function fetchCategories(): Promise<Category[]> {
  */
 export async function fetchProductsByCategory(categoryId: number): Promise<Product[]> {
   try {
-    // Convert the categoryId to a string before passing it to the query
+    // Convert the categoryId to a number before passing it to the query
     const { data, error } = await supabase
       .from('supermarket_products')
       .select('*')
-      .eq('category_id', categoryId.toString());
+      .eq('category_id', categoryId);
     
     if (error) throw error;
     
