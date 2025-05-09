@@ -31,8 +31,8 @@ const PharmacyCheckoutContent: React.FC = () => {
   const handleSubmitOrder = async () => {
     if (!selectedAddressId) {
       toast({
-        title: "خطأ في الطلب",
-        description: "يرجى اختيار عنوان التوصيل",
+        title: "فيه مشكلة في الطلب",
+        description: "لازم تختار عنوان التوصيل الأول",
         variant: "destructive"
       });
       return;
@@ -63,8 +63,8 @@ const PharmacyCheckoutContent: React.FC = () => {
         });
       } else {
         toast({
-          title: "خطأ في الطلب",
-          description: result.message || "حدث خطأ أثناء معالجة الطلب",
+          title: "فيه مشكلة في الطلب",
+          description: result.message || "حصل مشكلة أثناء تنفيذ الطلب",
           variant: "destructive"
         });
         setIsProcessing(false);
@@ -72,8 +72,8 @@ const PharmacyCheckoutContent: React.FC = () => {
     } catch (error) {
       console.error("Order submission error:", error);
       toast({
-        title: "خطأ في الطلب",
-        description: "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى",
+        title: "فيه مشكلة في الطلب",
+        description: "حصل مشكلة مش متوقعة. حاول تاني",
         variant: "destructive"
       });
       setIsProcessing(false);
@@ -81,9 +81,9 @@ const PharmacyCheckoutContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-blue-50 pb-28">
+    <div className="min-h-screen bg-blue-50 pb-32">
       <div className="max-w-md mx-auto bg-white">
-        {/* Header */}
+        {/* الهيدر */}
         <div className="sticky top-0 flex items-center justify-between p-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-sm z-10 rounded-b-xl">
           <Link to="/pharmacy/cart" className="text-white hover:text-blue-100">
             <ArrowLeft className="w-6 h-6" />
@@ -98,19 +98,19 @@ const PharmacyCheckoutContent: React.FC = () => {
           ) : (
             <>
               <div className="space-y-6">
-                {/* Address Section */}
+                {/* قسم العنوان */}
                 <div className="space-y-2">
                   <h2 className="text-lg font-bold text-blue-800">عنوان التوصيل</h2>
                   <AddressSelector onAddNewClick={() => setIsAddingNewAddress(true)} />
                 </div>
 
-                {/* Payment Method Section */}
+                {/* قسم طريقة الدفع */}
                 <div className="space-y-2">
                   <h2 className="text-lg font-bold text-blue-800">طريقة الدفع</h2>
                   <PaymentMethods />
                 </div>
 
-                {/* Order Summary */}
+                {/* ملخص الطلب */}
                 <div className="space-y-3">
                   <h3 className="text-lg font-bold text-blue-800">ملخص الطلب</h3>
                   <Card className="bg-blue-50 border border-blue-100">
@@ -132,26 +132,15 @@ const PharmacyCheckoutContent: React.FC = () => {
                     </CardContent>
                   </Card>
                 </div>
-
-                {/* Submit Order Button */}
-                <Button 
-                  variant="pharmacy"
-                  size="checkout"
-                  className="w-full mb-16 mt-4"
-                  onClick={handleSubmitOrder}
-                  disabled={isProcessing || !selectedAddressId}
-                >
-                  {isProcessing ? "جاري تنفيذ الطلب..." : "تأكيد الطلب"}
-                </Button>
               </div>
             </>
           )}
         </div>
       </div>
       
-      {/* Bottom fixed button container */}
+      {/* زر تأكيد الطلب العائم */}
       {!isAddingNewAddress && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t border-blue-100 p-4 z-10 max-w-md mx-auto mb-28">
+        <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t border-blue-100 p-4 z-50 max-w-md mx-auto">
           <Button 
             variant="pharmacy"
             size="checkout" 
@@ -159,7 +148,7 @@ const PharmacyCheckoutContent: React.FC = () => {
             onClick={handleSubmitOrder}
             disabled={isProcessing || !selectedAddressId}
           >
-            {isProcessing ? "جاري تنفيذ الطلب..." : "تأكيد الطلب"}
+            {isProcessing ? "جاري تنفيذ الطلب..." : "تأكيد الطلب • " + orderTotal.toFixed(2) + " ج.م"}
           </Button>
         </div>
       )}

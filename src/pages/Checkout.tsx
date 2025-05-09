@@ -15,7 +15,7 @@ import { getDeliveryEstimate, submitOrder } from '@/api/checkout';
 // العناصر في سلة المشتريات (كمحاكاة)
 const cartItems = [{
   id: 1,
-  name: "شاورما دجاج سبيشال",
+  name: "شاورما فراخ سبيشال",
   price: 25,
   quantity: 2
 }, {
@@ -37,16 +37,16 @@ const OrderSummary = () => {
     <div className="space-y-3">
       <div className="flex justify-between text-sm">
         <span className="text-gray-600">المجموع الفرعي</span>
-        <span>{subtotal} ر.س</span>
+        <span>{subtotal} ج.م</span>
       </div>
       <div className="flex justify-between text-sm">
         <span className="text-gray-600">رسوم التوصيل</span>
-        <span>{deliveryFee} ر.س</span>
+        <span>{deliveryFee} ج.م</span>
       </div>
       <Separator className="my-2 bg-blue-200" />
       <div className="flex justify-between font-bold">
         <span>الإجمالي</span>
-        <span className="text-blue-700">{orderTotal} ر.س</span>
+        <span className="text-blue-700">{orderTotal} ج.م</span>
       </div>
     </div>
   );
@@ -72,7 +72,7 @@ const DeliveryTime = () => {
         <CardContent className="p-4">
           <div className="flex justify-between items-center">
             <div className="flex-1">
-              <p className="text-sm text-gray-600">وقت الوصول المتوقع</p>
+              <p className="text-sm text-gray-600">هيوصل في حوالي</p>
               <p className="text-lg font-bold text-blue-700">
                 {deliveryTime.min} - {deliveryTime.max} دقيقة
               </p>
@@ -100,7 +100,7 @@ const CheckoutButton = () => {
   
   const handleCheckout = async () => {
     if (!selectedAddressId) {
-      toast.error("الرجاء اختيار عنوان التوصيل");
+      toast.error("لازم تختار عنوان للتوصيل الأول");
       return;
     }
     
@@ -136,10 +136,10 @@ const CheckoutButton = () => {
         // الانتقال إلى صفحة تتبع الطلب
         navigate(response.trackingUrl || '/tracking');
       } else {
-        toast.error(response.message || "حدث خطأ أثناء تقديم طلبك. الرجاء المحاولة مرة أخرى.");
+        toast.error(response.message || "حصلت مشكلة أثناء تقديم طلبك. حاول مرة تانية.");
       }
     } catch (error) {
-      toast.error("حدث خطأ غير متوقع. الرجاء المحاولة مرة أخرى.");
+      toast.error("حصلت مشكلة غير متوقعة. حاول مرة تانية.");
       console.error("Checkout error:", error);
     } finally {
       setIsSubmitting(false);
@@ -154,7 +154,7 @@ const CheckoutButton = () => {
       size="checkout"
       className="w-full shadow-lg"
     >
-      {isSubmitting ? "جارٍ تأكيد الطلب..." : `تأكيد الطلب · ${orderTotal} ر.س`}
+      {isSubmitting ? "جاري تأكيد الطلب..." : `تأكيد الطلب • ${orderTotal} ج.م`}
     </Button>
   );
 };
@@ -177,7 +177,7 @@ const CheckoutContent = () => {
   };
   
   return (
-    <div className="space-y-6 pb-28">
+    <div className="space-y-6 pb-32">
       {/* قسم العناوين */}
       <Card className="border border-blue-100 shadow-sm">
         <CardContent className="p-5">
@@ -219,7 +219,7 @@ const CheckoutContent = () => {
               {cartItems.map(item => (
                 <div key={item.id} className="flex justify-between text-sm">
                   <span className="text-blue-800 font-medium">{item.name} × {item.quantity}</span>
-                  <span className="text-blue-700 font-medium">{item.price * item.quantity} ر.س</span>
+                  <span className="text-blue-700 font-medium">{item.price * item.quantity} ج.م</span>
                 </div>
               ))}
             </div>
@@ -233,7 +233,7 @@ const CheckoutContent = () => {
       </Card>
       
       {/* شريط الدفع السفلي الثابت */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-10 max-w-md mx-auto mb-28">
+      <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-50 max-w-md mx-auto">
         <CheckoutButton />
       </div>
     </div>
@@ -244,7 +244,7 @@ const Checkout: React.FC = () => {
   return (
     <CheckoutProvider>
       <div className="min-h-screen bg-blue-50" dir="rtl">
-        <div className="max-w-md mx-auto bg-white pb-28">
+        <div className="max-w-md mx-auto bg-white pb-32">
           {/* الرأس */}
           <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-md z-20">
             <div className="flex items-center justify-between p-4">

@@ -17,10 +17,10 @@ interface CartItem {
 }
 
 const ClothesCart: React.FC = () => {
-  // Mock cart items - in a real app, this would come from context or state management
+  // كارت المنتجات المختارة - في التطبيق الحقيقي، ستأتي من سياق أو إدارة حالة
   const [cartItems, setCartItems] = useState<CartItem[]>([{
     id: 1,
-    name: 'قميص أنيق',
+    name: 'قميص شيك',
     type: 'قميص',
     price: 150,
     size: 'M',
@@ -36,7 +36,7 @@ const ClothesCart: React.FC = () => {
     image: 'https://images.unsplash.com/photo-1603252109303-2751441dd157?auto=format&fit=crop&q=80&w=100&h=100'
   }]);
 
-  // Mock suggested products
+  // منتجات مقترحة
   const suggestedProducts = [{
     id: 14,
     name: 'تيشيرت رياضي',
@@ -74,7 +74,7 @@ const ClothesCart: React.FC = () => {
     const itemToRemove = cartItems.find(item => item.id === id);
     if (itemToRemove) {
       setCartItems(items => items.filter(item => item.id !== id));
-      toast.success(`تم إزالة ${itemToRemove.name} من السلة`);
+      toast.success(`تم شيل ${itemToRemove.name} من السلة`);
     }
   };
 
@@ -82,40 +82,40 @@ const ClothesCart: React.FC = () => {
     setCartItems(prev => [...prev, {
       ...product,
       quantity: 1,
-      type: 'ملابس',
+      type: 'هدوم',
       size: 'M'
     }]);
-    toast.success(`تمت إضافة ${product.name} إلى السلة`);
+    toast.success(`تمت إضافة ${product.name} للسلة`);
   };
 
-  // Calculate totals
+  // حساب المجاميع
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const deliveryFee = 20;
   const total = subtotal + deliveryFee;
 
   return (
     <div className="min-h-screen bg-blue-50" dir="rtl">
-      <div className="max-w-md mx-auto bg-white pb-24 shadow-md">
-        {/* Header */}
+      <div className="max-w-md mx-auto bg-white pb-32 shadow-md">
+        {/* الهيدر */}
         <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-700 to-indigo-600 text-white sticky top-0 z-10 shadow-md">
           <Link to="/clothes" className="text-white hover:text-blue-100 transition-colors">
             <ArrowLeft className="w-6 h-6" />
           </Link>
-          <h1 className="text-xl font-bold">سلة المشتريات</h1>
-          <div className="w-6"></div> {/* Empty div for flex spacing */}
+          <h1 className="text-xl font-bold">السلة</h1>
+          <div className="w-6"></div> {/* عنصر فارغ للمباعدة */}
         </div>
 
-        {/* Cart Items */}
+        {/* محتويات السلة */}
         <div className="p-5">
           {cartItems.length === 0 ? (
             <div className="text-center py-10 mt-10 animate-fade-in">
               <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <ShoppingCart className="w-10 h-10 text-blue-600" />
               </div>
-              <p className="text-gray-500 mb-4">السلة فارغة</p>
+              <p className="text-gray-500 mb-4">السلة فاضية</p>
               <Link to="/clothes">
                 <Button variant="gradient" className="shadow-md">
-                  تسوق الآن
+                  تسوق دلوقتي
                 </Button>
               </Link>
             </div>
@@ -129,7 +129,7 @@ const ClothesCart: React.FC = () => {
                       alt={item.name} 
                       className="w-24 h-24 object-cover rounded-md border border-blue-100"
                     />
-                    <div className="ml-4 flex-1">
+                    <div className="mr-4 flex-1">
                       <h3 className="font-medium text-blue-800">{item.name}</h3>
                       <div className="flex text-xs text-gray-500 space-x-2 space-x-reverse mt-1">
                         <span>{item.type}</span>
@@ -138,8 +138,8 @@ const ClothesCart: React.FC = () => {
                       </div>
                       <div className="flex justify-between items-center mt-3">
                         <div className="flex flex-col">
-                          <span className="font-bold text-blue-700">{item.price * item.quantity} ريال</span>
-                          {item.quantity > 1 && <span className="text-xs text-gray-500">{item.quantity} × {item.price} ريال</span>}
+                          <span className="font-bold text-blue-700">{item.price * item.quantity} ج.م</span>
+                          {item.quantity > 1 && <span className="text-xs text-gray-500">{item.quantity} × {item.price} ج.م</span>}
                         </div>
                         <div className="flex items-center gap-2">
                           <button 
@@ -168,11 +168,11 @@ const ClothesCart: React.FC = () => {
                 </Card>
               ))}
 
-              {/* Suggested Products */}
+              {/* منتجات مقترحة */}
               <div className="mt-8 animate-fade-in">
                 <h2 className="text-lg font-bold mb-3 flex items-center text-blue-800">
                   <span className="block w-1 h-6 bg-blue-600 ml-2"></span>
-                  منتجات مقترحة
+                  منتجات ممكن تعجبك
                 </h2>
                 <div className="grid grid-cols-3 gap-3">
                   {suggestedProducts.map(product => (
@@ -189,7 +189,7 @@ const ClothesCart: React.FC = () => {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-blue-900/40 to-transparent"></div>
                         <div className="absolute bottom-1 right-1 bg-blue-700 text-white text-xs p-1 rounded">
-                          {product.price} ريال
+                          {product.price} ج.م
                         </div>
                       </div>
                       <div className="p-2">
@@ -200,21 +200,21 @@ const ClothesCart: React.FC = () => {
                 </div>
               </div>
 
-              {/* Order Summary */}
+              {/* ملخص الطلب */}
               <Card className="p-4 mt-6 border-none shadow-sm bg-blue-50 animate-fade-in">
                 <h3 className="font-bold mb-4 text-blue-800">ملخص الطلب</h3>
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-600">المجموع الفرعي</span>
-                    <span className="font-medium">{subtotal} ريال</span>
+                    <span className="font-medium">{subtotal} ج.م</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">رسوم التوصيل</span>
-                    <span className="font-medium">{deliveryFee} ريال</span>
+                    <span className="font-medium">{deliveryFee} ج.م</span>
                   </div>
                   <div className="border-t pt-3 mt-2 flex justify-between font-bold">
                     <span>الإجمالي</span>
-                    <span className="text-blue-700">{total} ريال</span>
+                    <span className="text-blue-700">{total} ج.م</span>
                   </div>
                 </div>
               </Card>
@@ -222,12 +222,12 @@ const ClothesCart: React.FC = () => {
           )}
         </div>
         
-        {/* Bottom Buttons - Fixed at bottom */}
+        {/* زر إتمام الطلب العائم في الأسفل */}
         {cartItems.length > 0 && (
-          <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 max-w-md mx-auto shadow-lg mb-16">
+          <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-50 max-w-md mx-auto shadow-lg">
             <Link to="/clothes/checkout">
               <Button variant="gradient" size="checkout" className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
-                إتمام الطلب ({total} ريال)
+                إتمام الطلب ({total} ج.م)
               </Button>
             </Link>
           </div>

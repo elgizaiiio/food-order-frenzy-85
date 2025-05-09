@@ -25,14 +25,14 @@ const ClothesCheckout: React.FC = () => {
   const [addresses, setAddresses] = useState<Address[]>([
     { 
       id: '1', 
-      title: 'المنزل', 
+      title: 'البيت', 
       address: 'شارع الملك فهد، حي الورود، الرياض',
       phone: '05xxxxxxxx',
       isDefault: true
     },
     { 
       id: '2', 
-      title: 'العمل', 
+      title: 'الشغل', 
       address: 'برج المملكة، طريق الملك فهد، الرياض',
       phone: '05xxxxxxxx',
     }
@@ -47,10 +47,10 @@ const ClothesCheckout: React.FC = () => {
     phone: ''
   });
 
-  // Mock order summary data
+  // بيانات ملخص الطلب
   const orderSummary = {
     items: [
-      { id: 1, name: 'قميص أنيق', quantity: 1, price: 150 },
+      { id: 1, name: 'قميص شيك', quantity: 1, price: 150 },
       { id: 5, name: 'قميص كاجوال', quantity: 2, price: 140 }
     ],
     subtotal: 430, // 150 + (140 * 2)
@@ -67,13 +67,13 @@ const ClothesCheckout: React.FC = () => {
   };
 
   const handleAddAddress = () => {
-    // Validate form
+    // التحقق من صحة النموذج
     if (!newAddress.title || !newAddress.address || !newAddress.phone) {
-      toast.error('الرجاء ملء جميع الحقول المطلوبة');
+      toast.error('لازم تملي كل الحقول المطلوبة');
       return;
     }
 
-    // Add new address
+    // إضافة عنوان جديد
     const id = Date.now().toString();
     const address: Address = {
       id,
@@ -86,30 +86,30 @@ const ClothesCheckout: React.FC = () => {
     setSelectedAddressId(id);
     setShowAddAddress(false);
     setNewAddress({ title: '', address: '', phone: '' });
-    toast.success('تمت إضافة العنوان بنجاح');
+    toast.success('العنوان اتضاف بنجاح');
   };
 
   const handleSubmitOrder = async () => {
     if (!selectedAddressId) {
-      toast.error('الرجاء اختيار عنوان للتوصيل');
+      toast.error('لازم تختار عنوان التوصيل');
       return;
     }
 
     setLoading(true);
     
-    // Simulate API call
+    // محاكاة طلب API
     try {
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // Show success message
-      toast.success('تم تقديم طلبك بنجاح! سنتصل بك قريبًا لتأكيد طلبك.', {
+      // إظهار رسالة نجاح
+      toast.success('تم تقديم طلبك بنجاح! هنتصل بيك قريب عشان نأكد طلبك.', {
         duration: 5000
       });
       
-      // Navigate to tracking or success page
+      // الانتقال إلى صفحة التتبع أو النجاح
       navigate('/tracking');
     } catch (error) {
-      toast.error('حدث خطأ أثناء معالجة طلبك. الرجاء المحاولة مرة أخرى.');
+      toast.error('حصلت مشكلة أثناء معالجة طلبك. حاول تاني.');
     } finally {
       setLoading(false);
     }
@@ -117,19 +117,19 @@ const ClothesCheckout: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-blue-50" dir="rtl">
-      <div className="max-w-md mx-auto bg-white pb-24">
-        {/* Header */}
+      <div className="max-w-md mx-auto bg-white pb-32">
+        {/* الهيدر */}
         <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-700 to-indigo-600 text-white sticky top-0 z-10 shadow-md">
           <Link to="/clothes/cart" className="text-white hover:text-blue-100 transition-colors">
             <ArrowLeft className="w-6 h-6" />
           </Link>
           <h1 className="text-xl font-bold">الدفع والتوصيل</h1>
-          <div className="w-6"></div> {/* Empty div for flex spacing */}
+          <div className="w-6"></div> {/* عنصر فارغ للمباعدة */}
         </div>
 
-        {/* Main Content */}
+        {/* المحتوى الرئيسي */}
         <div className="p-4 space-y-6">
-          {/* Delivery Address Section */}
+          {/* قسم عنوان التوصيل */}
           <div>
             <div className="flex items-center gap-2 mb-4">
               <MapPin className="w-5 h-5 text-blue-600" />
@@ -143,7 +143,7 @@ const ClothesCheckout: React.FC = () => {
                     <Label htmlFor="title" className="text-sm text-blue-800">اسم العنوان</Label>
                     <Input
                       id="title"
-                      placeholder="مثل: المنزل، العمل، ..."
+                      placeholder="مثل: البيت، الشغل، ..."
                       value={newAddress.title}
                       onChange={e => setNewAddress({...newAddress, title: e.target.value})}
                       className="mt-1 border-blue-200 focus:ring-blue-500"
@@ -153,18 +153,18 @@ const ClothesCheckout: React.FC = () => {
                     <Label htmlFor="address" className="text-sm text-blue-800">العنوان التفصيلي</Label>
                     <Input
                       id="address"
-                      placeholder="الحي، الشارع، رقم المبنى"
+                      placeholder="المنطقة، الشارع، رقم العمارة"
                       value={newAddress.address}
                       onChange={e => setNewAddress({...newAddress, address: e.target.value})}
                       className="mt-1 border-blue-200 focus:ring-blue-500"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="phone" className="text-sm text-blue-800">رقم الهاتف</Label>
+                    <Label htmlFor="phone" className="text-sm text-blue-800">رقم الموبايل</Label>
                     <Input
                       id="phone"
                       type="tel"
-                      placeholder="05xxxxxxxx"
+                      placeholder="01xxxxxxxx"
                       value={newAddress.phone}
                       onChange={e => setNewAddress({...newAddress, phone: e.target.value})}
                       className="mt-1 border-blue-200 focus:ring-blue-500"
@@ -231,7 +231,7 @@ const ClothesCheckout: React.FC = () => {
             )}
           </div>
 
-          {/* Payment Method Section */}
+          {/* قسم طريقة الدفع */}
           <div>
             <div className="flex items-center gap-2 mb-4">
               <CreditCard className="w-5 h-5 text-blue-600" />
@@ -255,11 +255,11 @@ const ClothesCheckout: React.FC = () => {
                     </div>
                     <div>
                       <div className="font-medium text-blue-800">الدفع عند الاستلام</div>
-                      <div className="text-gray-500 text-xs mt-1">ادفع نقدًا عند استلام الطلب</div>
+                      <div className="text-gray-500 text-xs mt-1">ادفع كاش لما تستلم الطلب</div>
                     </div>
                   </div>
                   {paymentMethod === 'cash' && (
-                    <CheckCircle className="w-5 h-5 text-blue-600" />
+                    <CheckCircle className="w-5 h-5 text-green-600" />
                   )}
                 </label>
               </div>
@@ -279,8 +279,8 @@ const ClothesCheckout: React.FC = () => {
                       <CreditCard className="w-5 h-5" />
                     </div>
                     <div>
-                      <div className="font-medium text-blue-800">بطاقة ائتمان / مدى</div>
-                      <div className="text-gray-500 text-xs mt-1">فيزا، ماستركارد، مدى</div>
+                      <div className="font-medium text-blue-800">بطاقة ائتمانية</div>
+                      <div className="text-gray-500 text-xs mt-1">فيزا، ماستر كارد، مدى</div>
                     </div>
                   </div>
                   {paymentMethod === 'card' && (
@@ -304,12 +304,12 @@ const ClothesCheckout: React.FC = () => {
                       <Wallet className="w-5 h-5" />
                     </div>
                     <div>
-                      <div className="font-medium text-blue-800">محفظة إلكترونية</div>
-                      <div className="text-gray-500 text-xs mt-1">STC Pay، وغيرها</div>
+                      <div className="font-medium text-blue-800">المحفظة الإلكترونية</div>
+                      <div className="text-gray-500 text-xs mt-1">دفع بإستخدام رصيدك في المحفظة</div>
                     </div>
                   </div>
                   {paymentMethod === 'wallet' && (
-                    <CheckCircle className="w-5 h-5 text-blue-600" />
+                    <CheckCircle className="w-5 h-5 text-purple-600" />
                   )}
                 </label>
               </div>
@@ -325,89 +325,71 @@ const ClothesCheckout: React.FC = () => {
                   className="flex items-center justify-between p-4 rounded-lg border border-blue-100 cursor-pointer hover:bg-blue-50 peer-data-[state=checked]:border-blue-500 peer-data-[state=checked]:bg-blue-50 transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-black flex items-center justify-center text-white">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-900 flex items-center justify-center text-white">
                       <Apple className="w-5 h-5" />
                     </div>
                     <div>
                       <div className="font-medium text-blue-800">Apple Pay</div>
-                      <div className="text-gray-500 text-xs mt-1">الدفع السريع والآمن</div>
+                      <div className="text-gray-500 text-xs mt-1">دفع بإستخدام Apple Pay</div>
                     </div>
                   </div>
                   {paymentMethod === 'applepay' && (
-                    <CheckCircle className="w-5 h-5 text-blue-600" />
+                    <CheckCircle className="w-5 h-5 text-gray-900" />
                   )}
                 </label>
               </div>
             </RadioGroup>
-
-            {paymentMethod === 'card' && (
-              <div className="mt-3 p-3 flex justify-between items-center bg-blue-50 rounded-lg border border-blue-100">
-                <div className="flex gap-3">
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png" alt="Visa" className="h-6" />
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/MasterCard_Logo.svg/2560px-MasterCard_Logo.svg.png" alt="MasterCard" className="h-6" />
-                  <img src="https://upload.wikimedia.org/wikipedia/ar/b/bd/Mada_Logo.svg" alt="Mada" className="h-6" />
-                </div>
-                <span className="text-xs text-gray-500">معاملات آمنة 100%</span>
-              </div>
-            )}
           </div>
 
-          {/* Order Summary */}
+          {/* ملخص الطلب */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <img src="https://img.icons8.com/color/48/000000/shopping-basket.png" alt="Basket" className="w-5 h-5" />
+              <ShoppingBag className="w-5 h-5 text-blue-600" />
               <h2 className="text-lg font-bold text-blue-800">ملخص الطلب</h2>
             </div>
 
-            <Card className="border-none shadow-sm bg-blue-50">
-              <div className="p-4 space-y-4">
-                {/* Order Items */}
-                <div className="space-y-3">
-                  {orderSummary.items.map(item => (
-                    <div key={item.id} className="flex justify-between items-center text-sm">
-                      <div className="flex items-center gap-2">
-                        <span className="text-blue-800">{item.name}</span>
-                        <span className="text-gray-500">×{item.quantity}</span>
-                      </div>
-                      <span className="font-medium">{item.price * item.quantity} ريال</span>
+            <Card className="overflow-hidden border border-blue-100 shadow-sm">
+              <div className="p-4 space-y-3">
+                {orderSummary.items.map(item => (
+                  <div key={item.id} className="flex justify-between items-center py-2 border-b border-blue-50">
+                    <div className="flex items-center gap-2">
+                      <div className="font-medium text-gray-800">{item.name}</div>
+                      <div className="text-xs text-gray-500">× {item.quantity}</div>
                     </div>
-                  ))}
-                </div>
+                    <div className="font-medium text-blue-700">{item.price * item.quantity} ج.م</div>
+                  </div>
+                ))}
                 
-                <div className="border-t border-blue-200 my-2"></div>
-                
-                {/* Order Totals */}
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
+                <div className="pt-2 space-y-2">
+                  <div className="flex justify-between text-sm">
                     <span className="text-gray-600">المجموع الفرعي</span>
-                    <span>{orderSummary.subtotal} ريال</span>
+                    <span>{orderSummary.subtotal} ج.م</span>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between text-sm">
                     <span className="text-gray-600">رسوم التوصيل</span>
-                    <span>{orderSummary.deliveryFee} ريال</span>
+                    <span>{orderSummary.deliveryFee} ج.م</span>
                   </div>
-                  <div className="border-t border-blue-200 pt-2 mt-2 flex justify-between font-bold">
-                    <span className="text-blue-800">الإجمالي</span>
-                    <span className="text-blue-700">{orderSummary.total} ريال</span>
+                  <div className="flex justify-between font-bold text-lg pt-2 border-t border-blue-100">
+                    <span className="text-blue-800">إجمالي الطلب</span>
+                    <span className="text-blue-700">{orderSummary.total} ج.م</span>
                   </div>
                 </div>
               </div>
             </Card>
           </div>
         </div>
-
-        {/* Bottom Button - Fixed at bottom */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 max-w-md mx-auto shadow-lg mb-16">
-          <Button 
-            onClick={handleSubmitOrder}
-            disabled={loading}
-            className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-lg font-medium shadow-md"
-            variant="gradient"
-            size="checkout"
-          >
-            {loading ? 'جاري تنفيذ الطلب...' : `تأكيد الطلب (${orderSummary.total} ريال)`}
-          </Button>
-        </div>
+      </div>
+      
+      {/* زر إتمام الطلب العائم */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-50 max-w-md mx-auto shadow-lg">
+        <Button 
+          onClick={handleSubmitOrder} 
+          disabled={loading || !selectedAddressId} 
+          className="w-full py-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-lg font-bold shadow-lg"
+          size="checkout"
+        >
+          {loading ? "جاري تنفيذ الطلب..." : `تأكيد الطلب • ${orderSummary.total} ج.م`}
+        </Button>
       </div>
     </div>
   );

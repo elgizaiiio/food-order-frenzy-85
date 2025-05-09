@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, MapPin, Clock, CreditCard, Phone, Wallet, DollarSign, Apple, ShoppingBag } from 'lucide-react';
@@ -32,7 +33,7 @@ const DeliveryTime = () => {
         <CardContent className="p-4">
           <div className="flex justify-between items-center">
             <div className="flex-1">
-              <p className="text-sm text-gray-600">وقت الوصول المتوقع</p>
+              <p className="text-sm text-gray-600">هيوصل في حوالي</p>
               <p className="text-lg font-bold text-blue-700">
                 {deliveryTime.min} - {deliveryTime.max} دقيقة
               </p>
@@ -70,8 +71,8 @@ const CheckoutButton = () => {
   const handleCheckout = async () => {
     if (!selectedAddressId) {
       toast({
-        title: "خطأ",
-        description: "الرجاء اختيار عنوان التوصيل",
+        title: "فيه مشكلة",
+        description: "لازم تختار عنوان التوصيل الأول",
         variant: "destructive"
       });
       return;
@@ -113,15 +114,15 @@ const CheckoutButton = () => {
         navigate('/market/tracking');
       } else {
         toast({
-          title: "حدث خطأ",
-          description: response.message || "حدث خطأ أثناء تقديم طلبك. الرجاء المحاولة مرة أخرى.",
+          title: "حصلت مشكلة",
+          description: response.message || "حصلت مشكلة أثناء تقديم طلبك. حاول مرة تانية",
           variant: "destructive"
         });
       }
     } catch (error) {
       toast({
-        title: "حدث خطأ",
-        description: "حدث خطأ غير متوقع. الرجاء المحاولة مرة أخرى.",
+        title: "حصلت مشكلة",
+        description: "حصل خطأ غير متوقع. حاول تاني",
         variant: "destructive"
       });
       console.error("Checkout error:", error);
@@ -138,7 +139,7 @@ const CheckoutButton = () => {
       className="w-full shadow-lg" 
       disabled={isSubmitting || items.length === 0}
     >
-      {isSubmitting ? "جارٍ تأكيد الطلب..." : `تأكيد الطلب · ${orderTotal.toFixed(2)} ر.س`}
+      {isSubmitting ? "جاري تأكيد الطلب..." : `تأكيد الطلب • ${orderTotal.toFixed(2)} ج.م`}
     </Button>
   );
 };
@@ -178,7 +179,7 @@ const OrderSummary = () => {
                 <p className="text-sm text-gray-500">الكمية: <span className="text-blue-600 font-medium">{item.quantity}</span></p>
               </div>
             </div>
-            <p className="font-medium text-blue-700">{(item.price * item.quantity).toFixed(2)} ر.س</p>
+            <p className="font-medium text-blue-700">{(item.price * item.quantity).toFixed(2)} ج.م</p>
           </div>
         ))}
       </div>
@@ -187,15 +188,15 @@ const OrderSummary = () => {
       <div className="space-y-2 pt-3 bg-blue-50 p-3 rounded-lg">
         <div className="flex justify-between text-sm">
           <span className="text-gray-600">المجموع الفرعي</span>
-          <span>{subtotal.toFixed(2)} ر.س</span>
+          <span>{subtotal.toFixed(2)} ج.م</span>
         </div>
         <div className="flex justify-between text-sm">
           <span className="text-gray-600">رسوم التوصيل</span>
-          <span>{deliveryFee.toFixed(2)} ر.س</span>
+          <span>{deliveryFee.toFixed(2)} ج.م</span>
         </div>
         <div className="flex justify-between text-lg font-bold pt-2 border-t border-blue-200">
           <span>الإجمالي</span>
-          <span className="text-blue-600">{total.toFixed(2)} ر.س</span>
+          <span className="text-blue-600">{total.toFixed(2)} ج.م</span>
         </div>
       </div>
     </div>
@@ -226,8 +227,8 @@ const MarketCheckoutContent = () => {
         <div className="w-16 h-16 mb-4 rounded-full bg-blue-100 flex items-center justify-center">
           <ShoppingBag className="w-8 h-8 text-blue-600" />
         </div>
-        <h2 className="text-xl font-bold mb-2 text-blue-800">سلة التسوق فارغة</h2>
-        <p className="text-gray-600 mb-6">لم تقم بإضافة أي منتجات إلى سلة التسوق بعد</p>
+        <h2 className="text-xl font-bold mb-2 text-blue-800">السلة فاضية</h2>
+        <p className="text-gray-600 mb-6">لسه مضفتش أي منتجات للسلة</p>
         <Link to="/market">
           <Button variant="gradient" className="shadow-md">
             تصفح المنتجات
@@ -238,7 +239,7 @@ const MarketCheckoutContent = () => {
   }
   
   return (
-    <div className="space-y-6 pb-28">
+    <div className="space-y-6 pb-32">
       {/* قسم العناوين */}
       <Card className="border-none shadow-sm">
         <CardContent className="p-5">
@@ -270,11 +271,6 @@ const MarketCheckoutContent = () => {
           <OrderSummary />
         </CardContent>
       </Card>
-      
-      {/* شريط الدفع السفلي الثابت */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-10 max-w-md mx-auto mb-28">
-        <CheckoutButton />
-      </div>
     </div>
   );
 };
@@ -284,7 +280,7 @@ const MarketCheckout: React.FC = () => {
     <MarketCartProvider>
       <CheckoutProvider>
         <div className="min-h-screen bg-blue-50" dir="rtl">
-          <div className="max-w-md mx-auto bg-white pb-28">
+          <div className="max-w-md mx-auto bg-white pb-32">
             {/* الرأس */}
             <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-md z-20">
               <div className="flex items-center justify-between p-4">
@@ -301,6 +297,11 @@ const MarketCheckout: React.FC = () => {
               <MarketCheckoutContent />
             </div>
           </div>
+        </div>
+        
+        {/* زر تأكيد الطلب العائم */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t p-4 z-50 max-w-md mx-auto">
+          <CheckoutButton />
         </div>
       </CheckoutProvider>
     </MarketCartProvider>

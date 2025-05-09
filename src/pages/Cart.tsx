@@ -7,10 +7,10 @@ import { Card } from '@/components/ui/card';
 import { toast } from "sonner";
 
 const Cart: React.FC = () => {
-  // Mock cart data with useState for interactivity
+  // بيانات السلة المحاكاة مع useState للتفاعلية
   const [cartItems, setCartItems] = useState([{
     id: 1,
-    name: "شاورما دجاج سبيشال",
+    name: "شاورما فراخ سبيشال",
     price: 25,
     quantity: 2,
     image: "https://images.unsplash.com/photo-1550547660-d9450f859349?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80"
@@ -22,7 +22,7 @@ const Cart: React.FC = () => {
     image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80"
   }]);
 
-  // Suggested items
+  // منتجات مقترحة
   const suggestedItems = [{
     id: 3,
     name: "كوكا كولا",
@@ -30,7 +30,7 @@ const Cart: React.FC = () => {
     image: "https://images.unsplash.com/photo-1581006852262-e4307cf6283a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80"
   }, {
     id: 4,
-    name: "بطاطس مقلية",
+    name: "بطاطس محمرة",
     price: 12,
     image: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80"
   }, {
@@ -40,7 +40,7 @@ const Cart: React.FC = () => {
     image: "https://images.unsplash.com/photo-1546793665-c74683f339c1?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80"
   }];
 
-  // Calculate total
+  // حساب المجموع
   const calculateSubtotal = () => {
     return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
   };
@@ -56,7 +56,7 @@ const Cart: React.FC = () => {
     const itemToRemove = cartItems.find(item => item.id === id);
     if (itemToRemove) {
       setCartItems(prevItems => prevItems.filter(item => item.id !== id));
-      toast.success(`تم إزالة ${itemToRemove.name} من سلتك`);
+      toast.success(`تم شيل ${itemToRemove.name} من سلتك`);
     }
   };
   
@@ -65,7 +65,7 @@ const Cart: React.FC = () => {
       ...item,
       quantity: 1
     }]);
-    toast.success(`تمت إضافة ${item.name} إلى سلتك`);
+    toast.success(`تمت إضافة ${item.name} لسلتك`);
   };
   
   const subtotal = calculateSubtotal();
@@ -74,17 +74,17 @@ const Cart: React.FC = () => {
   
   return (
     <div className="min-h-screen bg-blue-50" dir="rtl">
-      <div className="max-w-md mx-auto bg-white pb-24 shadow-md">
-        {/* Header */}
+      <div className="max-w-md mx-auto bg-white pb-32 shadow-md">
+        {/* الهيدر */}
         <div className="flex items-center justify-between p-4 bg-gradient-to-l from-blue-600 to-blue-800 text-white sticky top-0 z-10 shadow-md">
           <Link to="/restaurant/1" className="text-white hover:text-blue-100 transition-colors">
             <ArrowLeft className="w-6 h-6" />
           </Link>
-          <h1 className="text-xl font-bold">سلة المشتريات</h1>
-          <div className="w-6"></div> {/* Empty div for flex balance */}
+          <h1 className="text-xl font-bold">السلة</h1>
+          <div className="w-6"></div> {/* عنصر فارغ للمباعدة */}
         </div>
 
-        {/* Cart Items */}
+        {/* محتويات السلة */}
         <div className="p-5">
           <div className="mb-6">
             {cartItems.length > 0 ? cartItems.map(item => (
@@ -100,7 +100,7 @@ const Cart: React.FC = () => {
                   />
                   <div>
                     <h3 className="font-bold text-gray-800">{item.name}</h3>
-                    <p className="text-blue-600 font-medium">{item.price} جنيه</p>
+                    <p className="text-blue-600 font-medium">{item.price} ج.م</p>
                     <div className="flex items-center gap-3 mt-2 bg-white rounded-full border border-blue-200 shadow-sm p-1">
                       <button 
                         onClick={() => updateQuantity(item.id, -1)} 
@@ -130,8 +130,8 @@ const Cart: React.FC = () => {
                 <div className="bg-blue-100 rounded-full w-20 h-20 mx-auto flex items-center justify-center mb-4">
                   <ShoppingBag className="w-10 h-10 text-blue-500" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-800 mb-2">سلة مشترياتك فارغة</h3>
-                <p className="text-gray-500 mb-6">لم تقم بإضافة أي منتجات بعد</p>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">السلة فاضية</h3>
+                <p className="text-gray-500 mb-6">مفيش حاجة في السلة</p>
                 <Link to="/restaurant/1">
                   <Button className="bg-gradient-to-l from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white shadow-lg">
                     ابدأ التسوق
@@ -143,19 +143,19 @@ const Cart: React.FC = () => {
 
           {cartItems.length > 0 && (
             <>
-              {/* Add More Button */}
+              {/* زر إضافة المزيد */}
               <Link to="/restaurant/1">
                 <Button 
                   variant="outline" 
                   className="w-full mb-8 border-blue-300 text-blue-700 hover:bg-blue-50 hover:text-blue-800 py-6 text-lg"
                 >
-                  إضافة المزيد من المنتجات
+                  إضافة حاجات تانية
                 </Button>
               </Link>
 
-              {/* Suggested Items */}
+              {/* منتجات مقترحة */}
               <div className="mb-8 animate-fade-in">
-                <h2 className="text-xl font-bold mb-4 text-gray-800 border-r-4 border-blue-500 pr-3">منتجات قد تعجبك</h2>
+                <h2 className="text-xl font-bold mb-4 text-gray-800 border-r-4 border-blue-500 pr-3">منتجات ممكن تعجبك</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 overflow-x-auto pb-2">
                   {suggestedItems.map(item => (
                     <Card 
@@ -173,7 +173,7 @@ const Cart: React.FC = () => {
                       <div className="p-3">
                         <h3 className="font-medium text-gray-800">{item.name}</h3>
                         <div className="flex items-center justify-between mt-2">
-                          <span className="text-blue-600 font-bold">{item.price} جنيه</span>
+                          <span className="text-blue-600 font-bold">{item.price} ج.م</span>
                           <Button 
                             size="sm" 
                             onClick={() => addSuggested(item)} 
@@ -188,21 +188,21 @@ const Cart: React.FC = () => {
                 </div>
               </div>
 
-              {/* Order Summary */}
+              {/* ملخص الطلب */}
               <div className="mb-4 bg-blue-50 p-5 rounded-xl shadow-sm border border-blue-100 animate-fade-in">
                 <h2 className="text-xl font-bold mb-4 text-gray-800">ملخص الطلب</h2>
                 <div className="space-y-3 mb-4">
                   <div className="flex justify-between">
                     <span className="text-gray-600">المجموع الفرعي</span>
-                    <span className="font-medium">{subtotal} جنيه</span>
+                    <span className="font-medium">{subtotal} ج.م</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">رسوم التوصيل</span>
-                    <span className="font-medium">{deliveryFee} جنيه</span>
+                    <span className="font-medium">{deliveryFee} ج.م</span>
                   </div>
                   <div className="flex justify-between font-bold pt-3 border-t text-lg">
                     <span>المبلغ الإجمالي</span>
-                    <span className="text-blue-600">{total} جنيه</span>
+                    <span className="text-blue-600">{total} ج.م</span>
                   </div>
                 </div>
               </div>
@@ -210,26 +210,16 @@ const Cart: React.FC = () => {
           )}
         </div>
 
-        {/* Bottom Buttons - Fixed at bottom */}
+        {/* زر إتمام الطلب العائم في الأسفل */}
         {cartItems.length > 0 && (
-          <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 max-w-md mx-auto shadow-lg my-[56px]">
-            <div className="flex gap-3">
-              <Link to="/restaurant/1" className="flex-1">
-                <Button 
-                  variant="outline" 
-                  className="w-full py-6 text-gray-600 border-gray-300 hover:bg-gray-50"
-                >
-                  إضافة المزيد
-                </Button>
-              </Link>
-              <Link to="/checkout" className="flex-1">
-                <Button 
-                  className="w-full py-6 bg-gradient-to-l from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white shadow-md"
-                >
-                  إتمام الطلب
-                </Button>
-              </Link>
-            </div>
+          <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-50 max-w-md mx-auto shadow-lg">
+            <Link to="/checkout">
+              <Button 
+                className="w-full py-6 bg-gradient-to-l from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white shadow-md text-lg"
+              >
+                إتمام الطلب • {total} ج.م
+              </Button>
+            </Link>
           </div>
         )}
       </div>

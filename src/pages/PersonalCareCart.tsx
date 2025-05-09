@@ -27,7 +27,7 @@ const PersonalCareCart: React.FC = () => {
   const suggestedItems = [
     {
       id: 10,
-      name: 'أحمر شفاه مات',
+      name: 'روج مات',
       price: 65,
       image: 'https://images.unsplash.com/photo-1631214540553-ff044a3ff1d4?q=80&w=200&auto=format&fit=crop',
     },
@@ -39,7 +39,7 @@ const PersonalCareCart: React.FC = () => {
     },
     {
       id: 12,
-      name: 'صابون طبيعي',
+      name: 'صابونة طبيعية',
       price: 45,
       image: 'https://images.unsplash.com/photo-1600612253971-422e7f7faeb6?q=80&w=200&auto=format&fit=crop',
     }
@@ -52,17 +52,17 @@ const PersonalCareCart: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-blue-50" dir="rtl">
-      <div className="max-w-md mx-auto bg-white pb-24 shadow-md">
-        {/* Header */}
+      <div className="max-w-md mx-auto bg-white pb-32 shadow-md">
+        {/* الهيدر */}
         <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-md sticky top-0 z-10">
           <Link to="/personal-care" className="text-white hover:text-blue-100 transition-colors">
             <ArrowLeft className="w-6 h-6" />
           </Link>
-          <h1 className="text-xl font-bold">سلة المشتريات</h1>
-          <div className="w-6"></div> {/* Empty div for flex balance */}
+          <h1 className="text-xl font-bold">السلة</h1>
+          <div className="w-6"></div> {/* عنصر فارغ للمباعدة */}
         </div>
 
-        {/* Cart Items */}
+        {/* محتويات السلة */}
         <div className="p-5">
           <div className="mb-6">
             {items.length > 0 ? (
@@ -76,7 +76,7 @@ const PersonalCareCart: React.FC = () => {
                     />
                     <div>
                       <h3 className="font-medium text-blue-900">{item.name}</h3>
-                      <p className="text-blue-600 font-medium">{item.price} ريال</p>
+                      <p className="text-blue-600 font-medium">{item.price} ج.م</p>
                       <div className="flex items-center gap-3 mt-1 bg-white rounded-full border border-blue-200 shadow-sm p-1">
                         <button 
                           className="w-6 h-6 flex items-center justify-center rounded-full border-0 bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors"
@@ -107,7 +107,7 @@ const PersonalCareCart: React.FC = () => {
                 <div className="bg-blue-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4">
                   <ShoppingBag className="w-12 h-12 text-blue-600" />
                 </div>
-                <p className="text-gray-500 mb-4">سلتك فارغة</p>
+                <p className="text-gray-500 mb-4">السلة فاضية</p>
                 <Link to="/personal-care">
                   <Button 
                     variant="personalCare" 
@@ -122,21 +122,21 @@ const PersonalCareCart: React.FC = () => {
 
           {items.length > 0 && (
             <>
-              {/* Add More Button */}
+              {/* زر إضافة المزيد */}
               <Link to="/personal-care">
                 <Button 
                   variant="personalCareOutline" 
                   className="w-full mb-8"
                 >
-                  إضافة المزيد من المنتجات
+                  إضافة منتجات تانية
                 </Button>
               </Link>
 
-              {/* Suggested Items */}
+              {/* منتجات مقترحة */}
               <div className="mb-8 animate-fade-in">
                 <h2 className="text-lg font-bold mb-3 flex items-center gap-2 text-blue-800">
                   <span className="h-5 w-1.5 rounded-full bg-gradient-to-b from-blue-600 to-blue-800"></span>
-                  منتجات قد تعجبك
+                  منتجات ممكن تعجبك
                 </h2>
                 <div className="flex overflow-x-auto gap-3 pb-2 no-scrollbar">
                   {suggestedItems.map((item) => (
@@ -154,7 +154,7 @@ const PersonalCareCart: React.FC = () => {
                       <div className="p-2">
                         <h3 className="text-sm font-medium text-blue-800">{item.name}</h3>
                         <div className="flex items-center justify-between mt-2">
-                          <span className="text-sm font-bold text-blue-700">{item.price} ريال</span>
+                          <span className="text-sm font-bold text-blue-700">{item.price} ج.م</span>
                           <Button 
                             size="sm" 
                             variant="personalCarePill" 
@@ -170,22 +170,22 @@ const PersonalCareCart: React.FC = () => {
                 </div>
               </div>
 
-              {/* Order Summary */}
+              {/* ملخص الطلب */}
               <div className="mb-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200 animate-fade-in">
                 <h2 className="text-lg font-bold mb-3 text-blue-800">ملخص الطلب</h2>
                 <div className="space-y-2 mb-3">
                   <div className="flex justify-between">
                     <span className="text-gray-600">المجموع الفرعي</span>
-                    <span className="font-medium">{totalPrice} ريال</span>
+                    <span className="font-medium">{totalPrice} ج.م</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">رسوم التوصيل</span>
-                    <span className="font-medium">{deliveryFee} ريال</span>
+                    <span className="font-medium">{deliveryFee} ج.م</span>
                   </div>
                   <Separator className="my-2 bg-blue-200" />
                   <div className="flex justify-between font-bold pt-2">
                     <span className="text-blue-900">المبلغ الإجمالي</span>
-                    <span className="text-blue-700">{total} ريال</span>
+                    <span className="text-blue-700">{total} ج.م</span>
                   </div>
                 </div>
               </div>
@@ -193,9 +193,9 @@ const PersonalCareCart: React.FC = () => {
           )}
         </div>
 
-        {/* Bottom Buttons - Fixed at bottom */}
+        {/* أزرار أسفل الصفحة - مثبتة في الأسفل */}
         {items.length > 0 && (
-          <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 max-w-md mx-auto shadow-lg">
+          <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-50 max-w-md mx-auto shadow-lg">
             <div className="flex gap-3">
               <Link to="/personal-care" className="flex-1">
                 <Button 
@@ -211,7 +211,7 @@ const PersonalCareCart: React.FC = () => {
                   variant="personalCare"
                   className="w-full"
                 >
-                  تابع الدفع
+                  إتمام الطلب • {total} ج.م
                 </Button>
               </Link>
             </div>

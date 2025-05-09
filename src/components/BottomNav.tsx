@@ -14,6 +14,7 @@ const BottomNav: React.FC = () => {
 
   // التحقق إذا كانت الصفحة الحالية هي صفحة دفع أو صفحات تسجيل الدخول/التسجيل
   const isCheckoutPage = path.includes('checkout');
+  const isCartPage = path.includes('cart');
   const isAuthPage = path === '/login' || path === '/register' || path === '/forgot-password';
 
   // استخدام مستشعر السحب لإعادة إظهار الشريط عند السحب للأعلى
@@ -77,7 +78,7 @@ const BottomNav: React.FC = () => {
 
   return (
     <nav 
-      className={`fixed bottom-0 left-0 right-0 z-50 bg-white shadow-lg border-t border-slate-200 transition-transform duration-300 ${!isVisible ? 'translate-y-full' : ''}`}
+      className={`fixed bottom-0 left-0 right-0 z-40 bg-white shadow-lg border-t border-slate-200 transition-transform duration-300 ${!isVisible ? 'translate-y-full' : ''}`}
       {...handlers}
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
     >

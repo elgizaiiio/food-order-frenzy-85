@@ -18,7 +18,7 @@ const MarketCartContent: React.FC = () => {
     totalPrice
   } = useMarketCart();
   
-  // Suggested items
+  // منتجات مقترحة
   const suggestedItems = [{
     id: 4,
     name: "بيبسي",
@@ -40,7 +40,7 @@ const MarketCartContent: React.FC = () => {
     const itemToRemove = items.find(item => item.id === id);
     if (itemToRemove) {
       removeFromCart(id);
-      toast.success(`تم إزالة ${itemToRemove.name} من سلتك`);
+      toast.success(`تم شيل ${itemToRemove.name} من السلة`);
     }
   };
   
@@ -53,26 +53,26 @@ const MarketCartContent: React.FC = () => {
       description: '',
     };
     increaseQuantity(item.id);
-    toast.success(`تمت إضافة ${item.name} إلى سلتك`);
+    toast.success(`تمت إضافة ${item.name} للسلة`);
   };
 
-  // Calculate delivery fee and total
+  // رسوم التوصيل والمجموع
   const deliveryFee = 10;
   const orderTotal = totalPrice + deliveryFee;
   
   return (
     <div className="min-h-screen bg-blue-50" dir="rtl">
-      <div className="max-w-md mx-auto bg-white pb-24 shadow-md">
-        {/* Header */}
+      <div className="max-w-md mx-auto bg-white pb-32 shadow-md">
+        {/* الهيدر */}
         <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-600 to-blue-800 text-white sticky top-0 z-10 shadow-md">
           <Link to="/market" className="text-white hover:text-blue-100 transition-colors">
             <ArrowLeft className="w-6 h-6" />
           </Link>
-          <h1 className="text-xl font-bold">سلة التسوق</h1>
-          <div className="w-6"></div> {/* Empty div for flex balance */}
+          <h1 className="text-xl font-bold">السلة</h1>
+          <div className="w-6"></div> {/* عنصر فارغ للمباعدة */}
         </div>
 
-        {/* Cart Items */}
+        {/* محتويات السلة */}
         <div className="p-5">
           <div className="mb-6">
             {items.length > 0 ? (
@@ -92,7 +92,7 @@ const MarketCartContent: React.FC = () => {
                     />
                     <div>
                       <h3 className="font-bold text-blue-900">{item.name}</h3>
-                      <p className="text-blue-600 font-medium">{item.price} جنيه</p>
+                      <p className="text-blue-600 font-medium">{item.price} ج.م</p>
                       <div className="flex items-center gap-3 mt-2 bg-white rounded-full border border-blue-200 shadow-sm p-1">
                         <button 
                           onClick={() => decreaseQuantity(item.id)} 
@@ -123,8 +123,8 @@ const MarketCartContent: React.FC = () => {
                 <div className="bg-blue-100 rounded-full w-20 h-20 mx-auto flex items-center justify-center mb-4">
                   <ShoppingBag className="w-10 h-10 text-blue-500" />
                 </div>
-                <h3 className="text-xl font-bold text-blue-800 mb-2">سلة التسوق فارغة</h3>
-                <p className="text-gray-500 mb-6">لم تقم بإضافة أي منتجات بعد</p>
+                <h3 className="text-xl font-bold text-blue-800 mb-2">السلة فاضية</h3>
+                <p className="text-gray-500 mb-6">مفيش منتجات في السلة</p>
                 <Link to="/market">
                   <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg">
                     ابدأ التسوق
@@ -136,19 +136,19 @@ const MarketCartContent: React.FC = () => {
 
           {items.length > 0 && (
             <>
-              {/* Add More Button */}
+              {/* زر إضافة المزيد */}
               <Link to="/market">
                 <Button 
                   variant="outline" 
                   className="w-full mb-8 border-blue-300 text-blue-700 hover:bg-blue-50 hover:text-blue-800 py-6 text-lg shadow-sm"
                 >
-                  إضافة المزيد من المنتجات
+                  إضافة منتجات تانية
                 </Button>
               </Link>
 
-              {/* Suggested Items */}
+              {/* منتجات مقترحة */}
               <div className="mb-8 animate-fade-in">
-                <h2 className="text-xl font-bold mb-4 text-blue-800 border-r-4 border-blue-500 pr-3">منتجات قد تعجبك أيضاً</h2>
+                <h2 className="text-xl font-bold mb-4 text-blue-800 border-r-4 border-blue-500 pr-3">منتجات ممكن تعجبك</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                   {suggestedItems.map(item => (
                     <Card 
@@ -169,7 +169,7 @@ const MarketCartContent: React.FC = () => {
                       <div className="p-3 bg-gradient-to-b from-blue-50 to-white">
                         <h3 className="font-medium text-blue-800">{item.name}</h3>
                         <div className="flex items-center justify-between mt-2">
-                          <span className="text-blue-600 font-bold">{item.price} جنيه</span>
+                          <span className="text-blue-600 font-bold">{item.price} ج.م</span>
                           <Button 
                             size="sm" 
                             onClick={() => addSuggested(item)} 
@@ -184,40 +184,33 @@ const MarketCartContent: React.FC = () => {
                 </div>
               </div>
 
-              {/* Order Summary */}
+              {/* ملخص الطلب */}
               <div className="mb-4 bg-blue-50 p-5 rounded-xl shadow-sm border border-blue-100 animate-fade-in">
                 <h2 className="text-xl font-bold mb-4 text-blue-800">ملخص الطلب</h2>
                 <div className="space-y-3 mb-4">
                   <div className="flex justify-between">
                     <span className="text-gray-600">المجموع الفرعي</span>
-                    <span className="font-medium">{totalPrice.toFixed(2)} جنيه</span>
+                    <span className="font-medium">{totalPrice.toFixed(2)} ج.م</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">رسوم التوصيل</span>
-                    <span className="font-medium">{deliveryFee.toFixed(2)} جنيه</span>
+                    <span className="font-medium">{deliveryFee.toFixed(2)} ج.م</span>
                   </div>
                   <div className="flex justify-between font-bold pt-3 border-t text-lg">
                     <span>المبلغ الإجمالي</span>
-                    <span className="text-blue-600">{orderTotal.toFixed(2)} جنيه</span>
+                    <span className="text-blue-600">{orderTotal.toFixed(2)} ج.م</span>
                   </div>
                 </div>
               </div>
 
-              {/* Buttons */}
-              <div className="mt-6 space-y-3 mb-16">
-                <Button 
-                  onClick={() => navigate('/market/checkout')}
-                  className="w-full py-6 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold shadow-md text-lg"
-                >
-                  <ShoppingCart className="ml-2 h-5 w-5" />
-                  إتمام الطلب
-                </Button>
+              {/* أزرار التحكم */}
+              <div className="mt-6 space-y-3">
                 <Button 
                   variant="outline" 
                   className="w-full border-gray-300 text-gray-600 hover:bg-blue-50 hover:text-blue-700"
                   onClick={() => {
                     clearCart();
-                    toast.success("تم تفريغ السلة بنجاح");
+                    toast.success("تم تفريغ السلة");
                   }}
                 >
                   تفريغ السلة
@@ -227,26 +220,16 @@ const MarketCartContent: React.FC = () => {
           )}
         </div>
 
-        {/* Bottom Buttons - Fixed at bottom */}
+        {/* زر إتمام الطلب العائم في الأسفل */}
         {items.length > 0 && (
-          <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 max-w-md mx-auto shadow-lg mb-16">
-            <div className="flex gap-3">
-              <Link to="/market" className="flex-1">
-                <Button 
-                  variant="outline" 
-                  className="w-full py-6 text-blue-700 border-blue-200 hover:bg-blue-50 shadow-sm"
-                >
-                  إضافة المزيد
-                </Button>
-              </Link>
-              <Link to="/market/checkout" className="flex-1">
-                <Button 
-                  className="w-full py-6 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md"
-                >
-                  إتمام الطلب
-                </Button>
-              </Link>
-            </div>
+          <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-50 max-w-md mx-auto shadow-lg">
+            <Button 
+              onClick={() => navigate('/market/checkout')}
+              className="w-full py-6 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold shadow-md text-lg"
+            >
+              <ShoppingCart className="ml-2 h-5 w-5" />
+              إتمام الطلب • {orderTotal.toFixed(2)} ج.م
+            </Button>
           </div>
         )}
       </div>
