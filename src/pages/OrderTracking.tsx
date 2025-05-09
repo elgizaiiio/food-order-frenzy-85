@@ -1,8 +1,11 @@
 
 import React from 'react';
-import { Check } from 'lucide-react';
+import { Check, ArrowLeft } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 const OrderTracking: React.FC = () => {
+  const navigate = useNavigate();
   // بيانات الطلب
   const order = {
     id: "ORD-12345",
@@ -29,7 +32,16 @@ const OrderTracking: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50" dir="rtl">
-      <div className="max-w-md mx-auto bg-white min-h-screen">
+      <div className="max-w-md mx-auto bg-white min-h-screen pb-24"> {/* زيادة المساحة السفلية لمنع تداخل المحتوى مع الزر الثابت */}
+        {/* الهيدر */}
+        <div className="sticky top-0 flex items-center justify-between p-4 bg-white shadow-sm z-10">
+          <Link to="/" className="text-gray-700">
+            <ArrowLeft className="w-6 h-6" />
+          </Link>
+          <h1 className="text-xl font-bold">تتبع الطلب</h1>
+          <div className="w-6"></div>
+        </div>
+        
         <div className="p-6">
           {/* شعار المطعم وشعار التطبيق */}
           <div className="flex justify-center mb-8">
@@ -136,11 +148,16 @@ const OrderTracking: React.FC = () => {
             </div>
             <p className="text-sm text-gray-500">الدفع: بطاقة ائتمان</p>
           </div>
-          
-          {/* شعار التطبيق */}
-          <div className="text-center text-gray-500 mt-8">
-            <p className="text-sm">طلبك من تطبيق طلباتي</p>
-          </div>
+        </div>
+        
+        {/* زر العودة ثابت في الأسفل */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-50 max-w-md mx-auto shadow-lg">
+          <Button 
+            onClick={() => navigate('/')}
+            className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
+          >
+            العودة للرئيسية
+          </Button>
         </div>
       </div>
     </div>

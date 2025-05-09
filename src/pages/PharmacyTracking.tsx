@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Check, Clock, Package, Truck, Home } from 'lucide-react';
+import { ArrowLeft, Check, Clock, Package, Truck, Home, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const PharmacyTracking: React.FC = () => {
@@ -22,7 +22,7 @@ const PharmacyTracking: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-md mx-auto bg-white pb-20">
+      <div className="max-w-md mx-auto bg-white pb-24"> {/* زيادة المساحة السفلية لتجنب تداخل الزر العائم مع المحتوى */}
         {/* الهيدر */}
         <div className="sticky top-0 flex items-center justify-between p-4 bg-white shadow-sm z-10">
           <Link to="/" className="text-gray-700">
@@ -40,7 +40,7 @@ const PharmacyTracking: React.FC = () => {
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center text-gray-600">
-              <Clock className="w-4 h-4 mr-1" />
+              <Clock className="w-4 h-4 ml-1" />
               <span className="text-sm">وقت التوصيل المتوقع:</span>
             </div>
             <span className="font-medium">{estimatedDelivery}</span>
@@ -74,17 +74,17 @@ const PharmacyTracking: React.FC = () => {
         </div>
 
         {/* أزرار العمليات */}
-        <div className="px-4 py-6 mt-6 fixed bottom-0 left-0 right-0 bg-white border-t max-w-md mx-auto">
-          <div className="space-y-4">
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-50 max-w-md mx-auto shadow-lg">
+          <div className="grid grid-cols-2 gap-3">
             <Button 
               variant="outline" 
-              className="w-full border-gray-300"
-              onClick={() => {}}
+              className="border-gray-300 flex items-center gap-2"
             >
-              الاتصال بالصيدلية
+              <Phone className="w-4 h-4" />
+              <span>الاتصال بالصيدلية</span>
             </Button>
             <Button 
-              className="w-full bg-brand-500 hover:bg-brand-600"
+              className="bg-brand-500 hover:bg-brand-600"
               onClick={() => navigate('/pharmacy')}
             >
               العودة للتسوق

@@ -1,12 +1,13 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, CheckCircle, Clock, Truck, PhoneCall } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 
 const MarketTracking: React.FC = () => {
+  const navigate = useNavigate();
   // بيانات الطلب
   const order = {
     id: 'ORD-2354789',
@@ -118,7 +119,7 @@ const MarketTracking: React.FC = () => {
           </Card>
 
           {/* تفاصيل الطلب */}
-          <Card className="p-4 mb-6">
+          <Card className="p-4 mb-16"> {/* زيادة الهامش أسفل الكارت الأخير لمنع تداخله مع الزر العائم */}
             <h3 className="text-lg font-bold mb-3">تفاصيل الطلب</h3>
             <div className="space-y-2 mb-4">
               {order.items.map((item, index) => (
@@ -145,13 +146,16 @@ const MarketTracking: React.FC = () => {
               </div>
             </div>
           </Card>
+        </div>
 
-          {/* زر العودة للرئيسية */}
-          <Link to="/market">
-            <Button variant="outline" className="w-full">
-              العودة للرئيسية
-            </Button>
-          </Link>
+        {/* تثبيت زر العودة أسفل الشاشة */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-50 max-w-md mx-auto shadow-lg">
+          <Button 
+            onClick={() => navigate('/market')}
+            className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
+          >
+            العودة للرئيسية
+          </Button>
         </div>
       </div>
     </div>
