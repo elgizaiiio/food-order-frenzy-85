@@ -61,6 +61,10 @@ import About from "./pages/About";
 import ChatSupport from "./pages/ChatSupport";
 import InviteFriends from "./pages/InviteFriends";
 import DamBro from "./pages/DamBro";
+// Authentication Pages
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -135,6 +139,12 @@ const App = () => {
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/splash" element={<Splash />} />
+                    
+                    {/* Authentication Routes */}
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    
                     <Route path="/restaurants" element={<Restaurants />} />
                     <Route path="/restaurant/:id" element={<RestaurantMenu />} />
                     <Route path="/cart" element={<Cart />} />
