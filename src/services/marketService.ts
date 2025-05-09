@@ -15,7 +15,7 @@ export async function fetchCategories(): Promise<Category[]> {
     
     // Transform the data to match our Category interface
     return data.map(item => ({
-      id: parseInt(item.id),
+      id: parseInt(item.id.toString()),
       name: item.name,
       description: item.description || '',
       image: item.image_url || 'https://via.placeholder.com/200?text=صورة+غير+متوفرة'
@@ -34,7 +34,7 @@ export async function fetchProductsByCategory(categoryId: number): Promise<Produ
     const { data, error } = await supabase
       .from('supermarket_products')
       .select('*')
-      .eq('category_id', categoryId);
+      .eq('category_id', categoryId.toString());
     
     if (error) throw error;
     
@@ -45,7 +45,7 @@ export async function fetchProductsByCategory(categoryId: number): Promise<Produ
       price: item.price,
       quantity: item.quantity || '',
       image: item.image_url || 'https://via.placeholder.com/400?text=صورة+غير+متوفرة',
-      categoryId: item.category_id ? parseInt(item.category_id) : 0,
+      categoryId: item.category_id ? parseInt(item.category_id.toString()) : 0,
       description: item.description || '',
       inStock: item.stock > 0
     }));
@@ -68,7 +68,7 @@ export async function fetchOffers(): Promise<Offer[]> {
     
     // Transform the data to match our Offer interface
     return data.map(item => ({
-      id: parseInt(item.id),
+      id: parseInt(item.id.toString()),
       title: item.title,
       description: item.description || '',
       discount: item.discount || 0,
@@ -100,7 +100,7 @@ export async function fetchPopularProducts(): Promise<Product[]> {
       price: item.price,
       quantity: item.quantity || '',
       image: item.image_url || 'https://via.placeholder.com/400?text=صورة+غير+متوفرة',
-      categoryId: item.category_id ? parseInt(item.category_id) : 0,
+      categoryId: item.category_id ? parseInt(item.category_id.toString()) : 0,
       description: item.description || '',
       inStock: item.stock > 0
     }));
