@@ -46,7 +46,6 @@ const BottomNav: React.FC = () => {
             className={`flex flex-col items-center justify-center w-full h-full ${
               item.active ? 'text-brand-500 font-medium' : 'text-gray-500'
             }`}
-            prefetch="intent"
           >
             <div className={item.active ? 'text-brand-500' : 'text-gray-500'}>
               {item.icon}

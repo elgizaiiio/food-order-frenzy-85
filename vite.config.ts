@@ -14,7 +14,6 @@ export default defineConfig(({ mode }) => ({
     react({
       // تمكين استخدام memo للتحسين
       jsxImportSource: 'react',
-      devTools: mode !== 'production',
     }),
     mode === 'development' &&
     componentTagger(),
