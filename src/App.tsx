@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -9,27 +8,9 @@ import { UserProvider } from "@/context/UserContext";
 import { MarketCartProvider } from "@/context/MarketCartContext";
 import { PharmacyCartProvider } from "@/context/PharmacyCartContext";
 import { PersonalCareCartProvider } from "@/context/PersonalCareCartContext";
-import { useOnboarding } from "./hooks/use-onboarding";
 import BottomNav from "./components/BottomNav";
 import Splash from "./components/Splash";
 import AuthGuard from "./components/AuthGuard";
-import OnboardingScreen from "./pages/OnboardingScreen";
-import Index from "./pages/Index";
-import Restaurants from "./pages/Restaurants";
-import RestaurantMenu from "./pages/RestaurantMenu";
-import Cart from "./pages/Cart";
-import Checkout from "./pages/Checkout";
-import OrderTracking from "./pages/OrderTracking";
-import NotFound from "./pages/NotFound";
-import Pharmacy from "./pages/Pharmacy";
-import PharmacyCart from "./pages/PharmacyCart";
-import PharmacyCheckout from "./pages/PharmacyCheckout";
-import PharmacyTracking from "./pages/PharmacyTracking";
-import DamMarket from "./pages/DamMarket";
-import MarketCategory from "./pages/MarketCategory";
-import MarketCart from "./pages/MarketCart";
-import MarketCheckout from "./pages/MarketCheckout";
-import MarketTracking from "./pages/MarketTracking";
 // Personal Care Section
 import PersonalCare from "./pages/PersonalCare";
 import PersonalCareCategory from "./pages/PersonalCareCategory";
@@ -68,6 +49,22 @@ import DamBro from "./pages/DamBro";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
+import Index from "./pages/Index";
+import Restaurants from "./pages/Restaurants";
+import RestaurantMenu from "./pages/RestaurantMenu";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import OrderTracking from "./pages/OrderTracking";
+import NotFound from "./pages/NotFound";
+import Pharmacy from "./pages/Pharmacy";
+import PharmacyCart from "./pages/PharmacyCart";
+import PharmacyCheckout from "./pages/PharmacyCheckout";
+import PharmacyTracking from "./pages/PharmacyTracking";
+import DamMarket from "./pages/DamMarket";
+import MarketCategory from "./pages/MarketCategory";
+import MarketCart from "./pages/MarketCart";
+import MarketCheckout from "./pages/MarketCheckout";
+import MarketTracking from "./pages/MarketTracking";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -117,36 +114,18 @@ const PersonalCareRoutes = () => (
 
 const AppContent = () => {
   const [showSplash, setShowSplash] = useState(true);
-  const { isLoaded, isNewUser } = useOnboarding();
   const location = useLocation();
   const navigate = useNavigate();
 
   // Use useEffect to manage the splash screen timing
   useEffect(() => {
-    if (!isLoaded) return; // انتظر حتى يتم تحميل حالة المستخدم
-
-    // إذا كان المسار الحالي هو /onboarding، لا نريد عرض شاشة Splash
-    if (location.pathname === '/onboarding') {
-      setShowSplash(false);
-      return;
-    }
-
+    // Show splash screen for 2.5 seconds
     const timer = setTimeout(() => {
       setShowSplash(false);
-      
-      // عند اكتمال العرض، إذا كان المستخدم جديدًا، انتقل إلى شاشة onboarding
-      if (isNewUser && location.pathname !== '/onboarding') {
-        navigate('/onboarding');
-      }
-    }, 2500); // تقليل مدة شاشة السبلاش إلى 2.5 ثانية
+    }, 2500);
 
     return () => clearTimeout(timer);
-  }, [isLoaded, isNewUser, location.pathname, navigate]);
-
-  // إذا لم يتم تحميل حالة المستخدم بعد، عرض شاشة السبلاش
-  if (!isLoaded) {
-    return <Splash />; 
-  }
+  }, []);
 
   if (showSplash) {
     return <Splash onComplete={() => setShowSplash(false)} />; 
@@ -156,9 +135,6 @@ const AppContent = () => {
     <>
       <div className="pb-16"> {/* Add padding to the bottom to prevent content from being hidden by the navigation bar */}
         <Routes>
-          {/* Onboarding Route */}
-          <Route path="/onboarding" element={<OnboardingScreen />} />
-          
           {/* Authentication Routes - Not Protected */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />

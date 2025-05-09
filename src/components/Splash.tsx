@@ -1,6 +1,6 @@
 
 import React, { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 interface SplashProps {
@@ -17,11 +17,9 @@ const Splash: React.FC<SplashProps> = ({
   // Use try-catch to safely use useNavigate
   // This will allow the component to work both inside and outside Router context
   let navigate: ReturnType<typeof useNavigate> | undefined;
-  let location: ReturnType<typeof useLocation> | undefined;
   
   try {
     navigate = useNavigate();
-    location = useLocation();
   } catch (error) {
     // If useNavigate fails, we're outside Router context
     // We'll rely on onComplete callback instead
@@ -52,7 +50,7 @@ const Splash: React.FC<SplashProps> = ({
 
   return (
     <motion.div 
-      className="fixed inset-0 flex flex-col items-center justify-center bg-gradient-to-b from-purple-700 to-purple-900 z-50"
+      className="fixed inset-0 flex flex-col items-center justify-center bg-gradient-to-b from-brand-500 to-brand-600 z-50"
       initial={{ opacity: 1 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -71,7 +69,7 @@ const Splash: React.FC<SplashProps> = ({
           loading="eager"
           decoding="async"
           onError={(e) => {
-            e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80' fill='none'%3E%3Crect width='80' height='80' rx='40' fill='%239333EA'/%3E%3Cpath d='M24 40C24 35.5817 27.5817 32 32 32H48C52.4183 32 56 35.5817 56 40V40C56 44.4183 52.4183 48 48 48H32C27.5817 48 24 44.4183 24 40V40Z' fill='white'/%3E%3C/svg%3E";
+            e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80' fill='none'%3E%3Crect width='80' height='80' rx='40' fill='%23ff8000'/%3E%3Cpath d='M24 40C24 35.5817 27.5817 32 32 32H48C52.4183 32 56 35.5817 56 40V40C56 44.4183 52.4183 48 48 48H32C27.5817 48 24 44.4183 24 40V40Z' fill='white'/%3E%3C/svg%3E";
           }}
         />
       </motion.div>
@@ -84,7 +82,7 @@ const Splash: React.FC<SplashProps> = ({
         دام
       </motion.h1>
       <motion.p
-        className="mt-2 text-purple-200 text-lg"
+        className="mt-2 text-orange-100 text-lg"
         initial={{ y: 10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.4, duration: 0.4 }}
