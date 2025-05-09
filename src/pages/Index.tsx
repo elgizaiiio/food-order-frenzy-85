@@ -26,7 +26,7 @@ const HeroSection = () => <div className="relative px-4 pt-6 pb-8 mb-4 bg-gradie
     </p>
     <div className="relative z-10 animate-fade-in animate-delay-2">
       <div className="relative">
-        <Input type="text" placeholder="ابحث عن أي حاجة عايز تطلبها..." className="h-12 pl-10 pr-4 rounded-xl shadow-lg text-gray-800 bg-white/95" />
+        
         
       </div>
     </div>
