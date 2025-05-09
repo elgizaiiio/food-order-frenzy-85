@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, User, Mail, Phone, Lock, Bell, Languages } from 'lucide-react';
@@ -105,14 +106,16 @@ const Settings: React.FC = () => {
         <div className="px-4 py-6">
           <h3 className="text-lg font-semibold mb-4 text-blue-800">الدعم والمعلومات</h3>
           
-          <Link to="/support" className="block">
+          <Link to="/chat-support" className="block">
             <div className="p-4 text-center bg-blue-50 rounded-lg mb-2 hover:bg-blue-100 transition-colors">
               <span className="text-blue-600 font-medium">مركز المساعدة</span>
             </div>
           </Link>
           
           <Link to="/terms" className="block">
-            
+            <div className="p-4 text-center bg-gray-50 rounded-lg mb-2 hover:bg-gray-100 transition-colors">
+              <span className="text-gray-600 font-medium">الشروط والأحكام</span>
+            </div>
           </Link>
           
           <div className="p-4 text-center">

@@ -58,6 +58,7 @@ import AddPaymentMethod from "./pages/AddPaymentMethod";
 import Orders from "./pages/Orders";
 import Coupons from "./pages/Coupons";
 import About from "./pages/About";
+import ChatSupport from "./pages/ChatSupport";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -171,6 +172,7 @@ const App = () => {
                     <Route path="/add-payment-method" element={<AddPaymentMethod />} />
                     <Route path="/orders" element={<Orders />} />
                     <Route path="/coupons" element={<Coupons />} />
+                    <Route path="/chat-support" element={<ChatSupport />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
