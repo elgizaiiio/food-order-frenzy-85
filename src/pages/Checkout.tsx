@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Clock, ShoppingBag } from 'lucide-react';
@@ -135,7 +134,7 @@ const CheckoutButton = () => {
       setIsSubmitting(false);
     }
   };
-  return <Button onClick={handleCheckout} className="w-full py-6 text-lg font-bold bg-brand-500 hover:bg-brand-600 text-white shadow-lg" disabled={isSubmitting}>
+  return <Button onClick={handleCheckout} disabled={isSubmitting} className="w-full py-6 text-lg font-bold text-white shadow-lg bg-blue-800 hover:bg-blue-700">
       {isSubmitting ? "جارٍ تأكيد الطلب..." : `تأكيد الطلب · ${orderTotal} ر.س`}
     </Button>;
 };
