@@ -52,7 +52,7 @@ const Categories: React.FC = () => {
       name: "كافيهات", 
       icon: <Coffee className="w-6 h-6" />, 
       color: "bg-amber-50 text-amber-700",
-      link: "/" 
+      link: "/cafes" 
     },
     { 
       name: "حسابي", 
