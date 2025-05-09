@@ -52,11 +52,11 @@ const PersonalCareTracking: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50" dir="rtl">
+    <div className="min-h-screen bg-blue-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-20">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b">
-          <Link to="/personal-care" className="text-gray-700">
+        <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+          <Link to="/personal-care" className="text-white">
             <ArrowLeft className="w-6 h-6" />
           </Link>
           <h1 className="text-xl font-bold">تتبع الطلب</h1>
@@ -65,112 +65,120 @@ const PersonalCareTracking: React.FC = () => {
 
         <div className="p-4">
           {/* Order Status */}
-          <Card className="p-4 mb-6 bg-brand-50 bg-gradient-to-r from-pink-50 to-purple-50">
-            <h2 className="text-lg font-bold mb-2">حالة الطلب #{order.id}</h2>
-            <Progress value={progress} className="h-2 mb-4" />
+          <Card className="p-4 mb-6 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200">
+            <h2 className="text-lg font-bold mb-2 text-blue-800">حالة الطلب #{order.id}</h2>
+            <Progress 
+              value={progress} 
+              className="h-2 mb-4" 
+              indicatorClassName="bg-gradient-to-r from-blue-500 to-blue-700"
+            />
             <div className="flex justify-between text-sm">
               <div className="flex flex-col items-center gap-1">
-                <CheckCircle className={`w-6 h-6 ${progress >= 33 ? 'text-brand-500 fill-brand-500' : 'text-gray-300'}`} />
-                <span>تم الاستلام</span>
+                <CheckCircle className={`w-6 h-6 ${progress >= 33 ? 'text-blue-600 fill-blue-600' : 'text-gray-300'}`} />
+                <span className={progress >= 33 ? 'text-blue-800' : 'text-gray-500'}>تم الاستلام</span>
               </div>
               <div className="flex flex-col items-center gap-1">
-                <Truck className={`w-6 h-6 ${progress >= 66 && progress < 100 ? 'text-brand-500' : 'text-gray-300'}`} />
-                <span>في الطريق</span>
+                <Truck className={`w-6 h-6 ${progress >= 66 && progress < 100 ? 'text-blue-600' : 'text-gray-300'}`} />
+                <span className={progress >= 66 && progress < 100 ? 'text-blue-800' : 'text-gray-500'}>في الطريق</span>
               </div>
               <div className="flex flex-col items-center gap-1">
-                <CheckCircle className={`w-6 h-6 ${progress === 100 ? 'text-brand-500 fill-brand-500' : 'text-gray-300'}`} />
-                <span>تم التوصيل</span>
+                <CheckCircle className={`w-6 h-6 ${progress === 100 ? 'text-blue-600 fill-blue-600' : 'text-gray-300'}`} />
+                <span className={progress === 100 ? 'text-blue-800' : 'text-gray-500'}>تم التوصيل</span>
               </div>
             </div>
           </Card>
 
           {/* Estimated Time */}
-          <Card className="p-4 mb-6">
+          <Card className="p-4 mb-6 border border-blue-200">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-bold">الوقت المتوقع للتوصيل</h3>
+                <h3 className="text-lg font-bold text-blue-800">الوقت المتوقع للتوصيل</h3>
                 <p className="text-gray-600">{order.estimatedTime} دقيقة</p>
               </div>
-              <Clock className="w-10 h-10 text-brand-500" />
+              <Clock className="w-10 h-10 text-blue-600" />
             </div>
           </Card>
 
           {/* Delivery Person - Only show when status is on_the_way */}
           {orderStatus !== 'preparing' && (
-            <Card className="p-4 mb-6 animate-fade-in">
-              <h3 className="text-lg font-bold mb-2">مندوب التوصيل</h3>
+            <Card className="p-4 mb-6 animate-fade-in border border-blue-200">
+              <h3 className="text-lg font-bold mb-2 text-blue-800">مندوب التوصيل</h3>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <img 
                     src={order.driver.image} 
                     alt={order.driver.name} 
-                    className="w-12 h-12 rounded-full object-cover"
+                    className="w-12 h-12 rounded-full object-cover border-2 border-blue-200"
                   />
                   <div>
-                    <p className="font-medium">{order.driver.name}</p>
+                    <p className="font-medium text-blue-900">{order.driver.name}</p>
                     <p className="text-sm text-gray-600">{order.driver.phone}</p>
                   </div>
                 </div>
-                <Button size="sm" variant="outline" className="h-10 w-10 p-0">
-                  <PhoneCall className="h-5 w-5" />
+                <Button 
+                  size="sm" 
+                  variant="personalCareOutline" 
+                  className="h-10 w-10 p-0 rounded-full"
+                >
+                  <PhoneCall className="h-5 w-5 text-blue-600" />
                 </Button>
               </div>
             </Card>
           )}
 
           {/* Status Message */}
-          <Card className="p-4 mb-6 bg-gradient-to-r from-blue-50 to-cyan-50">
+          <Card className="p-4 mb-6 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200">
             <div className="text-center">
               {orderStatus === 'preparing' && (
-                <p>جاري تحضير منتجاتك. سيتم التوصيل قريبًا!</p>
+                <p className="text-blue-700">جاري تحضير منتجاتك. سيتم التوصيل قريبًا!</p>
               )}
               {orderStatus === 'on_the_way' && (
-                <p>طلبك في الطريق إليك الآن مع المندوب {order.driver.name}</p>
+                <p className="text-blue-700">طلبك في الطريق إليك الآن مع المندوب {order.driver.name}</p>
               )}
               {orderStatus === 'delivered' && (
-                <p>تم توصيل طلبك بنجاح. نتمنى لك تجربة ممتعة!</p>
+                <p className="text-green-600">تم توصيل طلبك بنجاح. نتمنى لك تجربة ممتعة!</p>
               )}
             </div>
           </Card>
 
           {/* Delivery Address */}
-          <Card className="p-4 mb-6">
-            <h3 className="text-lg font-bold mb-2">عنوان التوصيل</h3>
+          <Card className="p-4 mb-6 border border-blue-200">
+            <h3 className="text-lg font-bold mb-2 text-blue-800">عنوان التوصيل</h3>
             <p className="text-gray-600">{order.address}</p>
           </Card>
 
           {/* Order Summary */}
-          <Card className="p-4 mb-6">
-            <h3 className="text-lg font-bold mb-3">تفاصيل الطلب</h3>
+          <Card className="p-4 mb-6 border border-blue-200">
+            <h3 className="text-lg font-bold mb-3 text-blue-800">تفاصيل الطلب</h3>
             <div className="space-y-2 mb-4">
               {order.items.map((item, index) => (
                 <div key={index} className="flex justify-between">
-                  <span>
+                  <span className="text-blue-900">
                     {item.name} × {item.quantity}
                   </span>
-                  <span>{item.price * item.quantity} ريال</span>
+                  <span className="text-blue-700 font-medium">{item.price * item.quantity} ريال</span>
                 </div>
               ))}
             </div>
-            <div className="pt-2 border-t space-y-2">
+            <div className="pt-2 border-t space-y-2 border-blue-100">
               <div className="flex justify-between">
                 <span className="text-gray-600">المجموع الفرعي</span>
-                <span>{order.subtotal} ريال</span>
+                <span className="text-blue-700">{order.subtotal} ريال</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">رسوم التوصيل</span>
-                <span>{order.deliveryFee} ريال</span>
+                <span className="text-blue-700">{order.deliveryFee} ريال</span>
               </div>
-              <div className="flex justify-between font-bold pt-2">
-                <span>المبلغ الإجمالي</span>
-                <span>{order.total} ريال</span>
+              <div className="flex justify-between font-bold pt-2 border-t border-blue-100">
+                <span className="text-blue-900">المبلغ الإجمالي</span>
+                <span className="text-blue-700">{order.total} ريال</span>
               </div>
             </div>
           </Card>
 
           {/* Back to Home Button */}
           <Link to="/personal-care">
-            <Button variant="outline" className="w-full">
+            <Button variant="personalCare" className="w-full">
               العودة للرئيسية
             </Button>
           </Link>

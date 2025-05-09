@@ -27,6 +27,9 @@ const buttonVariants = cva(
         pharmacy: "bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-md",
         pillBlue: "bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 rounded-full font-medium",
         outlineBlue: "border border-blue-300 text-blue-700 bg-white hover:bg-blue-50 hover:border-blue-400",
+        personalCare: "bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white shadow-md",
+        personalCarePill: "bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 rounded-full font-medium",
+        personalCareOutline: "border border-blue-300 text-blue-700 bg-white hover:bg-blue-50 hover:border-blue-400",
       },
       size: {
         default: "h-10 px-4 py-2",

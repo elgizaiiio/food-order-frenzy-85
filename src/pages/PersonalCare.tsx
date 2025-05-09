@@ -46,26 +46,29 @@ const PersonalCare: React.FC = () => {
 
   const handleAddToCart = (product: { id: number; name: string; price: number; image: string }) => {
     addToCart(product);
-    toast(`تمت إضافة ${product.name} إلى السلة`);
+    toast(`تمت إضافة ${product.name} إلى السلة`, {
+      position: "top-center",
+      className: "bg-blue-600 text-white border-blue-700"
+    });
   };
 
   return (
-    <div className="min-h-screen bg-gray-50" dir="rtl">
+    <div className="min-h-screen bg-blue-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-20">
         {/* Header */}
         <div className="flex items-center justify-between p-4 bg-white shadow-sm sticky top-0 z-10">
-          <Link to="/" className="text-gray-700 font-bold text-lg">
+          <Link to="/" className="text-blue-700 font-bold text-lg">
             dam
           </Link>
           <h1 className="text-lg font-bold">العناية الشخصية</h1>
           <div className="flex items-center gap-4">
-            <button className="text-gray-700">
+            <button className="text-blue-600">
               <Search className="w-5 h-5" />
             </button>
-            <Link to="/personal-care/cart" className="relative text-gray-700">
+            <Link to="/personal-care/cart" className="relative text-blue-600">
               <ShoppingCart className="w-5 h-5" />
               {itemCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                <span className="absolute -top-2 -right-2 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
                   {itemCount}
                 </span>
               )}
@@ -75,7 +78,7 @@ const PersonalCare: React.FC = () => {
 
         {/* Hero Section */}
         <div className="relative h-48 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 opacity-90"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-700 opacity-90"></div>
           <img 
             src="https://images.unsplash.com/photo-1612817288484-6f916006741a?q=80&w=600&auto=format&fit=crop" 
             alt="Personal Care Banner" 
@@ -93,15 +96,15 @@ const PersonalCare: React.FC = () => {
             <input 
               type="text" 
               placeholder="ابحث عن منتجات العناية الشخصية..." 
-              className="w-full p-3 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full p-3 pr-10 rounded-full border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
-            <Search className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-3 top-3 text-blue-400 w-5 h-5" />
           </div>
         </div>
 
         {/* Women's Categories */}
         <div className="p-4">
-          <h2 className="text-xl font-bold mb-4">منتجات العناية النسائية</h2>
+          <h2 className="text-xl font-bold mb-4 text-blue-800">منتجات العناية النسائية</h2>
           <div className="grid grid-cols-2 gap-4">
             {womenCategories.map((category) => (
               <Link key={category.id} to={`/personal-care/category/${category.id}`}>
@@ -111,7 +114,7 @@ const PersonalCare: React.FC = () => {
                     alt={category.name}
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-3">
+                  <div className="absolute inset-0 bg-gradient-to-t from-blue-900/80 to-transparent flex items-end p-3">
                     <h3 className="text-white font-bold">{category.name}</h3>
                   </div>
                 </div>
@@ -122,7 +125,7 @@ const PersonalCare: React.FC = () => {
 
         {/* Men's Categories */}
         <div className="p-4">
-          <h2 className="text-xl font-bold mb-4">منتجات العناية الرجالية</h2>
+          <h2 className="text-xl font-bold mb-4 text-blue-800">منتجات العناية الرجالية</h2>
           <div className="grid grid-cols-2 gap-4">
             {menCategories.map((category) => (
               <Link key={category.id} to={`/personal-care/category/${category.id}`}>
@@ -132,7 +135,7 @@ const PersonalCare: React.FC = () => {
                     alt={category.name}
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-3">
+                  <div className="absolute inset-0 bg-gradient-to-t from-blue-900/80 to-transparent flex items-end p-3">
                     <h3 className="text-white font-bold">{category.name}</h3>
                   </div>
                 </div>
@@ -143,10 +146,10 @@ const PersonalCare: React.FC = () => {
 
         {/* Featured Products */}
         <div className="p-4">
-          <h2 className="text-xl font-bold mb-4">منتجات مميزة</h2>
+          <h2 className="text-xl font-bold mb-4 text-blue-800">منتجات مميزة</h2>
           <div className="grid grid-cols-2 gap-4">
             {featuredProducts.map((product) => (
-              <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+              <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow border border-blue-100">
                 <Link to={`/personal-care/product/${product.id}`}>
                   <img 
                     src={product.image} 
@@ -156,17 +159,17 @@ const PersonalCare: React.FC = () => {
                 </Link>
                 <div className="p-3">
                   <Link to={`/personal-care/product/${product.id}`}>
-                    <h3 className="font-medium">{product.name}</h3>
+                    <h3 className="font-medium text-blue-800">{product.name}</h3>
                   </Link>
                   <div className="flex items-center gap-1 mb-2">
                     <Star className="h-3 w-3 fill-yellow-400 stroke-yellow-400" />
                     <span className="text-xs">{(4 + Math.random()).toFixed(1)}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="font-bold">{product.price} جنيه</span>
+                    <span className="font-bold text-blue-700">{product.price} ريال</span>
                     <Button 
                       size="sm" 
-                      className="rounded-full h-7 w-7 p-0 bg-gradient-to-r from-purple-500 to-pink-500"
+                      className="rounded-full h-7 w-7 p-0 bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
                       onClick={() => handleAddToCart(product)}
                     >
                       +
@@ -180,10 +183,10 @@ const PersonalCare: React.FC = () => {
 
         {/* Suggested Products */}
         <div className="px-4 mb-8">
-          <h2 className="text-xl font-bold mb-4">اكتشف المزيد</h2>
+          <h2 className="text-xl font-bold mb-4 text-blue-800">اكتشف المزيد</h2>
           <div className="flex overflow-x-auto gap-4 pb-4 no-scrollbar">
             {suggestedProducts.map((product) => (
-              <Card key={product.id} className="min-w-[160px] overflow-hidden hover:shadow-lg transition-shadow">
+              <Card key={product.id} className="min-w-[160px] overflow-hidden hover:shadow-lg transition-shadow border border-blue-100">
                 <Link to={`/personal-care/product/${product.id}`}>
                   <img 
                     src={product.image} 
@@ -193,13 +196,13 @@ const PersonalCare: React.FC = () => {
                 </Link>
                 <div className="p-3">
                   <Link to={`/personal-care/product/${product.id}`}>
-                    <h3 className="font-medium text-sm">{product.name}</h3>
+                    <h3 className="font-medium text-sm text-blue-800">{product.name}</h3>
                   </Link>
                   <div className="flex justify-between items-center mt-2">
-                    <span className="font-bold text-sm">{product.price} جنيه</span>
+                    <span className="font-bold text-sm text-blue-700">{product.price} ريال</span>
                     <Button 
                       size="sm" 
-                      className="rounded-full h-6 w-6 p-0 bg-gradient-to-r from-purple-500 to-pink-500"
+                      className="rounded-full h-6 w-6 p-0 bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
                       onClick={() => handleAddToCart(product)}
                     >
                       +
@@ -214,24 +217,24 @@ const PersonalCare: React.FC = () => {
         {/* Cart Floating Button */}
         {itemCount > 0 && (
           <div className="fixed bottom-5 left-0 right-0 mx-auto w-11/12 max-w-md z-30">
-            <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg shadow-lg p-4">
+            <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-lg shadow-lg p-4">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <ShoppingCart className="h-5 w-5" />
                   <span className="font-bold">{itemCount} منتج</span>
                 </div>
                 <span className="font-bold">
-                  {totalPrice} جنيه
+                  {totalPrice} ريال
                 </span>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <Link to="/personal-care" className="w-full">
-                  <Button variant="outline" className="w-full bg-white text-purple-500 border-0 hover:bg-gray-100">
+                  <Button variant="outlineBlue" className="w-full">
                     إضافة المزيد
                   </Button>
                 </Link>
                 <Link to="/personal-care/cart" className="w-full">
-                  <Button className="w-full bg-green-600 hover:bg-green-700 text-white border-0">
+                  <Button variant="personalCare" className="w-full">
                     إتمام الطلب
                   </Button>
                 </Link>

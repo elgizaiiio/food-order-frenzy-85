@@ -54,7 +54,7 @@ const PersonalCareCart: React.FC = () => {
     <div className="min-h-screen bg-blue-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-24 shadow-md">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-md sticky top-0 z-10">
+        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-md sticky top-0 z-10">
           <Link to="/personal-care" className="text-white hover:text-blue-100 transition-colors">
             <ArrowLeft className="w-6 h-6" />
           </Link>
@@ -75,7 +75,7 @@ const PersonalCareCart: React.FC = () => {
                       className="w-16 h-16 object-cover rounded-lg shadow-sm border border-blue-100"
                     />
                     <div>
-                      <h3 className="font-medium text-gray-800">{item.name}</h3>
+                      <h3 className="font-medium text-blue-900">{item.name}</h3>
                       <p className="text-blue-600 font-medium">{item.price} ريال</p>
                       <div className="flex items-center gap-3 mt-1 bg-white rounded-full border border-blue-200 shadow-sm p-1">
                         <button 
@@ -109,7 +109,10 @@ const PersonalCareCart: React.FC = () => {
                 </div>
                 <p className="text-gray-500 mb-4">سلتك فارغة</p>
                 <Link to="/personal-care">
-                  <Button className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white shadow-md">
+                  <Button 
+                    variant="personalCare" 
+                    className="shadow-md"
+                  >
                     تصفح المنتجات
                   </Button>
                 </Link>
@@ -122,8 +125,8 @@ const PersonalCareCart: React.FC = () => {
               {/* Add More Button */}
               <Link to="/personal-care">
                 <Button 
-                  variant="outline" 
-                  className="w-full mb-8 border-blue-200 text-blue-700 hover:bg-blue-50"
+                  variant="personalCareOutline" 
+                  className="w-full mb-8"
                 >
                   إضافة المزيد من المنتجات
                 </Button>
@@ -131,8 +134,8 @@ const PersonalCareCart: React.FC = () => {
 
               {/* Suggested Items */}
               <div className="mb-8 animate-fade-in">
-                <h2 className="text-lg font-bold mb-3 flex items-center gap-2">
-                  <span className="h-5 w-1.5 rounded-full bg-gradient-to-b from-blue-600 to-indigo-700"></span>
+                <h2 className="text-lg font-bold mb-3 flex items-center gap-2 text-blue-800">
+                  <span className="h-5 w-1.5 rounded-full bg-gradient-to-b from-blue-600 to-blue-800"></span>
                   منتجات قد تعجبك
                 </h2>
                 <div className="flex overflow-x-auto gap-3 pb-2 no-scrollbar">
@@ -144,18 +147,18 @@ const PersonalCareCart: React.FC = () => {
                           alt={item.name} 
                           className="w-full h-24 object-cover rounded-t-lg"
                         />
-                        <Badge className="absolute top-2 right-2 bg-gradient-to-r from-blue-600 to-indigo-700 text-xs text-white">
+                        <Badge className="absolute top-2 right-2 bg-gradient-to-r from-blue-600 to-blue-800 text-xs text-white">
                           جديد
                         </Badge>
                       </div>
                       <div className="p-2">
-                        <h3 className="text-sm font-medium text-gray-800">{item.name}</h3>
+                        <h3 className="text-sm font-medium text-blue-800">{item.name}</h3>
                         <div className="flex items-center justify-between mt-2">
                           <span className="text-sm font-bold text-blue-700">{item.price} ريال</span>
                           <Button 
                             size="sm" 
-                            variant="outline" 
-                            className="h-7 text-xs rounded-full border-blue-300 text-blue-700 hover:bg-blue-50"
+                            variant="personalCarePill" 
+                            className="h-7 text-xs rounded-full"
                             onClick={() => handleAddSuggested(item)}
                           >
                             إضافة
@@ -168,8 +171,8 @@ const PersonalCareCart: React.FC = () => {
               </div>
 
               {/* Order Summary */}
-              <div className="mb-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100 animate-fade-in">
-                <h2 className="text-lg font-bold mb-3 text-gray-800">ملخص الطلب</h2>
+              <div className="mb-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200 animate-fade-in">
+                <h2 className="text-lg font-bold mb-3 text-blue-800">ملخص الطلب</h2>
                 <div className="space-y-2 mb-3">
                   <div className="flex justify-between">
                     <span className="text-gray-600">المجموع الفرعي</span>
@@ -181,7 +184,7 @@ const PersonalCareCart: React.FC = () => {
                   </div>
                   <Separator className="my-2 bg-blue-200" />
                   <div className="flex justify-between font-bold pt-2">
-                    <span>المبلغ الإجمالي</span>
+                    <span className="text-blue-900">المبلغ الإجمالي</span>
                     <span className="text-blue-700">{total} ريال</span>
                   </div>
                 </div>
@@ -192,19 +195,21 @@ const PersonalCareCart: React.FC = () => {
 
         {/* Bottom Buttons - Fixed at bottom */}
         {items.length > 0 && (
-          <div className="fixed bottom-20 left-0 right-0 bg-white border-t p-4 max-w-md mx-auto shadow-lg">
+          <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 max-w-md mx-auto shadow-lg">
             <div className="flex gap-3">
               <Link to="/personal-care" className="flex-1">
                 <Button 
-                  variant="outline" 
-                  className="w-full py-6 text-gray-600 border-gray-300 hover:bg-blue-50"
+                  variant="personalCareOutline" 
+                  className="w-full"
                 >
                   إضافة المزيد
                 </Button>
               </Link>
               <Link to="/personal-care/checkout" className="flex-1">
                 <Button 
-                  className="w-full py-6 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white shadow-md"
+                  size="checkout"
+                  variant="personalCare"
+                  className="w-full"
                 >
                   تابع الدفع
                 </Button>
