@@ -45,8 +45,8 @@ const Cart: React.FC = () => {
         } else if (data && data.items) {
           // Convert items JSON to array of CartItem
           const itemsArray = Array.isArray(data.items) ? data.items : [];
-          // Type assertion to help TypeScript understand we're converting from Json to CartItem[]
-          setCartItems(itemsArray as CartItem[]);
+          // First convert to unknown, then to CartItem[] for type safety
+          setCartItems(itemsArray as unknown as CartItem[]);
         } else {
           setCartItems([]);
         }
