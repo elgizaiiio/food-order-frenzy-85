@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 
 export interface UserAddress {
@@ -169,6 +168,27 @@ export async function setDefaultPaymentMethod(methodId: string): Promise<void> {
     if (error) throw error;
   } catch (error) {
     console.error('Error setting default payment method:', error);
+    throw error;
+  }
+}
+
+/**
+ * Delete a payment method
+ */
+export async function deletePaymentMethod(methodId: string): Promise<void> {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+    
+    const { error } = await supabase
+      .from('user_payment_methods')
+      .delete()
+      .eq('id', methodId)
+      .eq('user_id', user.id);
+    
+    if (error) throw error;
+  } catch (error) {
+    console.error('Error deleting payment method:', error);
     throw error;
   }
 }

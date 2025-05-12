@@ -7,6 +7,7 @@ import {
   fetchUserPaymentMethods, 
   addPaymentMethod, 
   setDefaultPaymentMethod,
+  deletePaymentMethod,
   getUserProfile,
   updateUserProfile,
   UserAddress,
@@ -78,6 +79,18 @@ export function useSetDefaultPaymentMethod() {
   
   return useMutation({
     mutationFn: setDefaultPaymentMethod,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-payment-methods', user?.id] });
+    },
+  });
+}
+
+export function useDeletePaymentMethod() {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  
+  return useMutation({
+    mutationFn: deletePaymentMethod,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-payment-methods', user?.id] });
     },
