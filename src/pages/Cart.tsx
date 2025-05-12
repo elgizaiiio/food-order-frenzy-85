@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import { useUserAddresses } from '@/hooks/useUserData';
+import { Json } from '@/integrations/supabase/types';
 
 interface CartItem {
   id: number;
@@ -44,7 +45,8 @@ const Cart: React.FC = () => {
         } else if (data && data.items) {
           // Convert items JSON to array of CartItem
           const itemsArray = Array.isArray(data.items) ? data.items : [];
-          setCartItems(itemsArray);
+          // Type assertion to help TypeScript understand we're converting from Json to CartItem[]
+          setCartItems(itemsArray as CartItem[]);
         } else {
           setCartItems([]);
         }
@@ -79,7 +81,7 @@ const Cart: React.FC = () => {
         .upsert({ 
           user_id: user.id, 
           status: 'cart',
-          items: updatedItems,
+          items: updatedItems as unknown as Json, // Type casting to Json for Supabase
           total_amount: calculateSubtotal()
         });
         
@@ -106,7 +108,7 @@ const Cart: React.FC = () => {
         .upsert({ 
           user_id: user.id, 
           status: 'cart',
-          items: updatedItems,
+          items: updatedItems as unknown as Json, // Type casting to Json for Supabase
           total_amount: calculateSubtotal() - (itemToRemove.price * itemToRemove.quantity)
         });
         
