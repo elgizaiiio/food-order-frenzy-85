@@ -1,49 +1,130 @@
 
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { toast } from "sonner";
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/context/AuthContext';
+import { useUserAddresses } from '@/hooks/useUserData';
+
+interface CartItem {
+  id: number;
+  name: string;
+  price: number;
+  quantity: number;
+  image: string;
+}
 
 const Cart: React.FC = () => {
-  // بيانات السلة المحاكاة مع useState للتفاعلية
-  const [cartItems, setCartItems] = useState([{
-    id: 1,
-    name: "شاورما فراخ سبيشال",
-    price: 25,
-    quantity: 2,
-    image: "https://images.unsplash.com/photo-1550547660-d9450f859349?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80"
-  }, {
-    id: 2,
-    name: "سلطة الشيف",
-    price: 15,
-    quantity: 1,
-    image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80"
-  }]);
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { data: userAddresses } = useUserAddresses();
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Fetch cart items from database
+  useEffect(() => {
+    const fetchCartItems = async () => {
+      if (!user) return;
+      
+      try {
+        setIsLoading(true);
+        const { data, error } = await supabase
+          .from('orders')
+          .select('items')
+          .eq('user_id', user.id)
+          .eq('status', 'cart')
+          .single();
+        
+        if (error) {
+          console.error('Error fetching cart:', error);
+          setCartItems([]);
+        } else if (data && data.items) {
+          // Convert items JSON to array of CartItem
+          const itemsArray = Array.isArray(data.items) ? data.items : [];
+          setCartItems(itemsArray);
+        } else {
+          setCartItems([]);
+        }
+      } catch (error) {
+        console.error('Error in cart fetch:', error);
+        setCartItems([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchCartItems();
+  }, [user]);
 
-  // حساب المجموع
+  // Update cart item quantity
+  const updateQuantity = async (id: number, change: number) => {
+    if (!user) {
+      toast.error("يجب تسجيل الدخول أولاً");
+      navigate('/login');
+      return;
+    }
+    
+    const updatedItems = cartItems.map(item => 
+      item.id === id ? { ...item, quantity: Math.max(1, item.quantity + change) } : item
+    );
+    
+    setCartItems(updatedItems);
+    
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .upsert({ 
+          user_id: user.id, 
+          status: 'cart',
+          items: updatedItems,
+          total_amount: calculateSubtotal()
+        });
+        
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error updating cart:', error);
+      toast.error("حدث خطأ أثناء تحديث السلة");
+    }
+  };
+  
+  // Remove item from cart
+  const removeItem = async (id: number) => {
+    if (!user) return;
+    
+    const itemToRemove = cartItems.find(item => item.id === id);
+    if (!itemToRemove) return;
+    
+    const updatedItems = cartItems.filter(item => item.id !== id);
+    setCartItems(updatedItems);
+    
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .upsert({ 
+          user_id: user.id, 
+          status: 'cart',
+          items: updatedItems,
+          total_amount: calculateSubtotal() - (itemToRemove.price * itemToRemove.quantity)
+        });
+        
+      if (error) throw error;
+      toast.success(`تم إزالة ${itemToRemove.name} من سلتك`);
+    } catch (error) {
+      console.error('Error removing item from cart:', error);
+      toast.error("حدث خطأ أثناء إزالة المنتج");
+    }
+  };
+  
+  // Calculate subtotal
   const calculateSubtotal = () => {
     return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
   };
   
-  const updateQuantity = (id: number, change: number) => {
-    setCartItems(prevItems => prevItems.map(item => item.id === id ? {
-      ...item,
-      quantity: Math.max(1, item.quantity + change)
-    } : item));
-  };
-  
-  const removeItem = (id: number) => {
-    const itemToRemove = cartItems.find(item => item.id === id);
-    if (itemToRemove) {
-      setCartItems(prevItems => prevItems.filter(item => item.id !== id));
-      toast.success(`تم إزالة ${itemToRemove.name} من سلتك`);
-    }
-  };
-  
   const subtotal = calculateSubtotal();
-  const deliveryFee = 10;
+  const deliveryFee = userAddresses && userAddresses.length > 0 ? 10 : 15; // Higher fee if no saved address
   const total = subtotal + deliveryFee;
   
   return <div className="min-h-screen bg-blue-50" dir="rtl">
@@ -60,7 +141,11 @@ const Cart: React.FC = () => {
         {/* محتويات السلة */}
         <div className="p-4">
           <div>
-            {cartItems.length > 0 ? (
+            {isLoading ? (
+              <div className="flex justify-center py-8">
+                <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+              </div>
+            ) : cartItems.length > 0 ? (
               <>
                 <div className="mb-2">
                   <h2 className="text-lg font-bold text-blue-800">منتجات السلة</h2>
@@ -71,7 +156,10 @@ const Cart: React.FC = () => {
                       <img 
                         src={item.image} 
                         alt={item.name} 
-                        className="w-20 h-20 object-cover rounded-lg shadow-md border border-blue-100" 
+                        className="w-20 h-20 object-cover rounded-lg shadow-md border border-blue-100"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = 'https://via.placeholder.com/100?text=صورة+غير+متوفرة';
+                        }}
                       />
                       <div>
                         <h3 className="font-bold text-gray-800">{item.name}</h3>
@@ -161,4 +249,5 @@ const Cart: React.FC = () => {
       </div>
     </div>;
 };
+
 export default Cart;
