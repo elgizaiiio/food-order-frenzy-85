@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { 
   fetchUserAddresses, 
   addUserAddress,
+  deleteUserAddress,
   setDefaultAddress, 
   fetchUserPaymentMethods, 
   addPaymentMethod, 
@@ -32,6 +33,18 @@ export function useAddUserAddress() {
   
   return useMutation({
     mutationFn: addUserAddress,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-addresses', user?.id] });
+    },
+  });
+}
+
+export function useDeleteUserAddress() {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  
+  return useMutation({
+    mutationFn: deleteUserAddress,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-addresses', user?.id] });
     },

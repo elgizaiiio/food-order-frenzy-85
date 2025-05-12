@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 
 export interface UserAddress {
@@ -63,6 +64,27 @@ export async function addUserAddress(address: Omit<UserAddress, 'id' | 'user_id'
     return data;
   } catch (error) {
     console.error('Error adding user address:', error);
+    throw error;
+  }
+}
+
+/**
+ * Delete a user address
+ */
+export async function deleteUserAddress(addressId: string): Promise<void> {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+    
+    const { error } = await supabase
+      .from('user_addresses')
+      .delete()
+      .eq('id', addressId)
+      .eq('user_id', user.id);
+    
+    if (error) throw error;
+  } catch (error) {
+    console.error('Error deleting user address:', error);
     throw error;
   }
 }
