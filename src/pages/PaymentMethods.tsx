@@ -4,23 +4,41 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, PlusCircle, CreditCard, Trash } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
-import { useUserPaymentMethods, useSetDefaultPaymentMethod } from '@/hooks/useUserData';
+import { useUserPaymentMethods, useSetDefaultPaymentMethod, useDeletePaymentMethod } from '@/hooks/useUserData';
 import { PaymentMethod } from '@/services/userService';
 import { useAuth } from '@/context/AuthContext';
 
 const PaymentMethods: React.FC = () => {
   const { toast } = useToast();
   const { user } = useAuth();
-  const { data: paymentMethods, isLoading } = useUserPaymentMethods();
+  const { data: paymentMethods, isLoading, refetch } = useUserPaymentMethods();
   const setDefaultPaymentMethod = useSetDefaultPaymentMethod();
+  const deletePaymentMethod = useDeletePaymentMethod();
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
-  const deleteCard = (id: string) => {
-    // This would be implemented with a mutation hook
-    toast({
-      title: "تم حذف البطاقة",
-      description: "تم حذف البطاقة بنجاح"
+  const handleDeleteCard = (id: string) => {
+    setIsDeleting(id);
+    deletePaymentMethod.mutate(id, {
+      onSuccess: () => {
+        toast({
+          title: "تم حذف البطاقة",
+          description: "تم حذف البطاقة بنجاح"
+        });
+        refetch();
+      },
+      onError: (error) => {
+        console.error('Error deleting payment method:', error);
+        toast({
+          title: "حدث خطأ",
+          description: "لم نتمكن من حذف البطاقة",
+          variant: "destructive"
+        });
+      },
+      onSettled: () => {
+        setIsDeleting(null);
+      }
     });
   };
 
@@ -31,6 +49,7 @@ const PaymentMethods: React.FC = () => {
           title: "تم تغيير البطاقة الافتراضية",
           description: "تم تحديث البطاقة الافتراضية بنجاح"
         });
+        refetch();
       },
       onError: (error) => {
         console.error('Error setting default payment method:', error);
@@ -110,15 +129,23 @@ const PaymentMethods: React.FC = () => {
                         <div className="flex justify-end gap-2 mt-4">
                           <Button 
                             variant="outline" 
-                            onClick={() => deleteCard(card.id)}
+                            onClick={() => handleDeleteCard(card.id)}
+                            disabled={isDeleting === card.id}
                           >
-                            نعم، حذف البطاقة
+                            {isDeleting === card.id ? (
+                              <>
+                                <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2"></span>
+                                جاري الحذف...
+                              </>
+                            ) : (
+                              "نعم، حذف البطاقة"
+                            )}
                           </Button>
-                          <Button 
-                            variant="destructive" 
-                          >
-                            إلغاء
-                          </Button>
+                          <DialogClose asChild>
+                            <Button variant="destructive">
+                              إلغاء
+                            </Button>
+                          </DialogClose>
                         </div>
                       </DialogContent>
                     </Dialog>
@@ -129,8 +156,16 @@ const PaymentMethods: React.FC = () => {
                       variant="ghost" 
                       className="mt-3 text-brand-600 hover:text-brand-700 hover:bg-brand-50 text-sm px-2 h-8"
                       onClick={() => handleSetAsDefault(card.id)}
+                      disabled={setDefaultPaymentMethod.isPending}
                     >
-                      تعيين كبطاقة افتراضية
+                      {setDefaultPaymentMethod.isPending ? (
+                        <>
+                          <span className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin mr-1"></span>
+                          جاري التحديث...
+                        </>
+                      ) : (
+                        "تعيين كبطاقة افتراضية"
+                      )}
                     </Button>
                   )}
                 </CardContent>
