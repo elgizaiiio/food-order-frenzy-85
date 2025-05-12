@@ -5,21 +5,35 @@ import { ArrowLeft, User, Settings, MapPin, CreditCard, Package, Ticket, Message
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/context/AuthContext';
+import { useUserProfile } from '@/hooks/useUserData';
 import { toast } from 'sonner';
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const { data: userProfile, isLoading } = useUserProfile();
   
   const handleSignOut = async () => {
     try {
       await signOut();
       navigate('/login');
+      toast.success('تم تسجيل الخروج بنجاح');
     } catch (error) {
       console.error('Error signing out:', error);
       toast.error('حدث خطأ أثناء تسجيل الخروج');
     }
   };
+  
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex justify-center items-center" dir="rtl">
+        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+  
+  const displayName = userProfile?.name || user?.email?.split('@')[0] || 'المستخدم';
+  const profileImage = userProfile?.profile_image || userProfile?.avatar_url || null;
   
   return (
     <div className="min-h-screen bg-gray-50" dir="rtl">
@@ -39,14 +53,16 @@ const Profile: React.FC = () => {
         <div className="p-4">
           <div className="flex items-center mb-6">
             <Avatar className="h-20 w-20 border-4 border-white shadow-md">
-              <AvatarImage src="" />
+              {profileImage ? (
+                <AvatarImage src={profileImage} />
+              ) : null}
               <AvatarFallback className="bg-blue-100 text-blue-800 text-xl">
-                {user?.email?.charAt(0)?.toUpperCase()}
+                {displayName.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div className="mr-4">
-              <h2 className="text-xl font-bold text-blue-900">{user?.email}</h2>
-              <p className="text-blue-600">مرحبًا بك في التطبيق</p>
+              <h2 className="text-xl font-bold text-blue-900">{displayName}</h2>
+              <p className="text-blue-600">{user?.email}</p>
             </div>
           </div>
           
@@ -95,6 +111,20 @@ const Profile: React.FC = () => {
                     <Package className="w-5 h-5 text-blue-600" />
                   </div>
                   <span className="text-blue-900">الطلبات السابقة</span>
+                </div>
+                <span className="text-gray-400">
+                  <ArrowLeft className="w-5 h-5 rotate-180" />
+                </span>
+              </div>
+            </Link>
+            
+            <Link to="/gym/subscriptions">
+              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-blue-50 transition-colors">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                    <User className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <span className="text-blue-900">اشتراكات النوادي</span>
                 </div>
                 <span className="text-gray-400">
                   <ArrowLeft className="w-5 h-5 rotate-180" />

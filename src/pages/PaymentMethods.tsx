@@ -1,50 +1,55 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, PlusCircle, CreditCard, Trash } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
-
-interface PaymentCard {
-  id: string;
-  cardNumber: string;
-  expiryDate: string;
-  cardHolder: string;
-  isDefault: boolean;
-}
+import { useUserPaymentMethods, useSetDefaultPaymentMethod } from '@/hooks/useUserData';
+import { PaymentMethod } from '@/services/userService';
+import { useAuth } from '@/context/AuthContext';
 
 const PaymentMethods: React.FC = () => {
   const { toast } = useToast();
-  const [cards, setCards] = useState<PaymentCard[]>([
-    {
-      id: '1',
-      cardNumber: '•••• •••• •••• 4242',
-      expiryDate: '12/25',
-      cardHolder: 'أحمد محمد',
-      isDefault: true
-    }
-  ]);
+  const { user } = useAuth();
+  const { data: paymentMethods, isLoading } = useUserPaymentMethods();
+  const setDefaultPaymentMethod = useSetDefaultPaymentMethod();
 
   const deleteCard = (id: string) => {
-    setCards(cards.filter(card => card.id !== id));
+    // This would be implemented with a mutation hook
     toast({
       title: "تم حذف البطاقة",
       description: "تم حذف البطاقة بنجاح"
     });
   };
 
-  const setAsDefault = (id: string) => {
-    setCards(cards.map(card => ({
-      ...card,
-      isDefault: card.id === id
-    })));
-    toast({
-      title: "تم تغيير البطاقة الافتراضية",
-      description: "تم تحديث البطاقة الافتراضية بنجاح"
+  const handleSetAsDefault = (id: string) => {
+    setDefaultPaymentMethod.mutate(id, {
+      onSuccess: () => {
+        toast({
+          title: "تم تغيير البطاقة الافتراضية",
+          description: "تم تحديث البطاقة الافتراضية بنجاح"
+        });
+      },
+      onError: (error) => {
+        console.error('Error setting default payment method:', error);
+        toast({
+          title: "حدث خطأ",
+          description: "لم نتمكن من تحديث البطاقة الافتراضية",
+          variant: "destructive"
+        });
+      }
     });
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex justify-center items-center" dir="rtl">
+        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50" dir="rtl">
@@ -70,68 +75,73 @@ const PaymentMethods: React.FC = () => {
 
         {/* Cards List */}
         <div className="px-4 py-2 space-y-4">
-          {cards.map((card) => (
-            <Card key={card.id} className={`overflow-hidden ${card.isDefault ? 'bg-gradient-to-r from-brand-100 to-orange-50 border-brand-200' : ''}`}>
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <CreditCard className="w-5 h-5 text-brand-600" />
-                      <h3 className="font-medium">{card.cardNumber}</h3>
-                    </div>
-                    <div className="text-sm text-gray-600 space-y-1">
-                      <p>الاسم: {card.cardHolder}</p>
-                      <p>تنتهي في: {card.expiryDate}</p>
-                      {card.isDefault && (
-                        <span className="inline-block mt-2 text-xs bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full">
-                          البطاقة الافتراضية
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500 hover:bg-red-50 hover:text-red-600">
-                        <Trash className="h-4 w-4" />
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent dir="rtl">
-                      <DialogHeader>
-                        <DialogTitle>حذف البطاقة</DialogTitle>
-                        <DialogDescription>
-                          هل أنت متأكد من رغبتك في حذف هذه البطاقة؟
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="flex justify-end gap-2 mt-4">
-                        <Button 
-                          variant="outline" 
-                          onClick={() => deleteCard(card.id)}
-                        >
-                          نعم، حذف البطاقة
-                        </Button>
-                        <Button 
-                          variant="destructive" 
-                        >
-                          إلغاء
-                        </Button>
+          {paymentMethods && paymentMethods.length > 0 ? (
+            paymentMethods.map((card) => (
+              <Card key={card.id} className={`overflow-hidden ${card.is_default ? 'bg-gradient-to-r from-brand-100 to-orange-50 border-brand-200' : ''}`}>
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <CreditCard className="w-5 h-5 text-brand-600" />
+                        <h3 className="font-medium">{card.type} •••• {card.last4}</h3>
                       </div>
-                    </DialogContent>
-                  </Dialog>
-                </div>
+                      <div className="text-sm text-gray-600 space-y-1">
+                        {card.is_default && (
+                          <span className="inline-block mt-2 text-xs bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full">
+                            البطاقة الافتراضية
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500 hover:bg-red-50 hover:text-red-600">
+                          <Trash className="h-4 w-4" />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent dir="rtl">
+                        <DialogHeader>
+                          <DialogTitle>حذف البطاقة</DialogTitle>
+                          <DialogDescription>
+                            هل أنت متأكد من رغبتك في حذف هذه البطاقة؟
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="flex justify-end gap-2 mt-4">
+                          <Button 
+                            variant="outline" 
+                            onClick={() => deleteCard(card.id)}
+                          >
+                            نعم، حذف البطاقة
+                          </Button>
+                          <Button 
+                            variant="destructive" 
+                          >
+                            إلغاء
+                          </Button>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
 
-                {!card.isDefault && (
-                  <Button 
-                    variant="ghost" 
-                    className="mt-3 text-brand-600 hover:text-brand-700 hover:bg-brand-50 text-sm px-2 h-8"
-                    onClick={() => setAsDefault(card.id)}
-                  >
-                    تعيين كبطاقة افتراضية
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
-          ))}
+                  {!card.is_default && (
+                    <Button 
+                      variant="ghost" 
+                      className="mt-3 text-brand-600 hover:text-brand-700 hover:bg-brand-50 text-sm px-2 h-8"
+                      onClick={() => handleSetAsDefault(card.id)}
+                    >
+                      تعيين كبطاقة افتراضية
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            <div className="text-center py-10 text-gray-500">
+              <CreditCard className="w-12 h-12 mx-auto text-gray-300 mb-2" />
+              <p>لا توجد بطاقات محفوظة حالياً</p>
+            </div>
+          )}
         </div>
 
         {/* Help Text */}
