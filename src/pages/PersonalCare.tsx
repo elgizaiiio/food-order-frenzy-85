@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Search, ShoppingCart, Heart, Filter, ChevronDown } from 'lucide-react';
@@ -214,8 +213,14 @@ const PersonalCare: React.FC = () => {
                         size="sm"
                         disabled={product.stock <= 0}
                         onClick={() => product.stock > 0 && addToCart({
-                          ...product,
-                          image: product.image_url || 'https://via.placeholder.com/300?text=Beauty+Product'
+                          id: product.id,
+                          name: product.name,
+                          price: product.price,
+                          description: product.description,
+                          gender: product.gender,
+                          stock: product.stock,
+                          image: product.image_url || 'https://via.placeholder.com/300?text=Beauty+Product',
+                          image_url: product.image_url
                         })}
                         className={`rounded-full ${
                           product.stock > 0

@@ -3,12 +3,15 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
 export interface PersonalCareProduct {
-  id: number;
+  id: string;  // تغيير من number إلى string
   name: string;
   price: number;
-  image: string;
+  image?: string;  // جعلها اختيارية
   gender?: string;
   description?: string;
+  image_url?: string;
+  stock?: number;
+  inStock?: boolean;
 }
 
 interface CartItem extends PersonalCareProduct {
@@ -18,9 +21,9 @@ interface CartItem extends PersonalCareProduct {
 interface PersonalCareCartContextType {
   items: CartItem[];
   addToCart: (product: PersonalCareProduct) => void;
-  removeFromCart: (productId: number) => void;
-  increaseQuantity: (productId: number) => void;
-  decreaseQuantity: (productId: number) => void;
+  removeFromCart: (productId: string) => void;  // تغيير من number إلى string
+  increaseQuantity: (productId: string) => void;  // تغيير من number إلى string
+  decreaseQuantity: (productId: string) => void;  // تغيير من number إلى string
   clearCart: () => void;
   itemCount: number;
   totalPrice: number;
@@ -87,7 +90,7 @@ export const PersonalCareCartProvider: React.FC<{ children: React.ReactNode }> =
   };
 
   // إزالة منتج من السلة
-  const removeFromCart = (productId: number) => {
+  const removeFromCart = (productId: string) => {  // تغيير من number إلى string
     setItems(prevItems => {
       const itemToRemove = prevItems.find(item => item.id === productId);
       if (itemToRemove) {
@@ -101,7 +104,7 @@ export const PersonalCareCartProvider: React.FC<{ children: React.ReactNode }> =
   };
 
   // زيادة كمية منتج
-  const increaseQuantity = (productId: number) => {
+  const increaseQuantity = (productId: string) => {  // تغيير من number إلى string
     setItems(prevItems => 
       prevItems.map(item => 
         item.id === productId ? { ...item, quantity: item.quantity + 1 } : item
@@ -110,7 +113,7 @@ export const PersonalCareCartProvider: React.FC<{ children: React.ReactNode }> =
   };
 
   // إنقاص كمية منتج
-  const decreaseQuantity = (productId: number) => {
+  const decreaseQuantity = (productId: string) => {  // تغيير من number إلى string
     setItems(prevItems => {
       const existingItem = prevItems.find(item => item.id === productId);
       
