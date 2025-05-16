@@ -28,7 +28,7 @@ export async function fetchUserAddresses(): Promise<UserAddress[]> {
     if (!user) return [];
     
     const { data, error } = await supabase
-      .from('user_addresses') // استخدام اسم الجدول الصحيح
+      .from('user_addresses')
       .select('*')
       .eq('user_id', user.id)
       .order('is_default', { ascending: false });
@@ -51,7 +51,7 @@ export async function addUserAddress(address: Omit<UserAddress, 'id' | 'user_id'
     if (!user) throw new Error('يجب تسجيل الدخول أولاً');
     
     const { data, error } = await supabase
-      .from('user_addresses') // استخدام اسم الجدول الصحيح
+      .from('user_addresses')
       .insert({
         ...address,
         user_id: user.id
@@ -77,7 +77,7 @@ export async function deleteUserAddress(addressId: string): Promise<void> {
     if (!user) throw new Error('يجب تسجيل الدخول أولاً');
     
     const { error } = await supabase
-      .from('user_addresses') // استخدام اسم الجدول الصحيح
+      .from('user_addresses')
       .delete()
       .eq('id', addressId)
       .eq('user_id', user.id);
@@ -99,13 +99,13 @@ export async function setDefaultAddress(addressId: string): Promise<void> {
     
     // أولاً، إعادة تعيين جميع العناوين إلى غير افتراضي
     await supabase
-      .from('user_addresses') // استخدام اسم الجدول الصحيح
+      .from('user_addresses')
       .update({ is_default: false })
       .eq('user_id', user.id);
     
     // ثم تعيين العنوان المحدد كعنوان افتراضي
     const { error } = await supabase
-      .from('user_addresses') // استخدام اسم الجدول الصحيح
+      .from('user_addresses')
       .update({ is_default: true })
       .eq('id', addressId)
       .eq('user_id', user.id);
@@ -126,20 +126,14 @@ export async function fetchUserPaymentMethods(): Promise<PaymentMethod[]> {
     if (!user) return [];
     
     const { data, error } = await supabase
-      .from('payments')
-      .select('id, user_id, method, status, is_default:COALESCE(status=\'default\', false)')
+      .from('user_payment_methods')
+      .select('*')
       .eq('user_id', user.id)
-      .order('id', { ascending: false });
+      .order('is_default', { ascending: false });
     
     if (error) throw error;
     
-    // تحويل البيانات إلى التنسيق المطلوب
-    return data?.map(item => ({
-      id: item.id,
-      user_id: item.user_id,
-      type: item.method,
-      is_default: item.is_default
-    })) || [];
+    return data || [];
   } catch (error) {
     console.error('خطأ في جلب طرق الدفع:', error);
     return [];
@@ -155,24 +149,19 @@ export async function addPaymentMethod(method: Omit<PaymentMethod, 'id' | 'user_
     if (!user) throw new Error('يجب تسجيل الدخول أولاً');
     
     const { data, error } = await supabase
-      .from('payments')
+      .from('user_payment_methods')
       .insert({
         user_id: user.id,
-        method: method.type,
-        status: method.is_default ? 'default' : 'active',
-        amount: 0  // قيمة افتراضية مطلوبة
+        type: method.type,
+        last4: method.last4,
+        is_default: method.is_default
       })
       .select()
       .single();
     
     if (error) throw error;
     
-    return {
-      id: data.id,
-      user_id: data.user_id,
-      type: data.method,
-      is_default: data.status === 'default'
-    };
+    return data;
   } catch (error) {
     console.error('خطأ في إضافة طريقة دفع:', error);
     throw error;
@@ -189,15 +178,14 @@ export async function setDefaultPaymentMethod(methodId: string): Promise<void> {
     
     // أولاً، إعادة تعيين جميع طرق الدفع إلى غير افتراضي
     await supabase
-      .from('payments')
-      .update({ status: 'active' })
-      .eq('user_id', user.id)
-      .neq('id', methodId);
+      .from('user_payment_methods')
+      .update({ is_default: false })
+      .eq('user_id', user.id);
     
     // ثم تعيين طريقة الدفع المحددة كطريقة افتراضية
     const { error } = await supabase
-      .from('payments')
-      .update({ status: 'default' })
+      .from('user_payment_methods')
+      .update({ is_default: true })
       .eq('id', methodId)
       .eq('user_id', user.id);
     
@@ -217,7 +205,7 @@ export async function deletePaymentMethod(methodId: string): Promise<void> {
     if (!user) throw new Error('يجب تسجيل الدخول أولاً');
     
     const { error } = await supabase
-      .from('payments')
+      .from('user_payment_methods')
       .delete()
       .eq('id', methodId)
       .eq('user_id', user.id);
