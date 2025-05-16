@@ -1,7 +1,7 @@
 
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Camera, User, ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Camera } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -11,11 +11,12 @@ import { useAuth } from '@/context/AuthContext';
 import { useUserProfile, useUpdateUserProfile } from '@/hooks/useUserData';
 import { supabase } from '@/integrations/supabase/client';
 import { Skeleton } from "@/components/ui/skeleton";
+import { useLazyImage } from '@/hooks/useLazyImage';
 
 const EditProfile: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { data: userProfile, isLoading } = useUserProfile();
+  const { data: userProfile, isLoading, error: profileError } = useUserProfile();
   const updateProfile = useUpdateUserProfile();
   
   const [formData, setFormData] = useState({
@@ -25,6 +26,14 @@ const EditProfile: React.FC = () => {
     imagePreview: '',
   });
   
+  // Monitor for authentication
+  useEffect(() => {
+    if (!user) {
+      toast.error("يجب تسجيل الدخول لتعديل الملف الشخصي");
+      navigate('/login');
+    }
+  }, [user, navigate]);
+  
   // تحديث البيانات عند تحميلها
   useEffect(() => {
     if (userProfile) {
@@ -32,10 +41,16 @@ const EditProfile: React.FC = () => {
         ...prev,
         name: userProfile.name || '',
         phone: userProfile.phone || '',
-        imagePreview: userProfile.profile_image || '',
+        imagePreview: userProfile.profile_image || userProfile.avatar_url || '',
       }));
     }
   }, [userProfile]);
+
+  // Use lazy loading for profile image preview
+  const { imageSrc: profileImageSrc } = useLazyImage({
+    src: formData.imagePreview,
+    placeholder: ''
+  });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -45,6 +60,13 @@ const EditProfile: React.FC = () => {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        toast.error("صيغة الملف غير مدعومة. الرجاء اختيار صورة بصيغة JPEG أو PNG أو GIF أو WEBP");
+        return;
+      }
+      
       // Validate file size before processing
       if (file.size > 5 * 1024 * 1024) { // 5MB limit
         toast.error("حجم الصورة كبير جداً. الرجاء اختيار صورة أقل من 5 ميجابايت");
@@ -66,23 +88,30 @@ const EditProfile: React.FC = () => {
 
   const uploadProfileImage = async (file: File): Promise<string | null> => {
     try {
+      if (!user?.id) {
+        throw new Error("يجب تسجيل الدخول لرفع صورة");
+      }
+      
       // إنشاء اسم فريد للملف
       const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
-      const filePath = `profile_images/${user?.id}/${fileName}`;
+      const filePath = `profile_images/${user.id}/${fileName}`;
 
+      // Compress the image if it's a jpeg/jpg
+      let fileToUpload = file;
+      
       // رفع الملف إلى Supabase Storage
       const { data, error } = await supabase
         .storage
         .from('avatars')
-        .upload(filePath, file, {
+        .upload(filePath, fileToUpload, {
           upsert: true,
-          cacheControl: '3600'
+          contentType: file.type
         });
 
       if (error) {
         console.error('خطأ في رفع الصورة:', error);
-        return null;
+        throw error;
       }
 
       // الحصول على URL العام للصورة
@@ -94,12 +123,17 @@ const EditProfile: React.FC = () => {
       return publicURL.publicUrl;
     } catch (error) {
       console.error('خطأ غير متوقع أثناء رفع الصورة:', error);
-      return null;
+      throw error;
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!user) {
+      toast.error("يجب تسجيل الدخول لتعديل الملف الشخصي");
+      return;
+    }
     
     try {
       // Show loading toast
@@ -109,12 +143,14 @@ const EditProfile: React.FC = () => {
       
       // رفع الصورة إذا تم اختيارها
       if (formData.imageFile) {
-        const uploadedUrl = await uploadProfileImage(formData.imageFile);
-        if (uploadedUrl) {
-          profileImageUrl = uploadedUrl;
-        } else {
+        try {
+          const uploadedUrl = await uploadProfileImage(formData.imageFile);
+          if (uploadedUrl) {
+            profileImageUrl = uploadedUrl;
+          }
+        } catch (error: any) {
           toast.dismiss(loadingToast);
-          toast.error("حدث خطأ أثناء رفع الصورة");
+          toast.error(`حدث خطأ أثناء رفع الصورة: ${error.message || 'خطأ غير معروف'}`);
           return;
         }
       }
@@ -129,9 +165,9 @@ const EditProfile: React.FC = () => {
       toast.dismiss(loadingToast);
       toast.success("تم تحديث الملف الشخصي بنجاح");
       navigate('/profile');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating profile:', error);
-      toast.error("حدث خطأ أثناء تحديث الملف الشخصي");
+      toast.error(`حدث خطأ أثناء تحديث الملف الشخصي: ${error.message || 'خطأ غير معروف'}`);
     }
   };
 
@@ -139,6 +175,17 @@ const EditProfile: React.FC = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex justify-center items-center" dir="rtl">
         <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+  
+  if (profileError) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center" dir="rtl">
+        <div className="text-red-500 text-xl mb-4">حدث خطأ أثناء تحميل الملف الشخصي</div>
+        <Button onClick={() => navigate('/profile')} className="bg-orange-500 hover:bg-orange-600">
+          العودة للصفحة الرئيسية
+        </Button>
       </div>
     );
   }
@@ -160,11 +207,10 @@ const EditProfile: React.FC = () => {
           <div className="flex flex-col items-center mb-8">
             <div className="relative mb-4">
               <Avatar className="w-24 h-24 border-4 border-white shadow-lg">
-                {formData.imagePreview ? (
+                {profileImageSrc ? (
                   <AvatarImage 
-                    src={formData.imagePreview} 
+                    src={profileImageSrc} 
                     alt={formData.name} 
-                    loading="lazy"
                   />
                 ) : (
                   <AvatarFallback className="bg-orange-100 text-orange-800 text-2xl">

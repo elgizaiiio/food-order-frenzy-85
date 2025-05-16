@@ -18,7 +18,7 @@ import { useAuth } from '@/context/AuthContext';
 
 // Constants for cache configuration
 const USER_DATA_STALE_TIME = 5 * 60 * 1000; // 5 minutes
-const USER_DATA_CACHE_TIME = 10 * 60 * 1000; // 10 minutes
+const USER_DATA_GC_TIME = 10 * 60 * 1000; // 10 minutes
 
 export function useUserAddresses() {
   const { user } = useAuth();
@@ -27,7 +27,7 @@ export function useUserAddresses() {
     queryKey: ['user-addresses', user?.id],
     queryFn: fetchUserAddresses,
     staleTime: USER_DATA_STALE_TIME,
-    cacheTime: USER_DATA_CACHE_TIME,
+    gcTime: USER_DATA_GC_TIME,
     enabled: !!user?.id,
     // Optimize for better user experience
     retry: 1,
@@ -78,7 +78,7 @@ export function useUserPaymentMethods() {
     queryKey: ['user-payment-methods', user?.id],
     queryFn: fetchUserPaymentMethods,
     staleTime: USER_DATA_STALE_TIME,
-    cacheTime: USER_DATA_CACHE_TIME,
+    gcTime: USER_DATA_GC_TIME,
     enabled: !!user?.id,
     // Optimize for better user experience
     retry: 1,
@@ -129,7 +129,7 @@ export function useUserProfile() {
     queryKey: ['user-profile', user?.id],
     queryFn: getUserProfile,
     staleTime: USER_DATA_STALE_TIME,
-    cacheTime: USER_DATA_CACHE_TIME,
+    gcTime: USER_DATA_GC_TIME,
     enabled: !!user?.id,
     // Better error handling
     retry: (failureCount, error: any) => {

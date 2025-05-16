@@ -21,22 +21,37 @@ export function useLazyImage({ src, placeholder = '' }: UseLazyImageProps) {
       return;
     }
 
+    // Reset states when src changes
     setIsLoading(true);
     setHasError(false);
+    setImageSrc(placeholder);
+    
+    // Cancel previous image loading if any
+    let isMounted = true;
     
     const img = new Image();
+    
     img.onload = () => {
-      setImageSrc(src);
-      setIsLoading(false);
+      if (isMounted) {
+        setImageSrc(src);
+        setIsLoading(false);
+      }
     };
+    
     img.onerror = () => {
-      setIsLoading(false);
-      setHasError(true);
-      console.error(`Failed to load image: ${src}`);
+      if (isMounted) {
+        setIsLoading(false);
+        setHasError(true);
+        console.error(`Failed to load image: ${src}`);
+      }
     };
+    
+    // Add priority loading hint
+    img.loading = 'eager';
     img.src = src;
 
     return () => {
+      isMounted = false;
       img.onload = null;
       img.onerror = null;
     };
