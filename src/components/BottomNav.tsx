@@ -1,7 +1,7 @@
 
 import React, { memo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, ClipboardList, UserRound } from 'lucide-react';
+import { Home, ClipboardList, UserRound, Package } from 'lucide-react';
 import { useTouch } from "@/hooks/use-touch";
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -24,6 +24,12 @@ const BottomNav: React.FC = () => {
       icon: <Home className="w-6 h-6" />,
       path: '/',
       active: path === '/',
+    },
+    {
+      name: 'توصيل',
+      icon: <Package className="w-6 h-6" />,
+      path: '/delivery-request',
+      active: path === '/delivery-request',
     },
     {
       name: 'طلباتي',
