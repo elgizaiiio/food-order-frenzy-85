@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -61,15 +61,34 @@ import MarketCategory from "./pages/MarketCategory";
 import MarketCart from "./pages/MarketCart";
 import MarketCheckout from "./pages/MarketCheckout";
 import MarketTracking from "./pages/MarketTracking";
+import { useState } from "react";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      refetchOnWindowFocus: false,
+// إنشاء كائن QueryClient داخل دالة المكون لتفادي مشكلة القراءة من null
+const App = () => {
+  // تأكد من إنشاء queryClient داخل المكون
+  const [queryClient] = useState(() => new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 5 * 60 * 1000, // 5 minutes
+        refetchOnWindowFocus: false,
+      },
     },
-  },
-});
+  }));
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <UserProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <AppContent />
+          </TooltipProvider>
+        </UserProvider>
+      </AuthProvider>
+    </QueryClientProvider>
+  );
+};
 
 // Create wrapper components for cart contexts
 const PharmacyRoutes = () => (
@@ -161,22 +180,6 @@ const AppContent = () => {
       </div>
       <BottomNav />
     </>
-  );
-};
-
-const App = () => {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <UserProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <AppContent />
-          </TooltipProvider>
-        </UserProvider>
-      </AuthProvider>
-    </QueryClientProvider>
   );
 };
 
