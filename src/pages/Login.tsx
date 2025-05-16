@@ -14,18 +14,20 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { signIn, user } = useAuth();
+  const { signIn, user, isLoading } = useAuth();
   
   // الحصول على المسار السابق أو التوجيه إلى الصفحة الرئيسية
   const from = location.state?.from?.pathname || '/';
   
   // التحقق إذا كان المستخدم مسجل دخوله بالفعل
   useEffect(() => {
-    if (user) {
+    if (!isLoading && user) {
       console.log("تم تسجيل الدخول بالفعل، جاري التوجيه إلى:", from);
-      navigate(from, { replace: true });
+      setTimeout(() => {
+        navigate(from, { replace: true });
+      }, 100);
     }
-  }, [user, navigate, from]);
+  }, [user, navigate, from, isLoading]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -43,7 +45,6 @@ const Login: React.FC = () => {
       
       // تم تسجيل الدخول بنجاح
       toast.success('تم تسجيل الدخول بنجاح');
-      console.log("تم تسجيل الدخول بنجاح، جاري التوجيه إلى:", from);
       // لا حاجة للتوجيه هنا لأن useEffect سيتولى ذلك عندما يتم تحديث حالة المستخدم
     } catch (error: any) {
       console.error('خطأ في تسجيل الدخول:', error);

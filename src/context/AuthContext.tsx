@@ -23,43 +23,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // استرجاع جلسة المستخدم عند تحميل الصفحة
-    const getSession = async () => {
+    const initSession = async () => {
       setIsLoading(true);
       try {
+        // إعداد الاستماع لتغييرات حالة المصادقة أولاً
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+          console.log("Auth state changed:", _event, session?.user?.email);
+          setSession(session);
+          setUser(session?.user ?? null);
+          setIsLoading(false);
+        });
+
+        // ثم التحقق من وجود جلسة حالية
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
+          console.error('خطأ في جلب بيانات الجلسة', error);
           throw error;
         }
         
         setSession(session);
         setUser(session?.user ?? null);
+        setIsLoading(false);
+
+        return () => {
+          subscription.unsubscribe();
+        };
       } catch (error) {
-        console.error('خطأ في جلب بيانات الجلسة', error);
-      } finally {
+        console.error('خطأ في تهيئة الجلسة', error);
         setIsLoading(false);
       }
     };
     
-    // تنفيذ جلب الجلسة عند التحميل
-    getSession();
-
-    // الاستماع لتغييرات حالة المصادقة
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log("Auth state changed:", _event, session?.user?.email);
-      setSession(session);
-      setUser(session?.user ?? null);
-      setIsLoading(false);
-    });
-
+    // تنفيذ التهيئة
+    const unsubscribe = initSession();
+    
+    // تنظيف عند إلغاء تحميل المكون
     return () => {
-      subscription.unsubscribe();
+      if (typeof unsubscribe === 'function') {
+        unsubscribe();
+      }
     };
   }, []);
 
   // تسجيل الدخول
   const signIn = async (email: string, password: string) => {
     try {
+      setIsLoading(true);
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
       if (error) {
@@ -73,12 +83,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error: any) {
       console.error('خطأ في تسجيل الدخول', error);
       throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
 
   // إنشاء حساب جديد
   const signUp = async (email: string, password: string, userData?: any) => {
     try {
+      setIsLoading(true);
       const { data, error } = await supabase.auth.signUp({ 
         email, 
         password,
@@ -101,12 +114,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error: any) {
       console.error('خطأ في إنشاء الحساب', error);
       throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
 
   // تسجيل الخروج
   const signOut = async () => {
     try {
+      setIsLoading(true);
       const { error } = await supabase.auth.signOut();
       
       if (error) {
@@ -118,12 +134,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error('خطأ في تسجيل الخروج', error);
       throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
 
   // إعادة تعيين كلمة المرور
   const resetPassword = async (email: string) => {
     try {
+      setIsLoading(true);
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`,
       });
@@ -136,6 +155,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error('خطأ في إرسال طلب إعادة تعيين كلمة المرور', error);
       throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
 
