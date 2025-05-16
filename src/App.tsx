@@ -134,7 +134,7 @@ const PersonalCareRoutes = () => (
 const AppContent = () => {
   return (
     <>
-      <div className="pb-16"> {/* Add padding to the bottom to prevent content from being hidden by the navigation bar */}
+      <div className="pb-20"> {/* زيادة التباعد السفلي لإفساح مجال لشريط التنقل الثابت */}
         <Routes>
           {/* Authentication Routes - Not Protected */}
           <Route path="/login" element={<Login />} />
