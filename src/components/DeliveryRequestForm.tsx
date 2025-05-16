@@ -111,6 +111,8 @@ const DeliveryRequestForm: React.FC = () => {
         estimated_price: estimationData?.price,
         estimated_delivery_time: estimationData?.time,
         distance: estimationData?.distance,
+        // تحويل estimated_value إلى رقم إذا كان له قيمة
+        estimated_value: formData.estimated_value ? parseFloat(formData.estimated_value) : null
       };
       
       await createDeliveryRequest.mutateAsync(deliveryData);

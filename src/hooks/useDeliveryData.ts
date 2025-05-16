@@ -26,6 +26,11 @@ export function useUserDeliveryRequests() {
     enabled: !!user?.id,
     retry: 1,
     refetchOnWindowFocus: true,
+    meta: {
+      onError: (error: Error) => {
+        console.error('Error fetching delivery requests:', error);
+      }
+    }
   });
 }
 
@@ -40,6 +45,11 @@ export function useDeliveryRequestDetails(requestId: string | undefined) {
     enabled: !!user?.id && !!requestId,
     retry: 1,
     refetchOnWindowFocus: true,
+    meta: {
+      onError: (error: Error) => {
+        console.error('Error fetching delivery request details:', error);
+      }
+    }
   });
 }
 

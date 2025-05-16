@@ -9,6 +9,69 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      delivery_requests: {
+        Row: {
+          created_at: string | null
+          delivery_address: string
+          distance: number | null
+          driver_id: string | null
+          driver_name: string | null
+          driver_phone: string | null
+          driver_photo: string | null
+          estimated_delivery_time: string | null
+          estimated_price: number | null
+          estimated_value: number | null
+          id: string
+          items_description: string
+          notes: string | null
+          payment_method_id: string | null
+          pickup_address: string
+          status: string | null
+          user_id: string
+          vehicle_details: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          delivery_address: string
+          distance?: number | null
+          driver_id?: string | null
+          driver_name?: string | null
+          driver_phone?: string | null
+          driver_photo?: string | null
+          estimated_delivery_time?: string | null
+          estimated_price?: number | null
+          estimated_value?: number | null
+          id?: string
+          items_description: string
+          notes?: string | null
+          payment_method_id?: string | null
+          pickup_address: string
+          status?: string | null
+          user_id: string
+          vehicle_details?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          delivery_address?: string
+          distance?: number | null
+          driver_id?: string | null
+          driver_name?: string | null
+          driver_phone?: string | null
+          driver_photo?: string | null
+          estimated_delivery_time?: string | null
+          estimated_price?: number | null
+          estimated_value?: number | null
+          id?: string
+          items_description?: string
+          notes?: string | null
+          payment_method_id?: string | null
+          pickup_address?: string
+          status?: string | null
+          user_id?: string
+          vehicle_details?: string | null
+        }
+        Relationships: []
+      }
       gym_subscriptions: {
         Row: {
           created_at: string | null

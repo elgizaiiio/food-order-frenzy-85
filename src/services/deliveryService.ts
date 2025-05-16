@@ -7,34 +7,34 @@ export interface DeliveryRequest {
   pickup_address: string;
   delivery_address: string;
   items_description: string;
-  estimated_value?: number;
-  payment_method_id?: string;
+  estimated_value?: number | null;
+  payment_method_id?: string | null;
   status?: 'pending' | 'accepted' | 'picked_up' | 'delivered' | 'cancelled';
-  driver_id?: string;
-  driver_name?: string;
-  driver_phone?: string;
-  driver_photo?: string;
-  vehicle_details?: string;
+  driver_id?: string | null;
+  driver_name?: string | null;
+  driver_phone?: string | null;
+  driver_photo?: string | null;
+  vehicle_details?: string | null;
   created_at?: string;
-  estimated_delivery_time?: string;
-  estimated_price?: number;
-  distance?: number;
-  notes?: string;
+  estimated_delivery_time?: string | null;
+  estimated_price?: number | null;
+  distance?: number | null;
+  notes?: string | null;
 }
 
 // استعلام طلبات التوصيل للمستخدم الحالي
 export const fetchUserDeliveryRequests = async (): Promise<DeliveryRequest[]> => {
   console.log('Fetching user delivery requests');
   
-  const { data: userId } = await supabase.auth.getSession();
-  if (!userId?.session?.user?.id) {
+  const { data: sessionData } = await supabase.auth.getSession();
+  if (!sessionData?.session?.user?.id) {
     throw new Error("يجب تسجيل الدخول لعرض طلبات التوصيل");
   }
 
   const { data, error } = await supabase
     .from('delivery_requests')
     .select('*')
-    .eq('user_id', userId.session.user.id)
+    .eq('user_id', sessionData.session.user.id)
     .order('created_at', { ascending: false });
 
   if (error) {
