@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 
 export interface Category {
@@ -46,44 +47,44 @@ export async function fetchHomeCategories(): Promise<Category[]> {
   // هذه البيانات الثابتة حاليًا، في المستقبل يمكن تحويلها إلى جدول في قاعدة البيانات
   return [
     { 
-      id: "rides",
-      name: "توصيل", 
-      icon: "Car", 
-      color: "bg-gradient-to-br from-black to-gray-800 text-white",
-      shadow: "shadow-gray-200",
-      link: "/rides"
-    },
-    { 
       id: "restaurants",
       name: "مطاعم", 
       icon: "UtensilsCrossed", 
-      color: "bg-gradient-to-br from-black to-gray-800 text-white",
-      shadow: "shadow-gray-200",
+      color: "bg-gradient-to-br from-orange-500 to-orange-600 text-white",
+      shadow: "shadow-orange-200",
       link: "/restaurants"
     },
     { 
       id: "market",
-      name: "بقالة", 
+      name: "سوبر ماركت", 
       icon: "ShoppingCart", 
-      color: "bg-gradient-to-br from-black to-gray-800 text-white",
-      shadow: "shadow-gray-200",
+      color: "bg-gradient-to-br from-orange-400 to-orange-500 text-white",
+      shadow: "shadow-orange-200",
       link: "/market" 
     },
     { 
       id: "pharmacy",
       name: "صيدليات", 
       icon: "Pill", 
-      color: "bg-gradient-to-br from-black to-gray-800 text-white",
-      shadow: "shadow-gray-200",
+      color: "bg-gradient-to-br from-orange-500 to-orange-600 text-white",
+      shadow: "shadow-orange-200",
       link: "/pharmacy" 
     },
     { 
-      id: "travel",
-      name: "سفر", 
-      icon: "Compass", 
-      color: "bg-gradient-to-br from-black to-gray-800 text-white",
-      shadow: "shadow-gray-200",
-      link: "/travel" 
+      id: "personal-care",
+      name: "بيوتي", 
+      icon: "Brush", 
+      color: "bg-gradient-to-br from-orange-400 to-orange-500 text-white",
+      shadow: "shadow-orange-200",
+      link: "/personal-care" 
+    },
+    { 
+      id: "gym",
+      name: "جيم", 
+      icon: "Dumbbell", 
+      color: "bg-gradient-to-br from-orange-500 to-orange-600 text-white",
+      shadow: "shadow-orange-200",
+      link: "/gym" 
     }
   ];
 }
@@ -108,7 +109,7 @@ export async function fetchHomeOffers(): Promise<Offer[]> {
         title: offer.title,
         description: offer.description,
         image: offer.image_url || "https://images.unsplash.com/photo-1501747315-124a0eaca060?q=80&w=500&fit=crop",
-        gradient: "from-lime-500 to-green-600",
+        gradient: "from-black/60 to-transparent",
         link: `/promotions/${offer.id}`
       }));
     }
@@ -183,33 +184,33 @@ export async function fetchHomePromos(): Promise<Promo[]> {
   return [
     {
       id: 1,
-      title: "طلب توصيل",
-      description: "سيارة فورية بأفضل سعر",
-      icon: "Car",
-      gradient: "from-black to-gray-900",
-      iconBg: "bg-white/20",
-      textColor: "text-white",
-      link: "/rides"
-    }, 
-    {
-      id: 2,
-      title: "طلب طعام",
-      description: "من أفضل المطاعم القريبة",
-      icon: "Compass",
-      gradient: "from-black to-gray-900",
-      iconBg: "bg-white/20",
-      textColor: "text-white",
-      link: "/restaurants"
-    }, 
-    {
-      id: 3,
-      title: "بقالة سريعة",
-      description: "توصيل خلال 15 دقيقة",
-      icon: "ShoppingBag",
-      gradient: "from-black to-gray-900",
+      title: "سوبر ماركت",
+      description: "خصم 50 جنيه على أول طلب",
+      icon: "Home",
+      gradient: "from-orange-500 to-orange-600",
       iconBg: "bg-white/20",
       textColor: "text-white",
       link: "/market"
+    }, 
+    {
+      id: 2,
+      title: "اشتراكات الجيم",
+      description: "اشتراك شهري بـ 300 جنيه",
+      icon: "Dumbbell",
+      gradient: "from-orange-600 to-orange-700",
+      iconBg: "bg-white/20",
+      textColor: "text-white",
+      link: "/gym"
+    }, 
+    {
+      id: 3,
+      title: "بيوتي",
+      description: "خصم 20% على كل المنتجات",
+      icon: "Brush",
+      gradient: "from-orange-500 to-orange-600",
+      iconBg: "bg-white/20",
+      textColor: "text-white",
+      link: "/personal-care"
     }
   ];
 }

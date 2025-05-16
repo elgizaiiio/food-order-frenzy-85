@@ -1,241 +1,343 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  UtensilsCrossed, 
-  ShoppingBag, 
-  Bell, 
-  Pill,
-  Scissors,
-  Star,
-  Package,
-  Clock,
-  ChevronLeft
-} from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import Categories from '@/components/Categories';
-import Offers from '@/components/Offers';
-import PopularPlaces from '@/components/ui/PopularPlaces';
-import Promos from '@/components/ui/Promos';
-import AddressInput from '@/components/AddressInput';
-import SearchInput from '@/components/SearchInput';
-import ServiceCard from '@/components/ServiceCard';
-import { Badge } from '@/components/ui/badge';
-import { useNavigate } from 'react-router-dom';
+import { Search, MapPin, ChevronDown, Bell, Clock, Car } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Card, CardContent } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 
 const Index = () => {
-  const navigate = useNavigate();
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState('all');
-  const [currentAddress, setCurrentAddress] = useState('شارع التحرير');
   
-  // تخصيص الأقسام حسب التبويب النشط
-  const mainCategories = [
-    { id: 'all', name: 'الكل' },
-    { id: 'restaurants', name: 'مطاعم' },
-    { id: 'market', name: 'بقالة' },
-    { id: 'pharmacy', name: 'صيدليات' },
-    { id: 'gym', name: 'جيم' },
-    { id: 'personal-care', name: 'العناية الشخصية' }
-  ];
-
-  // أخذ التنقل إلى الصفحات
-  const navigateTo = (path: string) => {
-    navigate(path);
-  };
-
-  // الحصول على اسم المستخدم
+  // الحصول على اسم المستخدم من البريد الإلكتروني أو عرض تحية عامة
   const firstName = user?.email ? user.email.split('@')[0] : 'صديقي';
   
+  // بيانات العناوين - في تطبيق حقيقي ستأتي من API
+  const [address, setAddress] = useState('شارع التحرير');
+  const [savedAddresses, setSavedAddresses] = useState(['شارع التحرير', 'ميدان طلعت حرب، القاهرة', 'المعادي، القاهرة']);
+
   return (
-    <div className="min-h-screen bg-gray-50" dir="rtl">
+    <div className="min-h-screen bg-gray-100" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-20">
-        {/* رأس الصفحة */}
-        <header className="sticky top-0 z-30 bg-white shadow-sm">
-          {/* شريط العنوان */}
-          <div className="flex items-center justify-between p-4 animate-fade-in">
-            <AddressInput 
-              currentAddress={currentAddress}
-              setCurrentAddress={setCurrentAddress}
-            />
-            
-            <div className="flex items-center space-x-3 space-x-reverse">
-              <Link to="/notifications" className="relative">
-                <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-                  <Bell className="w-4 h-4" />
-                </div>
-                <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full font-medium">2</span>
-              </Link>
-              <Link to="/profile">
-                <Avatar className="w-8 h-8 border border-gray-200">
-                  {user?.email ? (
-                    <AvatarImage src="" />
-                  ) : null}
-                  <AvatarFallback className="bg-orange-500 text-white text-xs">
-                    {firstName?.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-              </Link>
-            </div>
-          </div>
-          
-          {/* شريط البحث */}
-          <div className="px-4 pb-3 animate-fade-in" style={{animationDelay: "100ms"}}>
-            <SearchInput 
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-            />
-          </div>
-          
-          {/* شريط التبويبات */}
-          <div className="border-b border-gray-200">
-            <div className="flex overflow-x-auto no-scrollbar px-4">
-              {mainCategories.map(category => (
-                <button
-                  key={category.id}
-                  className={`px-4 py-3 whitespace-nowrap text-sm font-medium border-b-2 transition-colors ${
-                    activeTab === category.id 
-                      ? 'border-orange-500 text-orange-500'
-                      : 'border-transparent text-gray-500'
-                  }`}
-                  onClick={() => setActiveTab(category.id)}
-                >
-                  {category.name}
-                </button>
-              ))}
-            </div>
-          </div>
-        </header>
-        
-        {/* المحتوى الرئيسي */}
-        <main className="px-4">
-          {/* العروض والإعلانات المتحركة */}
-          <Offers />
-          
-          {/* الخدمات الرئيسية */}
-          <section className="pt-5 pb-2 animate-fade-in" style={{animationDelay: "200ms"}}>
-            <div className="flex justify-between items-center mb-4">
-              <Link to="/services" className="text-xs font-medium text-orange-500 hover:text-orange-600 flex items-center">
-                عرض الكل <ChevronLeft className="h-3 w-3 mr-1" />
-              </Link>
-              <h2 className="text-lg font-bold">اختر الخدمة</h2>
+        {/* Header with talabat styling */}
+        <div className="p-6 bg-orange-500 text-white rounded-b-3xl shadow-lg">
+          {/* تحديد العنوان */}
+          <div className="flex items-center justify-between mb-4 text-sm">
+            <div className="flex items-center gap-1.5 text-orange-100">
+              <MapPin className="w-4 h-4" />
+              <span className="font-medium">توصيل لحد عندك</span>
             </div>
             
-            <div className="grid grid-cols-2 gap-3">
-              <ServiceCard
-                icon={<UtensilsCrossed className="h-5 w-5 text-white" />}
-                title="مطاعم"
-                description="توصيل من مطاعمك المفضلة"
-                onClick={() => navigateTo('/restaurants')}
-              />
-              
-              <ServiceCard
-                icon={<ShoppingBag className="h-5 w-5 text-white" />}
-                title="بقالة"
-                description="توصيل بقالة سريع"
-                onClick={() => navigateTo('/market')}
-              />
-            </div>
-            
-            <div className="grid grid-cols-3 gap-3 mt-3">
-              <ServiceCard
-                icon={<Pill className="h-5 w-5 text-white" />}
-                title="صيدليات"
-                description="الأدوية"
-                bgClass="bg-white"
-                onClick={() => navigateTo('/pharmacy')}
-              />
-              
-              <ServiceCard
-                icon={<Star className="h-5 w-5 text-white" />}
-                title="الجيم"
-                description="اشتراكات"
-                bgClass="bg-white"
-                onClick={() => navigateTo('/gym')}
-              />
-              
-              <ServiceCard
-                icon={<Scissors className="h-5 w-5 text-white" />}
-                title="العناية"
-                description="منتجات العناية"
-                bgClass="bg-white"
-                onClick={() => navigateTo('/personal-care')}
-              />
-            </div>
-          </section>
-          
-          {/* فئات الرئيسية */}
-          <Categories />
-          
-          {/* المطاعم المميزة */}
-          <PopularPlaces title="مطاعم قريبة منك" />
-          
-          {/* عروض ترويجية */}
-          <Promos />
-          
-          {/* بقالة وسوبر ماركت */}
-          <section className="py-5 animate-fade-in" style={{animationDelay: "600ms"}}>
-            <div className="flex justify-between items-center mb-3">
-              <Link to="/market" className="text-xs font-medium text-orange-500 hover:text-orange-600 flex items-center">
-                عرض الكل <ChevronLeft className="h-3 w-3 mr-1" />
-              </Link>
-              <h2 className="text-lg font-bold">البقالة</h2>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-3">
-              <ServiceCard
-                icon={<Package className="h-5 w-5 text-white" />}
-                title="توصيل سريع"
-                description="خلال 15 دقيقة"
-                special={true}
-                onClick={() => navigateTo('/market')}
-              />
-              
-              <ServiceCard
-                icon={<Pill className="h-5 w-5 text-white" />}
-                title="صيدلية"
-                description="من أقرب صيدلية"
-                special={true}
-                onClick={() => navigateTo('/pharmacy')}
-              />
-            </div>
-            
-            {/* قسم الخصومات */}
-            <div className="mt-5 rounded-xl overflow-hidden bg-orange-500 text-white animate-fade-in" style={{animationDelay: "650ms"}}>
-              <div className="p-5 flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-bold mb-1">خصم 30% على أول طلب</h3>
-                  <p className="text-xs text-orange-100 mb-3">احصل على خصم 30% عند تسجيلك لأول مرة</p>
-                  <Button className="bg-white text-orange-600 hover:bg-gray-100 text-xs px-3 py-1 h-auto">
-                    استخدم الكود: FIRST30
+            <div className="flex items-center justify-between w-full">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="link" className="h-auto p-0 mx-1 flex items-center gap-1.5 text-white hover:text-orange-100">
+                    <span className="font-medium">{address}</span>
+                    <ChevronDown className="w-4 h-4" />
                   </Button>
-                </div>
-                <div className="rounded-full bg-white/10 p-3">
-                  <Star className="w-10 h-10 text-white" />
-                </div>
+                </PopoverTrigger>
+                <PopoverContent className="w-60" align="start">
+                  <div className="space-y-2">
+                    <h4 className="font-medium text-sm text-gray-900">العناوين المحفوظة</h4>
+                    {savedAddresses.map((addr, idx) => (
+                      <Button 
+                        key={idx} 
+                        variant="ghost" 
+                        className="w-full justify-start text-sm hover:bg-orange-50 hover:text-orange-700" 
+                        onClick={() => setAddress(addr)}
+                      >
+                        <MapPin className="w-4 h-4 ml-2 text-orange-500" />
+                        {addr}
+                      </Button>
+                    ))}
+                    <Button variant="outline" className="w-full text-xs mt-2 text-orange-700 border-orange-300 hover:bg-orange-50 hover:border-orange-400">
+                      ضيف عنوان جديد
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
+              
+              {/* زر الإشعارات */}
+              <Link to="/notifications" className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 hover:bg-white/20">
+                <Bell className="w-4 h-4 text-white" />
+              </Link>
+            </div>
+          </div>
+          
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <h1 className="text-2xl font-bold">أهلاً {firstName}!</h1>
+              <p className="text-orange-100 mt-1">عايز تطلب إيه النهاردة؟</p>
+            </div>
+            <Link to="/profile">
+              <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center shadow-inner hover:bg-white/30 transition-all">
+                {user?.email ? (
+                  <span className="text-white font-bold text-xl">{user.email.charAt(0).toUpperCase()}</span>
+                ) : (
+                  <span className="text-white font-bold">؟</span>
+                )}
+              </div>
+            </Link>
+          </div>
+          
+          {/* Quick Search Bar */}
+          <div className="mt-4 relative">
+            <Input 
+              type="text"
+              placeholder="دور على مطعم، مشروبات، أو أكلة..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full py-3 px-5 pr-12 rounded-xl bg-white/10 text-white placeholder:text-orange-100 border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/30"
+            />
+            <button className="absolute top-1/2 right-4 -translate-y-1/2 text-orange-100">
+              <Search className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+        
+        {/* Banner Slider */}
+        <BannerSlider />
+        
+        {/* Main Categories with enhanced styling */}
+        <Categories />
+        
+        {/* Value Proposition */}
+        <ValuePropositions />
+        
+        {/* Top Restaurants */}
+        <TopRestaurants />
+        
+        {/* Special Offers */}
+        <SpecialOffers />
+      </div>
+    </div>
+  );
+};
+
+// مكون شرائح البانر
+const BannerSlider = () => {
+  const banners = [
+    {
+      id: 1,
+      title: "خصم 30% على كل المطاعم",
+      image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=500&auto=format&fit=crop",
+      color: "from-orange-700 to-orange-900"
+    },
+    {
+      id: 2,
+      title: "توصيل مجاني للطلبات فوق 100 جنيه",
+      image: "https://images.unsplash.com/photo-1526367790999-0150786686a2?q=80&w=500&auto=format&fit=crop",
+      color: "from-orange-600 to-orange-800"
+    }
+  ];
+  
+  return (
+    <div className="py-4 px-4">
+      <div className="flex overflow-x-auto gap-3 pb-2 no-scrollbar">
+        {banners.map(banner => (
+          <div 
+            key={banner.id}
+            className="min-w-[280px] h-32 rounded-2xl overflow-hidden relative shadow-md flex-shrink-0"
+          >
+            <img 
+              src={banner.image} 
+              alt={banner.title} 
+              className="w-full h-full object-cover"
+            />
+            <div className={`absolute inset-0 bg-gradient-to-tr ${banner.color} opacity-70`}></div>
+            <div className="absolute inset-0 flex items-center justify-center p-6">
+              <h3 className="text-white text-xl font-bold text-center drop-shadow-md">{banner.title}</h3>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// مكون القيمة المقترحة
+const ValuePropositions = () => {
+  const values = [
+    {
+      title: "وصل بسرعة",
+      icon: <Clock className="h-5 w-5 text-orange-500" />,
+      description: "طلبك هيوصل خلال 20-30 دقيقة"
+    },
+    {
+      title: "توصيل ببلاش",
+      icon: <Car className="h-5 w-5 text-orange-500" />,
+      description: "للطلبات اللي أكتر من 50 جنيه"
+    }
+  ];
+  
+  return (
+    <div className="px-4 py-3 mb-2 bg-white">
+      <div className="flex justify-between gap-4">
+        {values.map((value, index) => (
+          <Card key={index} className="flex-1 border-none shadow-sm">
+            <CardContent className="flex items-center p-3">
+              <div className="bg-orange-100 p-2 rounded-full mr-3">
+                {value.icon}
+              </div>
+              <div>
+                <h3 className="font-bold text-sm">{value.title}</h3>
+                <p className="text-xs text-gray-600">{value.description}</p>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// مكون المطاعم المميزة
+const TopRestaurants = () => {
+  const restaurants = [
+    {
+      id: 1,
+      name: "مطعم الكشري المصري",
+      image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=300&auto=format&fit=crop",
+      rating: 4.8,
+      category: "كشري",
+      deliveryTime: "25-35 د",
+      deliveryFee: "مجاناً"
+    },
+    {
+      id: 2,
+      name: "كنتاكي",
+      image: "https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?q=80&w=300&auto=format&fit=crop",
+      rating: 4.5,
+      category: "فراخ",
+      deliveryTime: "15-25 د",
+      deliveryFee: "10 ج.م"
+    },
+    {
+      id: 3,
+      name: "برجر كينج",
+      image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=300&auto=format&fit=crop",
+      rating: 4.6,
+      category: "برجر",
+      deliveryTime: "20-30 د",
+      deliveryFee: "مجاناً"
+    }
+  ];
+  
+  return (
+    <div className="py-6 bg-white mt-2">
+      <div className="flex justify-between items-center mb-4 px-4">
+        <Link to="/restaurants" className="text-sm font-medium text-orange-500 hover:text-orange-600">
+          شوف الكل
+        </Link>
+        <h2 className="text-xl font-bold text-gray-900">مطاعم قريبة منك</h2>
+      </div>
+      
+      <div className="scroll-container px-4 no-scrollbar">
+        {restaurants.map((restaurant, index) => (
+          <Card 
+            key={restaurant.id} 
+            className="w-64 flex-shrink-0 border-none shadow-sm hover:shadow-md transition-all animate-fade-in"
+            style={{animationDelay: `${index * 100}ms`}}
+          >
+            <div className="relative h-36">
+              <img 
+                src={restaurant.image} 
+                alt={restaurant.name} 
+                className="w-full h-full object-cover rounded-t-xl" 
+              />
+              <div className="absolute top-3 left-3 bg-white rounded-full px-2 py-0.5 text-xs font-medium flex items-center">
+                <svg className="w-3 h-3 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+                {restaurant.rating}
               </div>
             </div>
             
-            {/* قسم التوصيل السريع */}
-            <div className="mt-3 p-4 rounded-xl bg-orange-500 text-white">
-              <div className="flex items-center mb-3">
-                <div className="p-2 bg-white/20 rounded-full mr-3">
-                  <Clock className="h-5 w-5 text-white" />
+            <CardContent className="p-3">
+              <h3 className="font-bold text-gray-900 mb-1">{restaurant.name}</h3>
+              <p className="text-sm text-gray-500 mb-2">{restaurant.category}</p>
+              
+              <div className="flex justify-between items-center text-xs text-gray-600">
+                <div className="flex items-center">
+                  <Clock className="w-3 h-3 ml-1" />
+                  {restaurant.deliveryTime}
                 </div>
-                <div>
-                  <h3 className="font-bold">توصيل الطلبات</h3>
-                  <p className="text-xs text-orange-100">استلم طلبك خلال 30 دقيقة أو أقل</p>
+                <div>{restaurant.deliveryFee}</div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// مكون العروض الخاصة 
+const SpecialOffers = () => {
+  const offers = [
+    {
+      id: 1,
+      title: "خصم 30%",
+      description: "على كل الوجبات من ماكدونالدز",
+      image: "https://images.unsplash.com/photo-1561758033-7e924f619b47?q=80&w=500&auto=format&fit=crop",
+    },
+    {
+      id: 2,
+      title: "اطلب 1 واحصل على 1 ببلاش",
+      description: "من بيتزا هت على كل البيتزا",
+      image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=500&auto=format&fit=crop",
+    }
+  ];
+  
+  return (
+    <div className="py-6 bg-white mt-2">
+      <div className="flex justify-between items-center mb-4 px-4">
+        <Link to="/offers" className="text-sm font-medium text-orange-500 hover:text-orange-600">
+          شوف الكل
+        </Link>
+        <h2 className="text-xl font-bold text-gray-900">عروض حصرية</h2>
+      </div>
+      
+      <div className="scroll-container px-4 no-scrollbar">
+        {offers.map((offer, index) => (
+          <Card 
+            key={offer.id} 
+            className="w-72 flex-shrink-0 border-none shadow-sm hover:shadow-md transition-all overflow-hidden animate-fade-in"
+            style={{animationDelay: `${index * 100 + 300}ms`}}
+          >
+            <div className="relative h-40">
+              <img 
+                src={offer.image} 
+                alt={offer.title} 
+                className="w-full h-full object-cover" 
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent">
+                <div className="absolute bottom-4 right-4 text-white text-right">
+                  <h3 className="text-xl font-bold">{offer.title}</h3>
+                  <p className="text-sm mt-1">{offer.description}</p>
                 </div>
               </div>
-              <Button className="bg-white text-orange-600 hover:bg-gray-100 w-full mt-2">
-                اطلب الآن
-              </Button>
             </div>
-          </section>
-        </main>
+          </Card>
+        ))}
+      </div>
+      
+      {/* Download App Banner */}
+      <div className="mt-8 mx-4">
+        <Card className="border-none overflow-hidden bg-gradient-to-r from-orange-500 to-orange-600">
+          <div className="p-5 text-white">
+            <h3 className="text-xl font-bold mb-2">عايز تجربة أحسن؟</h3>
+            <p className="text-sm mb-4">نزل تطبيق طلبات دلوقتي وخد مميزات حصرية</p>
+            <Button className="bg-white text-orange-600 hover:bg-orange-50">
+              حمل التطبيق
+            </Button>
+          </div>
+        </Card>
       </div>
     </div>
   );
