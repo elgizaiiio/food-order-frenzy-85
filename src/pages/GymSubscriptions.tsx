@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Calendar, Share, Clock, MapPin, Trophy, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, MapPin, Trophy, ChevronRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -49,8 +49,8 @@ const GymSubscriptions = () => {
     <div className="min-h-screen bg-gray-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-20">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-700 to-indigo-700 text-white sticky top-0 z-10 shadow-md">
-          <Link to="/gym" className="text-white hover:text-blue-200 transition-colors">
+        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white sticky top-0 z-10 shadow-md rounded-b-xl">
+          <Link to="/gym" className="text-white hover:text-orange-100 transition-colors">
             <ArrowLeft className="w-6 h-6" />
           </Link>
           <h1 className="text-xl font-bold">اشتراكاتك</h1>
@@ -63,25 +63,25 @@ const GymSubscriptions = () => {
             <div className="space-y-4">
               {[1, 2].map(i => (
                 <Card key={i} className="overflow-hidden border-none shadow-md animate-pulse">
-                  <div className="h-32 bg-blue-100"></div>
+                  <div className="h-32 bg-orange-100"></div>
                   <div className="p-4">
-                    <div className="h-6 bg-blue-100 rounded-md mb-2 w-3/4"></div>
-                    <div className="h-4 bg-blue-100 rounded-md mb-4 w-1/2"></div>
-                    <div className="h-10 bg-blue-100 rounded-md w-full"></div>
+                    <div className="h-6 bg-orange-100 rounded-md mb-2 w-3/4"></div>
+                    <div className="h-4 bg-orange-100 rounded-md mb-4 w-1/2"></div>
+                    <div className="h-10 bg-orange-100 rounded-md w-full"></div>
                   </div>
                 </Card>
               ))}
             </div>
           ) : subscriptions.length === 0 ? (
             <div className="text-center py-8">
-              <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-blue-100 flex items-center justify-center">
-                <Trophy className="w-10 h-10 text-blue-600" />
+              <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-orange-100 flex items-center justify-center">
+                <Trophy className="w-10 h-10 text-orange-600" />
               </div>
-              <h3 className="text-xl font-bold text-blue-900 mb-2">لا توجد اشتراكات</h3>
-              <p className="text-blue-700 mb-6">لم تقم بالاشتراك في أي نادي حتى الآن</p>
+              <h3 className="text-xl font-bold text-orange-900 mb-2">لا توجد اشتراكات</h3>
+              <p className="text-orange-700 mb-6">لم تقم بالاشتراك في أي نادي حتى الآن</p>
               <Link to="/gym">
                 <Button 
-                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md"
+                  className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-md"
                 >
                   تصفح النوادي
                 </Button>
@@ -92,25 +92,25 @@ const GymSubscriptions = () => {
               {subscriptions.map((subscription) => (
                 <Card 
                   key={subscription.id}
-                  className="overflow-hidden border border-blue-100 shadow-md hover:shadow-lg transition-all"
+                  className="overflow-hidden border border-orange-100 shadow-md hover:shadow-lg transition-all"
                 >
-                  <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100">
+                  <div className="p-4 bg-gradient-to-r from-orange-50 to-amber-50 border-b border-orange-100">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
-                        <div className="w-10 h-10 rounded-full bg-blue-100 border border-blue-200 overflow-hidden">
+                        <div className="w-10 h-10 rounded-full bg-orange-100 border border-orange-200 overflow-hidden">
                           <img 
                             src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?auto=format&fit=crop&q=80&w=100&h=100" 
                             alt={subscription.gym_id} 
                             className="w-full h-full object-cover"
                           />
                         </div>
-                        <div className="ml-3">
-                          <h3 className="font-bold text-blue-800">
+                        <div className="mr-3">
+                          <h3 className="font-bold text-orange-800">
                             {/* Display gym name if available, fallback to gym ID */}
                             {subscription.gym_id}
                           </h3>
-                          <div className="text-xs text-blue-600 flex items-center">
-                            <Clock className="w-3 h-3 mr-1" />
+                          <div className="text-xs text-orange-600 flex items-center">
+                            <Clock className="w-3 h-3 ml-1" />
                             <span>اشتراك {subscription.plan_name}</span>
                           </div>
                         </div>
@@ -132,31 +132,31 @@ const GymSubscriptions = () => {
                   <CardContent className="p-4">
                     <div className="space-y-3 mb-4">
                       <div className="flex items-center text-sm">
-                        <Calendar className="w-4 h-4 text-blue-600 mr-2" />
+                        <Calendar className="w-4 h-4 text-orange-600 ml-2" />
                         <div>
-                          <span className="text-blue-700">تاريخ بداية الاشتراك: </span>
-                          <span className="text-blue-900 font-medium">{formatDate(subscription.start_date)}</span>
+                          <span className="text-orange-700">تاريخ بداية الاشتراك: </span>
+                          <span className="text-orange-900 font-medium">{formatDate(subscription.start_date)}</span>
                         </div>
                       </div>
                       
                       <div className="flex items-center text-sm">
-                        <Calendar className="w-4 h-4 text-blue-600 mr-2" />
+                        <Calendar className="w-4 h-4 text-orange-600 ml-2" />
                         <div>
-                          <span className="text-blue-700">تاريخ نهاية الاشتراك: </span>
-                          <span className="text-blue-900 font-medium">{formatDate(subscription.end_date)}</span>
+                          <span className="text-orange-700">تاريخ نهاية الاشتراك: </span>
+                          <span className="text-orange-900 font-medium">{formatDate(subscription.end_date)}</span>
                         </div>
                       </div>
                       
                       <div className="flex items-center text-sm">
-                        <MapPin className="w-4 h-4 text-blue-600 mr-2" />
-                        <span className="text-blue-700">رقم العضوية: </span>
-                        <span className="text-blue-900 font-medium">{subscription.id.split('-')[0].toUpperCase()}</span>
+                        <MapPin className="w-4 h-4 text-orange-600 ml-2" />
+                        <span className="text-orange-700">رقم العضوية: </span>
+                        <span className="text-orange-900 font-medium">{subscription.id.split('-')[0].toUpperCase()}</span>
                       </div>
                     </div>
                     
                     <Button
-                      variant="outlineBlue"
-                      className="w-full border-blue-200 text-blue-700 hover:bg-blue-50 flex items-center justify-between"
+                      variant="outline"
+                      className="w-full border-orange-200 text-orange-700 hover:bg-orange-50 flex items-center justify-between"
                       onClick={() => toast.info('سيتم إضافة تفاصيل الاشتراك قريباً')}
                     >
                       <span>عرض التفاصيل</span>
@@ -172,8 +172,8 @@ const GymSubscriptions = () => {
           {subscriptions.length > 0 && (
             <Link to="/gym">
               <Button
-                variant="outlineBlue"
-                className="w-full mt-6 border-blue-200 text-blue-700 hover:bg-blue-50"
+                variant="outline"
+                className="w-full mt-6 border-orange-200 text-orange-700 hover:bg-orange-50"
               >
                 استكشف المزيد من النوادي
               </Button>

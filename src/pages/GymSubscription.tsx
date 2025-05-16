@@ -111,8 +111,8 @@ const GymSubscription: React.FC = () => {
     <div className="min-h-screen bg-gray-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-20">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-700 to-indigo-700 text-white sticky top-0 z-10 shadow-md">
-          <Link to="/gym" className="text-white hover:text-blue-200 transition-colors">
+        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-orange-600 to-orange-700 text-white sticky top-0 z-10 shadow-md rounded-b-xl">
+          <Link to="/gym" className="text-white hover:text-orange-100 transition-colors">
             <ArrowLeft className="w-6 h-6" />
           </Link>
           <h1 className="text-xl font-bold">خطط الاشتراك</h1>
@@ -121,7 +121,7 @@ const GymSubscription: React.FC = () => {
 
         {/* Gym banner */}
         {loading || !gymInfo ? (
-          <div className="relative h-48 bg-blue-100 animate-pulse"></div>
+          <div className="relative h-48 bg-orange-100 animate-pulse"></div>
         ) : (
           <div className="relative">
             <div className="h-48">
@@ -130,7 +130,7 @@ const GymSubscription: React.FC = () => {
                 alt={gymInfo.name} 
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-blue-900/80 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-orange-900/80 to-transparent"></div>
             </div>
             <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
               <div className="flex justify-between items-end">
@@ -160,19 +160,19 @@ const GymSubscription: React.FC = () => {
         {gymInfo && (
           <div className="px-4 py-4 flex justify-between gap-2">
             {gymInfo.openHours && (
-              <Card className="border-0 shadow-sm flex-1 bg-blue-50 border border-blue-100">
+              <Card className="border-0 shadow-sm flex-1 bg-orange-50 border border-orange-100">
                 <CardContent className="p-3 flex flex-col items-center">
-                  <Clock className="w-5 h-5 text-blue-600 mb-1" />
-                  <span className="text-xs text-blue-700">ساعات العمل</span>
-                  <span className="text-sm font-medium text-blue-900">{gymInfo.openHours}</span>
+                  <Clock className="w-5 h-5 text-orange-600 mb-1" />
+                  <span className="text-xs text-orange-700">ساعات العمل</span>
+                  <span className="text-sm font-medium text-orange-900">{gymInfo.openHours}</span>
                 </CardContent>
               </Card>
             )}
-            <Card className="border-0 shadow-sm flex-1 bg-blue-50 border border-blue-100">
+            <Card className="border-0 shadow-sm flex-1 bg-orange-50 border border-orange-100">
               <CardContent className="p-3 flex flex-col items-center">
-                <Users className="w-5 h-5 text-blue-600 mb-1" />
-                <span className="text-xs text-blue-700">الأعضاء</span>
-                <span className="text-sm font-medium text-blue-900">500+</span>
+                <Users className="w-5 h-5 text-orange-600 mb-1" />
+                <span className="text-xs text-orange-700">الأعضاء</span>
+                <span className="text-sm font-medium text-orange-900">500+</span>
               </CardContent>
             </Card>
           </div>
@@ -180,12 +180,12 @@ const GymSubscription: React.FC = () => {
 
         {/* Subscription plans */}
         <div className="px-4 py-2">
-          <h3 className="text-lg font-bold mb-4 text-blue-900">اختر خطة الاشتراك</h3>
+          <h3 className="text-lg font-bold mb-4 text-orange-900">اختر خطة الاشتراك</h3>
           
           {loading ? (
             <div className="space-y-4">
               {[1, 2, 3].map(i => (
-                <div key={i} className="h-48 bg-blue-100 animate-pulse rounded-lg"></div>
+                <div key={i} className="h-48 bg-orange-100 animate-pulse rounded-lg"></div>
               ))}
             </div>
           ) : (
@@ -199,31 +199,31 @@ const GymSubscription: React.FC = () => {
                   key={plan.id}
                   className={`border rounded-xl transition-all overflow-hidden ${
                     selectedPlan === plan.id 
-                      ? 'border-blue-500 ring-2 ring-blue-300 shadow-md' 
+                      ? 'border-orange-500 ring-2 ring-orange-300 shadow-md' 
                       : 'border-gray-200'
                   } ${plan.recommended ? 'relative' : ''}`}
                 >
                   {plan.recommended && (
-                    <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs py-1 px-3 text-center font-medium">
+                    <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs py-1 px-3 text-center font-medium">
                       الخيار الأفضل
                     </div>
                   )}
-                  <div className={`p-4 ${plan.recommended ? 'pt-8' : ''} ${selectedPlan === plan.id ? 'bg-blue-50' : 'bg-white'}`}>
+                  <div className={`p-4 ${plan.recommended ? 'pt-8' : ''} ${selectedPlan === plan.id ? 'bg-orange-50' : 'bg-white'}`}>
                     <div className="flex items-center space-x-2 space-x-reverse">
                       <RadioGroupItem 
                         value={plan.id} 
                         id={plan.id} 
-                        className="border-blue-600 text-blue-600"
+                        className="border-orange-600 text-orange-600"
                       />
                       <div className="w-full flex justify-between items-center">
                         <Label htmlFor={plan.id} className="flex-1 cursor-pointer">
-                          <div className="font-bold text-lg text-blue-800">{plan.title}</div>
-                          <div className="text-sm text-blue-700">{plan.duration}</div>
+                          <div className="font-bold text-lg text-orange-800">{plan.title}</div>
+                          <div className="text-sm text-orange-700">{plan.duration}</div>
                         </Label>
                         <div className="text-right">
-                          <div className="font-bold text-lg text-blue-800">{plan.price} جنيه</div>
+                          <div className="font-bold text-lg text-orange-800">{plan.price} جنيه</div>
                           {plan.priceDiscount && (
-                            <div className="text-xs line-through text-blue-400">{plan.priceDiscount} جنيه</div>
+                            <div className="text-xs line-through text-orange-400">{plan.priceDiscount} جنيه</div>
                           )}
                         </div>
                       </div>
@@ -232,10 +232,10 @@ const GymSubscription: React.FC = () => {
                     <div className="mt-4 space-y-2 pl-8">
                       {plan.features.map((feature, idx) => (
                         <div key={idx} className="flex items-start">
-                          <div className="mt-0.5 min-w-4 w-4 h-4 bg-blue-100 rounded-full flex items-center justify-center mr-2">
-                            <Check className="w-3 h-3 text-blue-600" />
+                          <div className="mt-0.5 min-w-4 w-4 h-4 bg-orange-100 rounded-full flex items-center justify-center mr-2">
+                            <Check className="w-3 h-3 text-orange-600" />
                           </div>
-                          <span className="text-sm text-blue-700">{feature}</span>
+                          <span className="text-sm text-orange-700">{feature}</span>
                         </div>
                       ))}
                     </div>
@@ -248,7 +248,7 @@ const GymSubscription: React.FC = () => {
           <Button 
             onClick={handleSubmit}
             disabled={loading || !gymInfo}
-            className="w-full mt-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md py-6"
+            className="w-full mt-6 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-md py-6"
           >
             اختر هذه الخطة
           </Button>
