@@ -25,6 +25,11 @@ export function useProductsByCategory(category: string) {
   });
 }
 
+// Alias for useProductsByCategory to match component import
+export function usePersonalCareProductsByCategory(category: string) {
+  return useProductsByCategory(category);
+}
+
 export function useProductsByGender(gender: string) {
   return useQuery({
     queryKey: ['personal-care-gender', gender],
@@ -40,6 +45,27 @@ export function useProductDetails(id: string) {
     queryFn: () => fetchProductById(id),
     staleTime: 5 * 60 * 1000,
     enabled: !!id,
+  });
+}
+
+// Alias for useProductDetails to match component import
+export function usePersonalCareProduct(id: string) {
+  return useProductDetails(id);
+}
+
+// New function for related products 
+export function usePersonalCareRelatedProducts(productId: string) {
+  return useQuery({
+    queryKey: ['personal-care-related', productId],
+    queryFn: () => {
+      // This would typically fetch related products from a service
+      // For now, we'll reuse the fetchPersonalCareProducts function and filter out the current product
+      return fetchPersonalCareProducts().then(products => 
+        products.filter(product => product.id !== productId).slice(0, 5)
+      );
+    },
+    staleTime: 5 * 60 * 1000,
+    enabled: !!productId,
   });
 }
 
