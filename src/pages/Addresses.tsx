@@ -5,7 +5,7 @@ import { ArrowLeft, PlusCircle, MapPin, Home, Briefcase, Edit, Trash } from 'luc
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 type AddressType = 'home' | 'work' | 'other';
 
@@ -18,7 +18,6 @@ interface Address {
 }
 
 const Addresses: React.FC = () => {
-  const { toast } = useToast();
   const [addresses, setAddresses] = useState<Address[]>([
     {
       id: '1',
@@ -38,10 +37,7 @@ const Addresses: React.FC = () => {
 
   const deleteAddress = (id: string) => {
     setAddresses(addresses.filter(address => address.id !== id));
-    toast({
-      title: "تم حذف العنوان",
-      description: "تم حذف العنوان بنجاح"
-    });
+    toast.success("تم حذف العنوان بنجاح");
   };
 
   const setAsDefault = (id: string) => {
@@ -49,16 +45,13 @@ const Addresses: React.FC = () => {
       ...address,
       isDefault: address.id === id
     })));
-    toast({
-      title: "تم تغيير العنوان الافتراضي",
-      description: "تم تحديث العنوان الافتراضي بنجاح"
-    });
+    toast.success("تم تحديث العنوان الافتراضي بنجاح");
   };
 
   const getAddressIcon = (type: AddressType) => {
     switch(type) {
       case 'home':
-        return <Home className="w-5 h-5 text-blue-500" />;
+        return <Home className="w-5 h-5 text-brand-500" />;
       case 'work':
         return <Briefcase className="w-5 h-5 text-green-500" />;
       default:
@@ -70,8 +63,8 @@ const Addresses: React.FC = () => {
     <div className="min-h-screen bg-gray-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-20">
         {/* Header */}
-        <div className="sticky top-0 flex items-center justify-between p-4 bg-white shadow-sm z-10">
-          <Link to="/profile" className="text-gray-700">
+        <div className="sticky top-0 flex items-center justify-between p-4 bg-gradient-to-r from-brand-500 to-brand-600 text-white z-10 shadow-md">
+          <Link to="/profile" className="text-white">
             <ArrowLeft className="w-6 h-6" />
           </Link>
           <h1 className="text-xl font-bold">العناوين المحفوظة</h1>
@@ -81,7 +74,7 @@ const Addresses: React.FC = () => {
         {/* Add New Address Button */}
         <div className="px-4 py-6">
           <Link to="/add-address">
-            <Button className="w-full flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600">
+            <Button className="w-full flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white">
               <PlusCircle className="w-5 h-5" />
               أضف عنوان جديد
             </Button>
@@ -95,7 +88,7 @@ const Addresses: React.FC = () => {
               <CardContent className="p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-3">
-                    <div className="mt-1 w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
+                    <div className="mt-1 w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center">
                       {getAddressIcon(address.type)}
                     </div>
                     <div>
@@ -138,11 +131,11 @@ const Addresses: React.FC = () => {
                           >
                             نعم، حذف العنوان
                           </Button>
-                          <Button 
-                            variant="destructive"
-                          >
-                            إلغاء
-                          </Button>
+                          <DialogTrigger asChild>
+                            <Button variant="destructive">
+                              إلغاء
+                            </Button>
+                          </DialogTrigger>
                         </div>
                       </DialogContent>
                     </Dialog>

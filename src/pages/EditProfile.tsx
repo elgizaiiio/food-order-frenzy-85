@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 const EditProfile: React.FC = () => {
   const navigate = useNavigate();
@@ -52,23 +52,19 @@ const EditProfile: React.FC = () => {
       profilePicture: formData.profilePicture,
     });
     
-    toast({
-      title: "تم تحديث الملف الشخصي",
-      description: "تم حفظ التغييرات بنجاح",
-    });
-    
+    toast.success("تم تحديث الملف الشخصي بنجاح");
     navigate('/profile');
   };
 
   return (
-    <div className="min-h-screen bg-blue-50" dir="rtl">
+    <div className="min-h-screen bg-gray-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white">
         {/* Header */}
         <div className="sticky top-0 flex items-center justify-between p-4 bg-white shadow-sm z-10">
-          <Link to="/profile" className="text-blue-600">
+          <Link to="/profile" className="text-brand-600">
             <ArrowLeft className="w-6 h-6" />
           </Link>
-          <h1 className="text-xl font-bold text-blue-800">تعديل الملف الشخصي</h1>
+          <h1 className="text-xl font-bold text-gray-900">تعديل الملف الشخصي</h1>
           <div className="w-6"></div>
         </div>
 
@@ -83,12 +79,12 @@ const EditProfile: React.FC = () => {
                     alt={formData.name} 
                   />
                 ) : (
-                  <AvatarFallback className="bg-gradient-to-br from-blue-400 to-blue-600 text-white text-2xl">
+                  <AvatarFallback className="bg-gradient-to-br from-brand-400 to-brand-600 text-white text-2xl">
                     {formData.name.charAt(0)}
                   </AvatarFallback>
                 )}
               </Avatar>
-              <label htmlFor="profile-picture" className="absolute bottom-0 right-0 bg-blue-500 hover:bg-blue-600 rounded-full p-2 cursor-pointer shadow-md transition-colors">
+              <label htmlFor="profile-picture" className="absolute bottom-0 right-0 bg-brand-500 hover:bg-brand-600 rounded-full p-2 cursor-pointer shadow-md transition-colors">
                 <Upload className="w-4 h-4 text-white" />
               </label>
               <input 
@@ -99,43 +95,43 @@ const EditProfile: React.FC = () => {
                 onChange={handleImageUpload}
               />
             </div>
-            <p className="text-sm text-blue-600">اضغط على الأيقونة لتغيير الصورة الشخصية</p>
+            <p className="text-sm text-brand-600">اضغط على الأيقونة لتغيير الصورة الشخصية</p>
           </div>
 
           {/* Name Input */}
           <div className="mb-6 animate-fade-in" style={{ animationDelay: "100ms" }}>
-            <Label htmlFor="name" className="block mb-2 text-blue-800">الاسم</Label>
+            <Label htmlFor="name" className="block mb-2 text-gray-800">الاسم</Label>
             <Input
               id="name"
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              className="w-full border-blue-200 focus:border-blue-400 focus:ring-blue-300"
+              className="w-full border-gray-200 focus:border-brand-400 focus:ring-brand-300"
               required
             />
           </div>
 
           {/* Username Input */}
           <div className="mb-8 animate-fade-in" style={{ animationDelay: "200ms" }}>
-            <Label htmlFor="username" className="block mb-2 text-blue-800">اسم المستخدم</Label>
+            <Label htmlFor="username" className="block mb-2 text-gray-800">اسم المستخدم</Label>
             <div className="relative">
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-400">@</span>
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-400">@</span>
               <Input
                 id="username"
                 name="username"
                 value={formData.username}
                 onChange={handleInputChange}
-                className="w-full pr-8 border-blue-200 focus:border-blue-400 focus:ring-blue-300"
+                className="w-full pr-8 border-gray-200 focus:border-brand-400 focus:ring-brand-300"
                 required
               />
             </div>
-            <p className="text-xs text-blue-500 mt-1">سيظهر اسم المستخدم في صفحتك الشخصية</p>
+            <p className="text-xs text-brand-500 mt-1">سيظهر اسم المستخدم في صفحتك الشخصية</p>
           </div>
 
           {/* Submit Button */}
           <Button 
             type="submit" 
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl shadow-md animate-fade-in"
+            className="w-full bg-brand-500 hover:bg-brand-600 text-white font-medium py-3 rounded-xl shadow-md animate-fade-in"
             style={{ animationDelay: "300ms" }}
           >
             حفظ التغييرات

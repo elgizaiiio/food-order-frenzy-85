@@ -27,7 +27,7 @@ const Profile: React.FC = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex justify-center items-center" dir="rtl">
-        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-16 h-16 border-4 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -39,12 +39,12 @@ const Profile: React.FC = () => {
     <div className="min-h-screen bg-gray-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-20">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-700 to-indigo-800 text-white sticky top-0 z-10 shadow-md">
-          <Link to="/" className="text-white hover:text-blue-200">
+        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-brand-500 to-brand-600 text-white sticky top-0 z-10 shadow-md">
+          <Link to="/" className="text-white hover:text-brand-200">
             <ArrowLeft className="w-6 h-6" />
           </Link>
           <h1 className="text-xl font-bold">الملف الشخصي</h1>
-          <Link to="/settings" className="text-white hover:text-blue-200">
+          <Link to="/settings" className="text-white hover:text-brand-200">
             <Settings className="w-6 h-6" />
           </Link>
         </div>
@@ -56,19 +56,19 @@ const Profile: React.FC = () => {
               {profileImage ? (
                 <AvatarImage src={profileImage} />
               ) : null}
-              <AvatarFallback className="bg-blue-100 text-blue-800 text-xl">
+              <AvatarFallback className="bg-brand-100 text-brand-800 text-xl">
                 {displayName.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div className="mr-4">
-              <h2 className="text-xl font-bold text-blue-900">{displayName}</h2>
-              <p className="text-blue-600">{user?.email}</p>
+              <h2 className="text-xl font-bold text-gray-900">{displayName}</h2>
+              <p className="text-brand-600">{user?.email}</p>
             </div>
           </div>
           
           <Link to="/edit-profile">
             <Button 
-              className="w-full mb-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
+              className="w-full mb-6 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white"
             >
               تعديل الملف الشخصي
             </Button>
@@ -77,12 +77,12 @@ const Profile: React.FC = () => {
           {/* Menu Options */}
           <div className="space-y-1">
             <Link to="/addresses">
-              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-blue-50 transition-colors">
+              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-brand-50 transition-colors">
                 <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                    <MapPin className="w-5 h-5 text-blue-600" />
+                  <div className="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center mr-3">
+                    <MapPin className="w-5 h-5 text-brand-600" />
                   </div>
-                  <span className="text-blue-900">العناوين</span>
+                  <span className="text-gray-900">العناوين</span>
                 </div>
                 <span className="text-gray-400">
                   <ArrowLeft className="w-5 h-5 rotate-180" />
@@ -91,12 +91,12 @@ const Profile: React.FC = () => {
             </Link>
             
             <Link to="/payment-methods">
-              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-blue-50 transition-colors">
+              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-brand-50 transition-colors">
                 <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                    <CreditCard className="w-5 h-5 text-blue-600" />
+                  <div className="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center mr-3">
+                    <CreditCard className="w-5 h-5 text-brand-600" />
                   </div>
-                  <span className="text-blue-900">طرق الدفع</span>
+                  <span className="text-gray-900">طرق الدفع</span>
                 </div>
                 <span className="text-gray-400">
                   <ArrowLeft className="w-5 h-5 rotate-180" />
@@ -105,26 +105,12 @@ const Profile: React.FC = () => {
             </Link>
             
             <Link to="/orders">
-              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-blue-50 transition-colors">
+              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-brand-50 transition-colors">
                 <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                    <Package className="w-5 h-5 text-blue-600" />
+                  <div className="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center mr-3">
+                    <Package className="w-5 h-5 text-brand-600" />
                   </div>
-                  <span className="text-blue-900">الطلبات السابقة</span>
-                </div>
-                <span className="text-gray-400">
-                  <ArrowLeft className="w-5 h-5 rotate-180" />
-                </span>
-              </div>
-            </Link>
-            
-            <Link to="/gym/subscriptions">
-              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-blue-50 transition-colors">
-                <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                    <User className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <span className="text-blue-900">اشتراكات النوادي</span>
+                  <span className="text-gray-900">الطلبات السابقة</span>
                 </div>
                 <span className="text-gray-400">
                   <ArrowLeft className="w-5 h-5 rotate-180" />
@@ -133,12 +119,12 @@ const Profile: React.FC = () => {
             </Link>
             
             <Link to="/coupons">
-              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-blue-50 transition-colors">
+              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-brand-50 transition-colors">
                 <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                    <Ticket className="w-5 h-5 text-blue-600" />
+                  <div className="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center mr-3">
+                    <Ticket className="w-5 h-5 text-brand-600" />
                   </div>
-                  <span className="text-blue-900">الكوبونات</span>
+                  <span className="text-gray-900">الكوبونات</span>
                 </div>
                 <span className="text-gray-400">
                   <ArrowLeft className="w-5 h-5 rotate-180" />
@@ -147,12 +133,12 @@ const Profile: React.FC = () => {
             </Link>
             
             <Link to="/chat-support">
-              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-blue-50 transition-colors">
+              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-brand-50 transition-colors">
                 <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                    <MessageSquare className="w-5 h-5 text-blue-600" />
+                  <div className="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center mr-3">
+                    <MessageSquare className="w-5 h-5 text-brand-600" />
                   </div>
-                  <span className="text-blue-900">الدعم الفني</span>
+                  <span className="text-gray-900">الدعم الفني</span>
                 </div>
                 <span className="text-gray-400">
                   <ArrowLeft className="w-5 h-5 rotate-180" />
@@ -161,12 +147,12 @@ const Profile: React.FC = () => {
             </Link>
             
             <Link to="/invite-friends">
-              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-blue-50 transition-colors">
+              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-brand-50 transition-colors">
                 <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                    <UserPlus className="w-5 h-5 text-blue-600" />
+                  <div className="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center mr-3">
+                    <UserPlus className="w-5 h-5 text-brand-600" />
                   </div>
-                  <span className="text-blue-900">دعوة الأصدقاء</span>
+                  <span className="text-gray-900">دعوة الأصدقاء</span>
                 </div>
                 <span className="text-gray-400">
                   <ArrowLeft className="w-5 h-5 rotate-180" />
