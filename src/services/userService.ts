@@ -1,6 +1,5 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { Database } from '@/integrations/supabase/types';
 
 export interface UserAddress {
   id: string;
@@ -29,7 +28,7 @@ export async function fetchUserAddresses(): Promise<UserAddress[]> {
     if (!user) return [];
     
     const { data, error } = await supabase
-      .from('addresses')
+      .from('user_addresses') // استخدام اسم الجدول الصحيح
       .select('*')
       .eq('user_id', user.id)
       .order('is_default', { ascending: false });
@@ -52,7 +51,7 @@ export async function addUserAddress(address: Omit<UserAddress, 'id' | 'user_id'
     if (!user) throw new Error('يجب تسجيل الدخول أولاً');
     
     const { data, error } = await supabase
-      .from('addresses')
+      .from('user_addresses') // استخدام اسم الجدول الصحيح
       .insert({
         ...address,
         user_id: user.id
@@ -78,7 +77,7 @@ export async function deleteUserAddress(addressId: string): Promise<void> {
     if (!user) throw new Error('يجب تسجيل الدخول أولاً');
     
     const { error } = await supabase
-      .from('addresses')
+      .from('user_addresses') // استخدام اسم الجدول الصحيح
       .delete()
       .eq('id', addressId)
       .eq('user_id', user.id);
@@ -100,13 +99,13 @@ export async function setDefaultAddress(addressId: string): Promise<void> {
     
     // أولاً، إعادة تعيين جميع العناوين إلى غير افتراضي
     await supabase
-      .from('addresses')
+      .from('user_addresses') // استخدام اسم الجدول الصحيح
       .update({ is_default: false })
       .eq('user_id', user.id);
     
     // ثم تعيين العنوان المحدد كعنوان افتراضي
     const { error } = await supabase
-      .from('addresses')
+      .from('user_addresses') // استخدام اسم الجدول الصحيح
       .update({ is_default: true })
       .eq('id', addressId)
       .eq('user_id', user.id);

@@ -66,8 +66,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       setSession(data.session);
       setUser(data.user);
-      
-      return data;
     } catch (error: any) {
       console.error('خطأ في تسجيل الدخول', error);
       throw error;
@@ -90,8 +88,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       
       toast.success('تم إنشاء الحساب بنجاح! يرجى التحقق من بريدك الإلكتروني للتأكيد.');
-      
-      return data;
     } catch (error: any) {
       console.error('خطأ في إنشاء الحساب', error);
       throw error;
@@ -133,7 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const value = {
+  const value: AuthContextType = {
     user,
     session,
     isLoading,

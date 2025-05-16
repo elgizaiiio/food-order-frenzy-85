@@ -7,10 +7,10 @@ interface AuthGuardProps {
 }
 
 const AuthGuard = ({ children }: AuthGuardProps) => {
-  const { user, loading } = useAuth();
+  const { user, isLoading } = useAuth();
   const location = useLocation();
 
-  if (loading) {
+  if (isLoading) {
     // While checking authentication status, you could return a loading component
     return (
       <div className="flex items-center justify-center min-h-screen bg-blue-50">

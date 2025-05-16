@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Mail, Lock, EyeOff, Eye } from 'lucide-react';
@@ -6,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -37,13 +35,8 @@ const Login: React.FC = () => {
     setLoading(true);
     
     try {
-      // الاتصال بـ Supabase للمصادقة
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      
-      if (error) throw error;
+      // استخدام دالة تسجيل الدخول من سياق المصادقة
+      await signIn(email, password);
       
       // تم تسجيل الدخول بنجاح
       toast.success('تم تسجيل الدخول بنجاح');
