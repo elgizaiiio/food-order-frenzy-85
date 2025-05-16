@@ -3,15 +3,12 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import Categories from '@/components/Categories';
-// إزالة استيراد مكون العروض
 import PopularRestaurants from '@/components/PopularRestaurants';
-// إزالة استيراد مكون Promos
 import { Search, MapPin, ChevronDown, Bell, ShoppingBag, Clock, Car } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Card, CardContent } from '@/components/ui/card';
-import Offers from '@/components/Offers';
 
 const Index = () => {
   const { user } = useAuth();
@@ -113,16 +110,8 @@ const Index = () => {
           {/* Banner Slider with improved styling */}
           <BannerSlider />
           
-          {/* تم حذف مكون ValuePropositions الذي يحتوي على "توصيل مجاني" */}
-          
-          {/* Improved Offers Section */}
-          <Offers />
-          
           {/* Popular Restaurants */}
           <PopularRestaurants />
-          
-          {/* Download App Banner with improved styling */}
-          <DownloadAppBanner />
         </main>
       </div>
     </div>
@@ -168,21 +157,6 @@ const BannerSlider = () => {
         ))}
       </div>
     </div>
-  );
-};
-
-// مكون تحميل التطبيق محسن
-const DownloadAppBanner = () => {
-  return (
-    <Card className="border-none overflow-hidden bg-gradient-to-r from-orange-500 to-orange-600 animate-fade-in animate-delay-4 mb-6 rounded-xl shadow-md hover:shadow-lg transition-all">
-      <div className="p-5 text-white">
-        <h3 className="text-lg font-bold mb-2">عايز تجربة أفضل؟</h3>
-        <p className="text-sm mb-4">نزل التطبيق واحصل على خصومات حصرية</p>
-        <Button className="bg-white text-orange-600 hover:bg-orange-50 font-medium">
-          تحميل التطبيق
-        </Button>
-      </div>
-    </Card>
   );
 };
 
