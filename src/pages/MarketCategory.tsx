@@ -86,27 +86,27 @@ const MarketCategoryContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-blue-50" dir="rtl">
+    <div className="min-h-screen bg-gray-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-24">
         {/* Header */}
         <div className="sticky top-0 z-10 bg-white shadow-md">
-          <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-600 to-blue-800 text-white">
-            <Link to="/market" className="text-white hover:text-blue-100">
+          <div className="flex items-center justify-between p-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+            <Link to="/market" className="text-white hover:text-orange-100">
               <ArrowLeft className="w-6 h-6" />
             </Link>
             <h1 className="text-xl font-bold">{currentCategory}</h1>
             <div className="flex items-center gap-3">
-              <button className="text-white hover:text-blue-100">
+              <button className="text-white hover:text-orange-100">
                 <Search className="w-5 h-5" />
               </button>
-              <button className="text-white hover:text-blue-100">
+              <button className="text-white hover:text-orange-100">
                 <Share className="w-5 h-5" />
               </button>
             </div>
           </div>
 
           {/* Location Bar */}
-          <div className="flex items-center gap-2 px-4 py-2 border-b text-sm bg-blue-700 text-blue-100">
+          <div className="flex items-center gap-2 px-4 py-2 border-b text-sm bg-orange-400 text-orange-100">
             <MapPin className="w-4 h-4" />
             <span>التوصيل إلى:</span>
             <div className="flex items-center">
@@ -116,16 +116,16 @@ const MarketCategoryContent: React.FC = () => {
           </div>
 
           {/* Search Bar */}
-          <div className="px-4 py-3 bg-blue-500">
+          <div className="px-4 py-3 bg-orange-300">
             <div className="relative">
               <Input 
                 type="search" 
                 placeholder="ابحث في المنتجات..." 
-                className="pr-10 bg-white/95 border-0 rounded-xl text-blue-900 placeholder:text-blue-400"
+                className="pr-10 bg-white/95 border-0 rounded-xl text-orange-900 placeholder:text-orange-300"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-400 w-5 h-5" />
+              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-orange-400 w-5 h-5" />
             </div>
           </div>
 
@@ -136,7 +136,7 @@ const MarketCategoryContent: React.FC = () => {
                 variant={activeFilter === 'all' ? 'default' : 'outline'} 
                 size="sm" 
                 onClick={() => setActiveFilter('all')}
-                className={activeFilter === 'all' ? 'bg-blue-600 text-white hover:bg-blue-700' : 'text-blue-700 border-blue-200 hover:bg-blue-50'}
+                className={activeFilter === 'all' ? 'bg-orange-600 text-white hover:bg-orange-700' : 'text-orange-700 border-orange-200 hover:bg-orange-50'}
               >
                 الكل
               </Button>
@@ -144,7 +144,7 @@ const MarketCategoryContent: React.FC = () => {
                 variant={activeFilter === 'inStock' ? 'default' : 'outline'} 
                 size="sm" 
                 onClick={() => setActiveFilter('inStock')}
-                className={activeFilter === 'inStock' ? 'bg-blue-600 text-white hover:bg-blue-700' : 'text-blue-700 border-blue-200 hover:bg-blue-50'}
+                className={activeFilter === 'inStock' ? 'bg-orange-600 text-white hover:bg-orange-700' : 'text-orange-700 border-orange-200 hover:bg-orange-50'}
               >
                 متوفر
               </Button>
@@ -152,7 +152,7 @@ const MarketCategoryContent: React.FC = () => {
                 variant={activeFilter === 'priceAsc' ? 'default' : 'outline'} 
                 size="sm" 
                 onClick={() => setActiveFilter('priceAsc')}
-                className={activeFilter === 'priceAsc' ? 'bg-blue-600 text-white hover:bg-blue-700' : 'text-blue-700 border-blue-200 hover:bg-blue-50'}
+                className={activeFilter === 'priceAsc' ? 'bg-orange-600 text-white hover:bg-orange-700' : 'text-orange-700 border-orange-200 hover:bg-orange-50'}
               >
                 السعر: من الأقل للأعلى
               </Button>
@@ -160,7 +160,7 @@ const MarketCategoryContent: React.FC = () => {
                 variant={activeFilter === 'priceDesc' ? 'default' : 'outline'} 
                 size="sm" 
                 onClick={() => setActiveFilter('priceDesc')}
-                className={activeFilter === 'priceDesc' ? 'bg-blue-600 text-white hover:bg-blue-700' : 'text-blue-700 border-blue-200 hover:bg-blue-50'}
+                className={activeFilter === 'priceDesc' ? 'bg-orange-600 text-white hover:bg-orange-700' : 'text-orange-700 border-orange-200 hover:bg-orange-50'}
               >
                 السعر: من الأعلى للأقل
               </Button>
@@ -193,19 +193,19 @@ const MarketCategoryContent: React.FC = () => {
               <p className="text-gray-500 mb-4">حدثت مشكلة أثناء الاتصال بالخادم. يرجى المحاولة لاحقًا</p>
               <Button 
                 onClick={() => window.location.reload()}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                className="bg-orange-600 hover:bg-orange-700 text-white"
               >
                 إعادة تحميل الصفحة
               </Button>
             </div>
           ) : filteredProducts.length === 0 ? (
             <div className="text-center py-12">
-              <div className="text-blue-400 text-5xl mb-4">😕</div>
-              <h3 className="text-xl font-bold text-blue-800 mb-2">لم يتم العثور على منتجات</h3>
+              <div className="text-orange-400 text-5xl mb-4">😕</div>
+              <h3 className="text-xl font-bold text-orange-800 mb-2">لم يتم العثور على منتجات</h3>
               <p className="text-gray-500 mb-4">جرب البحث بكلمات مختلفة أو تغيير الفلتر</p>
               <Button 
                 onClick={() => {setSearchQuery(''); setActiveFilter('all');}}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                className="bg-orange-600 hover:bg-orange-700 text-white"
               >
                 عرض كل المنتجات
               </Button>
@@ -213,7 +213,7 @@ const MarketCategoryContent: React.FC = () => {
           ) : (
             <div className="grid grid-cols-2 gap-4">
               {filteredProducts.map((product) => (
-                <Card key={product.id} className="overflow-hidden border border-blue-100 rounded-xl shadow-sm hover:shadow-md transition-all animate-fade-in">
+                <Card key={product.id} className="overflow-hidden border border-orange-100 rounded-xl shadow-sm hover:shadow-md transition-all animate-fade-in">
                   <div className="relative">
                     <img 
                       src={product.image} 
@@ -229,29 +229,29 @@ const MarketCategoryContent: React.FC = () => {
                       </div>
                     )}
                   </div>
-                  <div className="p-3 bg-gradient-to-b from-blue-50 to-white">
-                    <h4 className="font-medium text-sm mb-1 text-blue-800">{product.name}</h4>
+                  <div className="p-3 bg-gradient-to-b from-orange-50 to-white">
+                    <h4 className="font-medium text-sm mb-1 text-orange-800">{product.name}</h4>
                     <p className="text-xs text-gray-500 mb-2">{product.quantity}</p>
                     <div className="flex justify-between items-center">
-                      <span className="font-bold text-blue-700">{product.price} ج.م</span>
+                      <span className="font-bold text-orange-700">{product.price} ج.م</span>
                       
                       {getCartItemQuantity(product.id) > 0 ? (
                         <div className="flex items-center gap-2">
                           <Button 
                             onClick={() => decreaseQuantity(product.id)}
                             size="sm" 
-                            className="rounded-full h-7 w-7 p-0 bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
+                            className="rounded-full h-7 w-7 p-0 bg-orange-600 hover:bg-orange-700 text-white shadow-sm"
                           >
                             <Minus className="h-3 w-3" />
                           </Button>
-                          <span className="font-medium w-5 text-center text-blue-900">
+                          <span className="font-medium w-5 text-center text-orange-900">
                             {getCartItemQuantity(product.id)}
                           </span>
                           <Button 
                             onClick={() => product.inStock && increaseQuantity(product.id)}
                             disabled={!product.inStock}
                             size="sm" 
-                            className="rounded-full h-7 w-7 p-0 bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
+                            className="rounded-full h-7 w-7 p-0 bg-orange-600 hover:bg-orange-700 text-white shadow-sm"
                           >
                             <Plus className="h-3 w-3" />
                           </Button>
@@ -261,7 +261,7 @@ const MarketCategoryContent: React.FC = () => {
                           onClick={() => handleProductAction(product)}
                           disabled={!product.inStock}
                           size="sm" 
-                          className={`rounded-full h-9 w-9 p-0 shadow-sm ${product.inStock ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-300'}`}
+                          className={`rounded-full h-9 w-9 p-0 shadow-sm ${product.inStock ? 'bg-orange-600 hover:bg-orange-700' : 'bg-gray-300'}`}
                         >
                           <Plus className="h-4 w-4" />
                         </Button>
@@ -277,7 +277,7 @@ const MarketCategoryContent: React.FC = () => {
         {/* Cart Floating Button - Adjusted position to be above bottom nav */}
         {itemCount > 0 && (
           <div className="fixed bottom-20 left-0 right-0 mx-auto w-11/12 max-w-md z-30">
-            <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg shadow-lg p-4 animate-fade-in">
+            <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-lg shadow-lg p-4 animate-fade-in">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <ShoppingCart className="h-5 w-5" />
@@ -289,7 +289,7 @@ const MarketCategoryContent: React.FC = () => {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <Link to="/market" className="w-full">
-                  <Button variant="outline" className="w-full bg-white text-blue-700 border-0 hover:bg-blue-50 shadow-sm">
+                  <Button variant="outline" className="w-full bg-white text-orange-700 border-0 hover:bg-orange-50 shadow-sm">
                     إضافة المزيد
                   </Button>
                 </Link>
