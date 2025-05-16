@@ -13,7 +13,6 @@ import {
 } from 'lucide-react';
 import { useHomeCategories } from '@/hooks/useHomeData';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Card } from '@/components/ui/card';
 
 const Categories: React.FC = () => {
   const { data: categories, isLoading } = useHomeCategories();
@@ -51,11 +50,11 @@ const Categories: React.FC = () => {
       </div>
       
       <div className="scroll-container overflow-x-auto pb-2 px-4 no-scrollbar">
-        <div className="flex gap-3">
+        <div className="flex gap-4">
           {isLoading ? (
             Array(6).fill(0).map((_, index) => (
               <div key={index} className="flex flex-col items-center min-w-[80px]">
-                <Skeleton className="w-16 h-16 rounded-xl mb-2" />
+                <Skeleton className="w-16 h-16 rounded-full mb-2" />
                 <Skeleton className="h-3 w-14" />
               </div>
             ))
@@ -67,10 +66,10 @@ const Categories: React.FC = () => {
                 className="flex flex-col items-center animate-fade-in min-w-[80px]"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
-                <Card className={`w-16 h-16 rounded-xl overflow-hidden flex items-center justify-center bg-gradient-to-br ${category.color} shadow-sm hover:shadow-md transition-all hover:scale-105 border-none`}>
+                <div className={`w-16 h-16 rounded-full overflow-hidden flex items-center justify-center bg-gradient-to-br ${category.color} shadow-md hover:shadow-xl transition-all duration-300 hover:scale-110 border-2 border-white`}>
                   {getIcon(category.icon)}
-                </Card>
-                <span className="text-sm font-medium text-gray-800 mt-1.5">{category.name}</span>
+                </div>
+                <span className="text-sm font-medium text-gray-800 mt-2">{category.name}</span>
               </Link>
             ))
           )}

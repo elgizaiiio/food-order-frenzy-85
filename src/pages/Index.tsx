@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -25,8 +26,8 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gray-50" dir="rtl">
       <div className="max-w-md mx-auto bg-gray-50 pb-20">
-        {/* Header with talabat styling */}
-        <header className="bg-gradient-to-r from-orange-600 to-orange-500 text-white rounded-b-3xl shadow-lg py-4 px-4">
+        {/* Header with improved styling */}
+        <header className="bg-gradient-to-r from-orange-600 to-orange-500 text-white rounded-b-3xl shadow-xl py-4 px-4">
           {/* تحديد العنوان */}
           <div className="flex items-center justify-between mb-4 text-sm">
             <div className="flex items-center gap-1.5 text-white/90">
@@ -64,7 +65,7 @@ const Index = () => {
               </Popover>
               
               {/* زر الإشعارات */}
-              <Link to="/notifications" className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 hover:bg-white/20">
+              <Link to="/notifications" className="flex items-center justify-center w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 transition-all">
                 <Bell className="w-4 h-4 text-white" />
               </Link>
             </div>
@@ -86,40 +87,38 @@ const Index = () => {
             </Link>
           </div>
           
-          {/* Quick Search Bar */}
+          {/* Improved Search Bar */}
           <div className="mt-3 relative">
             <Input 
               type="text"
               placeholder="مطعم، بقالة، أدوية..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full py-2.5 pl-4 pr-10 rounded-lg bg-white/10 border border-white/20 text-white placeholder:text-white/70 focus:border-white/40 focus:ring-1 focus:ring-white/30"
+              className="w-full py-2.5 pl-4 pr-10 rounded-full bg-white/15 border border-white/25 text-white placeholder:text-white/70 focus:border-white/40 focus:ring-1 focus:ring-white/30"
             />
-            <button className="absolute top-1/2 right-3 -translate-y-1/2 text-white">
+            <button className="absolute top-1/2 right-3 -translate-y-1/2 text-white/80 hover:text-white transition-colors">
               <Search className="h-5 w-5" />
             </button>
           </div>
         </header>
         
-        {/* الاقسام الرئيسية */}
-        <div className="px-4 mt-4">
+        {/* الاقسام الرئيسية مع أيقونات دائرية */}
+        <div className="px-4 mt-6">
           <Categories />
         </div>
         
-        {/* Main Content */}
+        {/* Main Content with improved styling */}
         <main className="px-4">
-          {/* Banner Slider */}
+          {/* Banner Slider with improved styling */}
           <BannerSlider />
           
-          {/* Value Proposition */}
+          {/* Value Proposition with improved styling */}
           <ValuePropositions />
-          
-          {/* إزالة مكون العروض */}
           
           {/* Popular Restaurants */}
           <PopularRestaurants />
           
-          {/* Download App Banner */}
+          {/* Download App Banner with improved styling */}
           <DownloadAppBanner />
         </main>
       </div>
@@ -127,7 +126,7 @@ const Index = () => {
   );
 };
 
-// مكون شرائح البانر
+// مكون شرائح البانر محسن
 const BannerSlider = () => {
   const banners = [
     {
@@ -150,7 +149,7 @@ const BannerSlider = () => {
         {banners.map((banner, index) => (
           <div 
             key={banner.id}
-            className="min-w-[280px] h-28 rounded-xl overflow-hidden relative shadow-sm flex-shrink-0 animate-fade-in"
+            className="min-w-[280px] h-32 rounded-2xl overflow-hidden relative shadow-md hover:shadow-lg transition-all flex-shrink-0 animate-fade-in"
             style={{ animationDelay: `${index * 100}ms` }}
           >
             <img 
@@ -158,7 +157,7 @@ const BannerSlider = () => {
               alt={banner.title} 
               className="w-full h-full object-cover"
             />
-            <div className={`absolute inset-0 bg-gradient-to-tr ${banner.color} opacity-85`}></div>
+            <div className={`absolute inset-0 bg-gradient-to-tr ${banner.color} opacity-75`}></div>
             <div className="absolute inset-0 flex items-center justify-center p-6">
               <h3 className="text-white text-lg font-bold text-center drop-shadow-md">{banner.title}</h3>
             </div>
@@ -169,26 +168,26 @@ const BannerSlider = () => {
   );
 };
 
-// مكون القيمة المقترحة
+// مكون القيمة المقترحة محسن
 const ValuePropositions = () => {
   const values = [
     {
       title: "توصيل سريع",
-      icon: <Clock className="h-4 w-4 text-orange-500" />,
+      icon: <Clock className="h-5 w-5 text-orange-500" />,
       description: "خلال 20-30 دقيقة"
     },
     {
       title: "توصيل مجاني",
-      icon: <Car className="h-4 w-4 text-orange-500" />,
+      icon: <Car className="h-5 w-5 text-orange-500" />,
       description: "للطلبات أكثر من 50 ريال"
     }
   ];
   
   return (
-    <div className="bg-white rounded-xl my-3 py-3 px-4 shadow-sm">
+    <div className="bg-white rounded-xl my-3 py-3 px-4 shadow-sm hover:shadow-md transition-all">
       <div className="flex justify-between gap-3">
         {values.map((value, index) => (
-          <Card key={index} className="flex-1 border-none shadow-sm animate-fade-in" style={{animationDelay: `${index * 100}ms`}}>
+          <Card key={index} className="flex-1 border-none shadow-sm hover:shadow-md transition-all animate-fade-in" style={{animationDelay: `${index * 100}ms`}}>
             <CardContent className="flex items-center p-3">
               <div className="bg-orange-100 p-2 rounded-full ml-3">
                 {value.icon}
@@ -205,14 +204,14 @@ const ValuePropositions = () => {
   );
 };
 
-// مكون تحميل التطبيق
+// مكون تحميل التطبيق محسن
 const DownloadAppBanner = () => {
   return (
-    <Card className="border-none overflow-hidden bg-gradient-to-r from-orange-500 to-orange-600 animate-fade-in animate-delay-4 mb-6 rounded-xl">
+    <Card className="border-none overflow-hidden bg-gradient-to-r from-orange-500 to-orange-600 animate-fade-in animate-delay-4 mb-6 rounded-xl shadow-md hover:shadow-lg transition-all">
       <div className="p-5 text-white">
         <h3 className="text-lg font-bold mb-2">عايز تجربة أفضل؟</h3>
         <p className="text-sm mb-4">نزل التطبيق واحصل على خصومات حصرية</p>
-        <Button className="bg-white text-orange-600 hover:bg-orange-50">
+        <Button className="bg-white text-orange-600 hover:bg-orange-50 font-medium">
           تحميل التطبيق
         </Button>
       </div>
