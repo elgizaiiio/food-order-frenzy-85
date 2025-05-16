@@ -17,13 +17,13 @@ const Login: React.FC = () => {
   const { signIn, user } = useAuth();
   
   // الحصول على المسار السابق أو التوجيه إلى الصفحة الرئيسية
-  const from = location.state?.from || '/';
+  const from = location.state?.from?.pathname || '/';
   
   // التحقق إذا كان المستخدم مسجل دخوله بالفعل
   useEffect(() => {
-    console.log("Login page: user is", user?.email, "redirecting to", from);
     if (user) {
-      navigate('/', { replace: true });
+      console.log("تم تسجيل الدخول بالفعل، جاري التوجيه إلى:", from);
+      navigate(from, { replace: true });
     }
   }, [user, navigate, from]);
 
@@ -43,15 +43,15 @@ const Login: React.FC = () => {
       
       // تم تسجيل الدخول بنجاح
       toast.success('تم تسجيل الدخول بنجاح');
-      console.log("Login successful, navigating to:", from);
-      navigate('/', { replace: true });
+      console.log("تم تسجيل الدخول بنجاح، جاري التوجيه إلى:", from);
+      // لا حاجة للتوجيه هنا لأن useEffect سيتولى ذلك عندما يتم تحديث حالة المستخدم
     } catch (error: any) {
       console.error('خطأ في تسجيل الدخول:', error);
       
       // رسائل خطأ محددة
-      if (error.message.includes('Invalid login credentials')) {
+      if (error.message?.includes('Invalid login credentials')) {
         toast.error('البريد الإلكتروني أو كلمة المرور غير صحيحة');
-      } else if (error.message.includes('Email not confirmed')) {
+      } else if (error.message?.includes('Email not confirmed')) {
         toast.error('يرجى التحقق من البريد الإلكتروني لتأكيد الحساب');
       } else {
         toast.error('حدث خطأ أثناء تسجيل الدخول');
