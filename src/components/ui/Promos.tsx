@@ -27,16 +27,16 @@ const Promos: React.FC = () => {
   };
 
   return (
-    <div className="px-4 py-6 mb-12 animate-fade-in animate-delay-3">
+    <div className="py-6 animate-fade-in" style={{animationDelay: "550ms"}}>
       <div className="flex justify-between items-center mb-5">
-        <h2 className="text-xl font-bold text-blue-900">خدماتنا المميزة</h2>
+        <h2 className="text-xl font-bold text-gray-800">خدماتنا المميزة</h2>
       </div>
       
       <div className="space-y-3">
         {isLoading ? (
           // عرض Skeleton أثناء التحميل
           Array(3).fill(0).map((_, i) => (
-            <Skeleton key={i} className="h-24 w-full" />
+            <Skeleton key={i} className="h-24 w-full rounded-xl" />
           ))
         ) : promos && promos.length > 0 ? (
           promos.map((promo, index) => (
@@ -44,7 +44,7 @@ const Promos: React.FC = () => {
               key={promo.id} 
               onClick={() => handleNavigate(promo.link)} 
               className="block cursor-pointer animate-fade-in" 
-              style={{animationDelay: `${index * 100 + 300}ms`}}
+              style={{animationDelay: `${index * 100 + 550}ms`}}
             >
               <div className={`rounded-2xl shadow-md hover:shadow-lg bg-gradient-to-r ${promo.gradient} transition-all duration-300 hover:scale-[1.01]`}>
                 <div className="flex items-center justify-between p-5">
@@ -60,17 +60,20 @@ const Promos: React.FC = () => {
             </div>
           ))
         ) : (
-          <div className="w-full h-32 flex items-center justify-center border border-dashed border-blue-300 rounded-lg">
-            <p className="text-blue-500">لا توجد عروض ترويجية متاحة حاليًا</p>
+          <div className="w-full h-32 flex items-center justify-center border border-dashed border-lime-300 rounded-lg">
+            <p className="text-lime-600">لا توجد عروض ترويجية متاحة حاليًا</p>
           </div>
         )}
       </div>
       
       {/* Banner */}
-      <div className="mt-8 rounded-2xl overflow-hidden shadow-md bg-gradient-to-br from-blue-800 to-indigo-900 text-white animate-fade-in" style={{animationDelay: '600ms'}}>
+      <div className="mt-8 rounded-2xl overflow-hidden shadow-md bg-gradient-to-br from-lime-600 to-green-700 text-white animate-fade-in" style={{animationDelay: "650ms"}}>
         <div className="p-6">
-          <h3 className="text-xl font-bold mb-2">انضم إلى عائلة dam</h3>
-          <p className="text-blue-100 mb-4">احصل على خصومات حصرية وتجربة تسوق مميزة</p>
+          <h3 className="text-xl font-bold mb-2">انضم إلى عائلة مرسول</h3>
+          <p className="text-lime-100 mb-4">احصل على خصومات حصرية وتجربة تسوق مميزة</p>
+          <button className="bg-white text-lime-700 hover:bg-lime-50 transition-colors px-4 py-2 rounded-lg font-medium shadow-lg">
+            تسجيل الآن
+          </button>
         </div>
       </div>
     </div>

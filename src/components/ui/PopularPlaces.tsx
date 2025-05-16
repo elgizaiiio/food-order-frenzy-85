@@ -17,23 +17,23 @@ const PopularPlaces: React.FC = () => {
   };
 
   return (
-    <div className="animate-fade-in animate-delay-2">
+    <div className="py-6 animate-fade-in" style={{animationDelay: "500ms"}}>
       <div className="flex justify-between items-center mb-4">
         <Button 
           variant="link" 
           onClick={() => navigate('/restaurants')} 
-          className="text-sm font-medium text-blue-600 hover:underline p-0"
+          className="text-sm font-medium text-lime-600 hover:text-lime-700 hover:underline p-0"
         >
           عرض الكل
         </Button>
-        <h2 className="text-xl font-bold text-right text-blue-900">الأماكن الرائجة</h2>
+        <h2 className="text-xl font-bold text-right text-gray-800">المطاعم الشهيرة</h2>
       </div>
       
       <div className="scroll-container">
         {isLoading ? (
           // عرض Skeleton أثناء التحميل
           Array(3).fill(0).map((_, i) => (
-            <Card key={i} className="w-72 overflow-hidden border-blue-100 shadow-sm flex-shrink-0">
+            <Card key={i} className="w-72 overflow-hidden border-lime-100 shadow-sm flex-shrink-0">
               <Skeleton className="h-44 w-full" />
               <CardContent className="p-3">
                 <div className="flex justify-between items-start mb-3">
@@ -50,31 +50,31 @@ const PopularPlaces: React.FC = () => {
             <Card 
               key={place.id} 
               onClick={() => navigateToRestaurant(place.id)} 
-              className="w-72 cursor-pointer overflow-hidden border-blue-100 hover:border-blue-300 hover:shadow-md shadow-sm transition-all duration-300 flex-shrink-0 animate-fade-in" 
+              className="w-72 cursor-pointer overflow-hidden border-lime-100 hover:border-lime-300 hover:shadow-md shadow-sm transition-all duration-300 flex-shrink-0 animate-fade-in" 
               style={{animationDelay: `${index * 100}ms`}}
             >
               <div className="relative h-44">
                 <img src={place.image} alt={place.name} className="w-full h-full object-cover" loading="lazy" />
                 {place.deliveryFee === "0 ج.م" && (
-                  <Badge className="absolute top-3 left-3 bg-blue-600 text-white border-0">
+                  <Badge className="absolute top-3 left-3 bg-lime-600 text-white border-0">
                     <BadgePercent className="w-3.5 h-3.5 ml-1" /> توصيل مجاني
                   </Badge>
                 )}
-                <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm rounded-lg px-2.5 py-1 text-xs font-medium text-blue-800 shadow-sm">
+                <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm rounded-lg px-2.5 py-1 text-xs font-medium text-lime-800 shadow-sm">
                   {place.category}
                 </div>
               </div>
               
               <CardContent className="p-3">
                 <div className="flex justify-between items-start">
-                  <div className="flex items-center gap-0.5 bg-blue-50 px-2 py-0.5 rounded-full">
+                  <div className="flex items-center gap-0.5 bg-lime-50 px-2 py-0.5 rounded-full">
                     <Star className="h-3.5 w-3.5 fill-yellow-400 stroke-yellow-400" />
-                    <span className="text-xs font-bold text-blue-900">{place.rating}</span>
+                    <span className="text-xs font-bold text-lime-900">{place.rating}</span>
                   </div>
-                  <h3 className="text-lg font-medium text-blue-800">{place.name}</h3>
+                  <h3 className="text-lg font-bold text-gray-800">{place.name}</h3>
                 </div>
                 
-                <div className="flex items-center justify-between mt-3 text-blue-600 text-xs">
+                <div className="flex items-center justify-between mt-3 text-lime-600 text-xs">
                   <div className="flex items-center gap-1">
                     <Clock className="w-3.5 h-3.5" />
                     <span>{place.deliveryTime}</span>
@@ -83,7 +83,7 @@ const PopularPlaces: React.FC = () => {
                 </div>
                 
                 <Button 
-                  className="w-full mt-3 bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white shadow-sm" 
+                  className="w-full mt-3 bg-gradient-to-r from-lime-500 to-green-600 hover:from-lime-600 hover:to-green-700 text-white shadow-sm" 
                   size="sm" 
                   onClick={(e) => {
                     e.stopPropagation();
@@ -96,8 +96,8 @@ const PopularPlaces: React.FC = () => {
             </Card>
           ))
         ) : (
-          <div className="w-full h-32 flex items-center justify-center border border-dashed border-blue-300 rounded-lg">
-            <p className="text-blue-500">لا توجد أماكن شائعة متاحة حاليًا</p>
+          <div className="w-full h-32 flex items-center justify-center border border-dashed border-lime-300 rounded-lg">
+            <p className="text-lime-600">لا توجد مطاعم شهيرة متاحة حاليًا</p>
           </div>
         )}
       </div>

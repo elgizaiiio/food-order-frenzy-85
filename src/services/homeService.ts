@@ -50,40 +50,40 @@ export async function fetchHomeCategories(): Promise<Category[]> {
       id: "restaurants",
       name: "مطاعم", 
       icon: "UtensilsCrossed", 
-      color: "bg-gradient-to-br from-orange-500 to-orange-600 text-white",
-      shadow: "shadow-orange-200",
+      color: "bg-gradient-to-br from-lime-500 to-green-600 text-white",
+      shadow: "shadow-lime-200",
       link: "/restaurants"
     },
     { 
       id: "market",
       name: "سوبر ماركت", 
       icon: "ShoppingCart", 
-      color: "bg-gradient-to-br from-orange-400 to-orange-500 text-white",
-      shadow: "shadow-orange-200",
+      color: "bg-gradient-to-br from-lime-500 to-green-600 text-white",
+      shadow: "shadow-lime-200",
       link: "/market" 
     },
     { 
       id: "pharmacy",
       name: "صيدليات", 
       icon: "Pill", 
-      color: "bg-gradient-to-br from-orange-500 to-orange-600 text-white",
-      shadow: "shadow-orange-200",
+      color: "bg-gradient-to-br from-lime-500 to-green-600 text-white",
+      shadow: "shadow-lime-200",
       link: "/pharmacy" 
     },
     { 
       id: "personal-care",
       name: "بيوتي", 
       icon: "Brush", 
-      color: "bg-gradient-to-br from-orange-400 to-orange-500 text-white",
-      shadow: "shadow-orange-200",
+      color: "bg-gradient-to-br from-lime-500 to-green-600 text-white",
+      shadow: "shadow-lime-200",
       link: "/personal-care" 
     },
     { 
       id: "gym",
       name: "جيم", 
       icon: "Dumbbell", 
-      color: "bg-gradient-to-br from-orange-500 to-orange-600 text-white",
-      shadow: "shadow-orange-200",
+      color: "bg-gradient-to-br from-lime-500 to-green-600 text-white",
+      shadow: "shadow-lime-200",
       link: "/gym" 
     }
   ];
@@ -109,7 +109,7 @@ export async function fetchHomeOffers(): Promise<Offer[]> {
         title: offer.title,
         description: offer.description,
         image: offer.image_url || "https://images.unsplash.com/photo-1501747315-124a0eaca060?q=80&w=500&fit=crop",
-        gradient: "from-black/60 to-transparent",
+        gradient: "from-lime-500 to-green-600",
         link: `/promotions/${offer.id}`
       }));
     }
@@ -187,7 +187,7 @@ export async function fetchHomePromos(): Promise<Promo[]> {
       title: "سوبر ماركت",
       description: "خصم 50 جنيه على أول طلب",
       icon: "Home",
-      gradient: "from-orange-500 to-orange-600",
+      gradient: "from-lime-500 to-green-600",
       iconBg: "bg-white/20",
       textColor: "text-white",
       link: "/market"
@@ -197,7 +197,7 @@ export async function fetchHomePromos(): Promise<Promo[]> {
       title: "اشتراكات الجيم",
       description: "اشتراك شهري بـ 300 جنيه",
       icon: "Dumbbell",
-      gradient: "from-orange-600 to-orange-700",
+      gradient: "from-lime-600 to-green-700",
       iconBg: "bg-white/20",
       textColor: "text-white",
       link: "/gym"
@@ -207,7 +207,7 @@ export async function fetchHomePromos(): Promise<Promo[]> {
       title: "بيوتي",
       description: "خصم 20% على كل المنتجات",
       icon: "Brush",
-      gradient: "from-orange-500 to-orange-600",
+      gradient: "from-lime-500 to-green-600",
       iconBg: "bg-white/20",
       textColor: "text-white",
       link: "/personal-care"

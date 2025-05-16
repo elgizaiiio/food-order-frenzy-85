@@ -14,8 +14,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
  
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 142 71% 45%;
+    --primary-foreground: 355 100% 100%;
  
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -31,13 +31,13 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 142 76% 45%;
  
-    --radius: 0.5rem;
+    --radius: 0.75rem;
   
-    --talabat-orange: 24 100% 50%;
-    --talabat-orange-dark: 24 100% 45%;
-    --talabat-orange-light: 24 100% 95%;
+    --mrsool-primary: 84 70% 50%;
+    --mrsool-primary-dark: 84 70% 40%;
+    --mrsool-primary-light: 84 70% 95%;
   }
  
   .dark {
@@ -50,8 +50,8 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
  
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 142 70% 40%;
+    --primary-foreground: 355 100% 100%;
  
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
@@ -67,7 +67,7 @@
  
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --ring: 142 70% 40%;
   }
 }
  
@@ -76,7 +76,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-gray-100 text-foreground;
+    @apply bg-gray-50 text-foreground;
     font-family: 'Tajawal', sans-serif;
   }
   
@@ -87,14 +87,18 @@
 
 /* تحسينات على شريط التمرير الأفقي */
 .scroll-container {
-  @apply flex overflow-x-auto gap-4 pb-4 overflow-y-hidden;
+  @apply flex overflow-x-auto gap-5 pb-6 overflow-y-hidden pr-1;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+  padding-top: 0.5rem;
+  padding-bottom: 1.5rem;
+  margin-bottom: -1rem;
 }
 
 .scroll-container > * {
   scroll-snap-align: start;
+  filter: drop-shadow(0 4px 6px rgb(0 0 0 / 0.05));
 }
 
 /* إخفاء شريط التمرير مع الحفاظ على الوظيفة */
@@ -109,21 +113,34 @@
   }
   
   .app-header {
-    @apply bg-gradient-to-r from-orange-500 to-orange-600 text-white;
+    @apply bg-gradient-to-r from-lime-500 to-green-600 text-white;
   }
   
-  .talabat-button {
-    @apply bg-orange-500 hover:bg-orange-600 text-white transition-colors;
+  .mrsool-button {
+    @apply bg-lime-500 hover:bg-lime-600 text-white transition-colors;
   }
   
-  .talabat-card {
-    @apply bg-white rounded-xl shadow-sm hover:shadow-md transition-all;
+  .mrsool-card {
+    @apply bg-white rounded-2xl shadow-md hover:shadow-lg transition-all duration-300;
+  }
+
+  .hover-scale {
+    @apply transition-transform duration-300 hover:scale-[1.03];
+  }
+
+  .hover-lift {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-md;
+  }
+  
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-md hover:border-lime-200;
   }
 }
 
 /* تأثيرات التلاشي */
 .animate-fade-in {
-  animation: fadeIn 0.6s ease-in-out forwards;
+  animation: fadeIn 0.8s ease-out forwards;
+  opacity: 0;
 }
 
 .animate-delay-1 {
@@ -138,6 +155,7 @@
   animation-delay: 600ms;
 }
 
+/* تأثيرات إضافية */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -147,4 +165,67 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+/* تحسين ظهور البطاقات */
+.card-animation-container > * {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.card-animation-container > *:nth-child(1) {
+  animation: fadeIn 0.6s ease-out forwards;
+  animation-delay: 100ms;
+}
+
+.card-animation-container > *:nth-child(2) {
+  animation: fadeIn 0.6s ease-out forwards;
+  animation-delay: 200ms;
+}
+
+.card-animation-container > *:nth-child(3) {
+  animation: fadeIn 0.6s ease-out forwards;
+  animation-delay: 300ms;
+}
+
+.card-animation-container > *:nth-child(4) {
+  animation: fadeIn 0.6s ease-out forwards;
+  animation-delay: 400ms;
+}
+
+.card-animation-container > *:nth-child(5) {
+  animation: fadeIn 0.6s ease-out forwards;
+  animation-delay: 500ms;
 }
