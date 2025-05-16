@@ -4,7 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import Categories from '@/components/Categories';
 // إزالة استيراد مكون العروض
 import PopularRestaurants from '@/components/PopularRestaurants';
-import Promos from '@/components/ui/Promos';
+// إزالة استيراد مكون Promos
 import { Search, MapPin, ChevronDown, Bell, ShoppingBag, Clock, Car } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -118,9 +118,6 @@ const Index = () => {
           
           {/* Popular Restaurants */}
           <PopularRestaurants />
-          
-          {/* Promos */}
-          <Promos />
           
           {/* Download App Banner */}
           <DownloadAppBanner />
