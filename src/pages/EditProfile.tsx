@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Camera, User, ChevronLeft } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { useAuth } from '@/context/AuthContext';
 import { useUserProfile, useUpdateUserProfile } from '@/hooks/useUserData';
 import { supabase } from '@/integrations/supabase/client';
+import { Skeleton } from "@/components/ui/skeleton";
 
 const EditProfile: React.FC = () => {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ const EditProfile: React.FC = () => {
   });
   
   // تحديث البيانات عند تحميلها
-  React.useEffect(() => {
+  useEffect(() => {
     if (userProfile) {
       setFormData(prev => ({
         ...prev,
@@ -44,6 +45,13 @@ const EditProfile: React.FC = () => {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Validate file size before processing
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        toast.error("حجم الصورة كبير جداً. الرجاء اختيار صورة أقل من 5 ميجابايت");
+        return;
+      }
+
+      // Optimize image preview loading
       const reader = new FileReader();
       reader.onloadend = () => {
         setFormData(prev => ({ 
@@ -94,6 +102,9 @@ const EditProfile: React.FC = () => {
     e.preventDefault();
     
     try {
+      // Show loading toast
+      const loadingToast = toast.loading("جاري تحديث الملف الشخصي...");
+      
       let profileImageUrl = userProfile?.profile_image || null;
       
       // رفع الصورة إذا تم اختيارها
@@ -102,7 +113,9 @@ const EditProfile: React.FC = () => {
         if (uploadedUrl) {
           profileImageUrl = uploadedUrl;
         } else {
+          toast.dismiss(loadingToast);
           toast.error("حدث خطأ أثناء رفع الصورة");
+          return;
         }
       }
       
@@ -113,6 +126,7 @@ const EditProfile: React.FC = () => {
         profile_image: profileImageUrl
       });
       
+      toast.dismiss(loadingToast);
       toast.success("تم تحديث الملف الشخصي بنجاح");
       navigate('/profile');
     } catch (error) {
@@ -150,6 +164,7 @@ const EditProfile: React.FC = () => {
                   <AvatarImage 
                     src={formData.imagePreview} 
                     alt={formData.name} 
+                    loading="lazy"
                   />
                 ) : (
                   <AvatarFallback className="bg-orange-100 text-orange-800 text-2xl">

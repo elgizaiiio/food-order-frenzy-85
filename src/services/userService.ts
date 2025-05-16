@@ -19,6 +19,11 @@ export interface PaymentMethod {
   is_default: boolean;
 }
 
+// تحسين أداء طلبات العناوين باستخدام التخزين المؤقت
+let addressesCache: Record<string, { data: UserAddress[], timestamp: number }> = {};
+let paymentMethodsCache: Record<string, { data: PaymentMethod[], timestamp: number }> = {};
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
+
 /**
  * جلب عناوين المستخدم
  */
@@ -26,6 +31,13 @@ export async function fetchUserAddresses(): Promise<UserAddress[]> {
   try {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return [];
+    
+    // Check if we have a valid cache
+    const now = Date.now();
+    const cachedData = addressesCache[user.id];
+    if (cachedData && (now - cachedData.timestamp < CACHE_DURATION)) {
+      return cachedData.data;
+    }
     
     const { data, error } = await supabase
       .from('user_addresses')
@@ -35,6 +47,8 @@ export async function fetchUserAddresses(): Promise<UserAddress[]> {
     
     if (error) throw error;
     
+    // Update cache
+    addressesCache[user.id] = { data: data || [], timestamp: now };
     return data || [];
   } catch (error) {
     console.error('خطأ في جلب عناوين المستخدم:', error);
@@ -61,6 +75,9 @@ export async function addUserAddress(address: Omit<UserAddress, 'id' | 'user_id'
     
     if (error) throw error;
     
+    // Invalidate cache
+    delete addressesCache[user.id];
+    
     return data;
   } catch (error) {
     console.error('خطأ في إضافة عنوان المستخدم:', error);
@@ -83,6 +100,9 @@ export async function deleteUserAddress(addressId: string): Promise<void> {
       .eq('user_id', user.id);
     
     if (error) throw error;
+    
+    // Invalidate cache
+    delete addressesCache[user.id];
   } catch (error) {
     console.error('خطأ في حذف عنوان المستخدم:', error);
     throw error;
@@ -111,6 +131,9 @@ export async function setDefaultAddress(addressId: string): Promise<void> {
       .eq('user_id', user.id);
     
     if (error) throw error;
+    
+    // Invalidate cache
+    delete addressesCache[user.id];
   } catch (error) {
     console.error('خطأ في تعيين العنوان الافتراضي:', error);
     throw error;
@@ -125,6 +148,13 @@ export async function fetchUserPaymentMethods(): Promise<PaymentMethod[]> {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return [];
     
+    // Check if we have a valid cache
+    const now = Date.now();
+    const cachedData = paymentMethodsCache[user.id];
+    if (cachedData && (now - cachedData.timestamp < CACHE_DURATION)) {
+      return cachedData.data;
+    }
+    
     const { data, error } = await supabase
       .from('user_payment_methods')
       .select('*')
@@ -133,6 +163,8 @@ export async function fetchUserPaymentMethods(): Promise<PaymentMethod[]> {
     
     if (error) throw error;
     
+    // Update cache
+    paymentMethodsCache[user.id] = { data: data || [], timestamp: now };
     return data || [];
   } catch (error) {
     console.error('خطأ في جلب طرق الدفع:', error);
@@ -160,6 +192,9 @@ export async function addPaymentMethod(method: Omit<PaymentMethod, 'id' | 'user_
       .single();
     
     if (error) throw error;
+    
+    // Invalidate cache
+    delete paymentMethodsCache[user.id];
     
     return data;
   } catch (error) {
@@ -190,6 +225,9 @@ export async function setDefaultPaymentMethod(methodId: string): Promise<void> {
       .eq('user_id', user.id);
     
     if (error) throw error;
+    
+    // Invalidate cache
+    delete paymentMethodsCache[user.id];
   } catch (error) {
     console.error('خطأ في تعيين طريقة الدفع الافتراضية:', error);
     throw error;
@@ -211,11 +249,17 @@ export async function deletePaymentMethod(methodId: string): Promise<void> {
       .eq('user_id', user.id);
     
     if (error) throw error;
+    
+    // Invalidate cache
+    delete paymentMethodsCache[user.id];
   } catch (error) {
     console.error('خطأ في حذف طريقة الدفع:', error);
     throw error;
   }
 }
+
+// Implementing memoization for user profile
+let profileCache: Record<string, { data: any, timestamp: number }> = {};
 
 /**
  * الحصول على معلومات الملف الشخصي
@@ -226,14 +270,23 @@ export async function getUserProfile() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('يجب تسجيل الدخول أولاً');
     
+    // Check for cached data
+    const now = Date.now();
+    const cachedData = profileCache[user.id];
+    if (cachedData && (now - cachedData.timestamp < CACHE_DURATION)) {
+      return cachedData.data;
+    }
+    
+    // Try to get user profile using maybeSingle instead of single to avoid errors
+    // when the user doesn't have a profile yet
     let { data, error } = await supabase
       .from('users')
       .select('*')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
     
     // إذا لم يكن المستخدم موجودًا في جدول المستخدمين، سنقوم بإنشائه
-    if (error && error.code === 'PGRST116') {
+    if (!data) {
       // إنشاء ملف شخصي جديد للمستخدم
       const { data: newUser, error: insertError } = await supabase
         .from('users')
@@ -247,11 +300,16 @@ export async function getUserProfile() {
         .single();
       
       if (insertError) throw insertError;
+      
+      // Update cache
+      profileCache[user.id] = { data: newUser, timestamp: now };
       return newUser;
     }
     
-    if (error) throw error;
+    if (error && error.code !== 'PGRST116') throw error;
     
+    // Update cache
+    profileCache[user.id] = { data: data, timestamp: now };
     return data;
   } catch (error) {
     console.error('خطأ في جلب معلومات الملف الشخصي:', error);
@@ -291,6 +349,10 @@ export async function updateUserProfile(updates: Record<string, any>) {
         .single();
       
       if (insertError) throw insertError;
+      
+      // Invalidate cache
+      delete profileCache[user.id];
+      
       return newUser;
     }
     
@@ -303,6 +365,9 @@ export async function updateUserProfile(updates: Record<string, any>) {
       .single();
     
     if (error) throw error;
+    
+    // Invalidate cache
+    delete profileCache[user.id];
     
     return data;
   } catch (error) {
