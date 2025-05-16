@@ -1,135 +1,320 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Check, Clock, Package, Truck, Home, Phone } from 'lucide-react';
+import { ArrowLeft, MapPin, Clock, Package, Truck, CheckCircle, Phone, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { Card, CardContent } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+
+type OrderStatus = 'preparing' | 'onway' | 'delivered';
+
+interface Order {
+  id: string;
+  status: OrderStatus;
+  estimatedDelivery: string;
+  items: Array<{
+    name: string;
+    quantity: number;
+    price: number;
+  }>;
+  address: {
+    name: string;
+    street: string;
+    area: string;
+    city: string;
+    phone: string;
+  };
+  deliveryPerson?: {
+    name: string;
+    phone: string;
+    image: string;
+  };
+  subtotal: number;
+  deliveryFee: number;
+  total: number;
+}
 
 const PersonalCareTracking: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { orderId, estimatedDelivery } = location.state || { 
-    orderId: `ORD-${Math.floor(Math.random() * 100000)}`, 
-    estimatedDelivery: '30-45 دقيقة' 
+  const [order, setOrder] = useState<Order | null>(null);
+  const [progress, setProgress] = useState(0);
+
+  // تحويل الحالة إلى نسبة مئوية
+  const getStatusProgress = (status: OrderStatus) => {
+    if (status === 'preparing') return 33;
+    if (status === 'onway') return 66;
+    if (status === 'delivered') return 100;
+    return 0;
   };
 
-  // عنوان التوصيل (سيأتي من الـ API في التطبيق الحقيقي)
-  const deliveryAddress = "شارع محمد نجيب، المعادي، القاهرة";
+  // تحويل الحالة إلى نص بالعربية
+  const getStatusText = (status: OrderStatus) => {
+    if (status === 'preparing') return 'جاري تجهيز الطلب';
+    if (status === 'onway') return 'الطلب في الطريق';
+    if (status === 'delivered') return 'تم التوصيل';
+    return '';
+  };
 
-  // حالة الطلب - عادة تأتي من الخادم
-  const orderStatus = "onway"; // preparing, onway, delivered
+  useEffect(() => {
+    // لو كان هناك بيانات في location.state، استخدمها
+    if (location.state && location.state.orderId) {
+      // في تطبيق حقيقي، سنقوم بجلب تفاصيل الطلب من الخادم
+      // هنا نستخدم بيانات وهمية للعرض التوضيحي
+      const demoOrder: Order = {
+        id: location.state.orderId,
+        status: 'onway', // preparing, onway, delivered
+        estimatedDelivery: location.state.estimatedDelivery || '30-45 دقيقة',
+        items: [
+          { name: 'كريم مرطب للوجه', quantity: 1, price: 120 },
+          { name: 'مزيل مكياج', quantity: 1, price: 85 },
+          { name: 'ماسك للبشرة', quantity: 2, price: 95 }
+        ],
+        address: {
+          name: 'محمد أحمد',
+          street: 'شارع النيل، عمارة 5، شقة 10',
+          area: 'المعادي',
+          city: 'القاهرة',
+          phone: '01012345678'
+        },
+        deliveryPerson: {
+          name: 'أحمد محمود',
+          phone: '01098765432',
+          image: 'https://randomuser.me/api/portraits/men/32.jpg'
+        },
+        subtotal: 395,
+        deliveryFee: 20,
+        total: 415
+      };
+      setOrder(demoOrder);
+      setProgress(getStatusProgress(demoOrder.status));
+    } else {
+      // لو لم يكن هناك بيانات، انتقل لصفحة السلة
+      navigate('/personal-care/cart');
+    }
+    
+    // محاكاة تحديث حالة الطلب
+    const interval = setInterval(() => {
+      setOrder(prevOrder => {
+        if (!prevOrder) return null;
+        
+        // هذه محاكاة بسيطة: إذا كان الطلب في "preparing"، فبعد فترة يصبح "onway"
+        if (prevOrder.status === 'preparing') {
+          const newOrder = { ...prevOrder, status: 'onway' as OrderStatus };
+          setProgress(getStatusProgress(newOrder.status));
+          return newOrder;
+        }
+        // وإذا كان "onway"، فبعد فترة يصبح "delivered"
+        else if (prevOrder.status === 'onway') {
+          // لن نغير الحالة هنا لإبقاء المحاكاة أقصر
+        }
+        
+        return prevOrder;
+      });
+    }, 15000); // كل 15 ثانية تحقق
+    
+    return () => clearInterval(interval);
+  }, [location.state, navigate]);
 
-  // خطوات تتبع الطلب
-  const trackingSteps = [
-    { id: 1, title: 'تم استلام الطلب', icon: <Check className="w-5 h-5" />, completed: true, time: 'منذ 5 دقائق' },
-    { id: 2, title: 'جاري تجهيز الطلب', icon: <Package className="w-5 h-5" />, completed: orderStatus !== "preparing", time: 'منذ 2 دقائق' },
-    { id: 3, title: 'الطلب في الطريق', icon: <Truck className="w-5 h-5" />, completed: orderStatus === "delivered", active: orderStatus === "onway", time: 'الآن' },
-    { id: 4, title: 'تم التوصيل', icon: <Home className="w-5 h-5" />, completed: orderStatus === "delivered", time: 'قريباً' },
-  ];
+  if (!order) {
+    return (
+      <div className="min-h-screen bg-pink-50 flex items-center justify-center">
+        <div className="animate-spin w-12 h-12 border-4 border-pink-600 border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
       <div className="max-w-md mx-auto bg-white pb-24">
         {/* الهيدر */}
-        <div className="sticky top-0 flex items-center justify-between p-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-sm z-10 rounded-b-xl">
-          <Link to="/" className="text-white hover:text-pink-100">
-            <ArrowLeft className="w-6 h-6" />
-          </Link>
-          <h1 className="text-xl font-bold">تتبع الطلب</h1>
-          <div className="w-6"></div>
+        <div className="sticky top-0 bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 shadow-md z-10">
+          <div className="flex items-center justify-between">
+            <Link to="/personal-care" className="text-white hover:text-pink-100 transition-colors">
+              <ArrowLeft className="w-6 h-6" />
+            </Link>
+            <h1 className="text-xl font-bold">تتبع الطلب</h1>
+            <div className="w-6"></div>
+          </div>
+          
+          <div className="mt-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-white/80 text-sm">رقم الطلب</span>
+                <p className="text-white font-bold">#{order.id}</p>
+              </div>
+              <div className="text-right">
+                <span className="text-white/80 text-sm">الوقت المتوقع للوصول</span>
+                <p className="text-white font-bold">{order.estimatedDelivery}</p>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="p-6">
-          {/* معلومات الطلب */}
-          <div className="flex flex-col items-center mb-8">
-            <div className="w-24 h-24 bg-pink-100 rounded-full flex items-center justify-center mb-4">
-              <img src="https://via.placeholder.com/100?text=Beauty" alt="Beauty" className="w-16 h-16 rounded-full object-cover" />
-            </div>
-            <h2 className="text-xl font-bold text-pink-800 mb-2">منتجات العناية الشخصية</h2>
-            <p className="text-gray-600">رقم الطلب: {orderId}</p>
-          </div>
-
-          {/* وقت التوصيل المتوقع */}
-          <div className="text-center mb-10">
-            <h3 className="text-3xl font-bold text-pink-800">{estimatedDelivery}</h3>
-            <p className="text-gray-500 mt-1">وقت التوصيل المتوقع</p>
-          </div>
-
-          {/* مراحل التتبع */}
-          <div className="mb-10 relative">
-            {/* خط التقدم */}
-            <div className="absolute top-0 bottom-0 right-[19px] w-1 bg-gray-200"></div>
-
-            {/* الخطوات */}
-            <div className="space-y-8">
-              {trackingSteps.map((step) => (
-                <div key={step.id} className="flex items-center gap-4">
-                  <div 
-                    className={`w-10 h-10 rounded-full flex items-center justify-center z-10 ${
-                      step.completed 
-                        ? 'bg-green-500' 
-                        : step.active 
-                        ? 'bg-pink-600 animate-pulse' 
-                        : 'bg-gray-200'
-                    }`}
-                  >
-                    {step.completed ? (
-                      <Check className="text-white w-5 h-5" />
-                    ) : (
-                      <div className={`w-5 h-5 flex items-center justify-center ${step.active ? 'text-white' : 'text-gray-400'}`}>
-                        {step.icon}
-                      </div>
-                    )}
-                  </div>
-                  <div>
-                    <h4 className={`font-bold ${!step.completed && !step.active ? 'text-gray-400' : 'text-gray-800'}`}>
-                      {step.title}
-                    </h4>
-                    <p className={`text-sm ${step.active ? 'text-pink-600 font-medium' : 'text-gray-500'}`}>
-                      {step.time}
-                    </p>
+        {/* حالة الطلب */}
+        <div className="p-4">
+          <Card className="border-pink-100 overflow-hidden">
+            <CardContent className="p-0">
+              <div className="bg-gradient-to-r from-pink-500/10 to-purple-500/10 p-4">
+                <div className="flex justify-between items-center mb-3">
+                  <h2 className="font-bold text-pink-800 text-lg">حالة الطلب</h2>
+                  <div className="text-sm font-medium px-3 py-1 rounded-full bg-pink-100 text-pink-700">
+                    {getStatusText(order.status)}
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
+                
+                <Progress value={progress} className="h-2 bg-gray-200" indicatorClassName="bg-gradient-to-r from-purple-600 to-pink-600" />
+                
+                <div className="flex justify-between mt-3 text-xs text-gray-600">
+                  <div className={`text-center ${progress >= 33 ? 'text-pink-700 font-medium' : ''}`}>
+                    <Package className={`mx-auto h-5 w-5 mb-1 ${progress >= 33 ? 'text-pink-600' : 'text-gray-400'}`} />
+                    قيد التجهيز
+                  </div>
+                  <div className={`text-center ${progress >= 66 ? 'text-pink-700 font-medium' : ''}`}>
+                    <Truck className={`mx-auto h-5 w-5 mb-1 ${progress >= 66 ? 'text-pink-600' : 'text-gray-400'}`} />
+                    في الطريق
+                  </div>
+                  <div className={`text-center ${progress >= 100 ? 'text-pink-700 font-medium' : ''}`}>
+                    <CheckCircle className={`mx-auto h-5 w-5 mb-1 ${progress >= 100 ? 'text-pink-600' : 'text-gray-400'}`} />
+                    تم التوصيل
+                  </div>
+                </div>
+              </div>
+              
+              {order.status === 'onway' && order.deliveryPerson && (
+                <div className="p-4 border-t border-pink-100">
+                  <h3 className="font-medium text-gray-700 mb-3">مندوب التوصيل</h3>
+                  <div className="flex items-center">
+                    <img 
+                      src={order.deliveryPerson.image} 
+                      alt={order.deliveryPerson.name}
+                      className="w-16 h-16 rounded-full object-cover border-2 border-pink-200"
+                    />
+                    <div className="mr-4">
+                      <p className="font-medium">{order.deliveryPerson.name}</p>
+                      <div className="flex gap-4 mt-2">
+                        <Button size="sm" className="bg-green-500 hover:bg-green-600 text-white text-xs px-3">
+                          <Phone className="h-3 w-3 ml-1" />
+                          اتصال
+                        </Button>
+                        <Button size="sm" variant="outline" className="text-xs px-3 border-pink-200 text-pink-700 hover:bg-pink-50">
+                          <MessageSquare className="h-3 w-3 ml-1" />
+                          رسالة
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {order.status === 'delivered' && (
+                <div className="p-4 border-t border-pink-100 bg-green-50">
+                  <div className="flex items-center justify-center gap-3">
+                    <CheckCircle className="h-6 w-6 text-green-600" />
+                    <p className="font-medium text-green-700">تم توصيل طلبك بنجاح</p>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
 
-          {/* عنوان التوصيل */}
-          <div className="mb-8 bg-pink-50 p-4 rounded-lg border border-pink-100">
-            <h3 className="font-bold mb-2 text-pink-800">عنوان التوصيل</h3>
-            <p className="text-gray-700">{deliveryAddress}</p>
-          </div>
+        {/* عنوان التوصيل */}
+        <div className="px-4 mb-4">
+          <Card className="border-pink-100">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-bold text-pink-800 flex items-center">
+                  <MapPin className="h-5 w-5 inline-block ml-1 text-pink-600" />
+                  عنوان التوصيل
+                </h3>
+                <Button variant="ghost" className="text-xs h-7 text-pink-600 hover:bg-pink-50 hover:text-pink-700 p-0">
+                  تغيير
+                </Button>
+              </div>
+              <div className="bg-pink-50 p-3 rounded-lg">
+                <p className="font-medium">{order.address.name}</p>
+                <p className="text-sm text-gray-600 mt-1">{order.address.street}</p>
+                <p className="text-sm text-gray-600">{order.address.area}، {order.address.city}</p>
+                <div className="flex items-center mt-2 text-sm text-pink-700">
+                  <Phone className="h-4 w-4 ml-1" />
+                  {order.address.phone}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
-          {/* معلومات إضافية */}
-          <div className="space-y-4">
+        {/* منتجات الطلب */}
+        <div className="px-4 mb-4">
+          <Card className="border-pink-100">
+            <CardContent className="p-4">
+              <h3 className="font-bold text-pink-800 mb-3 flex items-center">
+                <Package className="h-5 w-5 inline-block ml-1 text-pink-600" />
+                المنتجات ({order.items.length})
+              </h3>
+              
+              <div className="space-y-3">
+                {order.items.map((item, index) => (
+                  <div key={index} className="flex justify-between items-center">
+                    <div className="flex items-center">
+                      <span className="bg-pink-100 text-pink-800 w-6 h-6 rounded-full flex items-center justify-center text-sm ml-3">
+                        {item.quantity}
+                      </span>
+                      <span className="font-medium text-gray-800">{item.name}</span>
+                    </div>
+                    <span className="text-pink-700">{item.price * item.quantity} ج.م</span>
+                  </div>
+                ))}
+              </div>
+              
+              <Separator className="my-3 bg-pink-100" />
+              
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">المجموع الفرعي</span>
+                  <span>{order.subtotal} ج.م</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">رسوم التوصيل</span>
+                  <span>{order.deliveryFee} ج.م</span>
+                </div>
+                <div className="flex justify-between font-bold pt-1">
+                  <span>المجموع</span>
+                  <span className="text-pink-700">{order.total} ج.م</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* أزرار التحكم */}
+        <div className="px-4 mt-6 space-y-3">
+          <Button 
+            variant="outline" 
+            className="w-full border-pink-200 text-pink-700 hover:bg-pink-50"
+            onClick={() => navigate('/personal-care')}
+          >
+            العودة للمتجر
+          </Button>
+          
+          {order.status === 'onway' && (
             <Button 
-              variant="outline" 
-              className="w-full border-pink-200 text-pink-700 hover:bg-pink-50 flex items-center justify-center gap-2"
-              onClick={() => {/* اتصال بالدعم */}}
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
             >
-              <Phone className="w-4 h-4" />
-              اتصل بخدمة العملاء
+              <Phone className="w-4 h-4 ml-2" />
+              اتصال بخدمة العملاء
             </Button>
-
+          )}
+          
+          {order.status === 'delivered' && (
             <Button 
-              variant="outline"
-              className="w-full border-pink-200 text-pink-700 hover:bg-pink-50"
-              onClick={() => navigate('/orders')}
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+              onClick={() => navigate('/personal-care')}
             >
-              عرض جميع الطلبات
+              تسوق مرة أخرى
             </Button>
-          </div>
-
-          {orderStatus === "delivered" && (
-            <div className="mt-6 p-4 bg-green-50 border border-green-100 rounded-lg text-center">
-              <h3 className="text-green-700 font-bold text-lg mb-2">تم توصيل الطلب بنجاح!</h3>
-              <p className="text-green-600">شكرًا لاختيارك منتجاتنا. نتمنى لك تجربة رائعة!</p>
-              <Button 
-                className="mt-4 bg-green-600 hover:bg-green-700 text-white"
-                onClick={() => navigate('/personal-care')}
-              >
-                العودة للتسوق
-              </Button>
-            </div>
           )}
         </div>
       </div>
