@@ -18,8 +18,8 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
   // أثناء التحقق من حالة المصادقة، نعرض شاشة التحميل
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-blue-50">
-        <div className="w-16 h-16 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+      <div className="flex items-center justify-center min-h-screen bg-orange-50">
+        <div className="w-16 h-16 border-4 border-orange-400 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }

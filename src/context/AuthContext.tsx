@@ -56,14 +56,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
     
     // تنفيذ التهيئة
-    const unsubscribe = initSession();
+    initSession();
     
-    // تنظيف عند إلغاء تحميل المكون
-    return () => {
-      if (typeof unsubscribe === 'function') {
-        unsubscribe();
-      }
-    };
+    // لا نحتاج لإرجاع دالة تنظيف هنا لأننا نقوم بذلك داخل الدالة initSession نفسها
   }, []);
 
   // تسجيل الدخول

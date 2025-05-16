@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 
 export interface UserAddress {
@@ -21,6 +22,7 @@ export interface PaymentMethod {
 // تحسين أداء طلبات العناوين باستخدام التخزين المؤقت
 let addressesCache: Record<string, { data: UserAddress[], timestamp: number }> = {};
 let paymentMethodsCache: Record<string, { data: PaymentMethod[], timestamp: number }> = {};
+let profileCache: Record<string, { data: any, timestamp: number }> = {};
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 /**
@@ -257,9 +259,6 @@ export async function deletePaymentMethod(methodId: string): Promise<void> {
   }
 }
 
-// Implementing memoization for user profile
-let profileCache: Record<string, { data: any, timestamp: number }> = {};
-
 /**
  * الحصول على معلومات الملف الشخصي
  * سيتم استخدام الملف الموجود أو إنشاء ملف شخصي جديد إذا لم يكن موجودًا
@@ -275,6 +274,8 @@ export async function getUserProfile() {
     if (cachedData && (now - cachedData.timestamp < CACHE_DURATION)) {
       return cachedData.data;
     }
+    
+    console.log("Fetching user profile for:", user.id);
     
     // محاولة جلب الملف الشخصي الحالي
     const { data, error } = await supabase
@@ -297,14 +298,19 @@ export async function getUserProfile() {
       throw error;
     }
     
+    console.log("User profile data:", data);
+    
     // إذا لم يكن المستخدم موجودًا، نعيد معلومات أساسية
     if (!data) {
-      return {
+      const basicProfile = {
         id: user.id,
         email: user.email,
         name: user.user_metadata?.name || user.email?.split('@')[0] || '',
         username: user.email?.split('@')[0] || ''
       };
+      
+      console.log("No profile found, using basic profile:", basicProfile);
+      return basicProfile;
     }
     
     // Update cache
@@ -324,17 +330,23 @@ export async function updateUserProfile(updates: Record<string, any>) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('يجب تسجيل الدخول أولاً');
     
+    console.log("Updating user profile for:", user.id, "with data:", updates);
+    
     // خطوة 1: محاولة تحديث بيانات المستخدم
     const { data, error } = await supabase
       .from('users')
       .update(updates)
       .eq('id', user.id)
       .select()
-      .single();
+      .maybeSingle();
     
     if (error) {
+      console.error('خطأ في تحديث الملف الشخصي:', error);
+      
       // إذا كان الخطأ بسبب عدم وجود المستخدم، سنقوم بإنشائه
       if (error.code === 'PGRST204' || error.message?.includes('No rows found')) {
+        console.log("No user profile found, creating a new one");
+        
         // محاولة إنشاء ملف جديد
         const { data: newUser, error: insertError } = await supabase
           .from('users')
@@ -353,15 +365,18 @@ export async function updateUserProfile(updates: Record<string, any>) {
           throw insertError;
         }
         
+        console.log("Created new user profile:", newUser);
+        
         // Invalidate cache
         delete profileCache[user.id];
         
         return newUser;
       } else {
-        console.error('خطأ في تحديث الملف الشخصي:', error);
         throw error;
       }
     }
+    
+    console.log("Updated user profile:", data);
     
     // Invalidate cache
     delete profileCache[user.id];

@@ -28,14 +28,6 @@ const EditProfile: React.FC = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // Monitor for authentication
-  useEffect(() => {
-    if (!user) {
-      toast.error("يجب تسجيل الدخول لتعديل الملف الشخصي");
-      navigate('/login');
-    }
-  }, [user, navigate]);
-  
   // تحديث البيانات عند تحميلها
   useEffect(() => {
     if (userProfile) {
@@ -101,6 +93,20 @@ const EditProfile: React.FC = () => {
 
       // Compress the image if it's a jpeg/jpg
       let fileToUpload = file;
+      
+      // تأكد من وجود bucket
+      try {
+        // محاولة إنشاء bucket إذا لم يكن موجودًا
+        const { data: bucketExists } = await supabase.storage.getBucket('avatars');
+        if (!bucketExists) {
+          await supabase.storage.createBucket('avatars', {
+            public: true,
+            fileSizeLimit: 5 * 1024 * 1024 // 5MB
+          });
+        }
+      } catch (error) {
+        console.log('تجاهل خطأ التحقق من وجود البكت، سنحاول الرفع مباشرة');
+      }
       
       // رفع الملف إلى Supabase Storage
       const { data, error } = await supabase
@@ -182,6 +188,15 @@ const EditProfile: React.FC = () => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center" dir="rtl">
+        <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+        <p className="mt-4 text-orange-600 font-medium">جاري التحميل...</p>
+      </div>
+    );
+  }
+
   // أظهر الخطأ إذا لم يتمكن من تحميل الملف الشخصي بعد عدة محاولات
   if (profileError) {
     return (
@@ -212,20 +227,7 @@ const EditProfile: React.FC = () => {
           <div className="w-6"></div>
         </div>
 
-        {isLoading ? (
-          <div className="p-6 space-y-8">
-            <div className="flex flex-col items-center">
-              <Skeleton className="w-24 h-24 rounded-full mb-4" />
-              <Skeleton className="w-40 h-5" />
-            </div>
-            <div className="space-y-4">
-              <Skeleton className="w-full h-10" />
-              <Skeleton className="w-full h-10" />
-            </div>
-            <Skeleton className="w-full h-12" />
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="px-4 py-6">
+        <form onSubmit={handleSubmit} className="px-4 py-6">
             {/* Profile Picture Upload */}
             <div className="flex flex-col items-center mb-8">
               <div className="relative mb-4">
@@ -290,7 +292,6 @@ const EditProfile: React.FC = () => {
               {updateProfile.isPending || isSubmitting ? 'جاري الحفظ...' : 'حفظ التغييرات'}
             </Button>
           </form>
-        )}
       </div>
     </div>
   );
