@@ -51,8 +51,8 @@ const PersonalCareCheckoutContent: React.FC = () => {
         items: orderItems,
         addressId: selectedAddressId,
         paymentMethod,
-        serviceType: 'personal-care',
-        totalAmount: orderTotal,
+        orderType: 'personal_care',
+        total: orderTotal,
         phone: selectedAddress?.phone || ''
       });
 

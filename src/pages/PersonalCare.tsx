@@ -213,7 +213,10 @@ const PersonalCare: React.FC = () => {
                       <Button
                         size="sm"
                         disabled={product.stock <= 0}
-                        onClick={() => product.stock > 0 && addToCart(product)}
+                        onClick={() => product.stock > 0 && addToCart({
+                          ...product,
+                          image: product.image_url || 'https://via.placeholder.com/300?text=Beauty+Product'
+                        })}
                         className={`rounded-full ${
                           product.stock > 0
                             ? 'bg-pink-600 hover:bg-pink-700 text-white'

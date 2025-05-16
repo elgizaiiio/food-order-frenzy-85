@@ -23,7 +23,7 @@ const PersonalCareTracking: React.FC = () => {
     { id: 1, title: 'تم استلام الطلب', icon: <Check className="w-5 h-5" />, completed: true, time: 'منذ 5 دقائق' },
     { id: 2, title: 'جاري تجهيز الطلب', icon: <Package className="w-5 h-5" />, completed: orderStatus !== "preparing", time: 'منذ 2 دقائق' },
     { id: 3, title: 'الطلب في الطريق', icon: <Truck className="w-5 h-5" />, completed: orderStatus === "delivered", active: orderStatus === "onway", time: 'الآن' },
-    { id: 4, title: 'تم التوصيل', icon: <Home className="w-5 h-5" />, completed: false, time: 'قريباً' },
+    { id: 4, title: 'تم التوصيل', icon: <Home className="w-5 h-5" />, completed: orderStatus === "delivered", time: 'قريباً' },
   ];
 
   return (
