@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { MapPin, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -19,7 +19,9 @@ const AddressInput: React.FC<AddressInputProps> = ({ currentAddress, setCurrentA
 
   return (
     <div className="flex items-center space-x-2 space-x-reverse">
-      <MapPin className="w-5 h-5 text-black" />
+      <div className="bg-gray-100 p-2 rounded-full">
+        <MapPin className="w-4 h-4 text-black" />
+      </div>
       <div className="flex flex-col">
         <span className="text-xs text-gray-500">التوصيل إلى</span>
         <Popover>

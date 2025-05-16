@@ -6,7 +6,11 @@ import {
   ShoppingBag, 
   Bell, 
   Pill,
-  Compass
+  Scissors,
+  Star,
+  Package,
+  Navigation,
+  Clock
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -33,7 +37,9 @@ const Index = () => {
     { id: 'all', name: 'الكل' },
     { id: 'restaurants', name: 'مطاعم' },
     { id: 'market', name: 'بقالة' },
-    { id: 'pharmacy', name: 'صيدليات' }
+    { id: 'pharmacy', name: 'صيدليات' },
+    { id: 'gym', name: 'جيم' },
+    { id: 'personal-care', name: 'العناية الشخصية' }
   ];
 
   // أخذ التنقل إلى الصفحات
@@ -45,7 +51,7 @@ const Index = () => {
   const firstName = user?.email ? user.email.split('@')[0] : 'صديقي';
   
   return (
-    <div className="min-h-screen bg-white" dir="rtl">
+    <div className="min-h-screen bg-gray-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-20">
         {/* رأس الصفحة */}
         <header className="sticky top-0 z-30 bg-white shadow-sm">
@@ -135,7 +141,7 @@ const Index = () => {
               />
               
               <ServiceCard
-                icon={<Compass className="h-5 w-5 text-white" />}
+                icon={<Navigation className="h-5 w-5 text-white" />}
                 title="الجيم"
                 description="اشتراكات"
                 bgClass="bg-white"
@@ -143,7 +149,7 @@ const Index = () => {
               />
               
               <ServiceCard
-                icon={<ShoppingBag className="h-5 w-5 text-white" />}
+                icon={<Scissors className="h-5 w-5 text-white" />}
                 title="العناية"
                 description="منتجات العناية"
                 bgClass="bg-white"
@@ -174,36 +180,63 @@ const Index = () => {
             </div>
             
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-black text-white p-4 rounded-lg">
-                <h3 className="font-bold text-lg mb-2">توصيل سريع</h3>
-                <p className="text-xs text-gray-300 mb-3">توصيل خلال 15 دقيقة</p>
-                <Badge className="bg-white text-black hover:bg-gray-100">اطلب الآن</Badge>
+              <div className="bg-black text-white p-4 rounded-xl">
+                <div className="flex items-center mb-3">
+                  <div className="p-2 bg-white/20 rounded-full mr-3">
+                    <Package className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg">توصيل سريع</h3>
+                    <p className="text-xs text-gray-300">خلال 15 دقيقة</p>
+                  </div>
+                </div>
+                <Badge className="bg-white text-black hover:bg-gray-100 mt-2">اطلب الآن</Badge>
               </div>
               
-              <div className="bg-gray-100 p-4 rounded-lg">
-                <h3 className="font-bold text-lg mb-2">صيدلية</h3>
-                <p className="text-xs text-gray-500 mb-3">من أقرب صيدلية</p>
-                <Badge className="bg-black text-white hover:bg-gray-900">اطلب الآن</Badge>
+              <div className="bg-black text-white p-4 rounded-xl">
+                <div className="flex items-center mb-3">
+                  <div className="p-2 bg-white/20 rounded-full mr-3">
+                    <Pill className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg">صيدلية</h3>
+                    <p className="text-xs text-gray-300">من أقرب صيدلية</p>
+                  </div>
+                </div>
+                <Badge className="bg-white text-black hover:bg-gray-100 mt-2">اطلب الآن</Badge>
               </div>
             </div>
             
-            <div className="mt-5 rounded-lg overflow-hidden bg-black text-white animate-fade-in" style={{animationDelay: "650ms"}}>
-              <div className="p-4 flex items-center justify-between">
+            {/* قسم الخصومات */}
+            <div className="mt-5 rounded-xl overflow-hidden bg-black text-white animate-fade-in" style={{animationDelay: "650ms"}}>
+              <div className="p-5 flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-bold mb-1">أوبر وان</h3>
-                  <p className="text-xs text-gray-300 mb-3">اشترك الآن واحصل على مزايا حصرية</p>
+                  <h3 className="text-lg font-bold mb-1">خصم 30% على أول طلب</h3>
+                  <p className="text-xs text-gray-300 mb-3">احصل على خصم 30% عند تسجيلك لأول مرة</p>
                   <Button className="bg-white text-black hover:bg-gray-100 text-xs px-3 py-1 h-auto">
-                    اشترك الآن
+                    استخدم الكود: FIRST30
                   </Button>
                 </div>
-                <div className="rounded-full bg-gray-800 p-3">
-                  <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="white" strokeWidth="2" />
-                    <path d="M12 8V16" stroke="white" strokeWidth="2" strokeLinecap="round" />
-                    <path d="M16 12H8" stroke="white" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
+                <div className="rounded-full bg-white/10 p-3">
+                  <Star className="w-10 h-10 text-white" />
                 </div>
               </div>
+            </div>
+            
+            {/* قسم التوصيل السريع */}
+            <div className="mt-3 p-4 rounded-xl bg-black text-white">
+              <div className="flex items-center mb-3">
+                <div className="p-2 bg-white/20 rounded-full mr-3">
+                  <Clock className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-bold">توصيل الطلبات</h3>
+                  <p className="text-xs text-gray-300">استلم طلبك خلال 30 دقيقة أو أقل</p>
+                </div>
+              </div>
+              <Button className="bg-white text-black hover:bg-gray-100 w-full mt-2">
+                اطلب الآن
+              </Button>
             </div>
           </section>
         </main>
