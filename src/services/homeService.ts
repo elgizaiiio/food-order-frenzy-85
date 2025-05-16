@@ -221,6 +221,26 @@ export async function fetchHomePromos(): Promise<Promo[]> {
       iconBg: "bg-white/20",
       textColor: "text-white",
       link: "/pharmacy"
+    },
+    {
+      id: 5,
+      title: "توصيل سريع",
+      description: "وصل طلبك خلال 30 دقيقة",
+      icon: "Clock",
+      gradient: "from-amber-500 to-orange-600",
+      iconBg: "bg-white/20",
+      textColor: "text-white",
+      link: "/restaurants"
+    },
+    {
+      id: 6,
+      title: "ضمان الجودة",
+      description: "استرداد كامل المبلغ إذا لم تكن راضيًا",
+      icon: "ShieldCheck",
+      gradient: "from-green-500 to-teal-600",
+      iconBg: "bg-white/20",
+      textColor: "text-white",
+      link: "/market"
     }
   ];
 }
