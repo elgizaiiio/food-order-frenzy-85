@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -112,8 +111,7 @@ const Index = () => {
           {/* Banner Slider with improved styling */}
           <BannerSlider />
           
-          {/* Value Proposition with improved styling */}
-          <ValuePropositions />
+          {/* تم حذف مكون ValuePropositions الذي يحتوي على "توصيل مجاني" */}
           
           {/* Popular Restaurants */}
           <PopularRestaurants />
@@ -162,42 +160,6 @@ const BannerSlider = () => {
               <h3 className="text-white text-lg font-bold text-center drop-shadow-md">{banner.title}</h3>
             </div>
           </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-// مكون القيمة المقترحة محسن
-const ValuePropositions = () => {
-  const values = [
-    {
-      title: "توصيل سريع",
-      icon: <Clock className="h-5 w-5 text-orange-500" />,
-      description: "خلال 20-30 دقيقة"
-    },
-    {
-      title: "توصيل مجاني",
-      icon: <Car className="h-5 w-5 text-orange-500" />,
-      description: "للطلبات أكثر من 50 ريال"
-    }
-  ];
-  
-  return (
-    <div className="bg-white rounded-xl my-3 py-3 px-4 shadow-sm hover:shadow-md transition-all">
-      <div className="flex justify-between gap-3">
-        {values.map((value, index) => (
-          <Card key={index} className="flex-1 border-none shadow-sm hover:shadow-md transition-all animate-fade-in" style={{animationDelay: `${index * 100}ms`}}>
-            <CardContent className="flex items-center p-3">
-              <div className="bg-orange-100 p-2 rounded-full ml-3">
-                {value.icon}
-              </div>
-              <div className="text-right">
-                <h3 className="font-bold text-sm">{value.title}</h3>
-                <p className="text-xs text-gray-600 mt-0.5">{value.description}</p>
-              </div>
-            </CardContent>
-          </Card>
         ))}
       </div>
     </div>
