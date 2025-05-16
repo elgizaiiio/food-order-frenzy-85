@@ -1,189 +1,136 @@
 
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowLeft, CheckCircle, Clock, Truck, PhoneCall } from 'lucide-react';
+import React from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Check, Clock, Package, Truck, Home, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 
 const PersonalCareTracking: React.FC = () => {
-  // محاكاة حالة الطلب
-  const [orderStatus, setOrderStatus] = useState<'preparing' | 'on_the_way' | 'delivered'>('preparing');
-  const [progress, setProgress] = useState(33);
-
-  // بيانات الطلب
-  const order = {
-    id: 'ORD-2354789',
-    estimatedTime: '30-45',
-    items: [
-      { name: 'عطر فلورا الفاخر', quantity: 1, price: 199 },
-      { name: 'كريم مرطب للوجه', quantity: 2, price: 85 }
-    ],
-    subtotal: 369,
-    deliveryFee: 15,
-    total: 384,
-    address: 'شارع الملك فهد، القاهرة',
-    driver: {
-      name: 'أحمد محمد',
-      phone: '+2012XXXXXXXX',
-      image: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?auto=format&fit=crop&q=80&w=100&h=100'
-    }
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { orderId, estimatedDelivery } = location.state || { 
+    orderId: `ORD-${Math.floor(Math.random() * 100000)}`, 
+    estimatedDelivery: '30-45 دقيقة' 
   };
 
-  // محاكاة تغيير حالة الطلب
-  useEffect(() => {
-    // التغيير الأول: من التجهيز إلى في الطريق
-    const firstTimeout = setTimeout(() => {
-      setOrderStatus('on_the_way');
-      setProgress(66);
-    }, 10000); // 10 ثوان
+  // عنوان التوصيل (سيأتي من الـ API في التطبيق الحقيقي)
+  const deliveryAddress = "شارع محمد نجيب، المعادي، القاهرة";
 
-    // التغيير الثاني: من في الطريق إلى تم التوصيل
-    const secondTimeout = setTimeout(() => {
-      setOrderStatus('delivered');
-      setProgress(100);
-    }, 20000); // 20 ثانية
+  // حالة الطلب - عادة تأتي من الخادم
+  const orderStatus = "onway"; // preparing, onway, delivered
 
-    // تنظيف المؤقتات عند إلغاء تحميل المكون
-    return () => {
-      clearTimeout(firstTimeout);
-      clearTimeout(secondTimeout);
-    };
-  }, []);
+  // خطوات تتبع الطلب
+  const trackingSteps = [
+    { id: 1, title: 'تم استلام الطلب', icon: <Check className="w-5 h-5" />, completed: true, time: 'منذ 5 دقائق' },
+    { id: 2, title: 'جاري تجهيز الطلب', icon: <Package className="w-5 h-5" />, completed: orderStatus !== "preparing", time: 'منذ 2 دقائق' },
+    { id: 3, title: 'الطلب في الطريق', icon: <Truck className="w-5 h-5" />, completed: orderStatus === "delivered", active: orderStatus === "onway", time: 'الآن' },
+    { id: 4, title: 'تم التوصيل', icon: <Home className="w-5 h-5" />, completed: false, time: 'قريباً' },
+  ];
 
   return (
-    <div className="min-h-screen bg-blue-50" dir="rtl">
-      <div className="max-w-md mx-auto bg-white pb-20">
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-md mx-auto bg-white pb-24">
         {/* الهيدر */}
-        <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-blue-600 to-blue-800 text-white">
-          <Link to="/personal-care" className="text-white">
+        <div className="sticky top-0 flex items-center justify-between p-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-sm z-10 rounded-b-xl">
+          <Link to="/" className="text-white hover:text-pink-100">
             <ArrowLeft className="w-6 h-6" />
           </Link>
           <h1 className="text-xl font-bold">تتبع الطلب</h1>
-          <div className="w-6"></div> {/* عنصر فارغ للتوازن */}
+          <div className="w-6"></div>
         </div>
 
-        <div className="p-4">
-          {/* حالة الطلب */}
-          <Card className="p-4 mb-6 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200">
-            <h2 className="text-lg font-bold mb-2 text-blue-800">حالة الطلب #{order.id}</h2>
-            <Progress 
-              value={progress} 
-              className="h-2 mb-4" 
-              indicatorClassName="bg-gradient-to-r from-blue-500 to-blue-700"
-            />
-            <div className="flex justify-between text-sm">
-              <div className="flex flex-col items-center gap-1">
-                <CheckCircle className={`w-6 h-6 ${progress >= 33 ? 'text-blue-600 fill-blue-600' : 'text-gray-300'}`} />
-                <span className={progress >= 33 ? 'text-blue-800' : 'text-gray-500'}>تم الاستلام</span>
-              </div>
-              <div className="flex flex-col items-center gap-1">
-                <Truck className={`w-6 h-6 ${progress >= 66 && progress < 100 ? 'text-blue-600' : 'text-gray-300'}`} />
-                <span className={progress >= 66 && progress < 100 ? 'text-blue-800' : 'text-gray-500'}>في الطريق</span>
-              </div>
-              <div className="flex flex-col items-center gap-1">
-                <CheckCircle className={`w-6 h-6 ${progress === 100 ? 'text-blue-600 fill-blue-600' : 'text-gray-300'}`} />
-                <span className={progress === 100 ? 'text-blue-800' : 'text-gray-500'}>تم التوصيل</span>
-              </div>
+        <div className="p-6">
+          {/* معلومات الطلب */}
+          <div className="flex flex-col items-center mb-8">
+            <div className="w-24 h-24 bg-pink-100 rounded-full flex items-center justify-center mb-4">
+              <img src="https://via.placeholder.com/100?text=Beauty" alt="Beauty" className="w-16 h-16 rounded-full object-cover" />
             </div>
-          </Card>
+            <h2 className="text-xl font-bold text-pink-800 mb-2">منتجات العناية الشخصية</h2>
+            <p className="text-gray-600">رقم الطلب: {orderId}</p>
+          </div>
 
-          {/* وقت التوصيل المقدر */}
-          <Card className="p-4 mb-6 border border-blue-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-bold text-blue-800">وقت التوصيل المتوقع</h3>
-                <p className="text-gray-600">{order.estimatedTime} دقيقة</p>
-              </div>
-              <Clock className="w-10 h-10 text-blue-600" />
-            </div>
-          </Card>
+          {/* وقت التوصيل المتوقع */}
+          <div className="text-center mb-10">
+            <h3 className="text-3xl font-bold text-pink-800">{estimatedDelivery}</h3>
+            <p className="text-gray-500 mt-1">وقت التوصيل المتوقع</p>
+          </div>
 
-          {/* مندوب التوصيل - يظهر فقط عندما تكون الحالة في الطريق */}
-          {orderStatus !== 'preparing' && (
-            <Card className="p-4 mb-6 animate-fade-in border border-blue-200">
-              <h3 className="text-lg font-bold mb-2 text-blue-800">مندوب التوصيل</h3>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <img 
-                    src={order.driver.image} 
-                    alt={order.driver.name} 
-                    className="w-12 h-12 rounded-full object-cover border-2 border-blue-200"
-                  />
-                  <div>
-                    <p className="font-medium text-blue-900">{order.driver.name}</p>
-                    <p className="text-sm text-gray-600">{order.driver.phone}</p>
+          {/* مراحل التتبع */}
+          <div className="mb-10 relative">
+            {/* خط التقدم */}
+            <div className="absolute top-0 bottom-0 right-[19px] w-1 bg-gray-200"></div>
+
+            {/* الخطوات */}
+            <div className="space-y-8">
+              {trackingSteps.map((step) => (
+                <div key={step.id} className="flex items-center gap-4">
+                  <div 
+                    className={`w-10 h-10 rounded-full flex items-center justify-center z-10 ${
+                      step.completed 
+                        ? 'bg-green-500' 
+                        : step.active 
+                        ? 'bg-pink-600 animate-pulse' 
+                        : 'bg-gray-200'
+                    }`}
+                  >
+                    {step.completed ? (
+                      <Check className="text-white w-5 h-5" />
+                    ) : (
+                      <div className={`w-5 h-5 flex items-center justify-center ${step.active ? 'text-white' : 'text-gray-400'}`}>
+                        {step.icon}
+                      </div>
+                    )}
                   </div>
-                </div>
-                <Button 
-                  size="sm" 
-                  variant="personalCareOutline" 
-                  className="h-10 w-10 p-0 rounded-full"
-                >
-                  <PhoneCall className="h-5 w-5 text-blue-600" />
-                </Button>
-              </div>
-            </Card>
-          )}
-
-          {/* رسالة الحالة */}
-          <Card className="p-4 mb-6 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200">
-            <div className="text-center">
-              {orderStatus === 'preparing' && (
-                <p className="text-blue-700">جاري تحضير منتجاتك. هيوصلك قريب!</p>
-              )}
-              {orderStatus === 'on_the_way' && (
-                <p className="text-blue-700">طلبك في الطريق إليك دلوقتي مع المندوب {order.driver.name}</p>
-              )}
-              {orderStatus === 'delivered' && (
-                <p className="text-green-600">تم توصيل طلبك بنجاح. نتمنى لك تجربة ممتعة!</p>
-              )}
-            </div>
-          </Card>
-
-          {/* عنوان التوصيل */}
-          <Card className="p-4 mb-6 border border-blue-200">
-            <h3 className="text-lg font-bold mb-2 text-blue-800">عنوان التوصيل</h3>
-            <p className="text-gray-600">{order.address}</p>
-          </Card>
-
-          {/* تفاصيل الطلب */}
-          <Card className="p-4 mb-6 border border-blue-200">
-            <h3 className="text-lg font-bold mb-3 text-blue-800">تفاصيل الطلب</h3>
-            <div className="space-y-2 mb-4">
-              {order.items.map((item, index) => (
-                <div key={index} className="flex justify-between">
-                  <span className="text-blue-900">
-                    {item.name} × {item.quantity}
-                  </span>
-                  <span className="text-blue-700 font-medium">{item.price * item.quantity} جنيه</span>
+                  <div>
+                    <h4 className={`font-bold ${!step.completed && !step.active ? 'text-gray-400' : 'text-gray-800'}`}>
+                      {step.title}
+                    </h4>
+                    <p className={`text-sm ${step.active ? 'text-pink-600 font-medium' : 'text-gray-500'}`}>
+                      {step.time}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
-            <div className="pt-2 border-t space-y-2 border-blue-100">
-              <div className="flex justify-between">
-                <span className="text-gray-600">المجموع الفرعي</span>
-                <span className="text-blue-700">{order.subtotal} جنيه</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">رسوم التوصيل</span>
-                <span className="text-blue-700">{order.deliveryFee} جنيه</span>
-              </div>
-              <div className="flex justify-between font-bold pt-2 border-t border-blue-100">
-                <span className="text-blue-900">المبلغ الإجمالي</span>
-                <span className="text-blue-700">{order.total} جنيه</span>
-              </div>
-            </div>
-          </Card>
-
-          {/* زر العودة للرئيسية */}
-          <div className="fixed bottom-0 left-0 right-0 bg-white p-4 border-t max-w-md mx-auto">
-            <Link to="/personal-care">
-              <Button variant="personalCare" className="w-full">
-                العودة للرئيسية
-              </Button>
-            </Link>
           </div>
+
+          {/* عنوان التوصيل */}
+          <div className="mb-8 bg-pink-50 p-4 rounded-lg border border-pink-100">
+            <h3 className="font-bold mb-2 text-pink-800">عنوان التوصيل</h3>
+            <p className="text-gray-700">{deliveryAddress}</p>
+          </div>
+
+          {/* معلومات إضافية */}
+          <div className="space-y-4">
+            <Button 
+              variant="outline" 
+              className="w-full border-pink-200 text-pink-700 hover:bg-pink-50 flex items-center justify-center gap-2"
+              onClick={() => {/* اتصال بالدعم */}}
+            >
+              <Phone className="w-4 h-4" />
+              اتصل بخدمة العملاء
+            </Button>
+
+            <Button 
+              variant="outline"
+              className="w-full border-pink-200 text-pink-700 hover:bg-pink-50"
+              onClick={() => navigate('/orders')}
+            >
+              عرض جميع الطلبات
+            </Button>
+          </div>
+
+          {orderStatus === "delivered" && (
+            <div className="mt-6 p-4 bg-green-50 border border-green-100 rounded-lg text-center">
+              <h3 className="text-green-700 font-bold text-lg mb-2">تم توصيل الطلب بنجاح!</h3>
+              <p className="text-green-600">شكرًا لاختيارك منتجاتنا. نتمنى لك تجربة رائعة!</p>
+              <Button 
+                className="mt-4 bg-green-600 hover:bg-green-700 text-white"
+                onClick={() => navigate('/personal-care')}
+              >
+                العودة للتسوق
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -1,61 +1,55 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowLeft, Minus, Plus, X, ShoppingBag } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Minus, Plus, X, Trash2, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { usePersonalCareCart } from '@/context/PersonalCareCartContext';
-import { Badge } from '@/components/ui/badge';
 
 const PersonalCareCart: React.FC = () => {
-  const { 
-    items, 
-    removeFromCart, 
-    increaseQuantity, 
+  const navigate = useNavigate();
+  const {
+    items,
+    removeFromCart,
+    increaseQuantity,
     decreaseQuantity,
-    itemCount,
-    totalPrice,
-    addToCart 
+    clearCart,
+    totalPrice
   } = usePersonalCareCart();
-  
-  // معلومات التوصيل والضريبة
-  const deliveryFee = 15;
-  const total = totalPrice + deliveryFee;
 
   // منتجات مقترحة
   const suggestedItems = [
     {
-      id: 10,
-      name: 'روج مات',
-      price: 65,
-      image: 'https://images.unsplash.com/photo-1631214540553-ff044a3ff1d4?q=80&w=200&auto=format&fit=crop',
+      id: 101,
+      name: "كريم يدين مرطب",
+      price: 45.0,
+      image: "https://images.unsplash.com/photo-1556227702-d1e4e7b5c232?auto=format&fit=crop&q=80&w=200&h=200"
     },
     {
-      id: 11,
-      name: 'طقم فرش مكياج',
-      price: 120,
-      image: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=200&auto=format&fit=crop',
+      id: 102,
+      name: "مزيل مكياج",
+      price: 65.0,
+      image: "https://images.unsplash.com/photo-1631214540553-ff044a3ff1d4?auto=format&fit=crop&q=80&w=200&h=200"
     },
     {
-      id: 12,
-      name: 'صابونة طبيعية',
-      price: 45,
-      image: 'https://images.unsplash.com/photo-1600612253971-422e7f7faeb6?q=80&w=200&auto=format&fit=crop',
+      id: 103,
+      name: "مرطب للبشرة",
+      price: 85.0,
+      image: "https://images.unsplash.com/photo-1611080541639-021b5dbdf5e9?auto=format&fit=crop&q=80&w=200&h=200"
     }
   ];
 
-  // تعديل الدالة لإضافة المنتج مباشرة
-  const handleAddSuggested = (product: any) => {
-    addToCart(product);
-  };
+  // رسوم التوصيل والمجموع
+  const deliveryFee = 15;
+  const orderTotal = totalPrice + deliveryFee;
 
   return (
-    <div className="min-h-screen bg-blue-50" dir="rtl">
-      <div className="max-w-md mx-auto bg-white pb-24 shadow-md">
-        {/* الهيدر */}
-        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-md sticky top-0 z-10">
-          <Link to="/personal-care" className="text-white hover:text-blue-100 transition-colors">
+    <div className="min-h-screen bg-pink-50">
+      <div className="max-w-md mx-auto bg-white pb-24 shadow-sm">
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white sticky top-0 z-10 shadow-md rounded-b-xl">
+          <Link to="/personal-care" className="text-white hover:text-pink-100 transition-colors">
             <ArrowLeft className="w-6 h-6" />
           </Link>
           <h1 className="text-xl font-bold">السلة</h1>
@@ -64,104 +58,89 @@ const PersonalCareCart: React.FC = () => {
 
         {/* محتويات السلة */}
         <div className="p-4">
-          <div>
-            {items.length > 0 ? (
-              items.map((item) => (
-                <div key={item.id} className="flex items-center justify-between py-3 border-b border-blue-100 hover:bg-blue-50 transition-colors rounded-lg px-2 my-2 animate-fade-in">
-                  <div className="flex gap-3">
-                    <img 
-                      src={item.image} 
-                      alt={item.name} 
-                      className="w-16 h-16 object-cover rounded-lg shadow-sm border border-blue-100"
-                    />
-                    <div>
-                      <h3 className="font-medium text-blue-900">{item.name}</h3>
-                      <p className="text-blue-600 font-medium">{item.price} ج.م</p>
-                      <div className="flex items-center gap-3 mt-1 bg-white rounded-full border border-blue-200 shadow-sm p-1">
-                        <button 
-                          className="w-6 h-6 flex items-center justify-center rounded-full border-0 bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors"
-                          onClick={() => decreaseQuantity(item.id)}
-                        >
-                          <Minus className="w-3 h-3" />
-                        </button>
-                        <span className="font-bold text-gray-800 w-6 text-center">{item.quantity}</span>
-                        <button 
-                          className="w-6 h-6 flex items-center justify-center rounded-full border-0 bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-                          onClick={() => increaseQuantity(item.id)}
-                        >
-                          <Plus className="w-3 h-3" />
-                        </button>
+          {items.length === 0 ? (
+            <div className="text-center py-10 animate-fade-in">
+              <div className="w-16 h-16 mx-auto bg-pink-100 rounded-full flex items-center justify-center mb-3">
+                <ShoppingBag className="w-8 h-8 text-pink-500" />
+              </div>
+              <h3 className="font-bold text-lg mb-2 text-pink-800">السلة فارغة</h3>
+              <p className="text-pink-600 mb-4">لم تضف أي منتجات إلى السلة بعد</p>
+              <Button 
+                onClick={() => navigate('/personal-care')}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg"
+              >
+                تصفح المنتجات
+              </Button>
+            </div>
+          ) : (
+            <>
+              {/* قائمة المنتجات */}
+              <div className="space-y-3 mb-4">
+                {items.map(item => (
+                  <div key={item.id} className="flex items-center justify-between p-3 rounded-xl bg-white shadow-sm border border-pink-100 hover:bg-pink-50 transition-colors animate-fade-in">
+                    <div className="flex gap-3">
+                      <img 
+                        src={item.image} 
+                        alt={item.name} 
+                        className="w-20 h-20 object-cover rounded-lg shadow-md border border-pink-100" 
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = 'https://via.placeholder.com/100?text=صورة+غير+متوفرة';
+                        }}
+                      />
+                      <div>
+                        <h3 className="font-bold text-pink-900">{item.name}</h3>
+                        <p className="text-pink-600 font-medium">{item.price} ج.م</p>
+                        <div className="flex items-center gap-3 mt-2 bg-white rounded-full border border-pink-200 shadow-sm p-1">
+                          <button 
+                            onClick={() => decreaseQuantity(item.id)} 
+                            className="w-7 h-7 flex items-center justify-center rounded-full border-0 bg-pink-100 text-pink-700 hover:bg-pink-200 transition-colors"
+                          >
+                            <Minus className="w-3 h-3" />
+                          </button>
+                          <span className="font-bold text-pink-900 w-6 text-center">{item.quantity}</span>
+                          <button 
+                            onClick={() => increaseQuantity(item.id)}
+                            className="w-7 h-7 flex items-center justify-center rounded-full border-0 bg-pink-500 text-white hover:bg-pink-600 transition-colors"
+                          >
+                            <Plus className="w-3 h-3" />
+                          </button>
+                        </div>
                       </div>
                     </div>
+                    <button 
+                      onClick={() => removeFromCart(item.id)} 
+                      className="p-2 rounded-full bg-red-50 text-red-500 hover:bg-red-100 transition-colors"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
                   </div>
-                  <button 
-                    className="text-gray-400 hover:text-red-500 transition-colors" 
-                    onClick={() => removeFromCart(item.id)}
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-              ))
-            ) : (
-              <div className="text-center py-8 animate-fade-in">
-                <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <ShoppingBag className="w-8 h-8 text-blue-600" />
-                </div>
-                <p className="text-gray-500 mb-4">السلة فارغة</p>
-                <Link to="/personal-care">
-                  <Button 
-                    variant="personalCare" 
-                    className="shadow-md"
-                  >
-                    تصفح المنتجات
-                  </Button>
-                </Link>
+                ))}
               </div>
-            )}
-          </div>
 
-          {items.length > 0 && (
-            <>
-              {/* زر إضافة المزيد */}
-              <Link to="/personal-care" className="block mb-3">
-                <Button 
-                  variant="personalCareOutline" 
-                  className="w-full"
-                >
-                  إضافة منتجات تانية
-                </Button>
-              </Link>
-
-              {/* منتجات مقترحة */}
-              <div className="mb-4 animate-fade-in">
-                <h2 className="text-lg font-bold mb-3 flex items-center gap-2 text-blue-800">
-                  <span className="h-5 w-1.5 rounded-full bg-gradient-to-b from-blue-600 to-blue-800"></span>
-                  منتجات ممكن تعجبك
-                </h2>
-                <div className="flex overflow-x-auto gap-3 pb-2 no-scrollbar">
-                  {suggestedItems.map((item) => (
-                    <Card key={item.id} className="min-w-36 flex-shrink-0 border border-blue-100 shadow-sm hover:shadow-md transition-all">
-                      <div className="relative">
-                        <img 
-                          src={item.image} 
-                          alt={item.name} 
-                          className="w-full h-24 object-cover rounded-t-lg"
-                        />
-                        <Badge className="absolute top-2 right-2 bg-gradient-to-r from-blue-600 to-blue-800 text-xs text-white">
-                          جديد
-                        </Badge>
-                      </div>
-                      <div className="p-2">
-                        <h3 className="text-sm font-medium text-blue-800">{item.name}</h3>
-                        <div className="flex items-center justify-between mt-2">
-                          <span className="text-sm font-bold text-blue-700">{item.price} ج.م</span>
+              {/* المنتجات المقترحة */}
+              <div className="mt-6 mb-4">
+                <h3 className="font-bold mb-3 text-pink-800 flex items-center">
+                  <div className="w-1 h-5 bg-pink-600 ml-2"></div>
+                  منتجات مقترحة
+                </h3>
+                <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+                  {suggestedItems.map(item => (
+                    <Card key={item.id} className="min-w-[150px] flex-shrink-0 border border-pink-100 overflow-hidden animate-fade-in">
+                      <img 
+                        src={item.image} 
+                        alt={item.name} 
+                        className="w-full h-24 object-cover"
+                      />
+                      <div className="p-2 bg-gradient-to-b from-pink-50 to-white">
+                        <p className="text-sm font-medium text-pink-800 mb-1 line-clamp-1">{item.name}</p>
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs font-bold text-pink-600">{item.price} ج.م</span>
                           <Button 
                             size="sm" 
-                            variant="personalCarePill" 
-                            className="h-7 text-xs rounded-full"
-                            onClick={() => handleAddSuggested(item)}
+                            className="h-7 w-7 p-0 rounded-full bg-pink-500 hover:bg-pink-600 text-white"
+                            onClick={() => increaseQuantity(item.id)}
                           >
-                            إضافة
+                            <Plus className="h-3 w-3" />
                           </Button>
                         </div>
                       </div>
@@ -171,50 +150,50 @@ const PersonalCareCart: React.FC = () => {
               </div>
 
               {/* ملخص الطلب */}
-              <div className="mb-3 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200 animate-fade-in">
-                <h2 className="text-lg font-bold mb-2 text-blue-800">ملخص الطلب</h2>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">المجموع الفرعي</span>
-                    <span className="font-medium">{totalPrice} ج.م</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">رسوم التوصيل</span>
-                    <span className="font-medium">{deliveryFee} ج.م</span>
-                  </div>
-                  <Separator className="my-2 bg-blue-200" />
-                  <div className="flex justify-between font-bold pt-1">
-                    <span className="text-blue-900">المبلغ الإجمالي</span>
-                    <span className="text-blue-700">{total} ج.م</span>
+              <Card className="bg-pink-50 border border-pink-100 mt-4 animate-fade-in">
+                <div className="p-4">
+                  <h3 className="font-bold mb-3 text-pink-800">ملخص الطلب</h3>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-pink-700">المجموع الفرعي</span>
+                      <span className="font-medium">{totalPrice.toFixed(2)} ج.م</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-pink-700">رسوم التوصيل</span>
+                      <span className="font-medium">{deliveryFee.toFixed(2)} ج.م</span>
+                    </div>
+                    <Separator className="my-2 bg-pink-200" />
+                    <div className="flex justify-between font-bold">
+                      <span className="text-pink-800">المبلغ الإجمالي</span>
+                      <span className="text-pink-700">{orderTotal.toFixed(2)} ج.م</span>
+                    </div>
                   </div>
                 </div>
+              </Card>
+
+              {/* أزرار التحكم */}
+              <div className="mt-4">
+                <Button 
+                  variant="outline" 
+                  className="w-full border-pink-200 text-pink-700 hover:bg-pink-50" 
+                  onClick={clearCart}
+                >
+                  تفريغ السلة
+                </Button>
               </div>
             </>
           )}
         </div>
 
-        {/* أزرار أسفل الصفحة - مثبتة في الأسفل */}
+        {/* زر إتمام الطلب العائم في الأسفل */}
         {items.length > 0 && (
-          <div className="fixed bottom-16 left-0 right-0 bg-white border-t p-3 z-50 max-w-md mx-auto shadow-lg">
-            <div className="flex gap-3">
-              <Link to="/personal-care" className="flex-1">
-                <Button 
-                  variant="personalCareOutline" 
-                  className="w-full"
-                >
-                  إضافة المزيد
-                </Button>
-              </Link>
-              <Link to="/personal-care/checkout" className="flex-1">
-                <Button 
-                  size="checkout"
-                  variant="personalCare"
-                  className="w-full"
-                >
-                  إتمام الطلب • {total} ج.م
-                </Button>
-              </Link>
-            </div>
+          <div className="fixed bottom-16 left-0 right-0 bg-white shadow-lg border-t border-pink-100 p-4 z-50 max-w-md mx-auto">
+            <Button 
+              onClick={() => navigate('/personal-care/checkout')} 
+              className="w-full py-3 px-4 text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+            >
+              إتمام الطلب • {orderTotal.toFixed(2)} ج.م
+            </Button>
           </div>
         )}
       </div>
