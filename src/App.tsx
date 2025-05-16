@@ -15,6 +15,7 @@ import AuthGuard from "./components/AuthGuard";
 // Delivery Section - إضافة صفحات التوصيل الجديدة
 import DeliveryRequest from "./pages/DeliveryRequest";
 import DeliveryTracking from "./pages/DeliveryTracking";
+import DeliveryDetails from "./pages/DeliveryDetails";
 import DeliveryHelp from "./pages/DeliveryHelp";
 // Personal Care Section
 import PersonalCare from "./pages/PersonalCare";
@@ -150,9 +151,10 @@ const AppContent = () => {
           <Route path="/tracking" element={<AuthGuard><OrderTracking /></AuthGuard>} />
           <Route path="/about" element={<AuthGuard><About /></AuthGuard>} />
           
-          {/* Delivery Routes - إضافة مسارات التوصيل */}
+          {/* Delivery Routes - إضافة مسارات التوصيل المفصلة */}
           <Route path="/delivery-request" element={<AuthGuard><DeliveryRequest /></AuthGuard>} />
           <Route path="/delivery-tracking" element={<AuthGuard><DeliveryTracking /></AuthGuard>} />
+          <Route path="/delivery-tracking/:id" element={<AuthGuard><DeliveryDetails /></AuthGuard>} />
           <Route path="/delivery-help" element={<AuthGuard><DeliveryHelp /></AuthGuard>} />
           
           {/* Nested Route Sections */}
