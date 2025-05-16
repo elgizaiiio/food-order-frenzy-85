@@ -1,248 +1,306 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Star, Clock, Filter, ArrowLeft, MapPin, ChevronDown } from 'lucide-react';
+import { Star, Clock, Filter, ArrowLeft, MapPin, ChevronDown, Search } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Input } from '@/components/ui/input';
+import { useRestaurants } from '@/hooks/useRestaurantData';
+import { Skeleton } from '@/components/ui/skeleton';
+
 const Restaurants: React.FC = () => {
   const navigate = useNavigate();
+  const { data: restaurantsData, isLoading } = useRestaurants();
 
-  // Mock data - in a real app, this would come from an API
+  // للعناوين
   const [address, setAddress] = useState('شارع الملك فهد');
   const [savedAddresses, setSavedAddresses] = useState(['شارع الملك فهد', 'حي النزهة، الرياض', 'برج المملكة، الرياض']);
+  
+  // للفلتر
   const [activeFilterCategory, setActiveFilterCategory] = useState<number | null>(null);
   const [activeSortFilter, setActiveSortFilter] = useState(1);
-
-  // Food category data with blue colors
-  const foodCategories = [{
-    id: 1,
-    name: "حلويات",
-    color: "bg-blue-100 text-blue-700"
-  }, {
-    id: 2,
-    name: "شاورما",
-    color: "bg-blue-200 text-blue-800"
-  }, {
-    id: 3,
-    name: "برجر",
-    color: "bg-blue-300 text-blue-900"
-  }, {
-    id: 4,
-    name: "ساندوتشات",
-    color: "bg-cyan-100 text-cyan-800"
-  }, {
-    id: 5,
-    name: "بيتزا",
-    color: "bg-sky-100 text-sky-800"
-  }, {
-    id: 6,
-    name: "كافيه",
-    color: "bg-indigo-100 text-indigo-800"
-  }, {
-    id: 7,
-    name: "دجاج",
-    color: "bg-blue-50 text-blue-600"
-  }, {
-    id: 8,
-    name: "عصائر",
-    color: "bg-cyan-200 text-cyan-900"
-  }, {
-    id: 9,
-    name: "كريب",
-    color: "bg-indigo-200 text-indigo-900"
-  }, {
-    id: 10,
-    name: "دجاج مقلي",
-    color: "bg-sky-200 text-sky-900"
-  }, {
-    id: 11,
-    name: "إفطار",
-    color: "bg-blue-400 text-white"
-  }, {
-    id: 12,
-    name: "أخرى",
-    color: "bg-slate-200 text-slate-800"
-  }];
-
-  // Filter options with blue theme
-  const filters = [{
-    id: 1,
-    name: "العروض",
-    active: true
-  }, {
-    id: 2,
-    name: "الأعلى تقييمًا",
-    active: false
-  }, {
-    id: 3,
-    name: "التوصيل السريع",
-    active: false
-  }, {
-    id: 4,
-    name: "الأقرب لك",
-    active: false
-  }];
-
-  // Restaurant data
-  const restaurants = [{
-    id: 1,
-    name: "مطعم الشرق",
-    logo: "https://images.unsplash.com/photo-1552566626-52f8b828add9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=100&q=80",
-    cover: "https://images.unsplash.com/photo-1552566626-52f8b828add9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80",
-    rating: 4.8,
-    deliveryTime: "25-35",
-    deliveryFee: "15 ج.م",
-    tags: ["شاورما", "برجر", "دجاج"],
-    promo: "خصم 20٪ على الطلب الأول"
-  }, {
-    id: 2,
-    name: "برجر كينج",
-    logo: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=100&q=80",
-    cover: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80",
-    rating: 4.5,
-    deliveryTime: "20-30",
-    deliveryFee: "20 ج.م",
-    tags: ["برجر", "بطاطس", "وجبات سريعة"],
-    promo: "اشترِ وجبة واحصل على الثانية مجانًا"
-  }, {
-    id: 3,
-    name: "بيتزا هت",
-    logo: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=100&q=80",
-    cover: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80",
-    rating: 4.7,
-    deliveryTime: "30-40",
-    deliveryFee: "25 ج.م",
-    tags: ["بيتزا", "باستا", "سلطات"],
-    promo: "توصيل مجاني للطلبات فوق 100 ج.م"
-  }, {
-    id: 4,
-    name: "مطعم السلطان",
-    logo: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80",
-    cover: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
-    rating: 4.9,
-    deliveryTime: "35-45",
-    deliveryFee: "18 ج.م",
-    tags: ["شرقي", "مشاوي", "سلطات"]
-  }];
-
-  // Empty state handling
+  const [displayedRestaurants, setDisplayedRestaurants] = useState(restaurantsData || []);
   const [isFiltering, setIsFiltering] = useState(false);
-  const [filteredRestaurants, setFilteredRestaurants] = useState(restaurants);
 
-  // Filter and sorting functions
+  // فئات الطعام بألوان برتقالية (طلبات)
+  const foodCategories = [
+    { id: 1, name: "حلويات", color: "bg-orange-100 text-orange-700" },
+    { id: 2, name: "شاورما", color: "bg-orange-200 text-orange-800" },
+    { id: 3, name: "برجر", color: "bg-orange-300 text-orange-900" },
+    { id: 4, name: "ساندوتشات", color: "bg-amber-100 text-amber-800" },
+    { id: 5, name: "بيتزا", color: "bg-amber-200 text-amber-900" },
+    { id: 6, name: "كافيه", color: "bg-orange-100 text-orange-800" },
+    { id: 7, name: "دجاج", color: "bg-orange-50 text-orange-600" },
+    { id: 8, name: "عصائر", color: "bg-amber-200 text-amber-900" },
+    { id: 9, name: "كريب", color: "bg-orange-200 text-orange-900" },
+    { id: 10, name: "دجاج مقلي", color: "bg-amber-200 text-amber-900" },
+    { id: 11, name: "إفطار", color: "bg-orange-400 text-white" },
+    { id: 12, name: "أخرى", color: "bg-slate-200 text-slate-800" }
+  ];
+
+  // خيارات الفلتر بألوان طلبات
+  const filters = [
+    { id: 1, name: "العروض", active: true },
+    { id: 2, name: "الأعلى تقييمًا", active: false },
+    { id: 3, name: "التوصيل السريع", active: false },
+    { id: 4, name: "الأقرب لك", active: false }
+  ];
+
+  React.useEffect(() => {
+    if (restaurantsData) {
+      setDisplayedRestaurants(restaurantsData);
+    }
+  }, [restaurantsData]);
+
   const toggleCategoryFilter = (categoryId: number) => {
     if (activeFilterCategory === categoryId) {
       setActiveFilterCategory(null);
-      setFilteredRestaurants(restaurants);
+      setDisplayedRestaurants(restaurantsData || []);
       setIsFiltering(false);
     } else {
       setActiveFilterCategory(categoryId);
       const category = foodCategories.find(cat => cat.id === categoryId)?.name || '';
 
-      // Filter restaurants that have the category in their tags
-      const filtered = restaurants.filter(restaurant => restaurant.tags && restaurant.tags.some(tag => tag.toLowerCase().includes(category.toLowerCase())));
-      setFilteredRestaurants(filtered);
-      setIsFiltering(filtered.length === 0);
+      // فلترة المطاعم التي تحتوي على هذه الفئة في التاجات
+      if (restaurantsData) {
+        const filtered = restaurantsData.filter(restaurant => 
+          restaurant.description?.toLowerCase().includes(category.toLowerCase())
+        );
+        setDisplayedRestaurants(filtered);
+        setIsFiltering(filtered.length === 0);
+      }
     }
   };
+
   const handleSortFilter = (filterId: number) => {
     setActiveSortFilter(filterId);
 
-    // In a real app, this would trigger an API call with the filter
-    // For now, we'll just simulate the filtering
+    if (!restaurantsData) return;
+
+    // تطبيق الفلتر
     switch (filterId) {
       case 2:
         // الأعلى تقييمًا
-        setFilteredRestaurants([...restaurants].sort((a, b) => b.rating - a.rating));
+        setDisplayedRestaurants([...restaurantsData].sort((a, b) => (b.rating || 0) - (a.rating || 0)));
         break;
       case 3:
         // التوصيل السريع
-        setFilteredRestaurants([...restaurants].sort((a, b) => {
-          const aTime = parseInt(a.deliveryTime.split('-')[0]);
-          const bTime = parseInt(b.deliveryTime.split('-')[0]);
+        setDisplayedRestaurants([...restaurantsData].sort((a, b) => {
+          const aTime = parseInt(a.delivery_time?.split('-')[0] || '30');
+          const bTime = parseInt(b.delivery_time?.split('-')[0] || '30');
           return aTime - bTime;
         }));
         break;
       default:
-        setFilteredRestaurants(restaurants);
+        setDisplayedRestaurants(restaurantsData);
     }
   };
-  const handleNavigateToRestaurant = (restaurantId: number) => {
+
+  const handleNavigateToRestaurant = (restaurantId: string) => {
     navigate(`/restaurant/${restaurantId}`);
   };
 
-  // Added delivery address selection
   const handleAddressSelect = (address: string) => {
     setAddress(address);
   };
-  return <div className="min-h-screen bg-slate-50" dir="rtl">
+
+  // للبحث
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    
+    if (!restaurantsData) return;
+    
+    if (query.trim() === '') {
+      setDisplayedRestaurants(restaurantsData);
+    } else {
+      const filtered = restaurantsData.filter(restaurant => 
+        restaurant.name.toLowerCase().includes(query.toLowerCase()) ||
+        restaurant.description?.toLowerCase().includes(query.toLowerCase())
+      );
+      setDisplayedRestaurants(filtered);
+      setIsFiltering(filtered.length === 0);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-20">
-        {/* Header with back button and address */}
-        <div className="flex flex-col shadow-sm">
-          <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-sky-50">
-            <button onClick={() => navigate('/')} className="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-sm text-blue-700 hover:bg-blue-50 transition-colors">
+        {/* الهيدر مع زر الرجوع والعنوان */}
+        <div className="flex flex-col shadow-sm sticky top-0 z-10 bg-white">
+          <div className="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-orange-100">
+            <button 
+              onClick={() => navigate('/')} 
+              className="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-sm text-orange-500 hover:bg-orange-50 transition-colors"
+            >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <h1 className="text-xl font-bold text-blue-900">كل المطاعم</h1>
+            <h1 className="text-xl font-bold text-orange-950">المطاعم</h1>
             <div className="w-10"></div>
           </div>
           
-          {/* Delivery Address */}
-          
-        </div>
-
-        {/* Food Categories with blue theme */}
-        <div className="px-4 py-3 border-b bg-white">
-          <div className="flex overflow-x-auto gap-3 pb-3 no-scrollbar">
-            {foodCategories.map(category => <div key={category.id} className="flex-shrink-0 cursor-pointer transition-all" onClick={() => toggleCategoryFilter(category.id)}>
-                <div className={`px-4 py-2 rounded-lg ${category.color} transition-colors shadow-sm ${activeFilterCategory === category.id ? 'ring-2 ring-blue-500 ring-offset-2' : ''}`}>
-                  <span className="font-medium">{category.name}</span>
+          {/* اختيار عنوان التوصيل */}
+          <div className="px-4 py-2 flex items-center gap-2 border-b">
+            <MapPin className="text-orange-500 w-5 h-5 flex-shrink-0" />
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="flex items-center text-sm justify-between w-full">
+                  <span className="truncate font-medium">{address}</span>
+                  <ChevronDown className="h-4 w-4 opacity-70" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-64 p-0 bg-white shadow-lg rounded-xl border-orange-100">
+                <div className="p-2">
+                  <h3 className="font-bold mb-2 px-2 pt-2">اختر عنوان التوصيل</h3>
+                  <div className="space-y-1">
+                    {savedAddresses.map((addr, i) => (
+                      <div 
+                        key={i}
+                        className={`p-2 rounded-lg cursor-pointer ${addr === address ? 'bg-orange-100 text-orange-700' : 'hover:bg-gray-100'}`}
+                        onClick={() => handleAddressSelect(addr)}
+                      >
+                        <div className="flex items-center gap-2">
+                          <MapPin className={`w-4 h-4 ${addr === address ? 'text-orange-500' : 'text-gray-400'}`} />
+                          <span>{addr}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>)}
+              </PopoverContent>
+            </Popover>
+          </div>
+          
+          {/* البحث */}
+          <div className="px-4 py-3">
+            <div className="relative">
+              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Input 
+                className="pr-10 bg-gray-100 border-none focus-visible:ring-orange-200 placeholder:text-gray-400 rounded-xl" 
+                placeholder="ابحث عن مطاعم، وجبات..."
+                value={searchQuery}
+                onChange={handleSearch}
+              />
+            </div>
           </div>
         </div>
 
-        {/* Filters with blue theme */}
-        <div className="px-4 py-3 flex gap-2 overflow-x-auto no-scrollbar border-b bg-white">
-          {filters.map(filter => <Button key={filter.id} variant={activeSortFilter === filter.id ? "default" : "outline"} size="sm" className={`rounded-full whitespace-nowrap ${activeSortFilter === filter.id ? 'bg-gradient-to-r from-blue-500 to-sky-500 text-white shadow-md' : 'text-blue-700 border-blue-200 hover:border-blue-300'}`} onClick={() => handleSortFilter(filter.id)}>
-              {filter.name}
-            </Button>)}
+        {/* فئات الطعام بألوان برتقالية */}
+        <div className="px-4 py-3 border-b bg-white">
+          <div className="flex overflow-x-auto gap-3 pb-3 no-scrollbar">
+            {foodCategories.map(category => (
+              <div 
+                key={category.id} 
+                className="flex-shrink-0 cursor-pointer transition-all" 
+                onClick={() => toggleCategoryFilter(category.id)}
+              >
+                <div className={`px-4 py-2 rounded-lg ${category.color} transition-colors shadow-sm ${activeFilterCategory === category.id ? 'ring-2 ring-orange-500 ring-offset-2' : ''}`}>
+                  <span className="font-medium">{category.name}</span>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Restaurant List or Empty State */}
+        {/* الفلاتر بألوان طلبات */}
+        <div className="px-4 py-3 flex gap-2 overflow-x-auto no-scrollbar border-b bg-white">
+          {filters.map(filter => (
+            <Button 
+              key={filter.id} 
+              variant={activeSortFilter === filter.id ? "default" : "outline"} 
+              size="sm"
+              className={`rounded-full whitespace-nowrap ${activeSortFilter === filter.id ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md' : 'text-orange-700 border-orange-200 hover:border-orange-300'}`}
+              onClick={() => handleSortFilter(filter.id)}
+            >
+              {filter.name}
+            </Button>
+          ))}
+        </div>
+
+        {/* قائمة المطاعم أو حالة عدم وجود نتائج */}
         <div className="px-4 py-3">
-          {isFiltering ? <div className="flex flex-col items-center justify-center py-16 text-center">
-              <div className="w-20 h-20 rounded-full bg-blue-50 flex items-center justify-center mb-4">
+          {isLoading ? (
+            // سكيليتون للتحميل
+            Array(3).fill(0).map((_, index) => (
+              <Card key={index} className="mb-4 overflow-hidden border-slate-100 shadow-md rounded-xl">
+                <div className="relative">
+                  <Skeleton className="w-full h-40" />
+                  <div className="absolute bottom-0 right-0 p-3 transform translate-y-1/2">
+                    <Skeleton className="w-14 h-14 rounded-full" />
+                  </div>
+                </div>
+                <div className="p-4 pt-8 mt-2">
+                  <Skeleton className="h-6 w-3/4 mb-2" />
+                  <Skeleton className="h-4 w-1/2 mb-4" />
+                  <div className="flex items-center justify-between mt-4">
+                    <div className="flex items-center gap-3">
+                      <Skeleton className="w-16 h-8 rounded-full" />
+                      <Skeleton className="w-16 h-8 rounded-full" />
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            ))
+          ) : isFiltering || displayedRestaurants.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <div className="w-20 h-20 rounded-full bg-orange-50 flex items-center justify-center mb-4">
                 <div className="text-4xl">🍽️</div>
               </div>
-              <h3 className="text-lg font-bold text-blue-900 mb-2">مفيش مطاعم بالشروط دي</h3>
+              <h3 className="text-lg font-bold text-orange-900 mb-2">مفيش مطاعم بالشروط دي</h3>
               <p className="text-sm text-gray-600 mb-4">جرّب تشيل الفلاتر أو تدور على حاجة تانية</p>
-              <Button variant="outline" className="border-blue-300 text-blue-700 hover:bg-blue-50" onClick={() => {
-            setActiveFilterCategory(null);
-            setFilteredRestaurants(restaurants);
-            setIsFiltering(false);
-          }}>
+              <Button 
+                variant="outline" 
+                className="border-orange-300 text-orange-700 hover:bg-orange-50" 
+                onClick={() => {
+                  setActiveFilterCategory(null);
+                  setSearchQuery('');
+                  setDisplayedRestaurants(restaurantsData || []);
+                  setIsFiltering(false);
+                }}
+              >
                 عرض كل المطاعم
               </Button>
-            </div> : filteredRestaurants.map(restaurant => <div key={restaurant.id} className="block cursor-pointer hover:scale-[1.01] transition-transform animate-fade-in" onClick={() => handleNavigateToRestaurant(restaurant.id)}>
+            </div>
+          ) : (
+            displayedRestaurants.map(restaurant => (
+              <div 
+                key={restaurant.id} 
+                className="block cursor-pointer hover:scale-[1.01] transition-transform animate-fade-in" 
+                onClick={() => handleNavigateToRestaurant(restaurant.id)}
+              >
                 <Card className="mb-4 overflow-hidden border-slate-100 shadow-md hover:shadow-lg transition-shadow rounded-xl">
                   <div className="relative">
-                    <img src={restaurant.cover} alt={restaurant.name} className="w-full h-40 object-cover" />
-                    {restaurant.promo && <Badge className="absolute top-2 right-2 bg-gradient-to-r from-blue-600 to-sky-500 text-white border-0 py-1 px-2 font-medium">
-                        {restaurant.promo}
-                      </Badge>}
+                    <img 
+                      src={restaurant.logo_url || "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=500&auto=format&fit=crop"} 
+                      alt={restaurant.name} 
+                      className="w-full h-40 object-cover" 
+                    />
+                    {restaurant.delivery_fee === 0 && (
+                      <Badge className="absolute top-2 right-2 bg-gradient-to-r from-orange-600 to-orange-500 text-white border-0 py-1 px-2 font-medium">
+                        توصيل مجاني
+                      </Badge>
+                    )}
                   </div>
                   <div className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <img src={restaurant.logo} alt="logo" className="w-14 h-14 rounded-full object-cover border-2 border-white shadow-lg" />
+                        <img 
+                          src={restaurant.logo_url || "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=100&auto=format&fit=crop"} 
+                          alt="logo" 
+                          className="w-14 h-14 rounded-full object-cover border-2 border-white shadow-lg" 
+                        />
                         <div>
-                          <h3 className="font-bold text-lg text-blue-900">{restaurant.name}</h3>
+                          <h3 className="font-bold text-lg text-gray-900">{restaurant.name}</h3>
                           <div className="flex flex-wrap gap-1 mt-1">
-                            {restaurant.tags && restaurant.tags.map((tag, idx) => <span key={idx} className="text-xs text-gray-500">
-                                {tag}{idx !== restaurant.tags.length - 1 && ' • '}
-                              </span>)}
+                            {restaurant.description?.split(',').map((tag, idx) => (
+                              <span key={idx} className="text-xs text-gray-500">
+                                {tag.trim()}{idx !== restaurant.description.split(',').length - 1 && ' • '}
+                              </span>
+                            ))}
                           </div>
                         </div>
                       </div>
@@ -251,19 +309,23 @@ const Restaurants: React.FC = () => {
                       <div className="flex items-center gap-3">
                         <div className="flex items-center gap-1 bg-amber-50 px-2 py-1 rounded-full">
                           <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
-                          <span className="text-sm font-medium">{restaurant.rating}</span>
+                          <span className="text-sm font-medium">{restaurant.rating ?? "جديد"}</span>
                         </div>
-                        <div className="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-full">
-                          <Clock className="w-4 h-4 text-blue-500" />
-                          <span className="text-sm text-gray-700">{restaurant.deliveryTime} دقيقة</span>
+                        <div className="flex items-center gap-1 bg-orange-50 px-2 py-1 rounded-full">
+                          <Clock className="w-4 h-4 text-orange-500" />
+                          <span className="text-sm text-gray-700">{restaurant.delivery_time || "25-35"} دقيقة</span>
                         </div>
                       </div>
                     </div>
                   </div>
                 </Card>
-              </div>)}
+              </div>
+            ))
+          )}
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default Restaurants;
