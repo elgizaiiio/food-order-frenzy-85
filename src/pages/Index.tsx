@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import Categories from '@/components/Categories';
-import Offers from '@/components/Offers';
+// إزالة استيراد مكون العروض
 import PopularRestaurants from '@/components/PopularRestaurants';
 import Promos from '@/components/ui/Promos';
 import { Search, MapPin, ChevronDown, Bell, ShoppingBag, Clock, Car } from 'lucide-react';
@@ -115,8 +114,7 @@ const Index = () => {
           {/* Value Proposition */}
           <ValuePropositions />
           
-          {/* Offers */}
-          <Offers />
+          {/* إزالة مكون العروض */}
           
           {/* Popular Restaurants */}
           <PopularRestaurants />
