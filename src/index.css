@@ -87,7 +87,7 @@
 
 /* تحسينات على شريط التمرير الأفقي */
 .scroll-container {
-  @apply flex overflow-x-auto gap-4 pb-4 overflow-y-hidden;
+  @apply flex overflow-x-auto gap-3 pb-2 overflow-y-hidden;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
@@ -119,6 +119,22 @@
   .talabat-card {
     @apply bg-white rounded-xl shadow-sm hover:shadow-md transition-all;
   }
+  
+  .category-icon {
+    @apply bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-full p-2 shadow-md;
+  }
+  
+  .search-input {
+    @apply bg-white/10 border border-white/20 text-white placeholder:text-white/70 focus:border-white/30 focus:ring-1 focus:ring-white/30;
+  }
+  
+  .restaurant-card {
+    @apply bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all;
+  }
+  
+  .offer-card {
+    @apply rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all;
+  }
 }
 
 /* تأثيرات التلاشي */
@@ -127,15 +143,19 @@
 }
 
 .animate-delay-1 {
-  animation-delay: 200ms;
+  animation-delay: 100ms;
 }
 
 .animate-delay-2 {
-  animation-delay: 400ms;
+  animation-delay: 200ms;
 }
 
 .animate-delay-3 {
-  animation-delay: 600ms;
+  animation-delay: 300ms;
+}
+
+.animate-delay-4 {
+  animation-delay: 400ms;
 }
 
 @keyframes fadeIn {
@@ -147,4 +167,40 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.4s ease-out forwards;
+}
+
+/* تحسينات على مكونات طلبات */
+.talabat-header {
+  @apply bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-b-3xl shadow-md py-4 px-4;
+}
+
+.talabat-section {
+  @apply bg-white rounded-xl shadow-sm my-3 py-3 px-4;
+}
+
+.talabat-section-title {
+  @apply text-lg font-bold text-gray-800 mb-3;
+}
+
+.talabat-badge {
+  @apply bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full;
+}
+
+.talabat-rating {
+  @apply flex items-center gap-1 bg-orange-100 text-orange-800 text-xs px-2 py-0.5 rounded-full;
 }
