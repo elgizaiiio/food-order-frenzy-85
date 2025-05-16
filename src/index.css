@@ -34,6 +34,10 @@
     --ring: 222.2 84% 4.9%;
  
     --radius: 0.5rem;
+  
+    --talabat-orange: 24 100% 50%;
+    --talabat-orange-dark: 24 100% 45%;
+    --talabat-orange-light: 24 100% 95%;
   }
  
   .dark {
@@ -72,7 +76,12 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-gray-100 text-foreground;
+    font-family: 'Tajawal', sans-serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold;
   }
 }
 
@@ -97,6 +106,18 @@
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+  
+  .app-header {
+    @apply bg-gradient-to-r from-orange-500 to-orange-600 text-white;
+  }
+  
+  .talabat-button {
+    @apply bg-orange-500 hover:bg-orange-600 text-white transition-colors;
+  }
+  
+  .talabat-card {
+    @apply bg-white rounded-xl shadow-sm hover:shadow-md transition-all;
   }
 }
 
