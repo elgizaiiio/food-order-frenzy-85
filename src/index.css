@@ -63,7 +63,7 @@
  
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: hsl(212.7, 26.8%, 83.9);
+    --ring: 212.7 26.8% 83.9%;
   }
 }
  
@@ -76,64 +76,54 @@
   }
 }
 
-/* Custom Scrollbar */
+/* تحسينات على شريط التمرير الأفقي */
+.scroll-container {
+  @apply flex overflow-x-auto gap-4 pb-4 overflow-y-hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scroll-container > * {
+  scroll-snap-align: start;
+}
+
+/* إخفاء شريط التمرير مع الحفاظ على الوظيفة */
 @layer utilities {
-  /* ترتيب Scrollbar */
-  .scroll-container {
-    @apply flex overflow-x-auto gap-4 py-2 px-1 -mx-1 scrollbar-hide;
-  }
-  
-  /* إخفاء scrollbar */
-  .scrollbar-hide {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
-  }
-  
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none; /* Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
   }
 
-  /* رسوم متحركة */
-  .animate-fade-in {
-    animation: fadeIn 0.6s ease-in-out forwards;
-    opacity: 0;
-  }
-  
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  .animate-delay-1 {
-    animation-delay: 100ms;
-  }
-  
-  .animate-delay-2 {
-    animation-delay: 200ms;
-  }
-  
-  .animate-delay-3 {
-    animation-delay: 300ms;
-  }
-
-  /* تصميم مخصص لعناصر البطاقة */
-  .popular-places-scroll, .offers-scroll {
-    @apply flex overflow-x-auto pb-4 gap-4 scrollbar-hide;
+  .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+}
 
-  .place-card {
-    @apply min-w-[240px] bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition-all;
+/* تأثيرات التلاشي */
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-in-out forwards;
+}
+
+.animate-delay-1 {
+  animation-delay: 200ms;
+}
+
+.animate-delay-2 {
+  animation-delay: 400ms;
+}
+
+.animate-delay-3 {
+  animation-delay: 600ms;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
-
-  .offer-card {
-    @apply rounded-xl overflow-hidden shadow-md mr-4 last:mr-0 hover:shadow-lg transition-all;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

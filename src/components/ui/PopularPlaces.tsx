@@ -17,8 +17,15 @@ const PopularPlaces: React.FC = () => {
   };
 
   return (
-    <div className="px-4 mb-8 animate-fade-in animate-delay-2">
+    <div className="animate-fade-in animate-delay-2">
       <div className="flex justify-between items-center mb-4">
+        <Button 
+          variant="link" 
+          onClick={() => navigate('/restaurants')} 
+          className="text-sm font-medium text-blue-600 hover:underline p-0"
+        >
+          عرض الكل
+        </Button>
         <h2 className="text-xl font-bold text-right text-blue-900">الأماكن الرائجة</h2>
       </div>
       
@@ -50,7 +57,7 @@ const PopularPlaces: React.FC = () => {
                 <img src={place.image} alt={place.name} className="w-full h-full object-cover" loading="lazy" />
                 {place.deliveryFee === "0 ج.م" && (
                   <Badge className="absolute top-3 left-3 bg-blue-600 text-white border-0">
-                    <BadgePercent className="w-3.5 h-3.5 mr-1" /> توصيل مجاني
+                    <BadgePercent className="w-3.5 h-3.5 ml-1" /> توصيل مجاني
                   </Badge>
                 )}
                 <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm rounded-lg px-2.5 py-1 text-xs font-medium text-blue-800 shadow-sm">

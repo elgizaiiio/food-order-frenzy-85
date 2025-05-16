@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { useHomeCategories } from '@/hooks/useHomeData';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Card } from '@/components/ui/card';
 
 const Categories: React.FC = () => {
   const { data: categories, isLoading } = useHomeCategories();
@@ -32,12 +33,17 @@ const Categories: React.FC = () => {
   };
 
   return (
-    <div className="px-4 py-2 mb-6">
-      <h2 className="text-xl font-bold mb-4 text-blue-900">الخدمات</h2>
-      <div className="grid grid-cols-3 gap-4">
+    <div className="px-4 py-4 mb-6">
+      <div className="flex justify-between items-center mb-4">
+        <Link to="/services" className="text-sm font-medium text-blue-600 hover:underline">
+          عرض الكل
+        </Link>
+        <h2 className="text-xl font-bold text-blue-900">الخدمات</h2>
+      </div>
+      <div className="grid grid-cols-4 gap-3">
         {isLoading ? (
           // عرض Skeleton أثناء التحميل
-          Array(5).fill(0).map((_, index) => (
+          Array(8).fill(0).map((_, index) => (
             <div key={index} className="flex flex-col items-center">
               <Skeleton className="w-16 h-16 rounded-2xl mb-2" />
               <Skeleton className="h-4 w-16" />
@@ -51,10 +57,10 @@ const Categories: React.FC = () => {
               className="flex flex-col items-center animate-fade-in"
               style={{ animationDelay: `${index * 50}ms` }}
             >
-              <div className={`w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center ${category.color} ${category.shadow} shadow-md hover:shadow-lg transition-all hover:scale-105`}>
+              <Card className={`w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center ${category.color} ${category.shadow} shadow-md hover:shadow-lg transition-all hover:scale-105 border-none`}>
                 {getIcon(category.icon)}
-              </div>
-              <span className="text-sm font-medium text-blue-800 mt-2">{category.name}</span>
+              </Card>
+              <span className="text-xs font-medium text-blue-800 mt-2">{category.name}</span>
             </Link>
           ))
         )}

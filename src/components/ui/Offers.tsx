@@ -11,8 +11,11 @@ const Offers: React.FC = () => {
   const { data: offers, isLoading } = useHomeOffers();
   
   return (
-    <div className="px-4 mb-8 animate-fade-in animate-delay-1">
+    <div className="mb-8 animate-fade-in animate-delay-1">
       <div className="flex justify-between items-center mb-4">
+        <Link to="/offers" className="text-sm font-medium text-blue-600 hover:underline flex items-center">
+          عرض الكل <ChevronLeft className="h-4 w-4" />
+        </Link>
         <h2 className="text-xl font-bold text-blue-900">عروض خاصة</h2>
       </div>
       
@@ -40,7 +43,7 @@ const Offers: React.FC = () => {
                         <div className={`absolute inset-0 bg-gradient-to-t ${offer.gradient} opacity-75`}>
                           <div className="absolute top-4 left-4">
                             <div className="bg-white/90 backdrop-blur-sm rounded-full px-3 py-1.5 flex items-center shadow-md">
-                              <Tag size={14} className="text-blue-600 mr-1" />
+                              <Tag size={14} className="text-blue-600 ml-1" />
                               <span className="font-bold text-xs text-blue-700">{offer.title}</span>
                             </div>
                           </div>
