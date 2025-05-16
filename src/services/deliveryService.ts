@@ -1,6 +1,8 @@
 
 import { supabase } from '@/integrations/supabase/client';
 
+export type DeliveryStatus = 'pending' | 'accepted' | 'picked_up' | 'delivered' | 'cancelled';
+
 export interface DeliveryRequest {
   id?: string;
   user_id?: string;
@@ -9,7 +11,7 @@ export interface DeliveryRequest {
   items_description: string;
   estimated_value?: number | null;
   payment_method_id?: string | null;
-  status?: 'pending' | 'accepted' | 'picked_up' | 'delivered' | 'cancelled';
+  status?: DeliveryStatus;
   driver_id?: string | null;
   driver_name?: string | null;
   driver_phone?: string | null;
@@ -42,7 +44,11 @@ export const fetchUserDeliveryRequests = async (): Promise<DeliveryRequest[]> =>
     throw new Error('حدث خطأ أثناء استرجاع طلبات التوصيل');
   }
 
-  return data || [];
+  // تأكد من أن حقل status يتوافق مع النوع المتوقع
+  return (data || []).map(item => ({
+    ...item,
+    status: item.status as DeliveryStatus
+  }));
 };
 
 // إنشاء طلب توصيل جديد
@@ -58,7 +64,7 @@ export const createDeliveryRequest = async (requestData: DeliveryRequest): Promi
   const request = {
     ...requestData,
     user_id: sessionData.session.user.id,
-    status: 'pending',
+    status: 'pending' as DeliveryStatus,
     created_at: new Date().toISOString()
   };
 
@@ -73,11 +79,14 @@ export const createDeliveryRequest = async (requestData: DeliveryRequest): Promi
     throw new Error('حدث خطأ أثناء إنشاء طلب التوصيل');
   }
 
-  return data;
+  return {
+    ...data,
+    status: data.status as DeliveryStatus
+  };
 };
 
 // تحديث حالة طلب التوصيل
-export const updateDeliveryRequestStatus = async (requestId: string, status: string): Promise<void> => {
+export const updateDeliveryRequestStatus = async (requestId: string, status: DeliveryStatus): Promise<void> => {
   console.log(`Updating delivery request status: ${requestId} to ${status}`);
   
   const { data: sessionData } = await supabase.auth.getSession();
@@ -135,7 +144,7 @@ export const cancelDeliveryRequest = async (requestId: string): Promise<void> =>
 
   const { error } = await supabase
     .from('delivery_requests')
-    .update({ status: 'cancelled' })
+    .update({ status: 'cancelled' as DeliveryStatus })
     .eq('id', requestId)
     .eq('user_id', sessionData.session.user.id);
 
@@ -170,5 +179,8 @@ export const getDeliveryRequestDetails = async (requestId: string): Promise<Deli
     throw new Error('لم يتم العثور على طلب التوصيل');
   }
 
-  return data;
+  return {
+    ...data,
+    status: data.status as DeliveryStatus
+  };
 };

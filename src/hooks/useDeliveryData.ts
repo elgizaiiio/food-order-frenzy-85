@@ -7,7 +7,8 @@ import {
   cancelDeliveryRequest,
   getDeliveryRequestDetails,
   estimateDeliveryPrice,
-  DeliveryRequest
+  DeliveryRequest,
+  DeliveryStatus
 } from '@/services/deliveryService';
 import { useAuth } from '@/context/AuthContext';
 
@@ -70,7 +71,7 @@ export function useUpdateDeliveryStatus() {
   const { user } = useAuth();
   
   return useMutation({
-    mutationFn: ({ requestId, status }: { requestId: string; status: string }) => 
+    mutationFn: ({ requestId, status }: { requestId: string; status: DeliveryStatus }) => 
       updateDeliveryRequestStatus(requestId, status),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['delivery-request', variables.requestId] });
