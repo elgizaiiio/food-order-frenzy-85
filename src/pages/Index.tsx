@@ -1,343 +1,446 @@
 
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import Categories from '@/components/Categories';
-import { Search, MapPin, ChevronDown, Bell, Clock, Car } from 'lucide-react';
+import { 
+  MapPin, Search, TrendingUp, Clock, Utensils, ShoppingBag, 
+  Pill, Brush, Dumbbell, ChevronDown, Bell, PackageCheck, 
+  ScanLine, Award, Gift, UtensilsCrossed
+} from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
+import { useHomeCategories, useHomeOffers, usePopularPlaces } from '@/hooks/useHomeData';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 const Index = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState('all');
+  const [currentAddress, setCurrentAddress] = useState('شارع التحرير');
   
-  // الحصول على اسم المستخدم من البريد الإلكتروني أو عرض تحية عامة
+  const {
+    data: homeCategories,
+    isLoading: categoriesLoading
+  } = useHomeCategories();
+  
+  const {
+    data: homeOffers,
+    isLoading: offersLoading
+  } = useHomeOffers();
+  
+  const {
+    data: popularPlaces,
+    isLoading: placesLoading
+  } = usePopularPlaces();
+  
+  // تخصيص الأقسام حسب التبويب النشط
+  const mainCategories = [
+    { id: 'all', name: 'الكل' },
+    { id: 'restaurants', name: 'مطاعم' },
+    { id: 'market', name: 'بقالة' },
+    { id: 'pharmacy', name: 'صيدليات' },
+    { id: 'personal-care', name: 'مستلزمات' }
+  ];
+
+  // الحصول على اسم المستخدم
   const firstName = user?.email ? user.email.split('@')[0] : 'صديقي';
   
-  // بيانات العناوين - في تطبيق حقيقي ستأتي من API
-  const [address, setAddress] = useState('شارع التحرير');
-  const [savedAddresses, setSavedAddresses] = useState(['شارع التحرير', 'ميدان طلعت حرب، القاهرة', 'المعادي، القاهرة']);
-
   return (
-    <div className="min-h-screen bg-gray-100" dir="rtl">
+    <div className="min-h-screen bg-gray-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-20">
-        {/* Header with talabat styling */}
-        <div className="p-6 bg-orange-500 text-white rounded-b-3xl shadow-lg">
-          {/* تحديد العنوان */}
-          <div className="flex items-center justify-between mb-4 text-sm">
-            <div className="flex items-center gap-1.5 text-orange-100">
-              <MapPin className="w-4 h-4" />
-              <span className="font-medium">توصيل لحد عندك</span>
+        {/* رأس الصفحة - مستوحى من مرسول */}
+        <header className="sticky top-0 z-30 bg-white">
+          {/* شريط العنوان */}
+          <div className="flex items-center justify-between p-4">
+            <div className="flex items-center space-x-2 space-x-reverse">
+              <MapPin className="w-5 h-5 text-lime-600" />
+              <div className="flex flex-col">
+                <span className="text-xs text-gray-500">توصيل إلى</span>
+                <div className="flex items-center">
+                  <span className="text-sm font-medium">{currentAddress}</span>
+                  <ChevronDown className="w-4 h-4 mr-1 text-lime-600" />
+                </div>
+              </div>
             </div>
             
-            <div className="flex items-center justify-between w-full">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="link" className="h-auto p-0 mx-1 flex items-center gap-1.5 text-white hover:text-orange-100">
-                    <span className="font-medium">{address}</span>
-                    <ChevronDown className="w-4 h-4" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-60" align="start">
-                  <div className="space-y-2">
-                    <h4 className="font-medium text-sm text-gray-900">العناوين المحفوظة</h4>
-                    {savedAddresses.map((addr, idx) => (
-                      <Button 
-                        key={idx} 
-                        variant="ghost" 
-                        className="w-full justify-start text-sm hover:bg-orange-50 hover:text-orange-700" 
-                        onClick={() => setAddress(addr)}
-                      >
-                        <MapPin className="w-4 h-4 ml-2 text-orange-500" />
-                        {addr}
-                      </Button>
-                    ))}
-                    <Button variant="outline" className="w-full text-xs mt-2 text-orange-700 border-orange-300 hover:bg-orange-50 hover:border-orange-400">
-                      ضيف عنوان جديد
-                    </Button>
-                  </div>
-                </PopoverContent>
-              </Popover>
-              
-              {/* زر الإشعارات */}
-              <Link to="/notifications" className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 hover:bg-white/20">
-                <Bell className="w-4 h-4 text-white" />
+            <div className="flex items-center space-x-3 space-x-reverse">
+              <Link to="/notifications" className="relative">
+                <Bell className="w-6 h-6 text-gray-700" />
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">2</span>
+              </Link>
+              <Link to="/profile" className="relative">
+                <Avatar className="w-8 h-8 border border-gray-200">
+                  {user?.email ? (
+                    <AvatarImage src="" />
+                  ) : null}
+                  <AvatarFallback className="bg-lime-100 text-lime-800 text-sm">
+                    {firstName?.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
               </Link>
             </div>
           </div>
           
-          <div className="flex justify-between items-center mb-4">
-            <div>
-              <h1 className="text-2xl font-bold">أهلاً {firstName}!</h1>
-              <p className="text-orange-100 mt-1">عايز تطلب إيه النهاردة؟</p>
+          {/* شريط البحث */}
+          <div className="px-4 pb-2">
+            <div className="relative">
+              <Input 
+                type="text"
+                placeholder="ابحث عن مطعم أو بقالة..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pr-10 bg-gray-100 border-0 rounded-xl focus-visible:ring-lime-500"
+              />
+              <button className="absolute top-1/2 right-3 -translate-y-1/2">
+                <Search className="h-5 w-5 text-gray-400" />
+              </button>
             </div>
-            <Link to="/profile">
-              <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center shadow-inner hover:bg-white/30 transition-all">
-                {user?.email ? (
-                  <span className="text-white font-bold text-xl">{user.email.charAt(0).toUpperCase()}</span>
-                ) : (
-                  <span className="text-white font-bold">؟</span>
-                )}
-              </div>
-            </Link>
           </div>
           
-          {/* Quick Search Bar */}
-          <div className="mt-4 relative">
-            <Input 
-              type="text"
-              placeholder="دور على مطعم، مشروبات، أو أكلة..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full py-3 px-5 pr-12 rounded-xl bg-white/10 text-white placeholder:text-orange-100 border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/30"
-            />
-            <button className="absolute top-1/2 right-4 -translate-y-1/2 text-orange-100">
-              <Search className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
-        
-        {/* Banner Slider */}
-        <BannerSlider />
-        
-        {/* Main Categories with enhanced styling */}
-        <Categories />
-        
-        {/* Value Proposition */}
-        <ValuePropositions />
-        
-        {/* Top Restaurants */}
-        <TopRestaurants />
-        
-        {/* Special Offers */}
-        <SpecialOffers />
-      </div>
-    </div>
-  );
-};
-
-// مكون شرائح البانر
-const BannerSlider = () => {
-  const banners = [
-    {
-      id: 1,
-      title: "خصم 30% على كل المطاعم",
-      image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=500&auto=format&fit=crop",
-      color: "from-orange-700 to-orange-900"
-    },
-    {
-      id: 2,
-      title: "توصيل مجاني للطلبات فوق 100 جنيه",
-      image: "https://images.unsplash.com/photo-1526367790999-0150786686a2?q=80&w=500&auto=format&fit=crop",
-      color: "from-orange-600 to-orange-800"
-    }
-  ];
-  
-  return (
-    <div className="py-4 px-4">
-      <div className="flex overflow-x-auto gap-3 pb-2 no-scrollbar">
-        {banners.map(banner => (
-          <div 
-            key={banner.id}
-            className="min-w-[280px] h-32 rounded-2xl overflow-hidden relative shadow-md flex-shrink-0"
-          >
-            <img 
-              src={banner.image} 
-              alt={banner.title} 
-              className="w-full h-full object-cover"
-            />
-            <div className={`absolute inset-0 bg-gradient-to-tr ${banner.color} opacity-70`}></div>
-            <div className="absolute inset-0 flex items-center justify-center p-6">
-              <h3 className="text-white text-xl font-bold text-center drop-shadow-md">{banner.title}</h3>
+          {/* شريط التبويبات */}
+          <div className="border-b border-gray-200">
+            <div className="flex overflow-x-auto no-scrollbar px-4">
+              {mainCategories.map(category => (
+                <button
+                  key={category.id}
+                  className={`px-4 py-3 whitespace-nowrap text-sm font-medium border-b-2 transition-colors ${
+                    activeTab === category.id 
+                      ? 'border-lime-500 text-lime-600'
+                      : 'border-transparent text-gray-500'
+                  }`}
+                  onClick={() => setActiveTab(category.id)}
+                >
+                  {category.name}
+                </button>
+              ))}
             </div>
           </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-// مكون القيمة المقترحة
-const ValuePropositions = () => {
-  const values = [
-    {
-      title: "وصل بسرعة",
-      icon: <Clock className="h-5 w-5 text-orange-500" />,
-      description: "طلبك هيوصل خلال 20-30 دقيقة"
-    },
-    {
-      title: "توصيل ببلاش",
-      icon: <Car className="h-5 w-5 text-orange-500" />,
-      description: "للطلبات اللي أكتر من 50 جنيه"
-    }
-  ];
-  
-  return (
-    <div className="px-4 py-3 mb-2 bg-white">
-      <div className="flex justify-between gap-4">
-        {values.map((value, index) => (
-          <Card key={index} className="flex-1 border-none shadow-sm">
-            <CardContent className="flex items-center p-3">
-              <div className="bg-orange-100 p-2 rounded-full mr-3">
-                {value.icon}
-              </div>
-              <div>
-                <h3 className="font-bold text-sm">{value.title}</h3>
-                <p className="text-xs text-gray-600">{value.description}</p>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-// مكون المطاعم المميزة
-const TopRestaurants = () => {
-  const restaurants = [
-    {
-      id: 1,
-      name: "مطعم الكشري المصري",
-      image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=300&auto=format&fit=crop",
-      rating: 4.8,
-      category: "كشري",
-      deliveryTime: "25-35 د",
-      deliveryFee: "مجاناً"
-    },
-    {
-      id: 2,
-      name: "كنتاكي",
-      image: "https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?q=80&w=300&auto=format&fit=crop",
-      rating: 4.5,
-      category: "فراخ",
-      deliveryTime: "15-25 د",
-      deliveryFee: "10 ج.م"
-    },
-    {
-      id: 3,
-      name: "برجر كينج",
-      image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=300&auto=format&fit=crop",
-      rating: 4.6,
-      category: "برجر",
-      deliveryTime: "20-30 د",
-      deliveryFee: "مجاناً"
-    }
-  ];
-  
-  return (
-    <div className="py-6 bg-white mt-2">
-      <div className="flex justify-between items-center mb-4 px-4">
-        <Link to="/restaurants" className="text-sm font-medium text-orange-500 hover:text-orange-600">
-          شوف الكل
-        </Link>
-        <h2 className="text-xl font-bold text-gray-900">مطاعم قريبة منك</h2>
-      </div>
-      
-      <div className="scroll-container px-4 no-scrollbar">
-        {restaurants.map((restaurant, index) => (
-          <Card 
-            key={restaurant.id} 
-            className="w-64 flex-shrink-0 border-none shadow-sm hover:shadow-md transition-all animate-fade-in"
-            style={{animationDelay: `${index * 100}ms`}}
-          >
-            <div className="relative h-36">
-              <img 
-                src={restaurant.image} 
-                alt={restaurant.name} 
-                className="w-full h-full object-cover rounded-t-xl" 
-              />
-              <div className="absolute top-3 left-3 bg-white rounded-full px-2 py-0.5 text-xs font-medium flex items-center">
-                <svg className="w-3 h-3 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-                {restaurant.rating}
-              </div>
-            </div>
+        </header>
+        
+        {/* قسم البانرات */}
+        <section className="px-4 pt-4 pb-2">
+          <div className="overflow-x-auto flex gap-3 no-scrollbar pb-2">
+            <Card className="min-w-[80%] h-36 rounded-xl bg-gradient-to-r from-lime-500 to-lime-600 border-0 overflow-hidden flex-shrink-0 animate-fade-in">
+              <CardContent className="p-0 relative h-full">
+                <img
+                  src="https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=500&auto=format&fit=crop"
+                  alt="عروض خاصة"
+                  className="w-full h-full object-cover opacity-40"
+                />
+                <div className="absolute inset-0 flex flex-col justify-center p-6 text-white">
+                  <h3 className="text-xl font-bold mb-2">خصم 30% على أول طلب</h3>
+                  <p className="text-sm mb-3">استمتع بتخفيضات حصرية على أشهر المطاعم</p>
+                  <Button className="w-max bg-white text-lime-700 hover:bg-gray-100 rounded-full px-5">
+                    اطلب الآن
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
             
-            <CardContent className="p-3">
-              <h3 className="font-bold text-gray-900 mb-1">{restaurant.name}</h3>
-              <p className="text-sm text-gray-500 mb-2">{restaurant.category}</p>
-              
-              <div className="flex justify-between items-center text-xs text-gray-600">
-                <div className="flex items-center">
-                  <Clock className="w-3 h-3 ml-1" />
-                  {restaurant.deliveryTime}
+            <Card className="min-w-[80%] h-36 rounded-xl overflow-hidden flex-shrink-0 border-0 animate-fade-in" style={{animationDelay: "100ms"}}>
+              <CardContent className="p-0 relative h-full">
+                <img
+                  src="https://images.unsplash.com/photo-1498837167922-ddd27525d352?q=80&w=500&auto=format&fit=crop"
+                  alt="توصيل سريع"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/20 flex flex-col justify-end p-4 text-white">
+                  <h3 className="text-lg font-bold">توصيل سريع خلال 30 دقيقة</h3>
+                  <p className="text-sm opacity-90">من أقرب المطاعم والمتاجر إليك</p>
                 </div>
-                <div>{restaurant.deliveryFee}</div>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+        
+        {/* فئات الرئيسية */}
+        <section className="px-4 py-5">
+          <h2 className="text-lg font-bold mb-4">اختر من الفئات</h2>
+          
+          {categoriesLoading ? (
+            <div className="grid grid-cols-4 gap-3">
+              {[1, 2, 3, 4].map(item => (
+                <div key={item} className="flex flex-col items-center">
+                  <Skeleton className="w-14 h-14 rounded-full mb-2" />
+                  <Skeleton className="w-10 h-3" />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-4 gap-4">
+              <Link to="/restaurants" className="flex flex-col items-center animate-fade-in">
+                <div className="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center mb-1 shadow-sm">
+                  <UtensilsCrossed className="w-7 h-7 text-orange-600" />
+                </div>
+                <span className="text-xs font-medium text-center">مطاعم</span>
+              </Link>
+              
+              <Link to="/market" className="flex flex-col items-center animate-fade-in" style={{animationDelay: "50ms"}}>
+                <div className="w-16 h-16 rounded-full bg-lime-100 flex items-center justify-center mb-1 shadow-sm">
+                  <ShoppingBag className="w-7 h-7 text-lime-600" />
+                </div>
+                <span className="text-xs font-medium text-center">بقالة</span>
+              </Link>
+              
+              <Link to="/pharmacy" className="flex flex-col items-center animate-fade-in" style={{animationDelay: "100ms"}}>
+                <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-1 shadow-sm">
+                  <Pill className="w-7 h-7 text-blue-600" />
+                </div>
+                <span className="text-xs font-medium text-center">صيدليات</span>
+              </Link>
+              
+              <Link to="/personal-care" className="flex flex-col items-center animate-fade-in" style={{animationDelay: "150ms"}}>
+                <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center mb-1 shadow-sm">
+                  <Brush className="w-7 h-7 text-purple-600" />
+                </div>
+                <span className="text-xs font-medium text-center">مستلزمات</span>
+              </Link>
+            </div>
+          )}
+        </section>
+        
+        {/* قسم الإعلانات المدفوعة */}
+        <section className="py-4 bg-gray-50">
+          <div className="px-4 mb-3">
+            <h2 className="text-lg font-bold">ترشيحات خاصة لك</h2>
+          </div>
+          <div className="px-4 overflow-x-auto flex gap-3 no-scrollbar pb-2">
+            {offersLoading ? (
+              Array(3).fill(0).map((_, i) => (
+                <Card key={i} className="min-w-[250px] border-0 shadow-sm flex-shrink-0">
+                  <CardContent className="p-0">
+                    <Skeleton className="h-32 w-full" />
+                    <div className="p-3">
+                      <Skeleton className="h-5 w-28 mb-1" />
+                      <Skeleton className="h-4 w-36" />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : homeOffers && homeOffers.length > 0 ? (
+              homeOffers.map((offer, index) => (
+                <Card 
+                  key={offer.id} 
+                  className="min-w-[250px] border-0 shadow-sm rounded-xl overflow-hidden flex-shrink-0 animate-fade-in" 
+                  style={{animationDelay: `${index * 100}ms`}}
+                >
+                  <CardContent className="p-0">
+                    <div className="relative">
+                      <img 
+                        src={offer.image} 
+                        alt={offer.title} 
+                        className="w-full h-32 object-cover"
+                      />
+                      <Badge className="absolute top-2 right-2 bg-lime-500 border-0 text-white">
+                        خصم 25%
+                      </Badge>
+                    </div>
+                    <div className="p-3">
+                      <h3 className="font-medium text-gray-800">{offer.title}</h3>
+                      <p className="text-xs text-gray-500 mt-1">{offer.description}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <div className="w-full py-6 text-center text-gray-500">
+                <p>لا توجد عروض حالياً</p>
+              </div>
+            )}
+          </div>
+        </section>
+        
+        {/* الأقسام السريعة */}
+        <section className="px-4 py-5">
+          <h2 className="text-lg font-bold mb-3">دلوقتي على طول</h2>
+          <div className="grid grid-cols-3 gap-3">
+            <Card className="border-0 shadow-sm bg-red-50 rounded-xl hover:shadow-md transition-shadow animate-fade-in">
+              <CardContent className="p-4 flex flex-col items-center text-center">
+                <TrendingUp className="w-8 h-8 text-red-500 mb-2" />
+                <h3 className="text-sm font-medium text-gray-800">الأكثر شعبية</h3>
+                <p className="text-xs text-gray-500 mt-1">الأعلى تقييماً</p>
+              </CardContent>
+            </Card>
+            
+            <Card className="border-0 shadow-sm bg-amber-50 rounded-xl hover:shadow-md transition-shadow animate-fade-in" style={{animationDelay: "50ms"}}>
+              <CardContent className="p-4 flex flex-col items-center text-center">
+                <Clock className="w-8 h-8 text-amber-500 mb-2" />
+                <h3 className="text-sm font-medium text-gray-800">توصيل سريع</h3>
+                <p className="text-xs text-gray-500 mt-1">خلال 30 دقيقة</p>
+              </CardContent>
+            </Card>
+            
+            <Card className="border-0 shadow-sm bg-blue-50 rounded-xl hover:shadow-md transition-shadow animate-fade-in" style={{animationDelay: "100ms"}}>
+              <CardContent className="p-4 flex flex-col items-center text-center">
+                <PackageCheck className="w-8 h-8 text-blue-500 mb-2" />
+                <h3 className="text-sm font-medium text-gray-800">طلبات سابقة</h3>
+                <p className="text-xs text-gray-500 mt-1">اطلب مجدداً</p>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+        
+        {/* المطاعم المميزة */}
+        <section className="px-4 py-5">
+          <div className="flex justify-between items-center mb-4">
+            <Link to="/restaurants" className="text-lime-600 text-sm font-medium">
+              عرض الكل
+            </Link>
+            <h2 className="text-lg font-bold">مطاعم موصى بها</h2>
+          </div>
+          
+          {placesLoading ? (
+            <div className="space-y-3">
+              {[1, 2, 3].map(item => (
+                <Card key={item} className="border-0 shadow-sm">
+                  <CardContent className="p-0">
+                    <div className="flex">
+                      <Skeleton className="h-24 w-24" />
+                      <div className="p-3 flex-1">
+                        <Skeleton className="h-5 w-24 mb-1" />
+                        <Skeleton className="h-4 w-full mb-1" />
+                        <Skeleton className="h-4 w-20" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : popularPlaces && popularPlaces.length > 0 ? (
+            <div className="space-y-3">
+              {popularPlaces.map((place, index) => (
+                <Card
+                  key={place.id}
+                  className="border-0 shadow-sm rounded-xl overflow-hidden hover:shadow-md transition-all animate-fade-in"
+                  style={{animationDelay: `${index * 100}ms`}}
+                >
+                  <CardContent className="p-0">
+                    <div className="flex">
+                      <div className="w-24 h-24 overflow-hidden">
+                        <img
+                          src={place.image}
+                          alt={place.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="p-3 flex-1">
+                        <div className="flex justify-between items-start">
+                          <h3 className="font-medium text-gray-800">{place.name}</h3>
+                          <div className="flex items-center bg-green-100 rounded-lg px-1.5 py-0.5">
+                            <span className="text-xs font-medium text-green-700">{place.rating}</span>
+                          </div>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">{place.category}</p>
+                        <div className="flex items-center gap-3 mt-2">
+                          <span className="text-xs text-gray-500">
+                            <Clock className="w-3 h-3 inline mr-1" />
+                            {place.deliveryTime}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            {place.deliveryFee}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-6 text-gray-500">
+              <p>لا توجد مطاعم قريبة حالياً</p>
+            </div>
+          )}
+        </section>
+        
+        {/* عروض إعلانية إضافية */}
+        <section className="px-4 py-5 bg-gray-50">
+          <h2 className="text-lg font-bold mb-3">عروض يومية</h2>
+          <Card className="border-0 shadow-sm rounded-xl overflow-hidden animate-fade-in">
+            <CardContent className="p-0 relative h-40">
+              <img
+                src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=500&auto=format&fit=crop"
+                alt="عروض خاصة"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-4 text-white">
+                <h3 className="text-xl font-bold mb-1">خصم 30% على أول طلب</h3>
+                <p className="text-sm">احصل على توصيل مجاني للطلبات أكثر من 100 ج.م</p>
+                <Button className="w-max mt-3 bg-white text-lime-700 hover:bg-gray-100">
+                  استفد الآن
+                </Button>
               </div>
             </CardContent>
           </Card>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-// مكون العروض الخاصة 
-const SpecialOffers = () => {
-  const offers = [
-    {
-      id: 1,
-      title: "خصم 30%",
-      description: "على كل الوجبات من ماكدونالدز",
-      image: "https://images.unsplash.com/photo-1561758033-7e924f619b47?q=80&w=500&auto=format&fit=crop",
-    },
-    {
-      id: 2,
-      title: "اطلب 1 واحصل على 1 ببلاش",
-      description: "من بيتزا هت على كل البيتزا",
-      image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=500&auto=format&fit=crop",
-    }
-  ];
-  
-  return (
-    <div className="py-6 bg-white mt-2">
-      <div className="flex justify-between items-center mb-4 px-4">
-        <Link to="/offers" className="text-sm font-medium text-orange-500 hover:text-orange-600">
-          شوف الكل
-        </Link>
-        <h2 className="text-xl font-bold text-gray-900">عروض حصرية</h2>
-      </div>
-      
-      <div className="scroll-container px-4 no-scrollbar">
-        {offers.map((offer, index) => (
-          <Card 
-            key={offer.id} 
-            className="w-72 flex-shrink-0 border-none shadow-sm hover:shadow-md transition-all overflow-hidden animate-fade-in"
-            style={{animationDelay: `${index * 100 + 300}ms`}}
-          >
-            <div className="relative h-40">
-              <img 
-                src={offer.image} 
-                alt={offer.title} 
-                className="w-full h-full object-cover" 
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent">
-                <div className="absolute bottom-4 right-4 text-white text-right">
-                  <h3 className="text-xl font-bold">{offer.title}</h3>
-                  <p className="text-sm mt-1">{offer.description}</p>
-                </div>
-              </div>
-            </div>
-          </Card>
-        ))}
-      </div>
-      
-      {/* Download App Banner */}
-      <div className="mt-8 mx-4">
-        <Card className="border-none overflow-hidden bg-gradient-to-r from-orange-500 to-orange-600">
-          <div className="p-5 text-white">
-            <h3 className="text-xl font-bold mb-2">عايز تجربة أحسن؟</h3>
-            <p className="text-sm mb-4">نزل تطبيق طلبات دلوقتي وخد مميزات حصرية</p>
-            <Button className="bg-white text-orange-600 hover:bg-orange-50">
-              حمل التطبيق
-            </Button>
+        </section>
+        
+        {/* المتاجر الشعبية */}
+        <section className="px-4 py-5">
+          <div className="flex justify-between items-center mb-4">
+            <Link to="/market" className="text-lime-600 text-sm font-medium">
+              عرض الكل
+            </Link>
+            <h2 className="text-lg font-bold">بقالة وسوبر ماركت</h2>
           </div>
-        </Card>
+          
+          <div className="grid grid-cols-2 gap-3">
+            <Card className="border-0 shadow-sm rounded-xl overflow-hidden hover:shadow-md transition-all animate-fade-in">
+              <CardContent className="p-0">
+                <div className="relative h-28">
+                  <img
+                    src="https://images.unsplash.com/photo-1604719312566-8912e9667857?q=80&w=300&auto=format&fit=crop"
+                    alt="سوبر ماركت"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-2 right-2 bg-white rounded-lg px-2 py-1">
+                    <span className="text-xs font-medium text-green-700">30 د</span>
+                  </div>
+                </div>
+                <div className="p-3">
+                  <h3 className="font-medium text-gray-800">سوبر ماركت الميدان</h3>
+                  <p className="text-xs text-gray-500 mt-1">بقالة، فواكه، خضروات</p>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="border-0 shadow-sm rounded-xl overflow-hidden hover:shadow-md transition-all animate-fade-in" style={{animationDelay: "50ms"}}>
+              <CardContent className="p-0">
+                <div className="relative h-28">
+                  <img
+                    src="https://images.unsplash.com/photo-1579113800032-c38bd7635818?q=80&w=300&auto=format&fit=crop"
+                    alt="هايبر ماركت"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-2 right-2 bg-white rounded-lg px-2 py-1">
+                    <span className="text-xs font-medium text-green-700">25 د</span>
+                  </div>
+                </div>
+                <div className="p-3">
+                  <h3 className="font-medium text-gray-800">هايبر ماركت مصر</h3>
+                  <p className="text-xs text-gray-500 mt-1">بقالة، منتجات منزلية</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          
+          <div className="mt-4">
+            <Card className="border-0 shadow-sm rounded-xl overflow-hidden hover:shadow-md transition-all bg-gradient-to-r from-lime-600 to-lime-500 animate-fade-in" style={{animationDelay: "100ms"}}>
+              <CardContent className="p-4 text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-bold mb-1">نزل تطبيق مرسول</h3>
+                    <p className="text-sm">واحصل على كوبونات وخصومات حصرية</p>
+                  </div>
+                  <ScanLine className="w-12 h-12" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
       </div>
     </div>
   );
