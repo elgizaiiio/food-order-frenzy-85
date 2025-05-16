@@ -9,8 +9,8 @@ import {
   Scissors,
   Star,
   Package,
-  Navigation,
-  Clock
+  Clock,
+  ChevronLeft
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -67,14 +67,14 @@ const Index = () => {
                 <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
                   <Bell className="w-4 h-4" />
                 </div>
-                <span className="absolute -top-1 -right-1 bg-black text-white text-xs w-4 h-4 flex items-center justify-center rounded-full font-medium">2</span>
+                <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full font-medium">2</span>
               </Link>
               <Link to="/profile">
                 <Avatar className="w-8 h-8 border border-gray-200">
                   {user?.email ? (
                     <AvatarImage src="" />
                   ) : null}
-                  <AvatarFallback className="bg-black text-white text-xs">
+                  <AvatarFallback className="bg-orange-500 text-white text-xs">
                     {firstName?.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
@@ -98,7 +98,7 @@ const Index = () => {
                   key={category.id}
                   className={`px-4 py-3 whitespace-nowrap text-sm font-medium border-b-2 transition-colors ${
                     activeTab === category.id 
-                      ? 'border-black text-black'
+                      ? 'border-orange-500 text-orange-500'
                       : 'border-transparent text-gray-500'
                   }`}
                   onClick={() => setActiveTab(category.id)}
@@ -112,9 +112,18 @@ const Index = () => {
         
         {/* المحتوى الرئيسي */}
         <main className="px-4">
+          {/* العروض والإعلانات المتحركة */}
+          <Offers />
+          
           {/* الخدمات الرئيسية */}
           <section className="pt-5 pb-2 animate-fade-in" style={{animationDelay: "200ms"}}>
-            <h2 className="text-lg font-bold mb-4">اختر الخدمة</h2>
+            <div className="flex justify-between items-center mb-4">
+              <Link to="/services" className="text-xs font-medium text-orange-500 hover:text-orange-600 flex items-center">
+                عرض الكل <ChevronLeft className="h-3 w-3 mr-1" />
+              </Link>
+              <h2 className="text-lg font-bold">اختر الخدمة</h2>
+            </div>
+            
             <div className="grid grid-cols-2 gap-3">
               <ServiceCard
                 icon={<UtensilsCrossed className="h-5 w-5 text-white" />}
@@ -141,7 +150,7 @@ const Index = () => {
               />
               
               <ServiceCard
-                icon={<Navigation className="h-5 w-5 text-white" />}
+                icon={<Star className="h-5 w-5 text-white" />}
                 title="الجيم"
                 description="اشتراكات"
                 bgClass="bg-white"
@@ -161,9 +170,6 @@ const Index = () => {
           {/* فئات الرئيسية */}
           <Categories />
           
-          {/* عروض خاصة */}
-          <Offers />
-          
           {/* المطاعم المميزة */}
           <PopularPlaces title="مطاعم قريبة منك" />
           
@@ -173,47 +179,37 @@ const Index = () => {
           {/* بقالة وسوبر ماركت */}
           <section className="py-5 animate-fade-in" style={{animationDelay: "600ms"}}>
             <div className="flex justify-between items-center mb-3">
-              <Link to="/market" className="text-xs font-medium text-black hover:text-gray-700">
-                عرض الكل
+              <Link to="/market" className="text-xs font-medium text-orange-500 hover:text-orange-600 flex items-center">
+                عرض الكل <ChevronLeft className="h-3 w-3 mr-1" />
               </Link>
-              <h2 className="text-lg font-bold text-black">البقالة</h2>
+              <h2 className="text-lg font-bold">البقالة</h2>
             </div>
             
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-black text-white p-4 rounded-xl">
-                <div className="flex items-center mb-3">
-                  <div className="p-2 bg-white/20 rounded-full mr-3">
-                    <Package className="h-5 w-5 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-lg">توصيل سريع</h3>
-                    <p className="text-xs text-gray-300">خلال 15 دقيقة</p>
-                  </div>
-                </div>
-                <Badge className="bg-white text-black hover:bg-gray-100 mt-2">اطلب الآن</Badge>
-              </div>
+              <ServiceCard
+                icon={<Package className="h-5 w-5 text-white" />}
+                title="توصيل سريع"
+                description="خلال 15 دقيقة"
+                special={true}
+                onClick={() => navigateTo('/market')}
+              />
               
-              <div className="bg-black text-white p-4 rounded-xl">
-                <div className="flex items-center mb-3">
-                  <div className="p-2 bg-white/20 rounded-full mr-3">
-                    <Pill className="h-5 w-5 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-lg">صيدلية</h3>
-                    <p className="text-xs text-gray-300">من أقرب صيدلية</p>
-                  </div>
-                </div>
-                <Badge className="bg-white text-black hover:bg-gray-100 mt-2">اطلب الآن</Badge>
-              </div>
+              <ServiceCard
+                icon={<Pill className="h-5 w-5 text-white" />}
+                title="صيدلية"
+                description="من أقرب صيدلية"
+                special={true}
+                onClick={() => navigateTo('/pharmacy')}
+              />
             </div>
             
             {/* قسم الخصومات */}
-            <div className="mt-5 rounded-xl overflow-hidden bg-black text-white animate-fade-in" style={{animationDelay: "650ms"}}>
+            <div className="mt-5 rounded-xl overflow-hidden bg-orange-500 text-white animate-fade-in" style={{animationDelay: "650ms"}}>
               <div className="p-5 flex items-center justify-between">
                 <div>
                   <h3 className="text-lg font-bold mb-1">خصم 30% على أول طلب</h3>
-                  <p className="text-xs text-gray-300 mb-3">احصل على خصم 30% عند تسجيلك لأول مرة</p>
-                  <Button className="bg-white text-black hover:bg-gray-100 text-xs px-3 py-1 h-auto">
+                  <p className="text-xs text-orange-100 mb-3">احصل على خصم 30% عند تسجيلك لأول مرة</p>
+                  <Button className="bg-white text-orange-600 hover:bg-gray-100 text-xs px-3 py-1 h-auto">
                     استخدم الكود: FIRST30
                   </Button>
                 </div>
@@ -224,17 +220,17 @@ const Index = () => {
             </div>
             
             {/* قسم التوصيل السريع */}
-            <div className="mt-3 p-4 rounded-xl bg-black text-white">
+            <div className="mt-3 p-4 rounded-xl bg-orange-500 text-white">
               <div className="flex items-center mb-3">
                 <div className="p-2 bg-white/20 rounded-full mr-3">
                   <Clock className="h-5 w-5 text-white" />
                 </div>
                 <div>
                   <h3 className="font-bold">توصيل الطلبات</h3>
-                  <p className="text-xs text-gray-300">استلم طلبك خلال 30 دقيقة أو أقل</p>
+                  <p className="text-xs text-orange-100">استلم طلبك خلال 30 دقيقة أو أقل</p>
                 </div>
               </div>
-              <Button className="bg-white text-black hover:bg-gray-100 w-full mt-2">
+              <Button className="bg-white text-orange-600 hover:bg-gray-100 w-full mt-2">
                 اطلب الآن
               </Button>
             </div>

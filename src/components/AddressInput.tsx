@@ -19,14 +19,14 @@ const AddressInput: React.FC<AddressInputProps> = ({ currentAddress, setCurrentA
 
   return (
     <div className="flex items-center space-x-2 space-x-reverse">
-      <div className="bg-gray-100 p-2 rounded-full">
-        <MapPin className="w-4 h-4 text-black" />
+      <div className="bg-orange-500 p-2 rounded-full">
+        <MapPin className="w-4 h-4 text-white" />
       </div>
       <div className="flex flex-col">
         <span className="text-xs text-gray-500">التوصيل إلى</span>
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="link" className="h-auto p-0 flex items-center text-black hover:text-gray-700">
+            <Button variant="link" className="h-auto p-0 flex items-center text-black hover:text-orange-500">
               <span className="text-sm font-medium">{currentAddress}</span>
               <ChevronDown className="w-4 h-4 mr-1" />
             </Button>
@@ -38,14 +38,14 @@ const AddressInput: React.FC<AddressInputProps> = ({ currentAddress, setCurrentA
                 <Button 
                   key={idx} 
                   variant="ghost" 
-                  className="w-full justify-start text-sm hover:bg-gray-100"
+                  className="w-full justify-start text-sm hover:bg-orange-50"
                   onClick={() => setCurrentAddress(addr)}
                 >
-                  <MapPin className="w-4 h-4 mr-2" />
+                  <MapPin className="w-4 h-4 mr-2 text-orange-500" />
                   {addr}
                 </Button>
               ))}
-              <Button variant="outline" className="w-full text-xs mt-2">
+              <Button variant="outline" className="w-full text-xs mt-2 border-orange-300 text-orange-600 hover:bg-orange-50">
                 إضافة عنوان جديد
               </Button>
             </div>
