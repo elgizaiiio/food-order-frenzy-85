@@ -41,7 +41,7 @@ const BottomNav: React.FC = () => {
 
   return (
     <nav 
-      className="fixed bottom-0 left-0 right-0 z-40 bg-white shadow-lg border-t border-slate-200"
+      className="fixed bottom-0 left-0 right-0 z-50 bg-white shadow-lg border-t border-slate-200"
       style={{ 
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
         maxWidth: '768px', 
@@ -54,17 +54,17 @@ const BottomNav: React.FC = () => {
             key={item.path}
             to={item.path}
             className={`flex flex-col items-center justify-center w-full h-full ${
-              item.active ? 'text-blue-600 font-medium' : 'text-gray-500'
+              item.active ? 'text-orange-600 font-medium' : 'text-gray-500'
             }`}
           >
             <div 
-              className={`${item.active ? 'text-blue-600' : 'text-gray-500'} ${item.active ? 'scale-110' : ''} transition-transform`}
+              className={`${item.active ? 'text-orange-600' : 'text-gray-500'} ${item.active ? 'scale-110' : ''} transition-transform`}
             >
               {item.icon}
             </div>
             <span className="text-xs mt-1">{item.name}</span>
             {item.active && (
-              <div className="absolute bottom-1 w-1.5 h-1.5 bg-blue-600 rounded-full" />
+              <div className="absolute bottom-1 w-1.5 h-1.5 bg-orange-600 rounded-full" />
             )}
           </Link>
         ))}

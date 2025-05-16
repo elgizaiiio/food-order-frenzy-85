@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import Categories from '@/components/Categories';
 import PopularRestaurants from '@/components/PopularRestaurants';
-import { Search, MapPin, ChevronDown, Bell, ShoppingBag, Clock, Car } from 'lucide-react';
+import { Search, MapPin, ChevronDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -62,10 +62,7 @@ const Index = () => {
                 </PopoverContent>
               </Popover>
               
-              {/* زر الإشعارات */}
-              <Link to="/notifications" className="flex items-center justify-center w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 transition-all">
-                <Bell className="w-4 h-4 text-white" />
-              </Link>
+              {/* تم إزالة زر الإشعارات هنا */}
             </div>
           </div>
           
