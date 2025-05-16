@@ -1,10 +1,11 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Tag, ChevronLeft, Star, Clock } from 'lucide-react';
+import { Tag, ChevronLeft, Star, Clock, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 type Offer = {
   id: number;
@@ -60,23 +61,39 @@ const Offers: React.FC = () => {
       deliveryTime: "25-35 دقيقة",
       discount: "توصيل مجاني",
       isFeatured: false
+    },
+    {
+      id: 4,
+      title: "بيتزا هت",
+      description: "خصم 25% على البيتزا الكبيرة",
+      color: "from-orange-500/90 to-orange-700/70",
+      textColor: "text-white",
+      image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=500&auto=format&fit=crop",
+      link: "/restaurant/4",
+      rating: 4.7,
+      deliveryTime: "30-40 دقيقة",
+      discount: "خصم 25%",
+      isFeatured: true
     }
   ];
 
   const featuredOffers = offers.filter(offer => offer.isFeatured);
 
   return (
-    <div className="talabat-section animate-fade-in animate-delay-2">
+    <div className="talabat-section animate-fade-in animate-delay-2 bg-white rounded-xl shadow-sm p-4 mb-4">
       <div className="flex justify-between items-center mb-4">
-        <Link to="/offers" className="text-sm font-medium text-orange-500 hover:text-orange-600 flex items-center">
+        <Link to="/offers" className="text-sm font-medium text-orange-500 hover:text-orange-600 flex items-center gap-1">
           عرض الكل <ChevronLeft className="h-4 w-4" />
         </Link>
-        <h2 className="talabat-section-title flex items-center">
-          <span className="bg-orange-100 p-1 rounded-md ml-2">
-            <Tag className="h-4 w-4 text-orange-600" />
-          </span>
-          عروض خاصة
-        </h2>
+        <div className="flex items-center gap-2">
+          <h2 className="talabat-section-title font-bold text-lg flex items-center">
+            العروض المميزة
+          </h2>
+          <Badge variant="outline" className="bg-orange-50 text-orange-600 border-orange-200 text-xs">
+            <Tag className="h-3 w-3 ml-1" />
+            حصري
+          </Badge>
+        </div>
       </div>
       
       <Carousel className="w-full">
@@ -134,24 +151,44 @@ const Offers: React.FC = () => {
       
       {/* Featured Offers Gallery */}
       {featuredOffers.length > 0 && (
-        <div className="mt-4 grid grid-cols-2 gap-3">
-          {featuredOffers.map(offer => (
-            <Link key={`featured-${offer.id}`} to={offer.link} className="block">
-              <div className="relative rounded-lg overflow-hidden h-24 shadow-sm hover:shadow-md transition-all">
-                <img 
-                  src={offer.image} 
-                  alt={offer.title}
-                  className="w-full h-full object-cover"
-                />
-                <div className={`absolute inset-0 bg-gradient-to-t ${offer.color}`}>
-                  <div className="absolute bottom-0 p-2 text-white text-right w-full">
-                    <h4 className="text-sm font-bold line-clamp-1">{offer.title}</h4>
-                    <p className="text-xs line-clamp-1">{offer.description}</p>
+        <div className="mt-4">
+          <div className="flex items-center justify-between mb-3">
+            <Button variant="ghost" size="sm" className="text-orange-500 hover:text-orange-600 p-0 flex items-center gap-1">
+              عرض جميع العروض <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <h3 className="text-sm font-bold text-gray-700">أفضل العروض</h3>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            {featuredOffers.map(offer => (
+              <Link key={`featured-${offer.id}`} to={offer.link} className="block">
+                <div className="relative rounded-xl overflow-hidden h-24 shadow-sm hover:shadow-md transition-all group">
+                  <img 
+                    src={offer.image} 
+                    alt={offer.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className={`absolute inset-0 bg-gradient-to-t ${offer.color}`}>
+                    {offer.discount && (
+                      <div className="absolute top-2 left-2">
+                        <Badge className="bg-orange-500 hover:bg-orange-600 text-[10px] py-0 px-1.5">
+                          {offer.discount}
+                        </Badge>
+                      </div>
+                    )}
+                    <div className="absolute bottom-0 p-2 text-white text-right w-full">
+                      <h4 className="text-sm font-bold line-clamp-1">{offer.title}</h4>
+                      <p className="text-xs line-clamp-1 text-white/90">{offer.description}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            ))}
+          </div>
+          <div className="text-center mt-4">
+            <Button variant="outline" size="sm" className="border-orange-200 text-orange-600 hover:bg-orange-50 text-xs flex items-center gap-1 mx-auto">
+              تصفح جميع العروض <ArrowRight className="h-3.5 w-3.5 rtl:rotate-180" />
+            </Button>
+          </div>
         </div>
       )}
     </div>

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -10,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Card, CardContent } from '@/components/ui/card';
+import Offers from '@/components/Offers';
 
 const Index = () => {
   const { user } = useAuth();
@@ -112,6 +114,9 @@ const Index = () => {
           <BannerSlider />
           
           {/* تم حذف مكون ValuePropositions الذي يحتوي على "توصيل مجاني" */}
+          
+          {/* Improved Offers Section */}
+          <Offers />
           
           {/* Popular Restaurants */}
           <PopularRestaurants />
