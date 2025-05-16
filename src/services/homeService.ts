@@ -20,7 +20,7 @@ export interface Offer {
 }
 
 export interface Place {
-  id: number;
+  id: string | number; // Updated to accept both string and number to fix the type mismatch
   name: string;
   image: string;
   rating: number;
