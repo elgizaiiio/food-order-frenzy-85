@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Camera, User } from 'lucide-react';
+import { ArrowLeft, Camera, User, ChevronLeft } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -83,12 +83,12 @@ const EditProfile: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50" dir="rtl">
+    <div className="min-h-screen bg-gray-100" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-20">
         {/* Header */}
         <div className="sticky top-0 flex items-center justify-between p-4 bg-white shadow-sm z-10">
           <Link to="/profile" className="text-gray-700">
-            <ArrowLeft className="w-6 h-6" />
+            <ChevronLeft className="w-6 h-6" />
           </Link>
           <h1 className="text-xl font-bold">تعديل الملف الشخصي</h1>
           <div className="w-6"></div>

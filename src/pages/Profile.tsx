@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, User, Settings, MapPin, CreditCard, Package, Ticket, MessageSquare, UserPlus, LogOut } from 'lucide-react';
+import { ArrowLeft, User, Settings, MapPin, CreditCard, Package, Ticket, MessageSquare, UserPlus, LogOut, ChevronLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/context/AuthContext';
@@ -36,143 +36,147 @@ const Profile: React.FC = () => {
   const profileImage = userProfile?.profile_image || userProfile?.avatar_url || null;
   
   return (
-    <div className="min-h-screen bg-gray-50" dir="rtl">
+    <div className="min-h-screen bg-gray-100" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-20">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white sticky top-0 z-10 shadow-md">
-          <Link to="/" className="text-white hover:text-orange-200">
-            <ArrowLeft className="w-6 h-6" />
-          </Link>
-          <h1 className="text-xl font-bold">الملف الشخصي</h1>
-          <Link to="/settings" className="text-white hover:text-orange-200">
-            <Settings className="w-6 h-6" />
-          </Link>
-        </div>
-        
-        {/* Profile Info */}
-        <div className="p-4">
-          <div className="flex items-center mb-6">
-            <Avatar className="h-20 w-20 border-4 border-white shadow-md">
-              {profileImage ? (
-                <AvatarImage src={profileImage} />
-              ) : null}
-              <AvatarFallback className="bg-orange-100 text-orange-800 text-xl">
-                {displayName.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <div className="mr-4">
-              <h2 className="text-xl font-bold text-gray-900">{displayName}</h2>
-              <p className="text-orange-600">{user?.email}</p>
+        {/* Header with gradient background */}
+        <div className="relative">
+          {/* Gradient background header */}
+          <div className="bg-gradient-to-r from-orange-500 to-orange-600 h-40 rounded-b-3xl shadow-md">
+            <div className="flex items-center justify-between p-4">
+              <Link to="/" className="text-white hover:text-orange-200">
+                <ChevronLeft className="w-6 h-6" />
+              </Link>
+              <h1 className="text-xl font-bold text-white">الملف الشخصي</h1>
+              <Link to="/settings" className="text-white hover:text-orange-200">
+                <Settings className="w-6 h-6" />
+              </Link>
             </div>
           </div>
           
+          {/* Profile avatar that overlaps the gradient header */}
+          <div className="absolute left-1/2 transform -translate-x-1/2 -bottom-16">
+            <div className="relative">
+              <Avatar className="h-32 w-32 border-4 border-white shadow-lg">
+                {profileImage ? (
+                  <AvatarImage src={profileImage} />
+                ) : (
+                  <AvatarFallback className="bg-orange-100 text-orange-800 text-4xl font-bold">
+                    {displayName.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                )}
+              </Avatar>
+            </div>
+          </div>
+        </div>
+        
+        {/* User Info with spacing for the avatar */}
+        <div className="pt-20 pb-6 text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-1">{displayName}</h2>
+          <p className="text-orange-600 mb-4">{user?.email}</p>
+          
           <Link to="/edit-profile">
             <Button 
-              className="w-full mb-6 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white"
+              variant="outline" 
+              className="rounded-full border-orange-300 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
             >
               تعديل الملف الشخصي
             </Button>
           </Link>
+        </div>
+        
+        {/* Divider */}
+        <div className="h-2 bg-gray-100"></div>
+        
+        {/* Menu Options with improved styling */}
+        <div className="p-4">
+          <h3 className="font-bold text-lg mb-3 text-gray-700 pr-2">إعدادات الحساب</h3>
           
-          {/* Menu Options */}
-          <div className="space-y-1">
+          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
             <Link to="/addresses">
-              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-orange-50 transition-colors">
+              <div className="flex items-center justify-between p-4 border-b border-gray-100">
                 <div className="flex items-center">
                   <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center ml-3">
                     <MapPin className="w-5 h-5 text-orange-600" />
                   </div>
-                  <span className="text-gray-900">العناوين</span>
+                  <span className="text-gray-800 font-medium">العناوين</span>
                 </div>
-                <span className="text-gray-400">
-                  <ArrowLeft className="w-5 h-5 rotate-180" />
-                </span>
+                <ChevronLeft className="w-5 h-5 text-gray-400" />
               </div>
             </Link>
             
             <Link to="/payment-methods">
-              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-orange-50 transition-colors">
+              <div className="flex items-center justify-between p-4 border-b border-gray-100">
                 <div className="flex items-center">
                   <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center ml-3">
                     <CreditCard className="w-5 h-5 text-orange-600" />
                   </div>
-                  <span className="text-gray-900">طرق الدفع</span>
+                  <span className="text-gray-800 font-medium">طرق الدفع</span>
                 </div>
-                <span className="text-gray-400">
-                  <ArrowLeft className="w-5 h-5 rotate-180" />
-                </span>
+                <ChevronLeft className="w-5 h-5 text-gray-400" />
               </div>
             </Link>
             
             <Link to="/orders">
-              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-orange-50 transition-colors">
+              <div className="flex items-center justify-between p-4 border-b border-gray-100">
                 <div className="flex items-center">
                   <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center ml-3">
                     <Package className="w-5 h-5 text-orange-600" />
                   </div>
-                  <span className="text-gray-900">الطلبات السابقة</span>
+                  <span className="text-gray-800 font-medium">الطلبات السابقة</span>
                 </div>
-                <span className="text-gray-400">
-                  <ArrowLeft className="w-5 h-5 rotate-180" />
-                </span>
+                <ChevronLeft className="w-5 h-5 text-gray-400" />
               </div>
             </Link>
             
             <Link to="/coupons">
-              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-orange-50 transition-colors">
+              <div className="flex items-center justify-between p-4">
                 <div className="flex items-center">
                   <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center ml-3">
                     <Ticket className="w-5 h-5 text-orange-600" />
                   </div>
-                  <span className="text-gray-900">الكوبونات</span>
+                  <span className="text-gray-800 font-medium">الكوبونات</span>
                 </div>
-                <span className="text-gray-400">
-                  <ArrowLeft className="w-5 h-5 rotate-180" />
-                </span>
+                <ChevronLeft className="w-5 h-5 text-gray-400" />
               </div>
             </Link>
-            
+          </div>
+          
+          <h3 className="font-bold text-lg mb-3 mt-6 text-gray-700 pr-2">المزيد</h3>
+          
+          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
             <Link to="/chat-support">
-              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-orange-50 transition-colors">
+              <div className="flex items-center justify-between p-4 border-b border-gray-100">
                 <div className="flex items-center">
                   <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center ml-3">
                     <MessageSquare className="w-5 h-5 text-orange-600" />
                   </div>
-                  <span className="text-gray-900">الدعم الفني</span>
+                  <span className="text-gray-800 font-medium">الدعم الفني</span>
                 </div>
-                <span className="text-gray-400">
-                  <ArrowLeft className="w-5 h-5 rotate-180" />
-                </span>
+                <ChevronLeft className="w-5 h-5 text-gray-400" />
               </div>
             </Link>
             
             <Link to="/invite-friends">
-              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-orange-50 transition-colors">
+              <div className="flex items-center justify-between p-4">
                 <div className="flex items-center">
                   <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center ml-3">
                     <UserPlus className="w-5 h-5 text-orange-600" />
                   </div>
-                  <span className="text-gray-900">دعوة الأصدقاء</span>
+                  <span className="text-gray-800 font-medium">دعوة الأصدقاء</span>
                 </div>
-                <span className="text-gray-400">
-                  <ArrowLeft className="w-5 h-5 rotate-180" />
-                </span>
+                <ChevronLeft className="w-5 h-5 text-gray-400" />
               </div>
             </Link>
-            
+          </div>
+          
+          {/* Logout button with better styling */}
+          <div className="mt-6">
             <button 
               onClick={handleSignOut}
-              className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-red-50 transition-colors text-right"
+              className="w-full flex items-center justify-center p-4 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 font-medium transition-colors"
             >
-              <div className="flex items-center">
-                <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center ml-3">
-                  <LogOut className="w-5 h-5 text-red-600" />
-                </div>
-                <span className="text-red-600">تسجيل الخروج</span>
-              </div>
-              <span className="text-red-300">
-                <ArrowLeft className="w-5 h-5 rotate-180" />
-              </span>
+              <LogOut className="w-5 h-5 ml-2" />
+              تسجيل الخروج
             </button>
           </div>
         </div>
