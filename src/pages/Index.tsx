@@ -4,8 +4,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import Categories from '@/components/Categories';
 import PopularRestaurants from '@/components/PopularRestaurants';
-import Offers from '@/components/Offers';
-import Promos from '@/components/ui/Promos';
 import { Search, MapPin, ChevronDown, ShoppingBag } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -148,16 +146,6 @@ const Index = () => {
         <main className="px-4">
           {/* Banner Slider with improved styling */}
           <BannerSlider />
-          
-          {/* Offers Component */}
-          <div className="mb-4">
-            <Offers />
-          </div>
-          
-          {/* Promotions Component */}
-          <div className="mb-4">
-            <Promos />
-          </div>
           
           {/* Popular Restaurants */}
           <PopularRestaurants />
