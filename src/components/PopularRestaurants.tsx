@@ -1,13 +1,12 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Clock, ShoppingBag } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { usePopularPlaces } from '@/hooks/useHomeData';
+import { useHomePopularPlaces } from '@/hooks/useHomeData';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const PopularRestaurants: React.FC = () => {
-  const { data: restaurants, isLoading } = usePopularPlaces();
+  const { data: restaurants, isLoading } = useHomePopularPlaces();
 
   return (
     <div className="talabat-section animate-fade-in animate-delay-3">

@@ -1,16 +1,15 @@
-
 import React from 'react';
 import { Star, Clock, BadgePercent } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { usePopularPlaces } from '@/hooks/useHomeData';
+import { useHomePopularPlaces } from '@/hooks/useHomeData';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const PopularPlaces: React.FC = () => {
   const navigate = useNavigate();
-  const { data: places, isLoading } = usePopularPlaces();
+  const { data: places, isLoading } = useHomePopularPlaces();
 
   const navigateToRestaurant = (id: number | string) => {
     navigate(`/restaurant/${id}`);

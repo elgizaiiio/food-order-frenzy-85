@@ -1,12 +1,12 @@
 
 import { useQuery } from "@tanstack/react-query";
-import { getHomeCategories, getHomeOffers, getHomePopularPlaces } from "@/services/homeService";
+import { fetchHomeCategories, fetchHomeOffers, fetchPopularPlaces, fetchHomePromos } from "@/services/homeService";
 
 // استخدام react-query لجلب بيانات الصفحة الرئيسية
 export const useHomeCategories = () => {
   return useQuery({
     queryKey: ['homeCategories'],
-    queryFn: getHomeCategories,
+    queryFn: fetchHomeCategories,
     staleTime: 5 * 60 * 1000, // 5 دقائق
     refetchOnWindowFocus: false
   });
@@ -15,7 +15,7 @@ export const useHomeCategories = () => {
 export const useHomeOffers = () => {
   return useQuery({
     queryKey: ['homeOffers'],
-    queryFn: getHomeOffers,
+    queryFn: fetchHomeOffers,
     staleTime: 5 * 60 * 1000, // 5 دقائق
     refetchOnWindowFocus: false
   });
@@ -24,7 +24,16 @@ export const useHomeOffers = () => {
 export const useHomePopularPlaces = () => {
   return useQuery({
     queryKey: ['homePopularPlaces'],
-    queryFn: getHomePopularPlaces,
+    queryFn: fetchPopularPlaces,
+    staleTime: 5 * 60 * 1000, // 5 دقائق
+    refetchOnWindowFocus: false
+  });
+};
+
+export const useHomePromos = () => {
+  return useQuery({
+    queryKey: ['homePromos'],
+    queryFn: fetchHomePromos,
     staleTime: 5 * 60 * 1000, // 5 دقائق
     refetchOnWindowFocus: false
   });
