@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useAuth } from '@/context/AuthContext';
 import { useUserProfile, useUpdateUserProfile } from '@/hooks/useUserData';
-import { supabase } from '@/integrations/supabase/client';
+import { uploadFile } from '@/services/storageService';
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLazyImage } from '@/hooks/useLazyImage';
 
@@ -89,46 +89,10 @@ const EditProfile: React.FC = () => {
       // إنشاء اسم فريد للملف
       const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
-      const filePath = `profile_images/${user.id}/${fileName}`;
+      const filePath = `${user.id}/${fileName}`;
 
-      // Compress the image if it's a jpeg/jpg
-      let fileToUpload = file;
-      
-      // تأكد من وجود bucket
-      try {
-        // محاولة إنشاء bucket إذا لم يكن موجودًا
-        const { data: bucketExists } = await supabase.storage.getBucket('avatars');
-        if (!bucketExists) {
-          await supabase.storage.createBucket('avatars', {
-            public: true,
-            fileSizeLimit: 5 * 1024 * 1024 // 5MB
-          });
-        }
-      } catch (error) {
-        console.log('تجاهل خطأ التحقق من وجود البكت، سنحاول الرفع مباشرة');
-      }
-      
-      // رفع الملف إلى Supabase Storage
-      const { data, error } = await supabase
-        .storage
-        .from('avatars')
-        .upload(filePath, fileToUpload, {
-          upsert: true,
-          contentType: file.type
-        });
-
-      if (error) {
-        console.error('خطأ في رفع الصورة:', error);
-        throw error;
-      }
-
-      // الحصول على URL العام للصورة
-      const { data: publicURL } = supabase
-        .storage
-        .from('avatars')
-        .getPublicUrl(filePath);
-
-      return publicURL.publicUrl;
+      // استخدام خدمة التخزين لرفع الملف
+      return await uploadFile('avatars', filePath, file);
     } catch (error) {
       console.error('خطأ غير متوقع أثناء رفع الصورة:', error);
       throw error;
