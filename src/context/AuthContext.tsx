@@ -1,5 +1,5 @@
 
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
 import { toast } from 'sonner';
@@ -7,32 +7,47 @@ import { toast } from 'sonner';
 interface AuthContextType {
   user: User | null;
   session: Session | null;
-  loading: boolean;
+  isLoading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string, userData?: any) => Promise<void>;
   signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Set up the auth state listener first
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+    // استرجاع جلسة المستخدم عند تحميل الصفحة
+    const getSession = async () => {
+      setIsLoading(true);
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          throw error;
+        }
+        
+        setSession(session);
+        setUser(session?.user ?? null);
+      } catch (error) {
+        console.error('خطأ في جلب بيانات الجلسة', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    getSession();
 
-    // Then check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // الاستماع لتغييرات حالة المصادقة
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
-      setLoading(false);
+      setIsLoading(false);
     });
 
     return () => {
@@ -40,70 +55,103 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
+  // تسجيل الدخول
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw error;
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        throw error;
+      }
+      
+      setSession(data.session);
+      setUser(data.user);
+      
+      return data;
     } catch (error: any) {
-      toast.error(error.message || 'حدث خطأ أثناء تسجيل الدخول');
+      console.error('خطأ في تسجيل الدخول', error);
       throw error;
     }
   };
 
-  const signUp = async (email: string, password: string) => {
+  // إنشاء حساب جديد
+  const signUp = async (email: string, password: string, userData?: any) => {
     try {
-      const { error } = await supabase.auth.signUp({ email, password });
-      if (error) throw error;
-      toast.success('تم إنشاء الحساب بنجاح! يرجى التحقق من بريدك الإلكتروني');
+      const { data, error } = await supabase.auth.signUp({ 
+        email, 
+        password,
+        options: {
+          data: userData
+        }
+      });
+
+      if (error) {
+        throw error;
+      }
+      
+      toast.success('تم إنشاء الحساب بنجاح! يرجى التحقق من بريدك الإلكتروني للتأكيد.');
+      
+      return data;
     } catch (error: any) {
-      toast.error(error.message || 'حدث خطأ أثناء إنشاء الحساب');
+      console.error('خطأ في إنشاء الحساب', error);
       throw error;
     }
   };
 
+  // تسجيل الخروج
   const signOut = async () => {
     try {
-      // Clear auth state
-      const cleanupAuthState = () => {
-        localStorage.removeItem('supabase.auth.token');
-        // Remove all Supabase auth keys from localStorage
-        Object.keys(localStorage).forEach((key) => {
-          if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
-            localStorage.removeItem(key);
-          }
-        });
-      };
+      const { error } = await supabase.auth.signOut();
       
-      // Clean up auth state
-      cleanupAuthState();
+      if (error) {
+        throw error;
+      }
       
-      // Attempt global sign out
-      await supabase.auth.signOut({ scope: 'global' });
+      setUser(null);
+      setSession(null);
+    } catch (error) {
+      console.error('خطأ في تسجيل الخروج', error);
+      throw error;
+    }
+  };
+
+  // إعادة تعيين كلمة المرور
+  const resetPassword = async (email: string) => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
       
-      // Force page reload for a clean state
-      window.location.href = '/';
-    } catch (error: any) {
-      toast.error('حدث خطأ أثناء تسجيل الخروج');
-      console.error('Logout error:', error);
+      if (error) {
+        throw error;
+      }
+      
+      toast.success('تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني');
+    } catch (error) {
+      console.error('خطأ في إرسال طلب إعادة تعيين كلمة المرور', error);
+      throw error;
     }
   };
 
   const value = {
     user,
     session,
-    loading,
+    isLoading,
     signIn,
     signUp,
     signOut,
+    resetPassword,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-};
+}
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
+  
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error('يجب استخدام useAuth داخل AuthProvider');
   }
+  
   return context;
 };

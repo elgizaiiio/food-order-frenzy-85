@@ -1,5 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import { Database } from '@/integrations/supabase/types';
 
 export interface UserAddress {
   id: string;
@@ -20,7 +21,7 @@ export interface PaymentMethod {
 }
 
 /**
- * Fetch user addresses
+ * جلب عناوين المستخدم
  */
 export async function fetchUserAddresses(): Promise<UserAddress[]> {
   try {
@@ -28,7 +29,7 @@ export async function fetchUserAddresses(): Promise<UserAddress[]> {
     if (!user) return [];
     
     const { data, error } = await supabase
-      .from('user_addresses')
+      .from('addresses')
       .select('*')
       .eq('user_id', user.id)
       .order('is_default', { ascending: false });
@@ -37,21 +38,21 @@ export async function fetchUserAddresses(): Promise<UserAddress[]> {
     
     return data || [];
   } catch (error) {
-    console.error('Error fetching user addresses:', error);
+    console.error('خطأ في جلب عناوين المستخدم:', error);
     return [];
   }
 }
 
 /**
- * Add a new user address
+ * إضافة عنوان جديد للمستخدم
  */
 export async function addUserAddress(address: Omit<UserAddress, 'id' | 'user_id'>): Promise<UserAddress> {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
+    if (!user) throw new Error('يجب تسجيل الدخول أولاً');
     
     const { data, error } = await supabase
-      .from('user_addresses')
+      .from('addresses')
       .insert({
         ...address,
         user_id: user.id
@@ -63,62 +64,62 @@ export async function addUserAddress(address: Omit<UserAddress, 'id' | 'user_id'
     
     return data;
   } catch (error) {
-    console.error('Error adding user address:', error);
+    console.error('خطأ في إضافة عنوان المستخدم:', error);
     throw error;
   }
 }
 
 /**
- * Delete a user address
+ * حذف عنوان مستخدم
  */
 export async function deleteUserAddress(addressId: string): Promise<void> {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
+    if (!user) throw new Error('يجب تسجيل الدخول أولاً');
     
     const { error } = await supabase
-      .from('user_addresses')
+      .from('addresses')
       .delete()
       .eq('id', addressId)
       .eq('user_id', user.id);
     
     if (error) throw error;
   } catch (error) {
-    console.error('Error deleting user address:', error);
+    console.error('خطأ في حذف عنوان المستخدم:', error);
     throw error;
   }
 }
 
 /**
- * Set a user address as default
+ * تعيين عنوان كعنوان افتراضي
  */
 export async function setDefaultAddress(addressId: string): Promise<void> {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
+    if (!user) throw new Error('يجب تسجيل الدخول أولاً');
     
-    // First, reset all addresses to non-default
+    // أولاً، إعادة تعيين جميع العناوين إلى غير افتراضي
     await supabase
-      .from('user_addresses')
+      .from('addresses')
       .update({ is_default: false })
       .eq('user_id', user.id);
     
-    // Then set the selected address as default
+    // ثم تعيين العنوان المحدد كعنوان افتراضي
     const { error } = await supabase
-      .from('user_addresses')
+      .from('addresses')
       .update({ is_default: true })
       .eq('id', addressId)
       .eq('user_id', user.id);
     
     if (error) throw error;
   } catch (error) {
-    console.error('Error setting default address:', error);
+    console.error('خطأ في تعيين العنوان الافتراضي:', error);
     throw error;
   }
 }
 
 /**
- * Fetch user payment methods
+ * جلب طرق الدفع للمستخدم
  */
 export async function fetchUserPaymentMethods(): Promise<PaymentMethod[]> {
   try {
@@ -126,102 +127,116 @@ export async function fetchUserPaymentMethods(): Promise<PaymentMethod[]> {
     if (!user) return [];
     
     const { data, error } = await supabase
-      .from('user_payment_methods')
-      .select('*')
+      .from('payments')
+      .select('id, user_id, method, status, is_default:COALESCE(status=\'default\', false)')
       .eq('user_id', user.id)
-      .order('is_default', { ascending: false });
+      .order('id', { ascending: false });
     
     if (error) throw error;
     
-    return data || [];
+    // تحويل البيانات إلى التنسيق المطلوب
+    return data?.map(item => ({
+      id: item.id,
+      user_id: item.user_id,
+      type: item.method,
+      is_default: item.is_default
+    })) || [];
   } catch (error) {
-    console.error('Error fetching user payment methods:', error);
+    console.error('خطأ في جلب طرق الدفع:', error);
     return [];
   }
 }
 
 /**
- * Add a new payment method
+ * إضافة طريقة دفع جديدة
  */
 export async function addPaymentMethod(method: Omit<PaymentMethod, 'id' | 'user_id'>): Promise<PaymentMethod> {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
+    if (!user) throw new Error('يجب تسجيل الدخول أولاً');
     
     const { data, error } = await supabase
-      .from('user_payment_methods')
+      .from('payments')
       .insert({
-        ...method,
-        user_id: user.id
+        user_id: user.id,
+        method: method.type,
+        status: method.is_default ? 'default' : 'active',
+        amount: 0  // قيمة افتراضية مطلوبة
       })
       .select()
       .single();
     
     if (error) throw error;
     
-    return data;
+    return {
+      id: data.id,
+      user_id: data.user_id,
+      type: data.method,
+      is_default: data.status === 'default'
+    };
   } catch (error) {
-    console.error('Error adding payment method:', error);
+    console.error('خطأ في إضافة طريقة دفع:', error);
     throw error;
   }
 }
 
 /**
- * Set a payment method as default
+ * تعيين طريقة دفع كطريقة افتراضية
  */
 export async function setDefaultPaymentMethod(methodId: string): Promise<void> {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
+    if (!user) throw new Error('يجب تسجيل الدخول أولاً');
     
-    // First, reset all payment methods to non-default
+    // أولاً، إعادة تعيين جميع طرق الدفع إلى غير افتراضي
     await supabase
-      .from('user_payment_methods')
-      .update({ is_default: false })
-      .eq('user_id', user.id);
+      .from('payments')
+      .update({ status: 'active' })
+      .eq('user_id', user.id)
+      .neq('id', methodId);
     
-    // Then set the selected method as default
+    // ثم تعيين طريقة الدفع المحددة كطريقة افتراضية
     const { error } = await supabase
-      .from('user_payment_methods')
-      .update({ is_default: true })
+      .from('payments')
+      .update({ status: 'default' })
       .eq('id', methodId)
       .eq('user_id', user.id);
     
     if (error) throw error;
   } catch (error) {
-    console.error('Error setting default payment method:', error);
+    console.error('خطأ في تعيين طريقة الدفع الافتراضية:', error);
     throw error;
   }
 }
 
 /**
- * Delete a payment method
+ * حذف طريقة دفع
  */
 export async function deletePaymentMethod(methodId: string): Promise<void> {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
+    if (!user) throw new Error('يجب تسجيل الدخول أولاً');
     
     const { error } = await supabase
-      .from('user_payment_methods')
+      .from('payments')
       .delete()
       .eq('id', methodId)
       .eq('user_id', user.id);
     
     if (error) throw error;
   } catch (error) {
-    console.error('Error deleting payment method:', error);
+    console.error('خطأ في حذف طريقة الدفع:', error);
     throw error;
   }
 }
 
 /**
- * Get user profile data
+ * الحصول على معلومات الملف الشخصي
  */
 export async function getUserProfile() {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
+    if (!user) throw new Error('يجب تسجيل الدخول أولاً');
     
     const { data, error } = await supabase
       .from('users')
@@ -233,18 +248,18 @@ export async function getUserProfile() {
     
     return data;
   } catch (error) {
-    console.error('Error fetching user profile:', error);
+    console.error('خطأ في جلب معلومات الملف الشخصي:', error);
     throw error;
   }
 }
 
 /**
- * Update user profile
+ * تحديث معلومات الملف الشخصي
  */
 export async function updateUserProfile(updates: Record<string, any>) {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
+    if (!user) throw new Error('يجب تسجيل الدخول أولاً');
     
     const { data, error } = await supabase
       .from('users')
@@ -257,7 +272,7 @@ export async function updateUserProfile(updates: Record<string, any>) {
     
     return data;
   } catch (error) {
-    console.error('Error updating user profile:', error);
+    console.error('خطأ في تحديث معلومات الملف الشخصي:', error);
     throw error;
   }
 }

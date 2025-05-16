@@ -1,11 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Mail, Lock, EyeOff, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -18,8 +19,8 @@ const Login: React.FC = () => {
   
   const from = location.state?.from?.pathname || '/';
   
-  // If user is already logged in, redirect to home page
-  React.useEffect(() => {
+  // التحقق إذا كان المستخدم مسجل دخوله بالفعل
+  useEffect(() => {
     if (user) {
       navigate(from, { replace: true });
     }
@@ -36,10 +37,28 @@ const Login: React.FC = () => {
     setLoading(true);
     
     try {
-      await signIn(email, password);
+      // الاتصال بـ Supabase للمصادقة
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      if (error) throw error;
+      
+      // تم تسجيل الدخول بنجاح
+      toast.success('تم تسجيل الدخول بنجاح');
       navigate(from, { replace: true });
-    } catch (error) {
-      console.error('Login error:', error);
+    } catch (error: any) {
+      console.error('خطأ في تسجيل الدخول:', error);
+      
+      // رسائل خطأ محددة
+      if (error.message.includes('Invalid login credentials')) {
+        toast.error('البريد الإلكتروني أو كلمة المرور غير صحيحة');
+      } else if (error.message.includes('Email not confirmed')) {
+        toast.error('يرجى التحقق من البريد الإلكتروني لتأكيد الحساب');
+      } else {
+        toast.error('حدث خطأ أثناء تسجيل الدخول');
+      }
     } finally {
       setLoading(false);
     }

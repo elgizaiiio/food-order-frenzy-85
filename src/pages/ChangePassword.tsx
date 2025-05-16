@@ -1,11 +1,12 @@
 
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ArrowLeft, Lock, Eye, EyeOff } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useChangePassword } from '@/hooks/useChangePassword';
+import { useNavigate } from 'react-router-dom';
 
 const ChangePassword: React.FC = () => {
   const [currentPassword, setCurrentPassword] = useState('');
@@ -14,33 +15,32 @@ const ChangePassword: React.FC = () => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState('');
-  const { toast } = useToast();
+  const [validationError, setValidationError] = useState('');
+  const { changePassword, isLoading, error } = useChangePassword();
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Reset any previous errors
-    setError('');
+    setValidationError('');
     
     // Validate passwords
     if (newPassword.length < 6) {
-      setError('كلمة المرور يجب أن تكون على الأقل 6 أحرف');
+      setValidationError('كلمة المرور يجب أن تكون على الأقل 6 أحرف');
       return;
     }
     
     if (newPassword !== confirmPassword) {
-      setError('كلمات المرور غير متطابقة');
+      setValidationError('كلمات المرور غير متطابقة');
       return;
     }
     
-    // Here you would typically update the password in your backend
-    toast({
-      title: "تم تغيير كلمة المرور",
-      description: "تم تحديث كلمة المرور الخاصة بك بنجاح",
-    });
-    navigate('/settings');
+    // تنفيذ تغيير كلمة المرور
+    const success = await changePassword(currentPassword, newPassword);
+    if (success) {
+      navigate('/settings');
+    }
   };
 
   return (
@@ -56,9 +56,9 @@ const ChangePassword: React.FC = () => {
         </div>
 
         <div className="px-4 py-6">
-          {error && (
+          {(validationError || error) && (
             <Alert variant="destructive" className="mb-4">
-              <AlertDescription>{error}</AlertDescription>
+              <AlertDescription>{validationError || error}</AlertDescription>
             </Alert>
           )}
           
@@ -137,8 +137,14 @@ const ChangePassword: React.FC = () => {
             <Button 
               type="submit" 
               className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors"
+              disabled={isLoading}
             >
-              تغيير كلمة المرور
+              {isLoading ? (
+                <div className="flex items-center justify-center">
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin ml-2"></div>
+                  <span>جاري تغيير كلمة المرور...</span>
+                </div>
+              ) : "تغيير كلمة المرور"}
             </Button>
           </form>
         </div>
