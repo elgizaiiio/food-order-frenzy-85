@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 
 export interface UserAddress {
@@ -263,7 +262,7 @@ let profileCache: Record<string, { data: any, timestamp: number }> = {};
 
 /**
  * الحصول على معلومات الملف الشخصي
- * سيتم إنشاء ملف شخصي إذا لم يكن موجودًا
+ * سيتم استخدام الملف الموجود أو إنشاء ملف شخصي جديد إذا لم يكن موجودًا
  */
 export async function getUserProfile() {
   try {
@@ -277,36 +276,36 @@ export async function getUserProfile() {
       return cachedData.data;
     }
     
-    // Try to get user profile using maybeSingle instead of single to avoid errors
-    // when the user doesn't have a profile yet
-    let { data, error } = await supabase
+    // محاولة جلب الملف الشخصي الحالي
+    const { data, error } = await supabase
       .from('users')
       .select('*')
       .eq('id', user.id)
       .maybeSingle();
-    
-    // إذا لم يكن المستخدم موجودًا في جدول المستخدمين، سنقوم بإنشائه
-    if (!data) {
-      // إنشاء ملف شخصي جديد للمستخدم
-      const { data: newUser, error: insertError } = await supabase
-        .from('users')
-        .insert({
+      
+    if (error) {
+      console.error('خطأ في جلب الملف الشخصي:', error);
+      // تحقق من نوع الخطأ للمعالجة الخاصة
+      if (error.code === '42501') { // خطأ في سياسة الأمان RLS
+        return {
           id: user.id,
           email: user.email,
           name: user.user_metadata?.name || user.email?.split('@')[0] || '',
-          username: user.email?.split('@')[0] || '',
-        })
-        .select()
-        .single();
-      
-      if (insertError) throw insertError;
-      
-      // Update cache
-      profileCache[user.id] = { data: newUser, timestamp: now };
-      return newUser;
+          username: user.email?.split('@')[0] || ''
+        };
+      }
+      throw error;
     }
     
-    if (error && error.code !== 'PGRST116') throw error;
+    // إذا لم يكن المستخدم موجودًا، نعيد معلومات أساسية
+    if (!data) {
+      return {
+        id: user.id,
+        email: user.email,
+        name: user.user_metadata?.name || user.email?.split('@')[0] || '',
+        username: user.email?.split('@')[0] || ''
+      };
+    }
     
     // Update cache
     profileCache[user.id] = { data: data, timestamp: now };
@@ -319,44 +318,13 @@ export async function getUserProfile() {
 
 /**
  * تحديث معلومات الملف الشخصي
- * سيتم إنشاء ملف شخصي إذا لم يكن موجودًا
  */
 export async function updateUserProfile(updates: Record<string, any>) {
   try {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('يجب تسجيل الدخول أولاً');
     
-    // التحقق أولاً مما إذا كان المستخدم موجودًا بالفعل
-    const { data: existingUser, error: checkError } = await supabase
-      .from('users')
-      .select('id')
-      .eq('id', user.id)
-      .maybeSingle();
-    
-    // إذا لم يكن المستخدم موجودًا، سنقوم بإنشائه أولاً
-    if (!existingUser) {
-      // إنشاء ملف شخصي جديد للمستخدم مع التحديثات المطلوبة
-      const { data: newUser, error: insertError } = await supabase
-        .from('users')
-        .insert({
-          id: user.id,
-          email: user.email,
-          name: updates.name || user.user_metadata?.name || user.email?.split('@')[0] || '',
-          username: user.email?.split('@')[0] || '',
-          ...updates  // دمج التحديثات المطلوبة
-        })
-        .select()
-        .single();
-      
-      if (insertError) throw insertError;
-      
-      // Invalidate cache
-      delete profileCache[user.id];
-      
-      return newUser;
-    }
-    
-    // تحديث بيانات المستخدم الموجود
+    // خطوة 1: محاولة تحديث بيانات المستخدم
     const { data, error } = await supabase
       .from('users')
       .update(updates)
@@ -364,7 +332,36 @@ export async function updateUserProfile(updates: Record<string, any>) {
       .select()
       .single();
     
-    if (error) throw error;
+    if (error) {
+      // إذا كان الخطأ بسبب عدم وجود المستخدم، سنقوم بإنشائه
+      if (error.code === 'PGRST204' || error.message?.includes('No rows found')) {
+        // محاولة إنشاء ملف جديد
+        const { data: newUser, error: insertError } = await supabase
+          .from('users')
+          .insert({
+            id: user.id,
+            email: user.email,
+            name: updates.name || user.user_metadata?.name || user.email?.split('@')[0] || '',
+            username: user.email?.split('@')[0] || '',
+            ...updates
+          })
+          .select()
+          .single();
+        
+        if (insertError) {
+          console.error('خطأ في إنشاء ملف جديد:', insertError);
+          throw insertError;
+        }
+        
+        // Invalidate cache
+        delete profileCache[user.id];
+        
+        return newUser;
+      } else {
+        console.error('خطأ في تحديث الملف الشخصي:', error);
+        throw error;
+      }
+    }
     
     // Invalidate cache
     delete profileCache[user.id];

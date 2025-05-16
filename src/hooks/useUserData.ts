@@ -1,4 +1,3 @@
-
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { 
   fetchUserAddresses, 
@@ -131,13 +130,11 @@ export function useUserProfile() {
     staleTime: USER_DATA_STALE_TIME,
     gcTime: USER_DATA_GC_TIME,
     enabled: !!user?.id,
-    // Better error handling
-    retry: (failureCount, error: any) => {
-      // Don't retry more than once if there's a specific error related to database
-      if (error?.code === 'PGRST116' || error?.code === '42501') return false;
-      return failureCount < 2;
-    },
+    retry: 2, // تحسين: زيادة عدد محاولات الاتصال
     refetchOnWindowFocus: false,
+    onError: (error: any) => {
+      console.error('خطأ في استرجاع بيانات الملف الشخصي:', error);
+    }
   });
 }
 
@@ -168,6 +165,7 @@ export function useUpdateUserProfile() {
       return { previousProfile };
     },
     onError: (err, newProfile, context) => {
+      console.error('خطأ في تحديث الملف الشخصي:', err);
       if (context?.previousProfile) {
         // If there was an error, roll back
         queryClient.setQueryData(
