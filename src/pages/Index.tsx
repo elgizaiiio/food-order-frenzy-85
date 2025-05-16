@@ -224,3 +224,5 @@ const DownloadAppBanner = () => {
     </Card>
   );
 };
+
+export default Index;
