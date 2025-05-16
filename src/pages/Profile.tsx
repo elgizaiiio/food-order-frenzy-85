@@ -27,7 +27,7 @@ const Profile: React.FC = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex justify-center items-center" dir="rtl">
-        <div className="w-16 h-16 border-4 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -39,12 +39,12 @@ const Profile: React.FC = () => {
     <div className="min-h-screen bg-gray-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-20">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-brand-500 to-brand-600 text-white sticky top-0 z-10 shadow-md">
-          <Link to="/" className="text-white hover:text-brand-200">
+        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white sticky top-0 z-10 shadow-md">
+          <Link to="/" className="text-white hover:text-orange-200">
             <ArrowLeft className="w-6 h-6" />
           </Link>
           <h1 className="text-xl font-bold">الملف الشخصي</h1>
-          <Link to="/settings" className="text-white hover:text-brand-200">
+          <Link to="/settings" className="text-white hover:text-orange-200">
             <Settings className="w-6 h-6" />
           </Link>
         </div>
@@ -56,19 +56,19 @@ const Profile: React.FC = () => {
               {profileImage ? (
                 <AvatarImage src={profileImage} />
               ) : null}
-              <AvatarFallback className="bg-brand-100 text-brand-800 text-xl">
+              <AvatarFallback className="bg-orange-100 text-orange-800 text-xl">
                 {displayName.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div className="mr-4">
               <h2 className="text-xl font-bold text-gray-900">{displayName}</h2>
-              <p className="text-brand-600">{user?.email}</p>
+              <p className="text-orange-600">{user?.email}</p>
             </div>
           </div>
           
           <Link to="/edit-profile">
             <Button 
-              className="w-full mb-6 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white"
+              className="w-full mb-6 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white"
             >
               تعديل الملف الشخصي
             </Button>
@@ -77,10 +77,10 @@ const Profile: React.FC = () => {
           {/* Menu Options */}
           <div className="space-y-1">
             <Link to="/addresses">
-              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-brand-50 transition-colors">
+              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-orange-50 transition-colors">
                 <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center mr-3">
-                    <MapPin className="w-5 h-5 text-brand-600" />
+                  <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center ml-3">
+                    <MapPin className="w-5 h-5 text-orange-600" />
                   </div>
                   <span className="text-gray-900">العناوين</span>
                 </div>
@@ -91,10 +91,10 @@ const Profile: React.FC = () => {
             </Link>
             
             <Link to="/payment-methods">
-              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-brand-50 transition-colors">
+              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-orange-50 transition-colors">
                 <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center mr-3">
-                    <CreditCard className="w-5 h-5 text-brand-600" />
+                  <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center ml-3">
+                    <CreditCard className="w-5 h-5 text-orange-600" />
                   </div>
                   <span className="text-gray-900">طرق الدفع</span>
                 </div>
@@ -105,10 +105,10 @@ const Profile: React.FC = () => {
             </Link>
             
             <Link to="/orders">
-              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-brand-50 transition-colors">
+              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-orange-50 transition-colors">
                 <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center mr-3">
-                    <Package className="w-5 h-5 text-brand-600" />
+                  <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center ml-3">
+                    <Package className="w-5 h-5 text-orange-600" />
                   </div>
                   <span className="text-gray-900">الطلبات السابقة</span>
                 </div>
@@ -119,10 +119,10 @@ const Profile: React.FC = () => {
             </Link>
             
             <Link to="/coupons">
-              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-brand-50 transition-colors">
+              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-orange-50 transition-colors">
                 <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center mr-3">
-                    <Ticket className="w-5 h-5 text-brand-600" />
+                  <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center ml-3">
+                    <Ticket className="w-5 h-5 text-orange-600" />
                   </div>
                   <span className="text-gray-900">الكوبونات</span>
                 </div>
@@ -133,10 +133,10 @@ const Profile: React.FC = () => {
             </Link>
             
             <Link to="/chat-support">
-              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-brand-50 transition-colors">
+              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-orange-50 transition-colors">
                 <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center mr-3">
-                    <MessageSquare className="w-5 h-5 text-brand-600" />
+                  <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center ml-3">
+                    <MessageSquare className="w-5 h-5 text-orange-600" />
                   </div>
                   <span className="text-gray-900">الدعم الفني</span>
                 </div>
@@ -147,10 +147,10 @@ const Profile: React.FC = () => {
             </Link>
             
             <Link to="/invite-friends">
-              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-brand-50 transition-colors">
+              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-orange-50 transition-colors">
                 <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center mr-3">
-                    <UserPlus className="w-5 h-5 text-brand-600" />
+                  <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center ml-3">
+                    <UserPlus className="w-5 h-5 text-orange-600" />
                   </div>
                   <span className="text-gray-900">دعوة الأصدقاء</span>
                 </div>
@@ -165,7 +165,7 @@ const Profile: React.FC = () => {
               className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-red-50 transition-colors text-right"
             >
               <div className="flex items-center">
-                <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center mr-3">
+                <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center ml-3">
                   <LogOut className="w-5 h-5 text-red-600" />
                 </div>
                 <span className="text-red-600">تسجيل الخروج</span>

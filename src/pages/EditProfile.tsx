@@ -1,28 +1,39 @@
 
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, User, Upload } from 'lucide-react';
+import { ArrowLeft, Camera, User } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { useAuth } from '@/context/AuthContext';
+import { useUserProfile, useUpdateUserProfile } from '@/hooks/useUserData';
 
 const EditProfile: React.FC = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState({
-    name: 'أحمد محمد',
-    username: 'ahmed_dam',
-    profilePicture: undefined,
-  });
+  const { user } = useAuth();
+  const { data: userProfile, isLoading } = useUserProfile();
+  const updateProfile = useUpdateUserProfile();
   
   const [formData, setFormData] = useState({
-    name: user.name,
-    username: user.username,
-    profilePicture: user.profilePicture,
+    name: '',
+    phone: '',
+    imageFile: null as File | null,
+    imagePreview: '',
   });
   
-  const [imagePreview, setImagePreview] = useState<string | undefined>(undefined);
+  // تحديث البيانات عند تحميلها
+  React.useEffect(() => {
+    if (userProfile) {
+      setFormData(prev => ({
+        ...prev,
+        name: userProfile.name || '',
+        phone: userProfile.phone || '',
+        imagePreview: userProfile.profile_image || '',
+      }));
+    }
+  }, [userProfile]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -34,58 +45,73 @@ const EditProfile: React.FC = () => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-        setFormData(prev => ({ ...prev, profilePicture: reader.result as string }));
+        setFormData(prev => ({ 
+          ...prev, 
+          imageFile: file,
+          imagePreview: reader.result as string 
+        }));
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // In a real app, you would save this to a database
-    // For now, we'll just update the local state and navigate back
-    setUser({
-      name: formData.name,
-      username: formData.username,
-      profilePicture: formData.profilePicture,
-    });
-    
-    toast.success("تم تحديث الملف الشخصي بنجاح");
-    navigate('/profile');
+    try {
+      // في تطبيق حقيقي، هنا سيتم رفع الصورة أولاً ثم تحديث البيانات
+      await updateProfile.mutateAsync({
+        name: formData.name,
+        phone: formData.phone,
+        // هنا يتم إضافة رابط الصورة بعد رفعها
+      });
+      
+      toast.success("تم تحديث الملف الشخصي بنجاح");
+      navigate('/profile');
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      toast.error("حدث خطأ أثناء تحديث الملف الشخصي");
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex justify-center items-center" dir="rtl">
+        <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50" dir="rtl">
-      <div className="max-w-md mx-auto bg-white">
+      <div className="max-w-md mx-auto bg-white pb-20">
         {/* Header */}
         <div className="sticky top-0 flex items-center justify-between p-4 bg-white shadow-sm z-10">
-          <Link to="/profile" className="text-brand-600">
+          <Link to="/profile" className="text-gray-700">
             <ArrowLeft className="w-6 h-6" />
           </Link>
-          <h1 className="text-xl font-bold text-gray-900">تعديل الملف الشخصي</h1>
+          <h1 className="text-xl font-bold">تعديل الملف الشخصي</h1>
           <div className="w-6"></div>
         </div>
 
         <form onSubmit={handleSubmit} className="px-4 py-6">
           {/* Profile Picture Upload */}
-          <div className="flex flex-col items-center mb-8 animate-fade-in">
+          <div className="flex flex-col items-center mb-8">
             <div className="relative mb-4">
               <Avatar className="w-24 h-24 border-4 border-white shadow-lg">
-                {(imagePreview || formData.profilePicture) ? (
+                {formData.imagePreview ? (
                   <AvatarImage 
-                    src={imagePreview || formData.profilePicture} 
+                    src={formData.imagePreview} 
                     alt={formData.name} 
                   />
                 ) : (
-                  <AvatarFallback className="bg-gradient-to-br from-brand-400 to-brand-600 text-white text-2xl">
-                    {formData.name.charAt(0)}
+                  <AvatarFallback className="bg-orange-100 text-orange-800 text-2xl">
+                    {formData.name?.charAt(0) || user?.email?.charAt(0)?.toUpperCase() || '؟'}
                   </AvatarFallback>
                 )}
               </Avatar>
-              <label htmlFor="profile-picture" className="absolute bottom-0 right-0 bg-brand-500 hover:bg-brand-600 rounded-full p-2 cursor-pointer shadow-md transition-colors">
-                <Upload className="w-4 h-4 text-white" />
+              <label htmlFor="profile-picture" className="absolute bottom-0 right-0 bg-orange-500 hover:bg-orange-600 rounded-full p-2 cursor-pointer shadow-md transition-colors">
+                <Camera className="w-4 h-4 text-white" />
               </label>
               <input 
                 type="file" 
@@ -95,46 +121,42 @@ const EditProfile: React.FC = () => {
                 onChange={handleImageUpload}
               />
             </div>
-            <p className="text-sm text-brand-600">اضغط على الأيقونة لتغيير الصورة الشخصية</p>
+            <p className="text-sm text-orange-600">اضغط على الأيقونة لتغيير الصورة الشخصية</p>
           </div>
 
           {/* Name Input */}
-          <div className="mb-6 animate-fade-in" style={{ animationDelay: "100ms" }}>
+          <div className="mb-6">
             <Label htmlFor="name" className="block mb-2 text-gray-800">الاسم</Label>
             <Input
               id="name"
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              className="w-full border-gray-200 focus:border-brand-400 focus:ring-brand-300"
-              required
+              className="w-full border-gray-200 focus:border-orange-400 focus:ring-orange-300"
             />
           </div>
 
-          {/* Username Input */}
-          <div className="mb-8 animate-fade-in" style={{ animationDelay: "200ms" }}>
-            <Label htmlFor="username" className="block mb-2 text-gray-800">اسم المستخدم</Label>
-            <div className="relative">
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-400">@</span>
-              <Input
-                id="username"
-                name="username"
-                value={formData.username}
-                onChange={handleInputChange}
-                className="w-full pr-8 border-gray-200 focus:border-brand-400 focus:ring-brand-300"
-                required
-              />
-            </div>
-            <p className="text-xs text-brand-500 mt-1">سيظهر اسم المستخدم في صفحتك الشخصية</p>
+          {/* Phone Input */}
+          <div className="mb-8">
+            <Label htmlFor="phone" className="block mb-2 text-gray-800">رقم الهاتف</Label>
+            <Input
+              id="phone"
+              name="phone"
+              value={formData.phone}
+              onChange={handleInputChange}
+              placeholder="+966 5xxxxxxxx"
+              className="w-full border-gray-200 focus:border-orange-400 focus:ring-orange-300"
+            />
+            <p className="text-xs text-orange-500 mt-1">سيتم استخدام رقم الهاتف للتواصل بخصوص طلباتك</p>
           </div>
 
           {/* Submit Button */}
           <Button 
             type="submit" 
-            className="w-full bg-brand-500 hover:bg-brand-600 text-white font-medium py-3 rounded-xl shadow-md animate-fade-in"
-            style={{ animationDelay: "300ms" }}
+            className="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-3 rounded-xl shadow-md"
+            disabled={updateProfile.isPending}
           >
-            حفظ التغييرات
+            {updateProfile.isPending ? 'جاري الحفظ...' : 'حفظ التغييرات'}
           </Button>
         </form>
       </div>
