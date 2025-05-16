@@ -1,107 +1,64 @@
 
 import React from 'react';
-import { Star, Clock, BadgePercent } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Star } from 'lucide-react';
 import { usePopularPlaces } from '@/hooks/useHomeData';
 import { Skeleton } from '@/components/ui/skeleton';
+import RestaurantCard from '../RestaurantCard';
 
-const PopularPlaces: React.FC = () => {
-  const navigate = useNavigate();
+interface PopularPlacesProps {
+  title?: string;
+}
+
+const PopularPlaces: React.FC<PopularPlacesProps> = ({ title = "المطاعم الأكثر شعبية" }) => {
   const { data: places, isLoading } = usePopularPlaces();
 
-  const navigateToRestaurant = (id: number | string) => {
-    navigate(`/restaurant/${id}`);
-  };
-
   return (
-    <div className="py-6 animate-fade-in" style={{animationDelay: "500ms"}}>
-      <div className="flex justify-between items-center mb-4">
-        <Button 
-          variant="link" 
-          onClick={() => navigate('/restaurants')} 
-          className="text-sm font-medium text-lime-600 hover:text-lime-700 hover:underline p-0"
-        >
+    <section className="py-4 animate-fade-in" style={{animationDelay: "450ms"}}>
+      <div className="flex justify-between items-center mb-3">
+        <Link to="/restaurants" className="text-xs font-medium text-black hover:text-gray-700">
           عرض الكل
-        </Button>
-        <h2 className="text-xl font-bold text-right text-gray-800">المطاعم الشهيرة</h2>
+        </Link>
+        <h2 className="text-lg font-bold text-black">{title}</h2>
       </div>
       
-      <div className="scroll-container">
-        {isLoading ? (
-          // عرض Skeleton أثناء التحميل
-          Array(3).fill(0).map((_, i) => (
-            <Card key={i} className="w-72 overflow-hidden border-lime-100 shadow-sm flex-shrink-0">
-              <Skeleton className="h-44 w-full" />
-              <CardContent className="p-3">
-                <div className="flex justify-between items-start mb-3">
-                  <Skeleton className="h-5 w-16" />
-                  <Skeleton className="h-6 w-24" />
-                </div>
-                <Skeleton className="h-4 w-full mb-3" />
-                <Skeleton className="h-8 w-full" />
-              </CardContent>
-            </Card>
-          ))
-        ) : places && places.length > 0 ? (
-          places.map((place, index) => (
-            <Card 
-              key={place.id} 
-              onClick={() => navigateToRestaurant(place.id)} 
-              className="w-72 cursor-pointer overflow-hidden border-lime-100 hover:border-lime-300 hover:shadow-md shadow-sm transition-all duration-300 flex-shrink-0 animate-fade-in" 
-              style={{animationDelay: `${index * 100}ms`}}
-            >
-              <div className="relative h-44">
-                <img src={place.image} alt={place.name} className="w-full h-full object-cover" loading="lazy" />
-                {place.deliveryFee === "0 ج.م" && (
-                  <Badge className="absolute top-3 left-3 bg-lime-600 text-white border-0">
-                    <BadgePercent className="w-3.5 h-3.5 ml-1" /> توصيل مجاني
-                  </Badge>
-                )}
-                <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm rounded-lg px-2.5 py-1 text-xs font-medium text-lime-800 shadow-sm">
-                  {place.category}
-                </div>
+      <div className="scroll-container overflow-x-auto pb-4 no-scrollbar">
+        <div className="flex gap-4">
+          {isLoading ? (
+            // Skeleton loading
+            Array(5).fill(0).map((_, index) => (
+              <div key={index} className="w-[260px] flex-shrink-0">
+                <Card className="border-0 overflow-hidden">
+                  <CardContent className="p-0">
+                    <Skeleton className="h-40 w-full" />
+                    <div className="p-3 space-y-2">
+                      <Skeleton className="h-4 w-2/3" />
+                      <Skeleton className="h-3 w-1/2" />
+                      <Skeleton className="h-3 w-1/3" />
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
-              
-              <CardContent className="p-3">
-                <div className="flex justify-between items-start">
-                  <div className="flex items-center gap-0.5 bg-lime-50 px-2 py-0.5 rounded-full">
-                    <Star className="h-3.5 w-3.5 fill-yellow-400 stroke-yellow-400" />
-                    <span className="text-xs font-bold text-lime-900">{place.rating}</span>
-                  </div>
-                  <h3 className="text-lg font-bold text-gray-800">{place.name}</h3>
-                </div>
-                
-                <div className="flex items-center justify-between mt-3 text-lime-600 text-xs">
-                  <div className="flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5" />
-                    <span>{place.deliveryTime}</span>
-                  </div>
-                  <span className="font-medium">{place.deliveryFee}</span>
-                </div>
-                
-                <Button 
-                  className="w-full mt-3 bg-gradient-to-r from-lime-500 to-green-600 hover:from-lime-600 hover:to-green-700 text-white shadow-sm" 
-                  size="sm" 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigateToRestaurant(place.id);
-                  }}
-                >
-                  اطلب الآن
-                </Button>
-              </CardContent>
-            </Card>
-          ))
-        ) : (
-          <div className="w-full h-32 flex items-center justify-center border border-dashed border-lime-300 rounded-lg">
-            <p className="text-lime-600">لا توجد مطاعم شهيرة متاحة حاليًا</p>
-          </div>
-        )}
+            ))
+          ) : (
+            places?.map((place) => (
+              <div key={place.id} className="w-[260px] flex-shrink-0 animate-fade-in">
+                <RestaurantCard 
+                  id={place.id}
+                  name={place.name}
+                  image={place.image}
+                  rating={place.rating}
+                  category={place.category}
+                  deliveryTime={place.deliveryTime}
+                  deliveryFee={place.deliveryFee}
+                />
+              </div>
+            ))
+          )}
+        </div>
       </div>
-    </div>
+    </section>
   );
 };
 

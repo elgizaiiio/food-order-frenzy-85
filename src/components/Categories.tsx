@@ -5,8 +5,8 @@ import {
   UtensilsCrossed, 
   ShoppingBag, 
   Pill, 
-  Brush, 
-  Dumbbell
+  Compass, 
+  Car
 } from 'lucide-react';
 import { useHomeCategories } from '@/hooks/useHomeData';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -18,28 +18,28 @@ const Categories: React.FC = () => {
   const getIcon = (iconName: string) => {
     switch(iconName) {
       case 'UtensilsCrossed':
-        return <UtensilsCrossed className="w-8 h-8 text-white" />;
+        return <UtensilsCrossed className="w-6 h-6 text-white" />;
       case 'ShoppingCart':
       case 'ShoppingBag':
-        return <ShoppingBag className="w-8 h-8 text-white" />;
+        return <ShoppingBag className="w-6 h-6 text-white" />;
       case 'Pill':
-        return <Pill className="w-8 h-8 text-white" />;
-      case 'Brush':
-        return <Brush className="w-8 h-8 text-white" />;
-      case 'Dumbbell':
-        return <Dumbbell className="w-8 h-8 text-white" />;
+        return <Pill className="w-6 h-6 text-white" />;
+      case 'Compass':
+        return <Compass className="w-6 h-6 text-white" />;
+      case 'Car':
+        return <Car className="w-6 h-6 text-white" />;
       default:
-        return <ShoppingBag className="w-8 h-8 text-white" />;
+        return <Car className="w-6 h-6 text-white" />;
     }
   };
 
   return (
-    <div className="py-6 mb-2 bg-white">
-      <div className="flex justify-between items-center mb-4">
-        <Link to="/services" className="text-sm font-medium text-lime-600 hover:text-lime-700">
+    <div className="py-4 mb-2 bg-white">
+      <div className="flex justify-between items-center mb-3">
+        <Link to="/services" className="text-xs font-medium text-black hover:text-gray-700">
           عرض الكل
         </Link>
-        <h2 className="text-xl font-bold text-gray-800">الأقسام</h2>
+        <h2 className="text-lg font-bold text-black">الفئات</h2>
       </div>
       
       <div className="scroll-container overflow-x-auto pb-4 no-scrollbar">
@@ -47,9 +47,9 @@ const Categories: React.FC = () => {
           {isLoading ? (
             // عرض Skeleton أثناء التحميل
             Array(6).fill(0).map((_, index) => (
-              <div key={index} className="flex flex-col items-center min-w-[90px]">
-                <Skeleton className="w-[72px] h-[72px] rounded-2xl mb-2" />
-                <Skeleton className="h-4 w-16" />
+              <div key={index} className="flex flex-col items-center min-w-[70px]">
+                <Skeleton className="w-[60px] h-[60px] rounded-md mb-2" />
+                <Skeleton className="h-3 w-16" />
               </div>
             ))
           ) : (
@@ -57,13 +57,13 @@ const Categories: React.FC = () => {
               <Link 
                 to={category.link} 
                 key={category.id} 
-                className="flex flex-col items-center animate-fade-in min-w-[90px]"
+                className="flex flex-col items-center animate-fade-in min-w-[70px]"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
-                <Card className={`w-[72px] h-[72px] rounded-2xl overflow-hidden flex items-center justify-center ${category.color} shadow-md hover:shadow-xl transition-all hover:scale-105 border-none`}>
+                <Card className={`w-[60px] h-[60px] rounded-md overflow-hidden flex items-center justify-center bg-black shadow-md hover:shadow-xl transition-all hover:scale-105 border-none`}>
                   {getIcon(category.icon)}
                 </Card>
-                <span className="text-sm font-bold text-gray-800 mt-2">{category.name}</span>
+                <span className="text-xs font-medium text-gray-800 mt-2">{category.name}</span>
               </Link>
             ))
           )}

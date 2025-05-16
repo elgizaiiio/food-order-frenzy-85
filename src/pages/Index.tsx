@@ -1,25 +1,26 @@
 
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { 
-  MapPin, Search, UtensilsCrossed, ShoppingBag, 
-  Pill, Brush, Dumbbell, ChevronDown, Bell
+  Car, 
+  UtensilsCrossed, 
+  ShoppingBag, 
+  Bell 
 } from 'lucide-react';
-import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { useHomeCategories, useHomeOffers, usePopularPlaces } from '@/hooks/useHomeData';
+import { useAuth } from '@/context/AuthContext';
 import Categories from '@/components/Categories';
 import Offers from '@/components/Offers';
 import PopularPlaces from '@/components/ui/PopularPlaces';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import Promos from '@/components/ui/Promos';
+import AddressInput from '@/components/AddressInput';
+import SearchInput from '@/components/SearchInput';
+import ServiceCard from '@/components/ServiceCard';
+import { Badge } from '@/components/ui/badge';
 
 const Index = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('all');
   const [currentAddress, setCurrentAddress] = useState('شارع التحرير');
@@ -27,10 +28,9 @@ const Index = () => {
   // تخصيص الأقسام حسب التبويب النشط
   const mainCategories = [
     { id: 'all', name: 'الكل' },
+    { id: 'rides', name: 'توصيل' },
     { id: 'restaurants', name: 'مطاعم' },
-    { id: 'market', name: 'بقالة' },
-    { id: 'pharmacy', name: 'صيدليات' },
-    { id: 'personal-care', name: 'مستلزمات' }
+    { id: 'market', name: 'بقالة' }
   ];
 
   // الحصول على اسم المستخدم
@@ -43,32 +43,24 @@ const Index = () => {
         <header className="sticky top-0 z-30 bg-white shadow-sm">
           {/* شريط العنوان */}
           <div className="flex items-center justify-between p-4 animate-fade-in">
-            <div className="flex items-center space-x-2 space-x-reverse">
-              <div className="w-10 h-10 rounded-full bg-lime-50 flex items-center justify-center shadow-sm">
-                <MapPin className="w-5 h-5 text-lime-600" />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-xs text-gray-500">توصيل إلى</span>
-                <div className="flex items-center">
-                  <span className="text-sm font-medium">{currentAddress}</span>
-                  <ChevronDown className="w-4 h-4 mr-1 text-lime-600" />
-                </div>
-              </div>
-            </div>
+            <AddressInput 
+              currentAddress={currentAddress}
+              setCurrentAddress={setCurrentAddress}
+            />
             
             <div className="flex items-center space-x-3 space-x-reverse">
               <Link to="/notifications" className="relative">
-                <div className="w-10 h-10 rounded-full bg-lime-50 flex items-center justify-center shadow-sm">
-                  <Bell className="w-5 h-5 text-lime-600" />
+                <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                  <Bell className="w-4 h-4" />
                 </div>
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-medium">2</span>
+                <span className="absolute -top-1 -right-1 bg-black text-white text-xs w-4 h-4 flex items-center justify-center rounded-full font-medium">2</span>
               </Link>
               <Link to="/profile">
-                <Avatar className="w-10 h-10 border-2 border-lime-100 shadow-sm">
+                <Avatar className="w-8 h-8 border border-gray-200">
                   {user?.email ? (
                     <AvatarImage src="" />
                   ) : null}
-                  <AvatarFallback className="bg-gradient-to-br from-lime-500 to-green-600 text-white text-sm">
+                  <AvatarFallback className="bg-black text-white text-xs">
                     {firstName?.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
@@ -78,18 +70,10 @@ const Index = () => {
           
           {/* شريط البحث */}
           <div className="px-4 pb-3 animate-fade-in" style={{animationDelay: "100ms"}}>
-            <div className="relative">
-              <Input 
-                type="text"
-                placeholder="ابحث عن مطعم أو بقالة..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pr-10 h-12 bg-gray-100 border-0 rounded-xl focus-visible:ring-lime-500 shadow-sm"
-              />
-              <button className="absolute top-1/2 right-3 -translate-y-1/2">
-                <Search className="h-5 w-5 text-gray-400" />
-              </button>
-            </div>
+            <SearchInput 
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+            />
           </div>
           
           {/* شريط التبويبات */}
@@ -100,7 +84,7 @@ const Index = () => {
                   key={category.id}
                   className={`px-4 py-3 whitespace-nowrap text-sm font-medium border-b-2 transition-colors ${
                     activeTab === category.id 
-                      ? 'border-lime-500 text-lime-600'
+                      ? 'border-black text-black'
                       : 'border-transparent text-gray-500'
                   }`}
                   onClick={() => setActiveTab(category.id)}
@@ -116,38 +100,16 @@ const Index = () => {
         <main className="px-4">
           {/* قسم البانرات */}
           <section className="pt-4 pb-2 animate-fade-in" style={{animationDelay: "200ms"}}>
-            <div className="overflow-x-auto flex gap-3 no-scrollbar pb-4">
-              <Card className="min-w-[80%] h-40 rounded-2xl bg-gradient-to-r from-lime-500 to-green-600 border-0 overflow-hidden flex-shrink-0">
-                <CardContent className="p-0 relative h-full">
-                  <img
-                    src="https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=500&auto=format&fit=crop"
-                    alt="عروض خاصة"
-                    className="w-full h-full object-cover opacity-30"
-                  />
-                  <div className="absolute inset-0 flex flex-col justify-center p-6 text-white">
-                    <h3 className="text-2xl font-bold mb-2">خصم 30% على أول طلب</h3>
-                    <p className="text-sm mb-3 opacity-90">استمتع بتخفيضات حصرية على أشهر المطاعم</p>
-                    <Button className="w-max bg-white text-lime-700 hover:bg-gray-100 rounded-full px-5 shadow-md font-medium">
-                      اطلب الآن
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+            <div className="grid grid-cols-2 gap-3">
+              <Button className="h-auto py-3 bg-black text-white hover:bg-gray-900 rounded-md flex flex-col items-center justify-center">
+                <Car className="h-6 w-6 mb-1" />
+                <span className="text-sm font-medium">طلب سيارة</span>
+              </Button>
               
-              <Card className="min-w-[80%] h-40 rounded-2xl overflow-hidden flex-shrink-0 border-0" style={{animationDelay: "300ms"}}>
-                <CardContent className="p-0 relative h-full">
-                  <img
-                    src="https://images.unsplash.com/photo-1498837167922-ddd27525d352?q=80&w=500&auto=format&fit=crop"
-                    alt="توصيل سريع"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20 flex flex-col justify-end p-5 text-white">
-                    <h3 className="text-xl font-bold mb-1">توصيل سريع خلال 30 دقيقة</h3>
-                    <p className="text-sm opacity-90 mb-2">من أقرب المطاعم والمتاجر إليك</p>
-                    <Badge className="w-max bg-lime-500 hover:bg-lime-600 text-white border-0 px-3">جديد</Badge>
-                  </div>
-                </CardContent>
-              </Card>
+              <Button className="h-auto py-3 bg-gray-100 text-black hover:bg-gray-200 rounded-md flex flex-col items-center justify-center">
+                <UtensilsCrossed className="h-6 w-6 mb-1" />
+                <span className="text-sm font-medium">طلب طعام</span>
+              </Button>
             </div>
           </section>
           
@@ -157,125 +119,77 @@ const Index = () => {
           {/* عروض خاصة */}
           <Offers />
           
-          {/* الأقسام السريعة */}
-          <section className="py-6 animate-fade-in" style={{animationDelay: "400ms"}}>
-            <h2 className="text-xl font-bold mb-4 text-gray-800">دلوقتي على طول</h2>
-            <div className="grid grid-cols-3 gap-4">
-              <Card className="border-0 shadow-md bg-gradient-to-br from-orange-500/10 to-orange-600/5 rounded-xl hover:shadow-lg transition-shadow">
-                <CardContent className="p-4 flex flex-col items-center text-center">
-                  <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center mb-3">
-                    <UtensilsCrossed className="w-6 h-6 text-orange-600" />
-                  </div>
-                  <h3 className="text-sm font-bold text-gray-800 mb-1">الأكثر شعبية</h3>
-                  <p className="text-xs text-gray-500">الأعلى تقييماً</p>
-                </CardContent>
-              </Card>
+          {/* الخدمات السريعة */}
+          <section className="py-4 animate-fade-in" style={{animationDelay: "400ms"}}>
+            <h2 className="text-lg font-bold mb-3 text-black">خدمات أوبر</h2>
+            <div className="grid grid-cols-3 gap-3">
+              <ServiceCard
+                icon={<Car className="w-5 h-5 text-white" />}
+                title="سيارة"
+                description="توصيل فوري"
+              />
               
-              <Card className="border-0 shadow-md bg-gradient-to-br from-amber-500/10 to-amber-600/5 rounded-xl hover:shadow-lg transition-shadow" style={{animationDelay: "450ms"}}>
-                <CardContent className="p-4 flex flex-col items-center text-center">
-                  <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mb-3">
-                    <ShoppingBag className="w-6 h-6 text-amber-600" />
-                  </div>
-                  <h3 className="text-sm font-bold text-gray-800 mb-1">توصيل سريع</h3>
-                  <p className="text-xs text-gray-500">خلال 30 دقيقة</p>
-                </CardContent>
-              </Card>
+              <ServiceCard
+                icon={<UtensilsCrossed className="w-5 h-5 text-white" />}
+                title="طعام"
+                description="من أفضل المطاعم"
+              />
               
-              <Card className="border-0 shadow-md bg-gradient-to-br from-blue-500/10 to-blue-600/5 rounded-xl hover:shadow-lg transition-shadow" style={{animationDelay: "500ms"}}>
-                <CardContent className="p-4 flex flex-col items-center text-center">
-                  <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mb-3">
-                    <Pill className="w-6 h-6 text-blue-600" />
-                  </div>
-                  <h3 className="text-sm font-bold text-gray-800 mb-1">طلبات سابقة</h3>
-                  <p className="text-xs text-gray-500">اطلب مجدداً</p>
-                </CardContent>
-              </Card>
+              <ServiceCard
+                icon={<ShoppingBag className="w-5 h-5 text-white" />}
+                title="بقالة"
+                description="توصيل سريع"
+              />
             </div>
           </section>
           
           {/* المطاعم المميزة */}
-          <PopularPlaces />
+          <PopularPlaces title="مطاعم قريبة منك" />
           
           {/* عروض ترويجية */}
           <Promos />
           
           {/* بقالة وسوبر ماركت */}
-          <section className="py-6 animate-fade-in" style={{animationDelay: "600ms"}}>
-            <div className="flex justify-between items-center mb-4">
-              <Link to="/market" className="text-lime-600 text-sm font-medium">
+          <section className="py-4 animate-fade-in" style={{animationDelay: "600ms"}}>
+            <div className="flex justify-between items-center mb-3">
+              <Link to="/market" className="text-xs font-medium text-black hover:text-gray-700">
                 عرض الكل
               </Link>
-              <h2 className="text-xl font-bold text-gray-800">بقالة وسوبر ماركت</h2>
+              <h2 className="text-lg font-bold text-black">أوبر سوبر</h2>
             </div>
             
-            <div className="grid grid-cols-2 gap-4">
-              <Card className="border-0 shadow-md rounded-xl overflow-hidden hover:shadow-lg transition-all">
-                <CardContent className="p-0">
-                  <div className="relative h-32">
-                    <img
-                      src="https://images.unsplash.com/photo-1604719312566-8912e9667857?q=80&w=300&auto=format&fit=crop"
-                      alt="سوبر ماركت"
-                      className="w-full h-full object-cover"
-                    />
-                    <Badge className="absolute top-2 right-2 bg-white text-lime-700 hover:bg-white hover:text-lime-800">
-                      30 دقيقة
-                    </Badge>
-                  </div>
-                  <div className="p-3">
-                    <h3 className="font-bold text-gray-800">سوبر ماركت الميدان</h3>
-                    <p className="text-xs text-gray-500 mt-1">بقالة، فواكه، خضروات</p>
-                    <Badge variant="outline" className="mt-2 bg-lime-50 text-lime-700 border-lime-200 hover:bg-lime-100">
-                      توصيل مجاني
-                    </Badge>
-                  </div>
-                </CardContent>
-              </Card>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-black text-white p-4 rounded-md">
+                <h3 className="font-bold text-lg mb-2">البقالة</h3>
+                <p className="text-xs text-gray-300 mb-3">توصيل خلال 15 دقيقة</p>
+                <Badge className="bg-white text-black hover:bg-gray-100">اطلب الآن</Badge>
+              </div>
               
-              <Card className="border-0 shadow-md rounded-xl overflow-hidden hover:shadow-lg transition-all">
-                <CardContent className="p-0">
-                  <div className="relative h-32">
-                    <img
-                      src="https://images.unsplash.com/photo-1579113800032-c38bd7635818?q=80&w=300&auto=format&fit=crop"
-                      alt="هايبر ماركت"
-                      className="w-full h-full object-cover"
-                    />
-                    <Badge className="absolute top-2 right-2 bg-white text-lime-700 hover:bg-white hover:text-lime-800">
-                      25 دقيقة
-                    </Badge>
-                  </div>
-                  <div className="p-3">
-                    <h3 className="font-bold text-gray-800">هايبر ماركت مصر</h3>
-                    <p className="text-xs text-gray-500 mt-1">بقالة، منتجات منزلية</p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100">
-                        خصم 15%
-                      </Badge>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <div className="bg-gray-100 p-4 rounded-md">
+                <h3 className="font-bold text-lg mb-2">الأدوية</h3>
+                <p className="text-xs text-gray-500 mb-3">من أقرب صيدلية</p>
+                <Badge className="bg-black text-white hover:bg-gray-900">اطلب الآن</Badge>
+              </div>
             </div>
             
-            <Card className="mt-5 border-0 shadow-md rounded-xl overflow-hidden hover:shadow-lg transition-all bg-gradient-to-r from-lime-600 to-green-600">
-              <CardContent className="p-5 text-white">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-xl font-bold mb-1">حمّل تطبيق مرسول</h3>
-                    <p className="text-sm opacity-90">واحصل على كوبونات وخصومات حصرية</p>
-                    <Button className="mt-3 bg-white text-lime-700 hover:bg-gray-100 shadow-md">
-                      تحميل الآن
-                    </Button>
-                  </div>
-                  <div className="bg-lime-400/20 backdrop-blur-sm p-4 rounded-xl">
-                    <svg className="w-16 h-16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <rect x="6" y="4" width="12" height="16" rx="1" stroke="currentColor" strokeWidth="2" />
-                      <path d="M10 4H14V6H10V4Z" fill="currentColor" />
-                      <path d="M12 17H12.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                    </svg>
-                  </div>
+            <div className="mt-5 rounded-md overflow-hidden bg-black text-white animate-fade-in" style={{animationDelay: "650ms"}}>
+              <div className="p-4 flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-bold mb-1">أوبر وان</h3>
+                  <p className="text-xs text-gray-300 mb-3">اشترك الآن واحصل على مزايا حصرية</p>
+                  <Button className="bg-white text-black hover:bg-gray-100 text-xs px-3 py-1 h-auto">
+                    اشترك الآن
+                  </Button>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="rounded-full bg-gray-800 p-3">
+                  <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="white" strokeWidth="2" />
+                    <path d="M12 8V16" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                    <path d="M16 12H8" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                  </svg>
+                </div>
+              </div>
+            </div>
           </section>
         </main>
       </div>
