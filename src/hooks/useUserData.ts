@@ -1,3 +1,4 @@
+
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { 
   fetchUserAddresses, 
@@ -130,10 +131,12 @@ export function useUserProfile() {
     staleTime: USER_DATA_STALE_TIME,
     gcTime: USER_DATA_GC_TIME,
     enabled: !!user?.id,
-    retry: 2, // تحسين: زيادة عدد محاولات الاتصال
+    retry: 2,
     refetchOnWindowFocus: false,
-    onError: (error: any) => {
-      console.error('خطأ في استرجاع بيانات الملف الشخصي:', error);
+    meta: {
+      onError: (error: any) => {
+        console.error('خطأ في استرجاع بيانات الملف الشخصي:', error);
+      }
     }
   });
 }
