@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useAuth } from '@/context/AuthContext';
 import { useUserProfile, useUpdateUserProfile } from '@/hooks/useUserData';
+import { supabase } from '@/integrations/supabase/client';
 
 const EditProfile: React.FC = () => {
   const navigate = useNavigate();
@@ -55,15 +56,61 @@ const EditProfile: React.FC = () => {
     }
   };
 
+  const uploadProfileImage = async (file: File): Promise<string | null> => {
+    try {
+      // إنشاء اسم فريد للملف
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+      const filePath = `profile_images/${user?.id}/${fileName}`;
+
+      // رفع الملف إلى Supabase Storage
+      const { data, error } = await supabase
+        .storage
+        .from('avatars')
+        .upload(filePath, file, {
+          upsert: true,
+          cacheControl: '3600'
+        });
+
+      if (error) {
+        console.error('خطأ في رفع الصورة:', error);
+        return null;
+      }
+
+      // الحصول على URL العام للصورة
+      const { data: publicURL } = supabase
+        .storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      return publicURL.publicUrl;
+    } catch (error) {
+      console.error('خطأ غير متوقع أثناء رفع الصورة:', error);
+      return null;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     try {
-      // في تطبيق حقيقي، هنا سيتم رفع الصورة أولاً ثم تحديث البيانات
+      let profileImageUrl = userProfile?.profile_image || null;
+      
+      // رفع الصورة إذا تم اختيارها
+      if (formData.imageFile) {
+        const uploadedUrl = await uploadProfileImage(formData.imageFile);
+        if (uploadedUrl) {
+          profileImageUrl = uploadedUrl;
+        } else {
+          toast.error("حدث خطأ أثناء رفع الصورة");
+        }
+      }
+      
+      // تحديث بيانات الملف الشخصي
       await updateProfile.mutateAsync({
         name: formData.name,
         phone: formData.phone,
-        // هنا يتم إضافة رابط الصورة بعد رفعها
+        profile_image: profileImageUrl
       });
       
       toast.success("تم تحديث الملف الشخصي بنجاح");

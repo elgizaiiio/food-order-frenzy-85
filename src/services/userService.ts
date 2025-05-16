@@ -219,17 +219,36 @@ export async function deletePaymentMethod(methodId: string): Promise<void> {
 
 /**
  * الحصول على معلومات الملف الشخصي
+ * سيتم إنشاء ملف شخصي إذا لم يكن موجودًا
  */
 export async function getUserProfile() {
   try {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('يجب تسجيل الدخول أولاً');
     
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from('users')
       .select('*')
       .eq('id', user.id)
       .single();
+    
+    // إذا لم يكن المستخدم موجودًا في جدول المستخدمين، سنقوم بإنشائه
+    if (error && error.code === 'PGRST116') {
+      // إنشاء ملف شخصي جديد للمستخدم
+      const { data: newUser, error: insertError } = await supabase
+        .from('users')
+        .insert({
+          id: user.id,
+          email: user.email,
+          name: user.user_metadata?.name || user.email?.split('@')[0] || '',
+          username: user.email?.split('@')[0] || '',
+        })
+        .select()
+        .single();
+      
+      if (insertError) throw insertError;
+      return newUser;
+    }
     
     if (error) throw error;
     
@@ -242,12 +261,40 @@ export async function getUserProfile() {
 
 /**
  * تحديث معلومات الملف الشخصي
+ * سيتم إنشاء ملف شخصي إذا لم يكن موجودًا
  */
 export async function updateUserProfile(updates: Record<string, any>) {
   try {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('يجب تسجيل الدخول أولاً');
     
+    // التحقق أولاً مما إذا كان المستخدم موجودًا بالفعل
+    const { data: existingUser, error: checkError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('id', user.id)
+      .maybeSingle();
+    
+    // إذا لم يكن المستخدم موجودًا، سنقوم بإنشائه أولاً
+    if (!existingUser) {
+      // إنشاء ملف شخصي جديد للمستخدم مع التحديثات المطلوبة
+      const { data: newUser, error: insertError } = await supabase
+        .from('users')
+        .insert({
+          id: user.id,
+          email: user.email,
+          name: updates.name || user.user_metadata?.name || user.email?.split('@')[0] || '',
+          username: user.email?.split('@')[0] || '',
+          ...updates  // دمج التحديثات المطلوبة
+        })
+        .select()
+        .single();
+      
+      if (insertError) throw insertError;
+      return newUser;
+    }
+    
+    // تحديث بيانات المستخدم الموجود
     const { data, error } = await supabase
       .from('users')
       .update(updates)
