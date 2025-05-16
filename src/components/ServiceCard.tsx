@@ -7,22 +7,27 @@ interface ServiceCardProps {
   title: string;
   description: string;
   bgClass?: string;
+  onClick?: () => void;
 }
 
 const ServiceCard: React.FC<ServiceCardProps> = ({ 
   icon, 
   title, 
   description, 
-  bgClass = "bg-gray-100" 
+  bgClass = "bg-white", 
+  onClick
 }) => {
   return (
-    <Card className={`border-0 shadow-sm hover:shadow-md transition-shadow rounded-md ${bgClass}`}>
-      <CardContent className="p-3 flex flex-col items-center text-center">
-        <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center mb-2">
+    <Card 
+      className={`border border-gray-100 shadow-sm hover:shadow-md transition-shadow rounded-lg ${bgClass} cursor-pointer`} 
+      onClick={onClick}
+    >
+      <CardContent className="p-4 flex flex-col">
+        <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center mb-3">
           {icon}
         </div>
-        <h3 className="text-sm font-bold text-gray-800 mb-1">{title}</h3>
-        <p className="text-xs text-gray-600">{description}</p>
+        <h3 className="text-base font-semibold text-gray-900 mb-1">{title}</h3>
+        <p className="text-sm text-gray-600">{description}</p>
       </CardContent>
     </Card>
   );

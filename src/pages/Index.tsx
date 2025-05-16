@@ -2,10 +2,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  Car, 
   UtensilsCrossed, 
   ShoppingBag, 
-  Bell 
+  Bell, 
+  Pill,
+  Compass
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -18,8 +19,10 @@ import AddressInput from '@/components/AddressInput';
 import SearchInput from '@/components/SearchInput';
 import ServiceCard from '@/components/ServiceCard';
 import { Badge } from '@/components/ui/badge';
+import { useNavigate } from 'react-router-dom';
 
 const Index = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('all');
@@ -28,16 +31,21 @@ const Index = () => {
   // تخصيص الأقسام حسب التبويب النشط
   const mainCategories = [
     { id: 'all', name: 'الكل' },
-    { id: 'rides', name: 'توصيل' },
     { id: 'restaurants', name: 'مطاعم' },
-    { id: 'market', name: 'بقالة' }
+    { id: 'market', name: 'بقالة' },
+    { id: 'pharmacy', name: 'صيدليات' }
   ];
+
+  // أخذ التنقل إلى الصفحات
+  const navigateTo = (path: string) => {
+    navigate(path);
+  };
 
   // الحصول على اسم المستخدم
   const firstName = user?.email ? user.email.split('@')[0] : 'صديقي';
   
   return (
-    <div className="min-h-screen bg-gray-50" dir="rtl">
+    <div className="min-h-screen bg-white" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-20">
         {/* رأس الصفحة */}
         <header className="sticky top-0 z-30 bg-white shadow-sm">
@@ -98,18 +106,49 @@ const Index = () => {
         
         {/* المحتوى الرئيسي */}
         <main className="px-4">
-          {/* قسم البانرات */}
-          <section className="pt-4 pb-2 animate-fade-in" style={{animationDelay: "200ms"}}>
+          {/* الخدمات الرئيسية */}
+          <section className="pt-5 pb-2 animate-fade-in" style={{animationDelay: "200ms"}}>
+            <h2 className="text-lg font-bold mb-4">اختر الخدمة</h2>
             <div className="grid grid-cols-2 gap-3">
-              <Button className="h-auto py-3 bg-black text-white hover:bg-gray-900 rounded-md flex flex-col items-center justify-center">
-                <Car className="h-6 w-6 mb-1" />
-                <span className="text-sm font-medium">طلب سيارة</span>
-              </Button>
+              <ServiceCard
+                icon={<UtensilsCrossed className="h-5 w-5 text-white" />}
+                title="مطاعم"
+                description="توصيل من مطاعمك المفضلة"
+                onClick={() => navigateTo('/restaurants')}
+              />
               
-              <Button className="h-auto py-3 bg-gray-100 text-black hover:bg-gray-200 rounded-md flex flex-col items-center justify-center">
-                <UtensilsCrossed className="h-6 w-6 mb-1" />
-                <span className="text-sm font-medium">طلب طعام</span>
-              </Button>
+              <ServiceCard
+                icon={<ShoppingBag className="h-5 w-5 text-white" />}
+                title="بقالة"
+                description="توصيل بقالة سريع"
+                onClick={() => navigateTo('/market')}
+              />
+            </div>
+            
+            <div className="grid grid-cols-3 gap-3 mt-3">
+              <ServiceCard
+                icon={<Pill className="h-5 w-5 text-white" />}
+                title="صيدليات"
+                description="الأدوية"
+                bgClass="bg-white"
+                onClick={() => navigateTo('/pharmacy')}
+              />
+              
+              <ServiceCard
+                icon={<Compass className="h-5 w-5 text-white" />}
+                title="الجيم"
+                description="اشتراكات"
+                bgClass="bg-white"
+                onClick={() => navigateTo('/gym')}
+              />
+              
+              <ServiceCard
+                icon={<ShoppingBag className="h-5 w-5 text-white" />}
+                title="العناية"
+                description="منتجات العناية"
+                bgClass="bg-white"
+                onClick={() => navigateTo('/personal-care')}
+              />
             </div>
           </section>
           
@@ -119,30 +158,6 @@ const Index = () => {
           {/* عروض خاصة */}
           <Offers />
           
-          {/* الخدمات السريعة */}
-          <section className="py-4 animate-fade-in" style={{animationDelay: "400ms"}}>
-            <h2 className="text-lg font-bold mb-3 text-black">خدمات أوبر</h2>
-            <div className="grid grid-cols-3 gap-3">
-              <ServiceCard
-                icon={<Car className="w-5 h-5 text-white" />}
-                title="سيارة"
-                description="توصيل فوري"
-              />
-              
-              <ServiceCard
-                icon={<UtensilsCrossed className="w-5 h-5 text-white" />}
-                title="طعام"
-                description="من أفضل المطاعم"
-              />
-              
-              <ServiceCard
-                icon={<ShoppingBag className="w-5 h-5 text-white" />}
-                title="بقالة"
-                description="توصيل سريع"
-              />
-            </div>
-          </section>
-          
           {/* المطاعم المميزة */}
           <PopularPlaces title="مطاعم قريبة منك" />
           
@@ -150,29 +165,29 @@ const Index = () => {
           <Promos />
           
           {/* بقالة وسوبر ماركت */}
-          <section className="py-4 animate-fade-in" style={{animationDelay: "600ms"}}>
+          <section className="py-5 animate-fade-in" style={{animationDelay: "600ms"}}>
             <div className="flex justify-between items-center mb-3">
               <Link to="/market" className="text-xs font-medium text-black hover:text-gray-700">
                 عرض الكل
               </Link>
-              <h2 className="text-lg font-bold text-black">أوبر سوبر</h2>
+              <h2 className="text-lg font-bold text-black">البقالة</h2>
             </div>
             
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-black text-white p-4 rounded-md">
-                <h3 className="font-bold text-lg mb-2">البقالة</h3>
+              <div className="bg-black text-white p-4 rounded-lg">
+                <h3 className="font-bold text-lg mb-2">توصيل سريع</h3>
                 <p className="text-xs text-gray-300 mb-3">توصيل خلال 15 دقيقة</p>
                 <Badge className="bg-white text-black hover:bg-gray-100">اطلب الآن</Badge>
               </div>
               
-              <div className="bg-gray-100 p-4 rounded-md">
-                <h3 className="font-bold text-lg mb-2">الأدوية</h3>
+              <div className="bg-gray-100 p-4 rounded-lg">
+                <h3 className="font-bold text-lg mb-2">صيدلية</h3>
                 <p className="text-xs text-gray-500 mb-3">من أقرب صيدلية</p>
                 <Badge className="bg-black text-white hover:bg-gray-900">اطلب الآن</Badge>
               </div>
             </div>
             
-            <div className="mt-5 rounded-md overflow-hidden bg-black text-white animate-fade-in" style={{animationDelay: "650ms"}}>
+            <div className="mt-5 rounded-lg overflow-hidden bg-black text-white animate-fade-in" style={{animationDelay: "650ms"}}>
               <div className="p-4 flex items-center justify-between">
                 <div>
                   <h3 className="text-lg font-bold mb-1">أوبر وان</h3>

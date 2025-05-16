@@ -19,9 +19,7 @@ const AddressInput: React.FC<AddressInputProps> = ({ currentAddress, setCurrentA
 
   return (
     <div className="flex items-center space-x-2 space-x-reverse">
-      <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center">
-        <MapPin className="w-4 h-4 text-white" />
-      </div>
+      <MapPin className="w-5 h-5 text-black" />
       <div className="flex flex-col">
         <span className="text-xs text-gray-500">التوصيل إلى</span>
         <Popover>
@@ -31,7 +29,7 @@ const AddressInput: React.FC<AddressInputProps> = ({ currentAddress, setCurrentA
               <ChevronDown className="w-4 h-4 mr-1" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-60" align="start">
+          <PopoverContent className="w-72" align="start">
             <div className="space-y-2">
               <h4 className="font-medium text-sm">العناوين المحفوظة</h4>
               {savedAddresses.map((addr, idx) => (
