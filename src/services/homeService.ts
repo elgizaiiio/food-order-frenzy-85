@@ -185,9 +185,9 @@ export async function fetchHomePromos(): Promise<Promo[]> {
     {
       id: 1,
       title: "سوبر ماركت",
-      description: "خصم 50 جنيه على أول طلب",
-      icon: "Home",
-      gradient: "from-orange-500 to-orange-600",
+      description: "توصيل مجاني للطلبات فوق 100 ريال",
+      icon: "ShoppingCart",
+      gradient: "from-orange-600 to-red-600",
       iconBg: "bg-white/20",
       textColor: "text-white",
       link: "/market"
@@ -195,22 +195,32 @@ export async function fetchHomePromos(): Promise<Promo[]> {
     {
       id: 2,
       title: "اشتراكات الجيم",
-      description: "اشتراك شهري بـ 300 جنيه",
+      description: "خصم 25% على الاشتراك السنوي",
       icon: "Dumbbell",
-      gradient: "from-orange-600 to-orange-700",
+      gradient: "from-orange-500 to-orange-700",
       iconBg: "bg-white/20",
       textColor: "text-white",
       link: "/gym"
     }, 
     {
       id: 3,
-      title: "بيوتي",
-      description: "خصم 20% على كل المنتجات",
+      title: "منتجات تجميل",
+      description: "اشتر قطعتين واحصل على الثالثة مجانًا",
       icon: "Brush",
-      gradient: "from-orange-500 to-orange-600",
+      gradient: "from-pink-500 to-purple-600",
       iconBg: "bg-white/20",
       textColor: "text-white",
       link: "/personal-care"
+    },
+    {
+      id: 4,
+      title: "صيدليات",
+      description: "توصيل أدويتك خلال ساعتين",
+      icon: "Pill",
+      gradient: "from-blue-500 to-blue-700",
+      iconBg: "bg-white/20",
+      textColor: "text-white",
+      link: "/pharmacy"
     }
   ];
 }
