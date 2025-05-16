@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import Categories from '@/components/Categories';
 import PopularRestaurants from '@/components/PopularRestaurants';
-import { Search, MapPin, ChevronDown, ShoppingBag } from 'lucide-react';
+import { MapPin, ChevronDown, ShoppingBag } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -23,19 +23,6 @@ const Index = () => {
   // بيانات العناوين - في تطبيق حقيقي ستأتي من API
   const [address, setAddress] = useState('شارع الملك فهد');
   const [savedAddresses, setSavedAddresses] = useState(['شارع الملك فهد', 'حي النزهة', 'المركز التجاري']);
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-    } else {
-      toast({
-        title: "أدخل كلمة البحث",
-        description: "يرجى إدخال كلمة للبحث عنها",
-        variant: "destructive"
-      });
-    }
-  };
 
   const handleQuickOrder = () => {
     navigate('/restaurants');
@@ -107,25 +94,6 @@ const Index = () => {
               </div>
             </Link>
           </div>
-          
-          {/* Improved Search Bar */}
-          <form onSubmit={handleSearch}>
-            <div className="mt-3 relative">
-              <Input 
-                type="text"
-                placeholder="مطعم، بقالة، أدوية..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full py-2.5 pl-4 pr-10 rounded-full bg-white/15 border border-white/25 text-white placeholder:text-white/70 focus:border-white/40 focus:ring-1 focus:ring-white/30"
-              />
-              <button 
-                type="submit"
-                className="absolute top-1/2 right-3 -translate-y-1/2 text-white/80 hover:text-white transition-colors"
-              >
-                <Search className="h-5 w-5" />
-              </button>
-            </div>
-          </form>
 
           <Button 
             variant="outline"
