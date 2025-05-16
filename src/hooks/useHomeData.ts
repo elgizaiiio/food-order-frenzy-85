@@ -1,6 +1,11 @@
 
 import { useQuery } from "@tanstack/react-query";
-import { fetchHomeCategories, fetchHomeOffers, fetchPopularPlaces, fetchHomePromos } from "@/services/homeService";
+import { 
+  fetchHomeCategories, 
+  fetchHomeOffers, 
+  fetchPopularPlaces, 
+  fetchHomePromos 
+} from "@/services/homeService";
 
 // استخدام react-query لجلب بيانات الصفحة الرئيسية
 export const useHomeCategories = () => {
@@ -45,5 +50,36 @@ export interface Category {
   name: string;
   icon: string;
   color: string;
+  link: string;
+}
+
+// واجهات البيانات الأخرى
+export interface Offer {
+  id: number;
+  title: string;
+  description: string;
+  image: string;
+  gradient: string;
+  link: string;
+}
+
+export interface Place {
+  id: string | number;
+  name: string;
+  image: string;
+  rating: number;
+  category: string;
+  deliveryTime?: string;
+  deliveryFee?: string;
+}
+
+export interface Promo {
+  id: number;
+  title: string;
+  description: string;
+  icon: string;
+  gradient: string;
+  iconBg: string;
+  textColor: string;
   link: string;
 }

@@ -1,18 +1,23 @@
 
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import Categories from '@/components/Categories';
 import PopularRestaurants from '@/components/PopularRestaurants';
-import { Search, MapPin, ChevronDown } from 'lucide-react';
+import Offers from '@/components/Offers';
+import Promos from '@/components/ui/Promos';
+import { Search, MapPin, ChevronDown, ShoppingBag } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Card, CardContent } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/hooks/use-toast';
 
 const Index = () => {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
+  const { toast } = useToast();
   
   // الحصول على اسم المستخدم من البريد الإلكتروني أو عرض تحية عامة
   const firstName = user?.email ? user.email.split('@')[0] : 'صديقي';
@@ -21,9 +26,30 @@ const Index = () => {
   const [address, setAddress] = useState('شارع الملك فهد');
   const [savedAddresses, setSavedAddresses] = useState(['شارع الملك فهد', 'حي النزهة', 'المركز التجاري']);
 
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    } else {
+      toast({
+        title: "أدخل كلمة البحث",
+        description: "يرجى إدخال كلمة للبحث عنها",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleQuickOrder = () => {
+    navigate('/restaurants');
+    toast({
+      title: "تم الانتقال إلى المطاعم",
+      description: "يمكنك اختيار مطعمك المفضل الآن",
+    });
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50" dir="rtl">
-      <div className="max-w-md mx-auto bg-gray-50 pb-20">
+    <div className="min-h-screen bg-gray-50 pb-16" dir="rtl">
+      <div className="max-w-md mx-auto bg-gray-50">
         {/* Header with improved styling */}
         <header className="bg-gradient-to-r from-orange-600 to-orange-500 text-white rounded-b-3xl shadow-xl py-4 px-4">
           {/* تحديد العنوان */}
@@ -55,14 +81,16 @@ const Index = () => {
                         {addr}
                       </Button>
                     ))}
-                    <Button variant="outline" className="w-full text-xs mt-2 text-orange-700 border-orange-300 hover:bg-orange-50 hover:border-orange-400">
+                    <Button 
+                      variant="outline" 
+                      className="w-full text-xs mt-2 text-orange-700 border-orange-300 hover:bg-orange-50 hover:border-orange-400"
+                      onClick={() => navigate('/addresses/new')}
+                    >
                       أضف عنوان جديد
                     </Button>
                   </div>
                 </PopoverContent>
               </Popover>
-              
-              {/* تم إزالة زر الإشعارات هنا */}
             </div>
           </div>
           
@@ -83,18 +111,32 @@ const Index = () => {
           </div>
           
           {/* Improved Search Bar */}
-          <div className="mt-3 relative">
-            <Input 
-              type="text"
-              placeholder="مطعم، بقالة، أدوية..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full py-2.5 pl-4 pr-10 rounded-full bg-white/15 border border-white/25 text-white placeholder:text-white/70 focus:border-white/40 focus:ring-1 focus:ring-white/30"
-            />
-            <button className="absolute top-1/2 right-3 -translate-y-1/2 text-white/80 hover:text-white transition-colors">
-              <Search className="h-5 w-5" />
-            </button>
-          </div>
+          <form onSubmit={handleSearch}>
+            <div className="mt-3 relative">
+              <Input 
+                type="text"
+                placeholder="مطعم، بقالة، أدوية..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full py-2.5 pl-4 pr-10 rounded-full bg-white/15 border border-white/25 text-white placeholder:text-white/70 focus:border-white/40 focus:ring-1 focus:ring-white/30"
+              />
+              <button 
+                type="submit"
+                className="absolute top-1/2 right-3 -translate-y-1/2 text-white/80 hover:text-white transition-colors"
+              >
+                <Search className="h-5 w-5" />
+              </button>
+            </div>
+          </form>
+
+          <Button 
+            variant="outline"
+            className="w-full mt-4 bg-white/15 hover:bg-white/25 border border-white/30 text-white font-medium rounded-full flex items-center justify-center gap-2"
+            onClick={handleQuickOrder}
+          >
+            <ShoppingBag className="w-4 h-4" />
+            اطلب الآن
+          </Button>
         </header>
         
         {/* الاقسام الرئيسية مع أيقونات دائرية */}
@@ -106,6 +148,16 @@ const Index = () => {
         <main className="px-4">
           {/* Banner Slider with improved styling */}
           <BannerSlider />
+          
+          {/* Offers Component */}
+          <div className="mb-4">
+            <Offers />
+          </div>
+          
+          {/* Promotions Component */}
+          <div className="mb-4">
+            <Promos />
+          </div>
           
           {/* Popular Restaurants */}
           <PopularRestaurants />
@@ -122,13 +174,15 @@ const BannerSlider = () => {
       id: 1,
       title: "خصم 30% على كل المطاعم",
       image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=500&auto=format&fit=crop",
-      color: "from-orange-600 to-orange-700"
+      color: "from-orange-600 to-orange-700",
+      link: "/restaurants"
     },
     {
       id: 2,
       title: "توصيل مجاني للطلبات فوق 100 ريال",
       image: "https://images.unsplash.com/photo-1526367790999-0150786686a2?q=80&w=500&auto=format&fit=crop",
-      color: "from-orange-500 to-orange-600"
+      color: "from-orange-500 to-orange-600",
+      link: "/market"
     }
   ];
   
@@ -136,8 +190,9 @@ const BannerSlider = () => {
     <div className="py-3">
       <div className="flex overflow-x-auto gap-3 pb-2 no-scrollbar">
         {banners.map((banner, index) => (
-          <div 
+          <Link
             key={banner.id}
+            to={banner.link}
             className="min-w-[280px] h-32 rounded-2xl overflow-hidden relative shadow-md hover:shadow-lg transition-all flex-shrink-0 animate-fade-in"
             style={{ animationDelay: `${index * 100}ms` }}
           >
@@ -150,7 +205,7 @@ const BannerSlider = () => {
             <div className="absolute inset-0 flex items-center justify-center p-6">
               <h3 className="text-white text-lg font-bold text-center drop-shadow-md">{banner.title}</h3>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

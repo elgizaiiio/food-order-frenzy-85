@@ -6,16 +6,20 @@ import {
   ShoppingCart, 
   Pill, 
   Brush, 
-  Dumbbell,
-  Heart,
-  Coffee,
-  Gift
+  Dumbbell
 } from 'lucide-react';
 import { useHomeCategories } from '@/hooks/useHomeData';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/hooks/use-toast';
 
 const Categories: React.FC = () => {
-  const { data: categories, isLoading } = useHomeCategories();
+  const { data: categories, isLoading, error } = useHomeCategories();
+  const { toast } = useToast();
+
+  // رسائل الخطأ
+  if (error) {
+    console.error("خطأ في تحميل الفئات:", error);
+  }
 
   const getIcon = (iconName: string) => {
     switch(iconName) {
@@ -29,15 +33,63 @@ const Categories: React.FC = () => {
         return <Brush className="h-6 w-6 text-white" />;
       case 'Dumbbell':
         return <Dumbbell className="h-6 w-6 text-white" />;
-      case 'Heart':
-        return <Heart className="h-6 w-6 text-white" />;
-      case 'Coffee':
-        return <Coffee className="h-6 w-6 text-white" />;
-      case 'Gift':
-        return <Gift className="h-6 w-6 text-white" />;
       default:
         return <UtensilsCrossed className="h-6 w-6 text-white" />;
     }
+  };
+
+  // بيانات الفئات الثابتة للاستخدام في حال فشل الـAPI
+  const staticCategories = [
+    { 
+      id: "restaurants",
+      name: "مطاعم", 
+      icon: "UtensilsCrossed", 
+      color: "bg-gradient-to-br from-orange-500 to-orange-600 text-white",
+      shadow: "shadow-orange-200",
+      link: "/restaurants"
+    },
+    { 
+      id: "market",
+      name: "سوبر ماركت", 
+      icon: "ShoppingCart", 
+      color: "bg-gradient-to-br from-orange-400 to-orange-500 text-white",
+      shadow: "shadow-orange-200",
+      link: "/market" 
+    },
+    { 
+      id: "pharmacy",
+      name: "صيدليات", 
+      icon: "Pill", 
+      color: "bg-gradient-to-br from-orange-500 to-orange-600 text-white",
+      shadow: "shadow-orange-200",
+      link: "/pharmacy" 
+    },
+    { 
+      id: "personal-care",
+      name: "بيوتي", 
+      icon: "Brush", 
+      color: "bg-gradient-to-br from-orange-400 to-orange-500 text-white",
+      shadow: "shadow-orange-200",
+      link: "/personal-care" 
+    },
+    { 
+      id: "gym",
+      name: "جيم", 
+      icon: "Dumbbell", 
+      color: "bg-gradient-to-br from-orange-500 to-orange-600 text-white",
+      shadow: "shadow-orange-200",
+      link: "/gym" 
+    }
+  ];
+
+  // استخدم البيانات من API أو البيانات الثابتة إذا لم تكن البيانات جاهزة
+  const displayCategories = categories && categories.length > 0 ? categories : staticCategories;
+
+  const handleCategoryClick = (categoryName: string) => {
+    toast({
+      title: `تم اختيار ${categoryName}`,
+      description: "جاري الانتقال للصفحة..."
+    });
   };
 
   return (
@@ -59,12 +111,13 @@ const Categories: React.FC = () => {
               </div>
             ))
           ) : (
-            categories?.map((category, index) => (
+            displayCategories?.map((category, index) => (
               <Link 
                 to={category.link} 
                 key={category.id} 
                 className="flex flex-col items-center animate-fade-in min-w-[80px]"
                 style={{ animationDelay: `${index * 50}ms` }}
+                onClick={() => handleCategoryClick(category.name)}
               >
                 <div className={`w-16 h-16 rounded-full overflow-hidden flex items-center justify-center bg-gradient-to-br ${category.color} shadow-md hover:shadow-xl transition-all duration-300 hover:scale-110 border-2 border-white`}>
                   {getIcon(category.icon)}

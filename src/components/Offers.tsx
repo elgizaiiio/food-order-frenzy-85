@@ -6,23 +6,24 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-
-type Offer = {
-  id: number;
-  title: string;
-  description: string;
-  color: string;
-  textColor: string;
-  image: string;
-  link: string;
-  rating?: number;
-  deliveryTime?: string;
-  discount?: string;
-  isFeatured?: boolean;
-};
+import { useHomeOffers } from '@/hooks/useHomeData';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const Offers: React.FC = () => {
-  const offers: Offer[] = [
+  const { data: offers, isLoading, error } = useHomeOffers();
+
+  // إذا كان هناك خطأ في تحميل العروض، نعرض رسالة الخطأ
+  if (error) {
+    return (
+      <div className="talabat-section mb-4">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center text-red-500">
+          <p>عذراً، حدث خطأ أثناء تحميل العروض. حاول مرة أخرى.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const staticOffers = [
     {
       id: 1,
       title: "مطعم شاورما العربي",
@@ -48,36 +49,14 @@ const Offers: React.FC = () => {
       deliveryTime: "15-25 دقيقة",
       discount: "1+1 مجاناً",
       isFeatured: true
-    },
-    {
-      id: 3,
-      title: "مطعم الشيف",
-      description: "توصيل مجاني لأول طلب",
-      color: "from-orange-400/90 to-orange-600/70",
-      textColor: "text-white",
-      image: "https://images.unsplash.com/photo-1526367790999-0150786686a2?q=80&w=500&auto=format&fit=crop",
-      link: "/restaurant/3",
-      rating: 4.6,
-      deliveryTime: "25-35 دقيقة",
-      discount: "توصيل مجاني",
-      isFeatured: false
-    },
-    {
-      id: 4,
-      title: "بيتزا هت",
-      description: "خصم 25% على البيتزا الكبيرة",
-      color: "from-orange-500/90 to-orange-700/70",
-      textColor: "text-white",
-      image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=500&auto=format&fit=crop",
-      link: "/restaurant/4",
-      rating: 4.7,
-      deliveryTime: "30-40 دقيقة",
-      discount: "خصم 25%",
-      isFeatured: true
     }
   ];
 
-  const featuredOffers = offers.filter(offer => offer.isFeatured);
+  // استخدم البيانات من API أو البيانات الثابتة إذا لم تكن البيانات جاهزة
+  const displayOffers = offers && offers.length > 0 ? offers : staticOffers;
+  
+  // تصفية العروض المميزة
+  const featuredOffers = displayOffers.filter((offer: any) => offer.isFeatured);
 
   return (
     <div className="talabat-section animate-fade-in animate-delay-2 bg-white rounded-xl shadow-sm p-4 mb-4">
@@ -98,50 +77,74 @@ const Offers: React.FC = () => {
       
       <Carousel className="w-full">
         <CarouselContent className="-mr-2 ml-2">
-          {offers.map(offer => (
-            <CarouselItem key={offer.id} className="pl-2 basis-9/10 sm:basis-3/4 lg:basis-1/2">
-              <Link to={offer.link} className="block">
-                <Card className="overflow-hidden border-none shadow-md hover:shadow-xl transition-all duration-300 rounded-xl">
+          {isLoading ? (
+            // عرض Skeleton أثناء التحميل
+            Array(3).fill(0).map((_, i) => (
+              <CarouselItem key={i} className="pl-2 basis-9/10 sm:basis-3/4 lg:basis-1/2">
+                <Card className="overflow-hidden border-none shadow-md">
                   <CardContent className="p-0 relative">
-                    <div className="relative group h-48">
-                      <img 
-                        src={offer.image} 
-                        alt={offer.title} 
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
-                        loading="lazy" 
-                      />
-                      <div className={`absolute inset-0 bg-gradient-to-t ${offer.color}`}>
-                        {offer.discount && (
-                          <div className="absolute top-3 left-3">
-                            <Badge className="bg-orange-500 hover:bg-orange-600 text-xs font-bold px-2 py-1">
-                              {offer.discount}
-                            </Badge>
-                          </div>
-                        )}
-                        <div className="absolute bottom-0 right-0 left-0 p-4 text-white text-right">
-                          <h3 className="text-xl font-bold drop-shadow-md">{offer.title}</h3>
-                          <p className="text-sm drop-shadow-md max-w-xs mt-1">{offer.description}</p>
-                          
-                          <div className="flex justify-between items-center mt-3">
-                            <Badge variant="outline" className="border-white/30 text-white flex items-center gap-1 bg-black/20 backdrop-blur-sm">
-                              <Clock className="h-3 w-3" /> {offer.deliveryTime}
-                            </Badge>
-                            
-                            {offer.rating && (
-                              <div className="flex items-center gap-1">
-                                <span className="text-sm font-bold">{offer.rating}</span>
-                                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                              </div>
-                            )}
-                          </div>
-                        </div>
+                    <Skeleton className="h-48 w-full" />
+                    <div className="p-3">
+                      <div className="flex justify-between items-start">
+                        <Skeleton className="h-5 w-16" />
+                        <Skeleton className="h-6 w-24" />
+                      </div>
+                      <Skeleton className="h-4 w-full mt-2" />
+                      <div className="flex justify-between mt-3">
+                        <Skeleton className="h-4 w-16" />
+                        <Skeleton className="h-4 w-16" />
                       </div>
                     </div>
                   </CardContent>
                 </Card>
-              </Link>
-            </CarouselItem>
-          ))}
+              </CarouselItem>
+            ))
+          ) : (
+            displayOffers.map((offer: any) => (
+              <CarouselItem key={offer.id} className="pl-2 basis-9/10 sm:basis-3/4 lg:basis-1/2">
+                <Link to={offer.link} className="block">
+                  <Card className="overflow-hidden border-none shadow-md hover:shadow-xl transition-all duration-300 rounded-xl">
+                    <CardContent className="p-0 relative">
+                      <div className="relative group h-48">
+                        <img 
+                          src={offer.image} 
+                          alt={offer.title} 
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                          loading="lazy" 
+                        />
+                        <div className={`absolute inset-0 bg-gradient-to-t ${offer.color}`}>
+                          {offer.discount && (
+                            <div className="absolute top-3 left-3">
+                              <Badge className="bg-orange-500 hover:bg-orange-600 text-xs font-bold px-2 py-1">
+                                {offer.discount}
+                              </Badge>
+                            </div>
+                          )}
+                          <div className="absolute bottom-0 right-0 left-0 p-4 text-white text-right">
+                            <h3 className="text-xl font-bold drop-shadow-md">{offer.title}</h3>
+                            <p className="text-sm drop-shadow-md max-w-xs mt-1">{offer.description}</p>
+                            
+                            <div className="flex justify-between items-center mt-3">
+                              <Badge variant="outline" className="border-white/30 text-white flex items-center gap-1 bg-black/20 backdrop-blur-sm">
+                                <Clock className="h-3 w-3" /> {offer.deliveryTime}
+                              </Badge>
+                              
+                              {offer.rating && (
+                                <div className="flex items-center gap-1">
+                                  <span className="text-sm font-bold">{offer.rating}</span>
+                                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </CarouselItem>
+            ))
+          )}
         </CarouselContent>
         <div className="hidden sm:block">
           <CarouselPrevious className="bg-white/80 backdrop-blur-sm hover:bg-white border-orange-100 text-orange-600" />
@@ -159,7 +162,7 @@ const Offers: React.FC = () => {
             <h3 className="text-sm font-bold text-gray-700">أفضل العروض</h3>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            {featuredOffers.map(offer => (
+            {featuredOffers.map((offer: any) => (
               <Link key={`featured-${offer.id}`} to={offer.link} className="block">
                 <div className="relative rounded-xl overflow-hidden h-24 shadow-sm hover:shadow-md transition-all group">
                   <img 
