@@ -12,6 +12,10 @@ import { AuthProvider } from "@/context/AuthContext";
 import BottomNav from "./components/BottomNav";
 import AuthGuard from "./components/AuthGuard";
 
+// Delivery Section - إضافة صفحات التوصيل الجديدة
+import DeliveryRequest from "./pages/DeliveryRequest";
+import DeliveryTracking from "./pages/DeliveryTracking";
+import DeliveryHelp from "./pages/DeliveryHelp";
 // Personal Care Section
 import PersonalCare from "./pages/PersonalCare";
 import PersonalCareCategory from "./pages/PersonalCareCategory";
@@ -145,6 +149,11 @@ const AppContent = () => {
           <Route path="/checkout" element={<AuthGuard><Checkout /></AuthGuard>} />
           <Route path="/tracking" element={<AuthGuard><OrderTracking /></AuthGuard>} />
           <Route path="/about" element={<AuthGuard><About /></AuthGuard>} />
+          
+          {/* Delivery Routes - إضافة مسارات التوصيل */}
+          <Route path="/delivery-request" element={<AuthGuard><DeliveryRequest /></AuthGuard>} />
+          <Route path="/delivery-tracking" element={<AuthGuard><DeliveryTracking /></AuthGuard>} />
+          <Route path="/delivery-help" element={<AuthGuard><DeliveryHelp /></AuthGuard>} />
           
           {/* Nested Route Sections */}
           <Route path="/pharmacy/*" element={<PharmacyRoutes />} />

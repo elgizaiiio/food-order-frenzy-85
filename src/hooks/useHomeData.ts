@@ -1,60 +1,40 @@
 
-import { useQuery } from '@tanstack/react-query';
-import { 
-  fetchHomeCategories, 
-  fetchHomeOffers, 
-  fetchPopularPlaces,
-  fetchHomePromos
-} from '@/services/homeService';
+import { useQuery } from "@tanstack/react-query";
+import { getHomeCategories, getHomeOffers, getHomePopularPlaces } from "@/services/homeService";
 
-/**
- * استخدام فئات الصفحة الرئيسية
- * @returns بيانات الفئات وحالة التحميل
- */
+// استخدام react-query لجلب بيانات الصفحة الرئيسية
 export const useHomeCategories = () => {
   return useQuery({
     queryKey: ['homeCategories'],
-    queryFn: fetchHomeCategories,
+    queryFn: getHomeCategories,
     staleTime: 5 * 60 * 1000, // 5 دقائق
-    retry: 2
+    refetchOnWindowFocus: false
   });
 };
 
-/**
- * استخدام عروض الصفحة الرئيسية
- * @returns بيانات العروض وحالة التحميل
- */
 export const useHomeOffers = () => {
   return useQuery({
     queryKey: ['homeOffers'],
-    queryFn: fetchHomeOffers,
+    queryFn: getHomeOffers,
     staleTime: 5 * 60 * 1000, // 5 دقائق
-    retry: 1
+    refetchOnWindowFocus: false
   });
 };
 
-/**
- * استخدام الأماكن الشائعة
- * @returns بيانات الأماكن الشائعة وحالة التحميل
- */
-export const usePopularPlaces = () => {
+export const useHomePopularPlaces = () => {
   return useQuery({
-    queryKey: ['popularPlaces'],
-    queryFn: fetchPopularPlaces,
+    queryKey: ['homePopularPlaces'],
+    queryFn: getHomePopularPlaces,
     staleTime: 5 * 60 * 1000, // 5 دقائق
-    retry: 1
+    refetchOnWindowFocus: false
   });
 };
 
-/**
- * استخدام العروض الترويجية
- * @returns بيانات العروض الترويجية وحالة التحميل
- */
-export const useHomePromos = () => {
-  return useQuery({
-    queryKey: ['homePromos'],
-    queryFn: fetchHomePromos,
-    staleTime: 5 * 60 * 1000, // 5 دقائق
-    retry: 1
-  });
-};
+// إضافة واجهة للتعريف بالفئات
+export interface Category {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+  link: string;
+}

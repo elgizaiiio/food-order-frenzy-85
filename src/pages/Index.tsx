@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Card, CardContent } from '@/components/ui/card';
+import DeliveryOption from '@/components/DeliveryOption';
 
 const Index = () => {
   const { user } = useAuth();
@@ -100,6 +101,11 @@ const Index = () => {
         {/* الاقسام الرئيسية مع أيقونات دائرية */}
         <div className="px-4 mt-6">
           <Categories />
+        </div>
+
+        {/* خدمة التوصيل */}
+        <div className="px-4 pt-4 pb-2">
+          <DeliveryOption />
         </div>
         
         {/* Main Content with improved styling */}
