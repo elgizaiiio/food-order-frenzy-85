@@ -39,9 +39,9 @@ const Categories: React.FC = () => {
     <div className="py-6 mb-2 bg-white">
       <div className="flex justify-between items-center mb-4 px-4">
         <Link to="/services" className="text-sm font-medium text-orange-500 hover:text-orange-600">
-          عرض الكل
+          شوف الكل
         </Link>
-        <h2 className="text-xl font-bold text-gray-900">التصنيفات</h2>
+        <h2 className="text-xl font-bold text-gray-900">الأقسام</h2>
       </div>
       
       <div className="scroll-container overflow-x-auto pb-4 px-4 no-scrollbar">

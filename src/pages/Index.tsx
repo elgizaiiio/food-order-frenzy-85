@@ -15,11 +15,11 @@ const Index = () => {
   const [searchQuery, setSearchQuery] = useState('');
   
   // الحصول على اسم المستخدم من البريد الإلكتروني أو عرض تحية عامة
-  const firstName = user?.email ? user.email.split('@')[0] : 'الزائر';
+  const firstName = user?.email ? user.email.split('@')[0] : 'صديقي';
   
   // بيانات العناوين - في تطبيق حقيقي ستأتي من API
-  const [address, setAddress] = useState('شارع الملك فهد');
-  const [savedAddresses, setSavedAddresses] = useState(['شارع الملك فهد', 'حي النزهة، جدة', 'حي العليا، الرياض']);
+  const [address, setAddress] = useState('شارع التحرير');
+  const [savedAddresses, setSavedAddresses] = useState(['شارع التحرير', 'ميدان طلعت حرب، القاهرة', 'المعادي، القاهرة']);
 
   return (
     <div className="min-h-screen bg-gray-100" dir="rtl">
@@ -30,7 +30,7 @@ const Index = () => {
           <div className="flex items-center justify-between mb-4 text-sm">
             <div className="flex items-center gap-1.5 text-orange-100">
               <MapPin className="w-4 h-4" />
-              <span className="font-medium">التوصيل إلى</span>
+              <span className="font-medium">توصيل لحد عندك</span>
             </div>
             
             <div className="flex items-center justify-between w-full">
@@ -56,7 +56,7 @@ const Index = () => {
                       </Button>
                     ))}
                     <Button variant="outline" className="w-full text-xs mt-2 text-orange-700 border-orange-300 hover:bg-orange-50 hover:border-orange-400">
-                      إضافة عنوان جديد
+                      ضيف عنوان جديد
                     </Button>
                   </div>
                 </PopoverContent>
@@ -71,8 +71,8 @@ const Index = () => {
           
           <div className="flex justify-between items-center mb-4">
             <div>
-              <h1 className="text-2xl font-bold">مرحباً {firstName}!</h1>
-              <p className="text-orange-100 mt-1">ماذا تريد اليوم؟</p>
+              <h1 className="text-2xl font-bold">أهلاً {firstName}!</h1>
+              <p className="text-orange-100 mt-1">عايز تطلب إيه النهاردة؟</p>
             </div>
             <Link to="/profile">
               <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center shadow-inner hover:bg-white/30 transition-all">
@@ -89,7 +89,7 @@ const Index = () => {
           <div className="mt-4 relative">
             <Input 
               type="text"
-              placeholder="ابحث عن مطعم، مقهى، وجبة..."
+              placeholder="دور على مطعم، مشروبات، أو أكلة..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full py-3 px-5 pr-12 rounded-xl bg-white/10 text-white placeholder:text-orange-100 border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/30"
@@ -124,13 +124,13 @@ const BannerSlider = () => {
   const banners = [
     {
       id: 1,
-      title: "خصم 30% على جميع المطاعم",
+      title: "خصم 30% على كل المطاعم",
       image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=500&auto=format&fit=crop",
       color: "from-orange-700 to-orange-900"
     },
     {
       id: 2,
-      title: "توصيل مجاني للطلبات فوق 100 ج.م",
+      title: "توصيل مجاني للطلبات فوق 100 جنيه",
       image: "https://images.unsplash.com/photo-1526367790999-0150786686a2?q=80&w=500&auto=format&fit=crop",
       color: "from-orange-600 to-orange-800"
     }
@@ -164,14 +164,14 @@ const BannerSlider = () => {
 const ValuePropositions = () => {
   const values = [
     {
-      title: "توصيل سريع",
+      title: "وصل بسرعة",
       icon: <Clock className="h-5 w-5 text-orange-500" />,
-      description: "وصول طلبك خلال 20-30 دقيقة"
+      description: "طلبك هيوصل خلال 20-30 دقيقة"
     },
     {
-      title: "خدمة مجانية",
+      title: "توصيل ببلاش",
       icon: <Car className="h-5 w-5 text-orange-500" />,
-      description: "توصيل مجاني للطلبات فوق 50 ج.م"
+      description: "للطلبات اللي أكتر من 50 جنيه"
     }
   ];
   
@@ -201,10 +201,10 @@ const TopRestaurants = () => {
   const restaurants = [
     {
       id: 1,
-      name: "مطعم المندي",
+      name: "مطعم الكشري المصري",
       image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=300&auto=format&fit=crop",
       rating: 4.8,
-      category: "مندي",
+      category: "كشري",
       deliveryTime: "25-35 د",
       deliveryFee: "مجاناً"
     },
@@ -213,7 +213,7 @@ const TopRestaurants = () => {
       name: "كنتاكي",
       image: "https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?q=80&w=300&auto=format&fit=crop",
       rating: 4.5,
-      category: "دجاج",
+      category: "فراخ",
       deliveryTime: "15-25 د",
       deliveryFee: "10 ج.م"
     },
@@ -232,7 +232,7 @@ const TopRestaurants = () => {
     <div className="py-6 bg-white mt-2">
       <div className="flex justify-between items-center mb-4 px-4">
         <Link to="/restaurants" className="text-sm font-medium text-orange-500 hover:text-orange-600">
-          عرض الكل
+          شوف الكل
         </Link>
         <h2 className="text-xl font-bold text-gray-900">مطاعم قريبة منك</h2>
       </div>
@@ -283,13 +283,13 @@ const SpecialOffers = () => {
     {
       id: 1,
       title: "خصم 30%",
-      description: "على جميع الوجبات من ماكدونالدز",
+      description: "على كل الوجبات من ماكدونالدز",
       image: "https://images.unsplash.com/photo-1561758033-7e924f619b47?q=80&w=500&auto=format&fit=crop",
     },
     {
       id: 2,
-      title: "اشترِ 1 واحصل على 1 مجاناً",
-      description: "من بيتزا هت على جميع البيتزا",
+      title: "اطلب 1 واحصل على 1 ببلاش",
+      description: "من بيتزا هت على كل البيتزا",
       image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=500&auto=format&fit=crop",
     }
   ];
@@ -298,9 +298,9 @@ const SpecialOffers = () => {
     <div className="py-6 bg-white mt-2">
       <div className="flex justify-between items-center mb-4 px-4">
         <Link to="/offers" className="text-sm font-medium text-orange-500 hover:text-orange-600">
-          عرض الكل
+          شوف الكل
         </Link>
-        <h2 className="text-xl font-bold text-gray-900">عروض خاصة</h2>
+        <h2 className="text-xl font-bold text-gray-900">عروض حصرية</h2>
       </div>
       
       <div className="scroll-container px-4 no-scrollbar">
@@ -331,10 +331,10 @@ const SpecialOffers = () => {
       <div className="mt-8 mx-4">
         <Card className="border-none overflow-hidden bg-gradient-to-r from-orange-500 to-orange-600">
           <div className="p-5 text-white">
-            <h3 className="text-xl font-bold mb-2">احصل على تجربة أفضل</h3>
-            <p className="text-sm mb-4">حمل تطبيق طلبات الآن واستمتع بمزايا حصرية</p>
+            <h3 className="text-xl font-bold mb-2">عايز تجربة أحسن؟</h3>
+            <p className="text-sm mb-4">نزل تطبيق طلبات دلوقتي وخد مميزات حصرية</p>
             <Button className="bg-white text-orange-600 hover:bg-orange-50">
-              تحميل التطبيق
+              حمل التطبيق
             </Button>
           </div>
         </Card>

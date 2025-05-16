@@ -20,7 +20,7 @@ export interface Offer {
 }
 
 export interface Place {
-  id: string | number; // Updated to accept both string and number to fix the type mismatch
+  id: string | number;
   name: string;
   image: string;
   rating: number;
@@ -50,40 +50,40 @@ export async function fetchHomeCategories(): Promise<Category[]> {
       id: "restaurants",
       name: "مطاعم", 
       icon: "UtensilsCrossed", 
-      color: "bg-gradient-to-br from-blue-500 to-blue-600 text-white",
-      shadow: "shadow-blue-200",
+      color: "bg-gradient-to-br from-orange-500 to-orange-600 text-white",
+      shadow: "shadow-orange-200",
       link: "/restaurants"
     },
     { 
       id: "market",
       name: "سوبر ماركت", 
       icon: "ShoppingCart", 
-      color: "bg-gradient-to-br from-cyan-500 to-blue-500 text-white",
-      shadow: "shadow-cyan-200",
+      color: "bg-gradient-to-br from-orange-400 to-orange-500 text-white",
+      shadow: "shadow-orange-200",
       link: "/market" 
     },
     { 
       id: "pharmacy",
       name: "صيدليات", 
       icon: "Pill", 
-      color: "bg-gradient-to-br from-sky-500 to-blue-500 text-white",
-      shadow: "shadow-sky-200",
+      color: "bg-gradient-to-br from-orange-500 to-orange-600 text-white",
+      shadow: "shadow-orange-200",
       link: "/pharmacy" 
     },
     { 
       id: "personal-care",
-      name: "العناية الشخصية", 
+      name: "بيوتي", 
       icon: "Brush", 
-      color: "bg-gradient-to-br from-blue-400 to-blue-600 text-white",
-      shadow: "shadow-blue-200",
+      color: "bg-gradient-to-br from-orange-400 to-orange-500 text-white",
+      shadow: "shadow-orange-200",
       link: "/personal-care" 
     },
     { 
       id: "gym",
       name: "جيم", 
       icon: "Dumbbell", 
-      color: "bg-gradient-to-br from-blue-600 to-indigo-700 text-white",
-      shadow: "shadow-blue-200",
+      color: "bg-gradient-to-br from-orange-500 to-orange-600 text-white",
+      shadow: "shadow-orange-200",
       link: "/gym" 
     }
   ];
@@ -149,8 +149,27 @@ export async function fetchPopularPlaces(): Promise<Place[]> {
       }));
     }
     
-    // إذا لم تكن هناك بيانات، نُرجع قائمة فارغة
-    return [];
+    // إذا لم تكن هناك بيانات، نُرجع قائمة افتراضية
+    return [
+      {
+        id: 1,
+        name: "مطعم الكشري المصري",
+        image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=300&auto=format&fit=crop",
+        rating: 4.8,
+        category: "كشري",
+        deliveryTime: "25-35 دقيقة",
+        deliveryFee: "مجاناً"
+      },
+      {
+        id: 2,
+        name: "كنتاكي",
+        image: "https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?q=80&w=300&auto=format&fit=crop",
+        rating: 4.5,
+        category: "فراخ",
+        deliveryTime: "15-25 دقيقة",
+        deliveryFee: "10 ج.م"
+      }
+    ];
   } catch (error) {
     console.error('خطأ في جلب الأماكن الشائعة:', error);
     return [];
@@ -168,7 +187,7 @@ export async function fetchHomePromos(): Promise<Promo[]> {
       title: "سوبر ماركت",
       description: "خصم 50 جنيه على أول طلب",
       icon: "Home",
-      gradient: "from-blue-500 to-sky-400",
+      gradient: "from-orange-500 to-orange-600",
       iconBg: "bg-white/20",
       textColor: "text-white",
       link: "/market"
@@ -178,17 +197,17 @@ export async function fetchHomePromos(): Promise<Promo[]> {
       title: "اشتراكات الجيم",
       description: "اشتراك شهري بـ 300 جنيه",
       icon: "Dumbbell",
-      gradient: "from-indigo-600 to-blue-500",
+      gradient: "from-orange-600 to-orange-700",
       iconBg: "bg-white/20",
       textColor: "text-white",
       link: "/gym"
     }, 
     {
       id: 3,
-      title: "العناية الشخصية",
+      title: "بيوتي",
       description: "خصم 20% على كل المنتجات",
       icon: "Brush",
-      gradient: "from-blue-700 to-blue-500",
+      gradient: "from-orange-500 to-orange-600",
       iconBg: "bg-white/20",
       textColor: "text-white",
       link: "/personal-care"
