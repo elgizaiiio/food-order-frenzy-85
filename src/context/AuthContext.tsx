@@ -41,10 +41,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     };
     
+    // تنفيذ جلب الجلسة عند التحميل
     getSession();
 
     // الاستماع لتغييرات حالة المصادقة
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log("Auth state changed:", _event, session?.user?.email);
       setSession(session);
       setUser(session?.user ?? null);
       setIsLoading(false);
@@ -66,6 +68,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       setSession(data.session);
       setUser(data.user);
+      console.log("Signed in successfully:", data.user?.email);
+      return;
     } catch (error: any) {
       console.error('خطأ في تسجيل الدخول', error);
       throw error;
@@ -88,6 +92,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       
       toast.success('تم إنشاء الحساب بنجاح! يرجى التحقق من بريدك الإلكتروني للتأكيد.');
+      
+      if (data.session) {
+        setSession(data.session);
+        setUser(data.user);
+        console.log("Signed up and logged in:", data.user?.email);
+      }
     } catch (error: any) {
       console.error('خطأ في إنشاء الحساب', error);
       throw error;

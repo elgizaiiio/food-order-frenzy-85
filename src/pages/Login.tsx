@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Mail, Lock, EyeOff, Eye } from 'lucide-react';
@@ -15,12 +16,14 @@ const Login: React.FC = () => {
   const location = useLocation();
   const { signIn, user } = useAuth();
   
-  const from = location.state?.from?.pathname || '/';
+  // الحصول على المسار السابق أو التوجيه إلى الصفحة الرئيسية
+  const from = location.state?.from || '/';
   
   // التحقق إذا كان المستخدم مسجل دخوله بالفعل
   useEffect(() => {
+    console.log("Login page: user is", user?.email, "redirecting to", from);
     if (user) {
-      navigate(from, { replace: true });
+      navigate('/', { replace: true });
     }
   }, [user, navigate, from]);
 
@@ -40,7 +43,8 @@ const Login: React.FC = () => {
       
       // تم تسجيل الدخول بنجاح
       toast.success('تم تسجيل الدخول بنجاح');
-      navigate(from, { replace: true });
+      console.log("Login successful, navigating to:", from);
+      navigate('/', { replace: true });
     } catch (error: any) {
       console.error('خطأ في تسجيل الدخول:', error);
       

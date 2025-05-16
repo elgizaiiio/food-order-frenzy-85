@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Mail, Lock, User, EyeOff, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -16,9 +16,10 @@ const Register: React.FC = () => {
   const navigate = useNavigate();
   const { signUp, user } = useAuth();
   
-  // If user is already logged in, redirect to home page
-  React.useEffect(() => {
+  // إذا كان المستخدم مسجل دخوله بالفعل، تحويله إلى الصفحة الرئيسية
+  useEffect(() => {
     if (user) {
+      console.log("Register page: User already logged in, redirecting to home");
       navigate('/', { replace: true });
     }
   }, [user, navigate]);
@@ -47,8 +48,13 @@ const Register: React.FC = () => {
       await signUp(email, password);
       toast.success('تم إنشاء الحساب بنجاح! يرجى تسجيل الدخول');
       navigate('/login');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Registration error:', error);
+      if (error.message.includes('already registered')) {
+        toast.error('البريد الإلكتروني مسجل بالفعل');
+      } else {
+        toast.error('حدث خطأ أثناء التسجيل');
+      }
     } finally {
       setLoading(false);
     }
