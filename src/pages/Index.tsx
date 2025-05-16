@@ -24,10 +24,10 @@ const Index = () => {
   const [savedAddresses, setSavedAddresses] = useState(['شارع الملك فهد', 'حي النزهة', 'المركز التجاري']);
 
   return (
-    <div className="min-h-screen bg-gray-100" dir="rtl">
-      <div className="max-w-md mx-auto bg-gray-100 pb-20">
+    <div className="min-h-screen bg-gray-50" dir="rtl">
+      <div className="max-w-md mx-auto bg-gray-50 pb-20">
         {/* Header with talabat styling */}
-        <header className="talabat-header">
+        <header className="bg-gradient-to-r from-orange-600 to-orange-500 text-white rounded-b-3xl shadow-lg py-4 px-4">
           {/* تحديد العنوان */}
           <div className="flex items-center justify-between mb-4 text-sm">
             <div className="flex items-center gap-1.5 text-white/90">
@@ -73,7 +73,7 @@ const Index = () => {
           
           <div className="flex justify-between items-center mb-4">
             <div>
-              <h1 className="text-2xl font-bold">أهلاً {firstName}!</h1>
+              <h1 className="text-2xl font-bold text-white">أهلاً {firstName}!</h1>
               <p className="text-white/90 mt-1 text-sm">عايز تطلب إيه النهاردة؟</p>
             </div>
             <Link to="/profile">
@@ -94,7 +94,7 @@ const Index = () => {
               placeholder="مطعم، بقالة، أدوية..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full py-2.5 pl-4 pr-10 rounded-lg search-input"
+              className="w-full py-2.5 pl-4 pr-10 rounded-lg bg-white/10 border border-white/20 text-white placeholder:text-white/70 focus:border-white/40 focus:ring-1 focus:ring-white/30"
             />
             <button className="absolute top-1/2 right-3 -translate-y-1/2 text-white">
               <Search className="h-5 w-5" />
@@ -163,7 +163,7 @@ const BannerSlider = () => {
               alt={banner.title} 
               className="w-full h-full object-cover"
             />
-            <div className={`absolute inset-0 bg-gradient-to-tr ${banner.color} opacity-75`}></div>
+            <div className={`absolute inset-0 bg-gradient-to-tr ${banner.color} opacity-85`}></div>
             <div className="absolute inset-0 flex items-center justify-center p-6">
               <h3 className="text-white text-lg font-bold text-center drop-shadow-md">{banner.title}</h3>
             </div>
@@ -190,7 +190,7 @@ const ValuePropositions = () => {
   ];
   
   return (
-    <div className="talabat-section">
+    <div className="bg-white rounded-xl my-3 py-3 px-4 shadow-sm">
       <div className="flex justify-between gap-3">
         {values.map((value, index) => (
           <Card key={index} className="flex-1 border-none shadow-sm animate-fade-in" style={{animationDelay: `${index * 100}ms`}}>
@@ -213,7 +213,7 @@ const ValuePropositions = () => {
 // مكون تحميل التطبيق
 const DownloadAppBanner = () => {
   return (
-    <Card className="border-none overflow-hidden bg-gradient-to-r from-orange-500 to-orange-600 animate-fade-in animate-delay-4 mb-6">
+    <Card className="border-none overflow-hidden bg-gradient-to-r from-orange-500 to-orange-600 animate-fade-in animate-delay-4 mb-6 rounded-xl">
       <div className="p-5 text-white">
         <h3 className="text-lg font-bold mb-2">عايز تجربة أفضل؟</h3>
         <p className="text-sm mb-4">نزل التطبيق واحصل على خصومات حصرية</p>
