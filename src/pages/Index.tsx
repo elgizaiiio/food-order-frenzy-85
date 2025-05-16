@@ -10,7 +10,7 @@ import PopularPlaces from '@/components/PopularPlaces';
 import { Header } from '@/components/ui/Header';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Package, UtensilsCrossed, Shopping, PlusSquare, Coffee } from 'lucide-react';
+import { Package, UtensilsCrossed, ShoppingBag, PlusSquare, Coffee } from 'lucide-react';
 
 export default function Index() {
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ export default function Index() {
       action: () => navigate('/restaurants')
     },
     {
-      icon: <Shopping className="h-8 w-8 text-white" />,
+      icon: <ShoppingBag className="h-8 w-8 text-white" />,
       title: "سوبر ماركت",
       description: "كل احتياجاتك اليومية",
       color: "from-blue-600 to-blue-500",
