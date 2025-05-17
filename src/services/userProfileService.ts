@@ -18,7 +18,7 @@ export interface UserProfile {
 // كاش للملف الشخصي لتسريع تحميل البيانات
 let profileCache: UserProfile | null = null;
 let lastFetchTime = 0;
-const CACHE_TTL = 60000; // مدة صلاحية الكاش - دقيقة واحدة
+const CACHE_TTL = 300000; // زيادة مدة صلاحية الكاش إلى 5 دقائق
 
 /**
  * الحصول على معلومات الملف الشخصي للمستخدم الحالي
@@ -27,19 +27,21 @@ const CACHE_TTL = 60000; // مدة صلاحية الكاش - دقيقة واحد
 export async function getUserProfile(): Promise<UserProfile> {
   try {
     const now = Date.now();
+    
+    // التحقق من وجود المستخدم أولاً قبل جلب البيانات
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) throw new Error('يجب تسجيل الدخول أولاً');
     
-    // إذا كان الكاش موجود وحديث، استخدمه
+    // إذا كان الكاش موجود وحديث، استخدمه لتجنب استدعاء قاعدة البيانات
     if (profileCache && lastFetchTime > now - CACHE_TTL && profileCache.id === user.id) {
       console.log("استخدام الملف الشخصي من الكاش:", profileCache.id);
       return profileCache;
     }
     
-    console.log("جلب ملف المستخدم:", user.id);
+    console.log("جلب ملف المستخدم من قاعدة البيانات:", user.id);
     
-    // محاولة جلب الملف الشخصي الحالي
+    // استخدم maybeSingle بدلاً من single لتجنب الأخطاء إذا لم يكن الملف موجودًا
     const { data, error } = await supabase
       .from('users')
       .select('*')
@@ -48,6 +50,8 @@ export async function getUserProfile(): Promise<UserProfile> {
       
     if (error) {
       console.error('خطأ في جلب الملف الشخصي:', error);
+      
+      // إذا كان الخطأ متعلقًا بسياسة الأمان، نستخدم معلومات المستخدم الأساسية
       if (error.code === '42501') { // خطأ في سياسة الأمان RLS
         const basicProfile = {
           id: user.id,
@@ -83,19 +87,29 @@ export async function getUserProfile(): Promise<UserProfile> {
       return basicProfile;
     }
     
-    // تحميل صورة الملف الشخصي بشكل منفصل ومتوازي لتسريع التحميل
-    const activeProfileImage = await getActiveProfileImage();
-    
-    const profile = {
-      ...data,
-      profile_image: activeProfileImage || data.profile_image || data.avatar_url
-    };
-    
-    // تحديث الكاش
-    profileCache = profile;
+    // نقوم بتعبئة الكاش قبل تحميل الصورة لتوفير الوقت
+    const tempProfile = {...data};
+    profileCache = tempProfile;
     lastFetchTime = now;
     
-    return profile;
+    // تحميل صورة الملف الشخصي بشكل منفصل
+    // هذا لا يؤثر على النتيجة المُرجعة الفورية، لكنه يحدّث الكاش للاستخدام المستقبلي
+    getActiveProfileImage().then(activeProfileImage => {
+      if (activeProfileImage) {
+        const updatedProfile = {
+          ...tempProfile,
+          profile_image: activeProfileImage
+        };
+        
+        // تحديث الكاش بالصورة
+        profileCache = updatedProfile;
+      }
+    }).catch(err => {
+      console.warn('خطأ في تحميل صورة الملف الشخصي:', err);
+      // لا نفعل شيئًا هنا - نستمر باستخدام البيانات بدون صورة
+    });
+    
+    return tempProfile;
   } catch (error) {
     console.error('خطأ في جلب معلومات الملف الشخصي:', error);
     throw error;

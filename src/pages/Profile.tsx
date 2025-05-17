@@ -1,16 +1,27 @@
 
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ChevronLeft, Settings, MapPin, CreditCard, Package, Ticket, MessageSquare, UserPlus, LogOut } from 'lucide-react';
+import { ChevronLeft, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/AuthContext';
 import { useUserProfile } from '@/hooks/useUserData';
 import { toast } from 'sonner';
+import { useLazyImage } from '@/hooks/useLazyImage';
 
-// مكون الرأس للملف الشخصي
-const ProfileHeader = ({ displayName, profileImage }: { displayName: string, profileImage: string | null }) => (
-  <>
+// تحميل المكونات غير الأساسية بشكل متأخر لتسريع التحميل الأولي
+const LazyMenuSection = lazy(() => import('@/components/profile/MenuSection'));
+
+// مكون الرأس للملف الشخصي - محسن للأداء
+const ProfileHeader = ({ displayName, profileImage }: { displayName: string, profileImage: string | null }) => {
+  const { imageSrc, isLoading } = useLazyImage({ 
+    src: profileImage,
+    placeholder: '', 
+    priority: true // نحمل الصورة بأولوية عالية لأنها مرئية مباشرة
+  });
+  
+  return (
     <div className="relative">
       {/* Gradient background header */}
       <div className="bg-gradient-to-r from-orange-500 to-orange-600 h-40 rounded-b-3xl shadow-md">
@@ -29,10 +40,12 @@ const ProfileHeader = ({ displayName, profileImage }: { displayName: string, pro
       <div className="absolute left-1/2 transform -translate-x-1/2 -bottom-16">
         <div className="relative">
           <Avatar className="h-32 w-32 border-4 border-white shadow-lg">
-            {profileImage ? (
+            {isLoading ? (
+              <Skeleton className="h-full w-full rounded-full" />
+            ) : imageSrc ? (
               <AvatarImage 
-                src={profileImage} 
-                loading="lazy"
+                src={imageSrc} 
+                loading="eager"
                 fetchPriority="high"
                 alt={displayName}
                 onError={(e) => {
@@ -50,22 +63,35 @@ const ProfileHeader = ({ displayName, profileImage }: { displayName: string, pro
         </div>
       </div>
     </div>
-  </>
-);
+  );
+};
 
-// مكون قائمة الإعدادات للتعامل معه بشكل منفصل
-const MenuItem = ({ to, icon: Icon, label }: { to: string; icon: React.ElementType; label: string }) => (
-  <Link to={to}>
-    <div className="flex items-center justify-between p-4 border-b border-gray-100">
-      <div className="flex items-center">
-        <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center ml-3">
-          <Icon className="w-5 h-5 text-orange-600" />
-        </div>
-        <span className="text-gray-800 font-medium">{label}</span>
+// مكون حالة التحميل للملف الشخصي
+const ProfileSkeleton = () => (
+  <div className="min-h-screen bg-gray-50 p-4">
+    <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
+      <Skeleton className="h-40 w-full rounded-xl mb-16" />
+      <div className="flex flex-col items-center pt-8">
+        <Skeleton className="h-6 w-36 mb-2" />
+        <Skeleton className="h-4 w-48 mb-4" />
+        <Skeleton className="h-10 w-48 rounded-full" />
       </div>
-      <ChevronLeft className="w-5 h-5 text-gray-400" />
     </div>
-  </Link>
+    <div className="mt-6 bg-white rounded-lg shadow-sm p-4">
+      <Skeleton className="h-6 w-36 mb-4" />
+      <div className="space-y-3">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="flex items-center justify-between border-b pb-2">
+            <div className="flex items-center">
+              <Skeleton className="h-10 w-10 rounded-full mr-3" />
+              <Skeleton className="h-4 w-24" />
+            </div>
+            <Skeleton className="h-4 w-4" />
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
 );
 
 const Profile: React.FC = () => {
@@ -73,9 +99,14 @@ const Profile: React.FC = () => {
   const { user, signOut } = useAuth();
   const { data: userProfile, isLoading, error: profileError, refetch } = useUserProfile();
   
-  // إعادة تحميل البيانات عند زيارة الصفحة
+  // إعادة تحميل البيانات عند زيارة الصفحة - باستخدام المعرف للمكون لمنع إعادة التحميل المستمر
   React.useEffect(() => {
-    refetch();
+    // استخدم setTimeout لتأخير التحميل قليلاً حتى تتم عملية التصيير أولاً
+    const timer = setTimeout(() => {
+      refetch();
+    }, 100);
+    
+    return () => clearTimeout(timer);
   }, [refetch]);
   
   const handleSignOut = async () => {
@@ -90,12 +121,7 @@ const Profile: React.FC = () => {
   };
   
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center" dir="rtl">
-        <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
-        <p className="mt-4 text-orange-600 font-medium">جاري التحميل...</p>
-      </div>
-    );
+    return <ProfileSkeleton />;
   }
   
   if (profileError) {
@@ -142,35 +168,19 @@ const Profile: React.FC = () => {
         {/* Divider */}
         <div className="h-2 bg-gray-100"></div>
         
-        {/* Menu Options with improved styling */}
-        <div className="p-4">
-          <h3 className="font-bold text-lg mb-3 text-gray-700 pr-2">إعدادات الحساب</h3>
-          
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-            <MenuItem to="/addresses" icon={MapPin} label="العناوين" />
-            <MenuItem to="/payment-methods" icon={CreditCard} label="طرق الدفع" />
-            <MenuItem to="/orders" icon={Package} label="الطلبات السابقة" />
-            <MenuItem to="/coupons" icon={Ticket} label="الكوبونات" />
+        {/* استخدام Suspense لتحميل المكونات الأقل أهمية بشكل متأخر */}
+        <Suspense fallback={
+          <div className="p-4 space-y-4">
+            <Skeleton className="h-6 w-36 mb-4" />
+            <div className="space-y-3">
+              {[1, 2, 3, 4].map((i) => (
+                <Skeleton key={i} className="h-16 w-full rounded-lg" />
+              ))}
+            </div>
           </div>
-          
-          <h3 className="font-bold text-lg mb-3 mt-6 text-gray-700 pr-2">المزيد</h3>
-          
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-            <MenuItem to="/chat-support" icon={MessageSquare} label="الدعم الفني" />
-            <MenuItem to="/invite-friends" icon={UserPlus} label="دعوة الأصدقاء" />
-          </div>
-          
-          {/* Logout button with better styling */}
-          <div className="mt-6">
-            <button 
-              onClick={handleSignOut}
-              className="w-full flex items-center justify-center p-4 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 font-medium transition-colors"
-            >
-              <LogOut className="w-5 h-5 ml-2" />
-              تسجيل الخروج
-            </button>
-          </div>
-        </div>
+        }>
+          <LazyMenuSection handleSignOut={handleSignOut} />
+        </Suspense>
       </div>
     </div>
   );

@@ -122,23 +122,34 @@ export function useDeletePaymentMethod() {
   });
 }
 
+// تحسين استعلام بيانات المستخدم لزيادة السرعة والأداء
 export function useUserProfile() {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   
+  // استخدام staleTime أطول لتقليل عدد الاستعلامات
   return useQuery({
     queryKey: ['user-profile', user?.id],
     queryFn: getUserProfile,
-    staleTime: USER_DATA_STALE_TIME / 2, // نصف الوقت للتأكد من تحديث البيانات
-    gcTime: USER_DATA_GC_TIME,
+    staleTime: 5 * 60 * 1000, // 5 دقائق
+    gcTime: 10 * 60 * 1000, // 10 دقائق
     enabled: !!user?.id,
-    retry: 2,
-    refetchOnWindowFocus: false, 
-    // تعطيل التحميل التلقائي عند تفعيل النافذة لمنع التأثير على الأداء
-    refetchOnMount: true, // تحديث البيانات عند تحميل المكون
+    // التحسينات لمنع الاستعلامات غير الضرورية
+    refetchOnMount: 'always', // تأكد من أن البيانات محدثة عند تحميل المكون
+    refetchOnWindowFocus: false, // تعطيل التحديث عند تركيز النافذة
+    refetchOnReconnect: false, // تعطيل التحديث عند إعادة الاتصال
+    retry: 1, // تقليل عدد المحاولات لتسريع ردود الخطأ
+    // تخزين النتيجة المسبقة للاستخدام الفوري
+    placeholderData: (previousData) => previousData,
     meta: {
       onError: (error: any) => {
         console.error('خطأ في استرجاع بيانات الملف الشخصي:', error);
       }
+    },
+    select: (data) => {
+      // التأكد من معالجة بيانات المستخدم بشكل صحيح
+      if (!data) return null;
+      return data;
     }
   });
 }
