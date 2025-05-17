@@ -1,15 +1,14 @@
 
-import React, { lazy, Suspense, useEffect } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ChevronLeft, Settings, MapPin, CreditCard, Package, Ticket, MessageSquare, UserPlus, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/AuthContext';
 import { useUserProfile } from '@/hooks/useUserData';
 import { toast } from 'sonner';
 
-// تحسين أداء التطبيق باستخدام التحميل الكسول للمكونات الغير ضرورية للعرض الأولي
+// مكون الرأس للملف الشخصي
 const ProfileHeader = ({ displayName, profileImage }: { displayName: string, profileImage: string | null }) => (
   <>
     <div className="relative">
@@ -75,7 +74,7 @@ const Profile: React.FC = () => {
   const { data: userProfile, isLoading, error: profileError, refetch } = useUserProfile();
   
   // إعادة تحميل البيانات عند زيارة الصفحة
-  useEffect(() => {
+  React.useEffect(() => {
     refetch();
   }, [refetch]);
   
@@ -108,7 +107,7 @@ const Profile: React.FC = () => {
           <Button onClick={() => window.location.reload()} className="bg-orange-500 hover:bg-orange-600">
             إعادة المحاولة
           </Button>
-          <Button onClick={() => navigate('/profile')} variant="outline">
+          <Button onClick={() => navigate('/')} variant="outline">
             العودة للصفحة الرئيسية
           </Button>
         </div>
@@ -122,7 +121,7 @@ const Profile: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-100" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-20">
-        {/* Header with gradient background - preload this component */}
+        {/* Header with gradient background */}
         <ProfileHeader displayName={displayName} profileImage={profileImage} />
         
         {/* User Info with spacing for the avatar */}
@@ -143,7 +142,7 @@ const Profile: React.FC = () => {
         {/* Divider */}
         <div className="h-2 bg-gray-100"></div>
         
-        {/* Menu Options with improved styling - lazy load these components */}
+        {/* Menu Options with improved styling */}
         <div className="p-4">
           <h3 className="font-bold text-lg mb-3 text-gray-700 pr-2">إعدادات الحساب</h3>
           

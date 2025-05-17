@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ChevronLeft, Camera } from 'lucide-react';
@@ -131,7 +132,7 @@ const EditProfile: React.FC = () => {
       
       console.log("بيانات التحديث المرسلة:", updateData);
       
-      // تحديث بيانات الملف الشخصي
+      // تحديث بيانات الملف الشخصي في قاعدة البيانات
       const updatedProfile = await updateProfile.mutateAsync(updateData);
       
       // تحديث اسم المستخدم في السياق
