@@ -89,6 +89,13 @@ const Login: React.FC = () => {
     }
   };
   
+  // Button animation variants
+  const buttonVariants = {
+    initial: { scale: 1 },
+    hover: { scale: 1.05 },
+    tap: { scale: 0.95 }
+  };
+  
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 via-white to-orange-100 overflow-hidden relative" dir="rtl">
       {/* Background decorations */}
@@ -234,12 +241,24 @@ const Login: React.FC = () => {
           className="text-center"
           variants={itemVariants}
         >
-          <p className="text-orange-800 text-lg">
-            معندكش حساب؟{" "}
-            <Link to="/register" className="text-orange-600 font-bold hover:text-orange-700 transition-colors hover:underline">
-              سجل دلوقتي
+          <motion.div
+            className="py-3"
+            whileHover="hover"
+            whileTap="tap"
+            variants={buttonVariants}
+          >
+            <Link to="/register" className="inline-block">
+              <p className="text-orange-800 text-lg">
+                <span className="text-orange-600 font-bold hover:text-orange-700 transition-colors">معندكش حساب؟</span>
+                {" "}
+                <span className="text-orange-600 font-bold hover:text-orange-700 transition-colors relative group">
+                  سجل دلوقتي
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-300"></span>
+                </span>
+              </p>
             </Link>
-          </p>
+          </motion.div>
+          
           <motion.div 
             className="w-16 h-1 bg-gradient-to-r from-orange-500 to-orange-300 mx-auto mt-2 rounded-full"
             initial={{ width: 0 }}

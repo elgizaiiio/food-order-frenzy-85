@@ -101,7 +101,7 @@ export async function fetchProductCategories(): Promise<string[]> {
   try {
     // Try using RPC if available
     try {
-      const { data, error } = await supabase.rpc<string[]>('get_distinct_category_ids');
+      const { data, error } = await supabase.rpc<string>('get_distinct_category_ids');
       
       if (!error && data) {
         return Array.isArray(data) ? data.map(String) : [];
