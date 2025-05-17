@@ -6,20 +6,20 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { collection, query, where, onSnapshot, doc, updateDoc, deleteDoc } from 'firebase/firestore';
-import { firestore } from '@/integrations/firebase/client';
+import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 
 type AddressType = 'home' | 'work' | 'other';
 
 interface Address {
   id: string;
-  name: string;
-  address: string;
-  type: AddressType;
-  details?: string;
-  isDefault: boolean;
-  userId: string;
+  label: string;
+  full_address: string;
+  city: string;
+  type?: AddressType;
+  is_default: boolean;
+  user_id: string;
+  phone_number: string;
 }
 
 const Addresses: React.FC = () => {
@@ -35,36 +35,67 @@ const Addresses: React.FC = () => {
     }
 
     // استعلام عن العناوين الخاصة بالمستخدم الحالي
-    const addressesRef = collection(firestore, "addresses");
-    const q = query(addressesRef, where("userId", "==", user.id));
-
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const addressesList: Address[] = [];
-      querySnapshot.forEach((doc) => {
-        addressesList.push({ id: doc.id, ...doc.data() } as Address);
-      });
+    const fetchAddresses = async () => {
+      const { data, error } = await supabase
+        .from('user_addresses')
+        .select('*')
+        .eq('user_id', user.id);
+      
+      if (error) {
+        console.error("خطأ في جلب العناوين:", error);
+        toast.error("حدث خطأ أثناء جلب العناوين");
+        setLoading(false);
+        return;
+      }
       
       // ترتيب العناوين بحيث يكون العنوان الافتراضي أولاً
-      addressesList.sort((a, b) => {
-        if (a.isDefault && !b.isDefault) return -1;
-        if (!a.isDefault && b.isDefault) return 1;
+      const sortedAddresses = data || [];
+      sortedAddresses.sort((a, b) => {
+        if (a.is_default && !b.is_default) return -1;
+        if (!a.is_default && b.is_default) return 1;
         return 0;
       });
       
-      setAddresses(addressesList);
+      setAddresses(sortedAddresses);
       setLoading(false);
-    }, (error) => {
-      console.error("خطأ في جلب العناوين:", error);
-      toast.error("حدث خطأ أثناء جلب العناوين");
-      setLoading(false);
-    });
+    };
 
-    return () => unsubscribe();
+    fetchAddresses();
+    
+    // Set up real-time subscription for updates
+    const addressesSubscription = supabase
+      .channel('user_addresses_changes')
+      .on('postgres_changes', 
+        { 
+          event: '*', 
+          schema: 'public', 
+          table: 'user_addresses',
+          filter: `user_id=eq.${user.id}`
+        }, 
+        () => {
+          fetchAddresses();
+        }
+      )
+      .subscribe();
+      
+    return () => {
+      supabase.removeChannel(addressesSubscription);
+    };
   }, [user?.id]);
 
   const deleteAddress = async (id: string) => {
     try {
-      await deleteDoc(doc(firestore, "addresses", id));
+      const { error } = await supabase
+        .from('user_addresses')
+        .delete()
+        .eq('id', id);
+        
+      if (error) {
+        console.error("خطأ في حذف العنوان:", error);
+        toast.error("حدث خطأ أثناء حذف العنوان");
+        return;
+      }
+      
       toast.success("تم حذف العنوان بنجاح");
     } catch (error) {
       console.error("خطأ في حذف العنوان:", error);
@@ -74,21 +105,29 @@ const Addresses: React.FC = () => {
 
   const setAsDefault = async (id: string) => {
     try {
-      // تحديث جميع العناوين لتكون غير افتراضية
-      const batch = [];
-      for (const address of addresses) {
-        if (address.isDefault) {
-          batch.push(updateDoc(doc(firestore, "addresses", address.id), {
-            isDefault: false
-          }));
-        }
-      }
-      await Promise.all(batch);
+      // First, update all addresses to not be default
+      const { error: updateAllError } = await supabase
+        .from('user_addresses')
+        .update({ is_default: false })
+        .eq('user_id', user?.id);
       
-      // تعيين العنوان المحدد كعنوان افتراضي
-      await updateDoc(doc(firestore, "addresses", id), {
-        isDefault: true
-      });
+      if (updateAllError) {
+        console.error("خطأ في تحديث العناوين:", updateAllError);
+        toast.error("حدث خطأ أثناء تعيين العنوان الافتراضي");
+        return;
+      }
+      
+      // Then set the selected address as default
+      const { error: updateError } = await supabase
+        .from('user_addresses')
+        .update({ is_default: true })
+        .eq('id', id);
+      
+      if (updateError) {
+        console.error("خطأ في تعيين العنوان الافتراضي:", updateError);
+        toast.error("حدث خطأ أثناء تعيين العنوان الافتراضي");
+        return;
+      }
       
       toast.success("تم تعيين العنوان الافتراضي بنجاح");
     } catch (error) {
@@ -97,7 +136,14 @@ const Addresses: React.FC = () => {
     }
   };
 
-  const getAddressIcon = (type: AddressType) => {
+  const getAddressIcon = (address: Address) => {
+    // Try to determine type based on label if type is not available
+    const type = address.type || 
+      (address.label.toLowerCase().includes('home') || 
+       address.label.toLowerCase().includes('منزل')) ? 'home' : 
+      (address.label.toLowerCase().includes('work') || 
+       address.label.toLowerCase().includes('عمل')) ? 'work' : 'other';
+       
     switch(type) {
       case 'home':
         return <Home className="w-5 h-5 text-brand-500" />;
@@ -155,25 +201,25 @@ const Addresses: React.FC = () => {
         {!loading && addresses.length > 0 && (
           <div className="px-4 py-2 space-y-4">
             {addresses.map((address) => (
-              <Card key={address.id} className={`border ${address.isDefault ? 'border-brand-200 bg-brand-50' : ''}`}>
+              <Card key={address.id} className={`border ${address.is_default ? 'border-brand-200 bg-brand-50' : ''}`}>
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between">
                     <div className="flex items-start gap-3">
                       <div className="mt-1 w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center">
-                        {getAddressIcon(address.type)}
+                        {getAddressIcon(address)}
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <h3 className="font-semibold">{address.name}</h3>
-                          {address.isDefault && (
+                          <h3 className="font-semibold">{address.label}</h3>
+                          {address.is_default && (
                             <span className="text-xs bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full">
                               الافتراضي
                             </span>
                           )}
                         </div>
-                        <p className="text-sm text-gray-500 mt-1">{address.address}</p>
-                        {address.details && (
-                          <p className="text-xs text-gray-400 mt-1">{address.details}</p>
+                        <p className="text-sm text-gray-500 mt-1">{address.full_address}</p>
+                        {address.city && address.city !== 'Unknown' && (
+                          <p className="text-xs text-gray-400 mt-1">{address.city}</p>
                         )}
                       </div>
                     </div>
@@ -216,7 +262,7 @@ const Addresses: React.FC = () => {
                     </div>
                   </div>
 
-                  {!address.isDefault && (
+                  {!address.is_default && (
                     <Button 
                       variant="ghost" 
                       className="mt-2 text-brand-600 hover:text-brand-700 hover:bg-brand-50 text-sm px-2 h-8"

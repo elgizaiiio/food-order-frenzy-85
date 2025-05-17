@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, MapPin, Home, Briefcase, Building } from 'lucide-react';
@@ -45,15 +44,14 @@ const AddAddress: React.FC = () => {
 
       // إضافة عنوان جديد إلى Supabase
       const { data: addressData, error } = await supabase
-        .from('addresses')
+        .from('user_addresses')
         .insert([{
           user_id: user.id,
-          name: data.name,
-          address: data.address,
-          type: data.type,
-          details: data.details || '',
-          is_default: false,
-          created_at: new Date().toISOString()
+          label: data.name,
+          full_address: data.address,
+          city: data.details || 'Unknown',
+          phone_number: '',
+          is_default: false
         }])
         .select();
 
