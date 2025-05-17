@@ -34,7 +34,13 @@ const EditProfile: React.FC = () => {
         name: userProfile.name || '',
         phone: userProfile.phone || '',
       }));
-      setImagePreview(userProfile.profile_image || userProfile.avatar_url || '');
+      
+      // تعيين صورة الملف الشخصي إذا كانت موجودة
+      if (userProfile.profile_image) {
+        setImagePreview(userProfile.profile_image);
+      } else if (userProfile.avatar_url) {
+        setImagePreview(userProfile.avatar_url);
+      }
     }
   }, [userProfile]);
 
@@ -84,6 +90,13 @@ const EditProfile: React.FC = () => {
         
         // تحديث الصورة في الواجهة
         setImagePreview(result.image_url);
+        
+        // تحديث قاعدة البيانات بعنوان URL الجديد
+        await updateProfile.mutateAsync({
+          profile_image: result.image_url
+        });
+        
+        console.log('تم تحديث صورة الملف الشخصي بنجاح:', result.image_url);
       } catch (error: any) {
         console.error('خطأ في رفع الصورة:', error);
         toast.error(`فشل في رفع الصورة: ${error.message || 'خطأ غير معروف'}`);

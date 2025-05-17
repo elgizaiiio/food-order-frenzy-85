@@ -59,11 +59,16 @@ const TopBar: React.FC<TopBarProps> = ({
               {profileLoading ? (
                 <Skeleton className="h-full w-full" />
               ) : profileImage ? (
-                <AvatarImage 
-                  src={profileImage} 
-                  alt={displayName} 
-                  className="h-full w-full object-cover"
-                />
+                <Avatar className="h-full w-full">
+                  <AvatarImage 
+                    src={profileImage} 
+                    alt={displayName} 
+                    className="h-full w-full object-cover"
+                  />
+                  <AvatarFallback className="bg-blue-300 text-blue-800">
+                    {displayName.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
               ) : (
                 <User className="w-5 h-5" />
               )}
@@ -85,7 +90,7 @@ const TopBar: React.FC<TopBarProps> = ({
         
         {/* Address */}
         <div className="flex items-center text-sm text-blue-100">
-          {isLoggedIn}
+          {address}
         </div>
       </div>
     </div>

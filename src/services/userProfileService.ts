@@ -85,13 +85,6 @@ export async function updateUserProfile(updates: Partial<UserProfile>) {
     
     console.log("تحديث ملف المستخدم:", user.id, "بالبيانات:", updates);
     
-    // التحقق من وجود صورة الملف الشخصي في التحديثات
-    if (updates.profile_image) {
-      // سيتم تجاهل هذه القيمة لأن صور الملفات الشخصية تُدار من خلال خدمة addProfileImage
-      console.log("تم تحديد profile_image ولكن سيتم تجاهلها لأنها تُدار بشكل منفصل");
-      delete updates.profile_image;
-    }
-    
     // خطوة 1: محاولة تحديث بيانات المستخدم
     const { data, error } = await supabase
       .from('users')

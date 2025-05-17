@@ -159,6 +159,12 @@ export const addProfileImage = async (file: File): Promise<{ image_url: string, 
       .eq('user_id', user.id)
       .neq('id', data.id);
     
+    // تحديث حقل profile_image في جدول users
+    await supabase
+      .from('users')
+      .update({ profile_image: imageUrl })
+      .eq('id', user.id);
+    
     return {
       image_url: imageUrl,
       storage_path: fileName
