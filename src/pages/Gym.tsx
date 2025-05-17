@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Search, MapPin, Star, Clock, Users, Dumbbell, Filter } from 'lucide-react';
@@ -8,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { useGyms } from '@/hooks/useGymData';
 import { useAuth } from '@/context/AuthContext';
-import { GymItem } from '@/services/gymService';
+import { Gym } from '@/services/gymService';
 
 const Gym: React.FC = () => {
   const navigate = useNavigate();
@@ -85,7 +84,7 @@ const Gym: React.FC = () => {
         {showFilters && (
           <div className="px-4 py-3 border-b border-orange-100 animate-fade-in">
             <div className="flex flex-wrap gap-2">
-              {typeFilters.map(type => (
+              {["كمال أجسام", "لياقة بدنية", "كروس فيت", "كارديو"].map(type => (
                 <Button
                   key={type}
                   variant={filterType === type ? "default" : "outline"}
@@ -145,7 +144,7 @@ const Gym: React.FC = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              {filteredGyms?.map((gym) => (
+              {gyms?.map((gym) => (
                 <Card 
                   key={gym.id} 
                   className="overflow-hidden border border-orange-100 rounded-xl shadow-md transition-all hover:shadow-lg hover:border-orange-300"
@@ -190,10 +189,10 @@ const Gym: React.FC = () => {
                     <div className="flex justify-between items-center mb-4 text-sm text-orange-700">
                       <div className="flex items-center">
                         <Clock className="w-4 h-4 mr-1 text-orange-500" />
-                        <span>{gym.openHours}</span>
+                        <span>{gym.open_hours}</span>
                       </div>
                       <div className="flex items-center">
-                        <span className="font-medium text-orange-800">{gym.price?.split('/')[0]}</span>
+                        <span className="font-medium text-orange-800">{typeof gym.price === 'string' ? gym.price : `${gym.price}`}</span>
                       </div>
                     </div>
                     
@@ -207,7 +206,7 @@ const Gym: React.FC = () => {
                 </Card>
               ))}
 
-              {filteredGyms?.length === 0 && (
+              {gyms?.length === 0 && (
                 <div className="text-center py-8 bg-orange-50 rounded-lg border border-orange-100">
                   <div className="w-16 h-16 mx-auto bg-orange-100 rounded-full flex items-center justify-center mb-3">
                     <Dumbbell className="w-8 h-8 text-orange-500" />

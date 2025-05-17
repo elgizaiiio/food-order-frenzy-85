@@ -9,6 +9,45 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      gym_subscriptions: {
+        Row: {
+          created_at: string | null
+          end_date: string
+          gym_id: string
+          gym_name: string
+          id: string
+          plan_name: string
+          price: number
+          start_date: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          end_date: string
+          gym_id: string
+          gym_name: string
+          id?: string
+          plan_name: string
+          price: number
+          start_date: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          end_date?: string
+          gym_id?: string
+          gym_name?: string
+          id?: string
+          plan_name?: string
+          price?: number
+          start_date?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           created_at: string
@@ -194,6 +233,95 @@ export type Database = {
           rating?: number | null
         }
         Relationships: []
+      }
+      supermarket_categories: {
+        Row: {
+          description: string | null
+          id: string
+          image_url: string | null
+          name: string
+        }
+        Insert: {
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+        }
+        Update: {
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+        }
+        Relationships: []
+      }
+      supermarket_offers: {
+        Row: {
+          description: string | null
+          discount: number | null
+          id: string
+          image_url: string | null
+          title: string
+        }
+        Insert: {
+          description?: string | null
+          discount?: number | null
+          id?: string
+          image_url?: string | null
+          title: string
+        }
+        Update: {
+          description?: string | null
+          discount?: number | null
+          id?: string
+          image_url?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
+      supermarket_products: {
+        Row: {
+          category_id: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          is_popular: boolean | null
+          name: string
+          price: number
+          quantity: string | null
+          stock: number | null
+        }
+        Insert: {
+          category_id?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_popular?: boolean | null
+          name: string
+          price: number
+          quantity?: string | null
+          stock?: number | null
+        }
+        Update: {
+          category_id?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_popular?: boolean | null
+          name?: string
+          price?: number
+          quantity?: string | null
+          stock?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supermarket_products_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "supermarket_categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_addresses: {
         Row: {

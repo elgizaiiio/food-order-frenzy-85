@@ -15,6 +15,9 @@ export interface Gym {
   price: number;
 }
 
+// Adding alias for Gym type for compatibility
+export type GymItem = Gym;
+
 // بيانات وهمية لعرض الصالات الرياضية
 const MOCK_GYMS: Gym[] = [
   {
@@ -65,6 +68,66 @@ export async function fetchGymById(gymId: string): Promise<Gym | null> {
   } catch (error) {
     console.error(`Error fetching gym with ID ${gymId}:`, error);
     return null;
+  }
+}
+
+// Define the GymSubscription interface
+export interface GymSubscription {
+  id: string;
+  user_id: string;
+  gym_id: string;
+  gym_name: string;
+  plan_name: string;
+  start_date: string;
+  end_date: string;
+  status: 'active' | 'expired' | 'cancelled';
+  price: number;
+  created_at?: string;
+}
+
+// Fetch user subscriptions
+export async function fetchUserSubscriptions(userId: string): Promise<GymSubscription[]> {
+  try {
+    if (!userId) {
+      throw new Error("User ID is required");
+    }
+    
+    // Fetch subscriptions from Supabase
+    const { data, error } = await supabase
+      .from('gym_subscriptions')
+      .select('*')
+      .eq('user_id', userId);
+      
+    if (error) {
+      console.error('Error fetching gym subscriptions:', error);
+      throw error;
+    }
+    
+    return data || [];
+  } catch (error) {
+    console.error('Error in fetchUserSubscriptions:', error);
+    return [];
+  }
+}
+
+// Create gym subscription
+export async function createSubscription(subscriptionData: Omit<GymSubscription, 'id' | 'created_at'>): Promise<GymSubscription> {
+  try {
+    const { data, error } = await supabase
+      .from('gym_subscriptions')
+      .insert([subscriptionData])
+      .select()
+      .single();
+      
+    if (error) {
+      console.error('Error creating gym subscription:', error);
+      throw error;
+    }
+    
+    return data;
+  } catch (error) {
+    console.error('Error in createSubscription:', error);
+    throw error;
   }
 }
 

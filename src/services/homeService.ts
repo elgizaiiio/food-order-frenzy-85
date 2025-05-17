@@ -11,7 +11,7 @@ export interface Category {
 }
 
 export interface Offer {
-  id: number;
+  id: string; // Changed from number to string to match database
   title: string;
   description: string;
   image: string;
@@ -95,6 +95,7 @@ export async function fetchHomeCategories(): Promise<Category[]> {
 export async function fetchHomeOffers(): Promise<Offer[]> {
   try {
     // محاولة جلب العروض من قاعدة البيانات
+    // Use the newly created supermarket_offers table
     const { data, error } = await supabase
       .from('supermarket_offers')
       .select('*')
@@ -107,7 +108,7 @@ export async function fetchHomeOffers(): Promise<Offer[]> {
       return data.map(offer => ({
         id: offer.id,
         title: offer.title,
-        description: offer.description,
+        description: offer.description || "",
         image: offer.image_url || "https://images.unsplash.com/photo-1501747315-124a0eaca060?q=80&w=500&fit=crop",
         gradient: "from-black/60 to-transparent",
         link: `/promotions/${offer.id}`
