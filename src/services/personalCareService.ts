@@ -104,6 +104,7 @@ export async function fetchProductCategories(): Promise<string[]> {
       const { data, error } = await supabase.rpc('get_distinct_category_ids');
       
       if (!error && data) {
+        // Explicit casting to string array to fix type issues
         return data as string[];
       }
     } catch (rpcError) {
@@ -117,17 +118,19 @@ export async function fetchProductCategories(): Promise<string[]> {
     
     if (error) throw error;
     
-    const categories: string[] = [];
+    // Using a Set for uniqueness and explicit type handling
     const categorySet = new Set<string>();
     
     if (data && Array.isArray(data)) {
       data.forEach(item => {
         if (item.category_id) {
+          // Explicit conversion to string to avoid type issues
           categorySet.add(String(item.category_id));
         }
       });
     }
     
+    // Return array of unique categories
     return Array.from(categorySet);
   } catch (error) {
     console.error('Error fetching product categories:', error);
