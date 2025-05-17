@@ -25,6 +25,7 @@ const EditProfile: React.FC = () => {
 
   const [imagePreview, setImagePreview] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imageChanged, setImageChanged] = useState(false);
   
   // تحديث البيانات عند تحميلها
   useEffect(() => {
@@ -76,6 +77,7 @@ const EditProfile: React.FC = () => {
         const reader = new FileReader();
         reader.onloadend = () => {
           setImagePreview(reader.result as string);
+          setImageChanged(true);
         };
         reader.readAsDataURL(file);
         
@@ -90,11 +92,7 @@ const EditProfile: React.FC = () => {
         
         // تحديث الصورة في الواجهة
         setImagePreview(result.image_url);
-        
-        // تحديث قاعدة البيانات بعنوان URL الجديد
-        await updateProfile.mutateAsync({
-          profile_image: result.image_url
-        });
+        setImageChanged(true);
         
         console.log('تم تحديث صورة الملف الشخصي بنجاح:', result.image_url);
       } catch (error: any) {
@@ -120,15 +118,27 @@ const EditProfile: React.FC = () => {
       // إظهار رسالة التحميل
       const loadingToast = toast.loading("جاري تحديث الملف الشخصي...");
       
-      // تحديث بيانات الملف الشخصي
-      await updateProfile.mutateAsync({
+      const updateData: any = {
         name: formData.name,
         phone: formData.phone
-      });
+      };
+      
+      // إذا تم تغيير الصورة، أضفها إلى التحديثات
+      if (imageChanged && imagePreview) {
+        updateData.profile_image = imagePreview;
+      }
+      
+      // تحديث بيانات الملف الشخصي
+      await updateProfile.mutateAsync(updateData);
       
       toast.dismiss(loadingToast);
       toast.success("تم تحديث الملف الشخصي بنجاح");
-      navigate('/profile');
+      
+      // إعادة تعيين علامة تغيير الصورة
+      setImageChanged(false);
+      
+      // الانتقال إلى صفحة الملف الشخصي بعد التأكد من اكتمال التحديث
+      setTimeout(() => navigate('/profile'), 500);
     } catch (error: any) {
       console.error('خطأ في تحديث الملف الشخصي:', error);
       toast.error(`فشل في تحديث الملف الشخصي: ${error.message || 'خطأ غير معروف'}`);

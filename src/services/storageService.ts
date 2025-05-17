@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 
 /**
@@ -17,16 +16,6 @@ export const uploadFile = async (
 ): Promise<string | null> => {
   try {
     console.log(`محاولة رفع ملف إلى البكت ${bucketName} في المسار ${filePath}`);
-    
-    // التحقق من وجود البكت
-    const { data: bucket, error: bucketError } = await supabase
-      .storage
-      .getBucket(bucketName);
-    
-    if (bucketError) {
-      console.error('خطأ في التحقق من دلو التخزين:', bucketError);
-      throw new Error(`فشل في العثور على دلو التخزين: ${bucketError.message}`);
-    }
     
     // رفع الملف إلى Supabase Storage
     const { data, error } = await supabase
@@ -123,6 +112,8 @@ export const addProfileImage = async (file: File): Promise<{ image_url: string, 
       throw new Error('يجب تسجيل الدخول لإضافة صورة شخصية');
     }
     
+    console.log('بدء عملية رفع صورة الملف الشخصي للمستخدم:', user.id);
+    
     // إنشاء مسار فريد للملف
     const fileExt = file.name.split('.').pop();
     const fileName = `${user.id}/${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
@@ -133,6 +124,8 @@ export const addProfileImage = async (file: File): Promise<{ image_url: string, 
     if (!imageUrl) {
       throw new Error('فشل في رفع الصورة');
     }
+
+    console.log('تم رفع الصورة بنجاح، الآن إضافة سجل في قاعدة البيانات');
     
     // إضافة سجل الصورة إلى قاعدة البيانات
     const { data, error } = await supabase
@@ -148,22 +141,35 @@ export const addProfileImage = async (file: File): Promise<{ image_url: string, 
     
     if (error) {
       // إذا فشل إنشاء السجل، نحذف الملف المرفوع
+      console.error('خطأ في حفظ بيانات الصورة في قاعدة البيانات:', error);
       await deleteFile('avatars', fileName);
       throw error;
     }
+
+    console.log('تم إنشاء سجل الصورة في قاعدة البيانات:', data);
     
     // إلغاء تنشيط جميع الصور الأخرى السابقة
-    await supabase
+    const { error: updateError } = await supabase
       .from('profile_images')
       .update({ is_active: false })
       .eq('user_id', user.id)
       .neq('id', data.id);
     
+    if (updateError) {
+      console.error('خطأ في تحديث حالة الصور السابقة:', updateError);
+    }
+
     // تحديث حقل profile_image في جدول users
-    await supabase
+    const { error: userUpdateError } = await supabase
       .from('users')
       .update({ profile_image: imageUrl })
       .eq('id', user.id);
+    
+    if (userUpdateError) {
+      console.error('خطأ في تحديث صورة الملف الشخصي للمستخدم:', userUpdateError);
+    } else {
+      console.log('تم تحديث حقل profile_image في جدول users بنجاح');
+    }
     
     return {
       image_url: imageUrl,

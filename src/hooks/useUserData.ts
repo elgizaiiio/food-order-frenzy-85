@@ -147,7 +147,8 @@ export function useUpdateUserProfile() {
   
   return useMutation({
     mutationFn: updateUserProfile,
-    onSuccess: () => {
+    onSuccess: (updatedProfile) => {
+      console.log('تم تحديث الملف الشخصي بنجاح:', updatedProfile);
       queryClient.invalidateQueries({ queryKey: ['user-profile', user?.id] });
     },
     // Show optimistic updates to improve perceived performance
@@ -190,6 +191,8 @@ export function useUploadProfileImage() {
   return useMutation({
     mutationFn: addProfileImage,
     onSuccess: (data) => {
+      console.log('تم رفع الصورة بنجاح، تحديث ذاكرة التخزين المؤقت', data);
+      
       // تحديث ذاكرة التخزين المؤقت للملف الشخصي
       queryClient.setQueryData(['user-profile', user?.id], (oldData: UserProfile | undefined) => {
         if (!oldData) return undefined;
@@ -198,6 +201,7 @@ export function useUploadProfileImage() {
           profile_image: data.image_url
         };
       });
+      
       queryClient.invalidateQueries({ queryKey: ['user-profile', user?.id] });
     },
     onError: (error) => {

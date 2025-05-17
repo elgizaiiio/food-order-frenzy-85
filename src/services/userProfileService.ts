@@ -78,7 +78,7 @@ export async function getUserProfile(): Promise<UserProfile> {
  * تحديث معلومات الملف الشخصي للمستخدم الحالي
  * @param updates التحديثات المراد إجراؤها على الملف الشخصي
  */
-export async function updateUserProfile(updates: Partial<UserProfile>) {
+export async function updateUserProfile(updates: Partial<UserProfile>): Promise<UserProfile> {
   try {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('يجب تسجيل الدخول أولاً');
