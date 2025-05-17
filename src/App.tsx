@@ -40,6 +40,8 @@ import EditContactInfo from "./pages/EditContactInfo";
 import ChangePassword from "./pages/ChangePassword";
 import NotificationSettings from "./pages/NotificationSettings";
 import Addresses from "./pages/Addresses";
+import AddAddress from "./pages/AddAddress";
+import EditAddress from "./pages/EditAddress";
 import PaymentMethods from "./pages/PaymentMethods";
 import AddPaymentMethod from "./pages/AddPaymentMethod";
 import Orders from "./pages/Orders";
@@ -180,6 +182,8 @@ const AppContent = () => {
           <Route path="/change-password" element={<AuthGuard><ChangePassword /></AuthGuard>} />
           <Route path="/notification-settings" element={<AuthGuard><NotificationSettings /></AuthGuard>} />
           <Route path="/addresses" element={<AuthGuard><Addresses /></AuthGuard>} />
+          <Route path="/add-address" element={<AuthGuard><AddAddress /></AuthGuard>} />
+          <Route path="/edit-address/:addressId" element={<AuthGuard><EditAddress /></AuthGuard>} />
           <Route path="/payment-methods" element={<AuthGuard><PaymentMethods /></AuthGuard>} />
           <Route path="/add-payment-method" element={<AuthGuard><AddPaymentMethod /></AuthGuard>} />
           <Route path="/orders" element={<AuthGuard><Orders /></AuthGuard>} />
