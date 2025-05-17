@@ -1,9 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Mail, Lock, User, EyeOff, Eye } from 'lucide-react';
+import { ArrowLeft, Mail, Lock, User, EyeOff, Eye, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
 import { motion } from 'framer-motion';
@@ -62,7 +63,7 @@ const Register: React.FC = () => {
     }
   };
   
-  // متغيرات للرسوم المتحركة
+  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { 
@@ -84,40 +85,41 @@ const Register: React.FC = () => {
     }
   };
   
-  const formSectionVariants = {
-    hidden: { x: 100, opacity: 0 },
+  const logoVariants = {
+    hidden: { scale: 0 },
     visible: {
-      x: 0,
-      opacity: 1,
+      scale: 1,
       transition: {
         type: "spring",
-        stiffness: 100,
-        damping: 15
+        stiffness: 260,
+        damping: 20,
+        delay: 0.2
       }
     }
   };
   
-  // تأثيرات التحريك للخلفية
-  const backgroundDecorations = [
-    { top: "10%", right: "10%", delay: 0.2, size: "100px" },
-    { bottom: "20%", left: "5%", delay: 0.5, size: "80px" },
-    { top: "40%", right: "15%", delay: 0.8, size: "60px" },
+  // Background decorative elements
+  const decorElements = [
+    { top: "5%", right: "5%", size: "120px", delay: 0.2, rotate: 15 },
+    { bottom: "15%", left: "5%", size: "90px", delay: 0.4, rotate: -10 },
+    { top: "50%", right: "10%", size: "70px", delay: 0.6, rotate: 25 },
   ];
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-100 overflow-hidden relative" dir="rtl">
-      {/* زخارف الخلفية المتحركة */}
-      {backgroundDecorations.map((item, index) => (
+      {/* Decorative background elements */}
+      {decorElements.map((item, index) => (
         <motion.div
           key={index}
-          className="absolute rounded-full opacity-20 bg-gradient-to-r from-orange-300 to-orange-500"
+          className="absolute rounded-full opacity-20 bg-gradient-to-r from-orange-300 to-orange-500 blur-sm"
           style={{ 
             width: item.size, 
             height: item.size,
             top: item.top,
             right: item.right,
             bottom: item.bottom,
-            left: item.left
+            left: item.left,
+            rotate: item.rotate
           }}
           initial={{ scale: 0 }}
           animate={{ 
@@ -135,22 +137,23 @@ const Register: React.FC = () => {
       ))}
       
       <motion.div 
-        className="max-w-md mx-auto pt-8 pb-16 px-4 relative z-10"
+        className="max-w-md mx-auto pt-8 pb-16 px-6 relative z-10"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-6 flex items-center justify-between">
           <Link to="/" className="text-orange-600 hover:text-orange-800 transition-colors">
             <motion.div 
               whileHover={{ scale: 1.1 }} 
               whileTap={{ scale: 0.95 }}
+              className="bg-white p-2 rounded-full shadow-sm"
             >
               <ArrowLeft className="w-6 h-6" />
             </motion.div>
           </Link>
           <motion.h1 
-            className="text-2xl font-bold text-orange-900 flex-1 text-center"
+            className="text-2xl font-bold text-orange-800 flex-1 text-center"
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
@@ -161,31 +164,37 @@ const Register: React.FC = () => {
         </div>
         
         <motion.div 
-          className="bg-white rounded-2xl shadow-lg p-8 mb-8 relative"
-          variants={formSectionVariants}
+          className="bg-white rounded-3xl shadow-xl p-8 mb-6 border border-orange-100 relative overflow-hidden"
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ 
+            duration: 0.6,
+            type: "spring",
+            stiffness: 90,
+            damping: 20
+          }}
         >
+          {/* Background card pattern */}
+          <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none">
+            <div className="absolute top-0 right-0 w-40 h-40 bg-orange-500 rounded-full transform -translate-y-1/2 translate-x-1/2"></div>
+            <div className="absolute bottom-0 left-0 w-60 h-60 bg-orange-400 rounded-full transform translate-y-1/2 -translate-x-1/2"></div>
+          </div>
+          
           <motion.div 
-            className="w-24 h-24 bg-gradient-to-tr from-orange-400 to-orange-600 rounded-full mx-auto mb-6 flex items-center justify-center"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ 
-              duration: 0.5, 
-              delay: 0.3,
-              type: "spring",
-              stiffness: 200
-            }}
+            className="w-24 h-24 bg-gradient-to-tr from-orange-500 to-orange-400 rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg relative z-10"
+            variants={logoVariants}
           >
-            <User className="w-12 h-12 text-white" />
+            <UserPlus className="w-12 h-12 text-white" />
           </motion.div>
           
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5 relative z-10">
             <motion.div 
               className="space-y-2"
               variants={itemVariants}
             >
-              <label htmlFor="name" className="text-sm font-medium text-orange-800 block">
+              <Label htmlFor="name" className="text-md font-semibold text-orange-800 block pr-1">
                 الاسم
-              </label>
+              </Label>
               <div className="relative">
                 <Input
                   id="name"
@@ -193,7 +202,7 @@ const Register: React.FC = () => {
                   placeholder="أدخل اسمك الكامل"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="pl-10 pr-4 py-3 rounded-lg border-orange-200 focus:border-orange-400 focus:ring-orange-300 transition-all"
+                  className="pl-10 pr-12 py-3 rounded-xl border-2 border-orange-200 focus:border-orange-400 focus:ring-orange-300 transition-all shadow-sm text-base"
                   required
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
@@ -206,9 +215,9 @@ const Register: React.FC = () => {
               className="space-y-2"
               variants={itemVariants}
             >
-              <label htmlFor="email" className="text-sm font-medium text-orange-800 block">
+              <Label htmlFor="email" className="text-md font-semibold text-orange-800 block pr-1">
                 البريد الإلكتروني
-              </label>
+              </Label>
               <div className="relative">
                 <Input
                   id="email"
@@ -216,7 +225,7 @@ const Register: React.FC = () => {
                   placeholder="أدخل بريدك الإلكتروني"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 pr-4 py-3 rounded-lg border-orange-200 focus:border-orange-400 focus:ring-orange-300 transition-all"
+                  className="pl-10 pr-12 py-3 rounded-xl border-2 border-orange-200 focus:border-orange-400 focus:ring-orange-300 transition-all shadow-sm text-base"
                   required
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
@@ -229,9 +238,9 @@ const Register: React.FC = () => {
               className="space-y-2"
               variants={itemVariants}
             >
-              <label htmlFor="password" className="text-sm font-medium text-orange-800 block">
+              <Label htmlFor="password" className="text-md font-semibold text-orange-800 block pr-1">
                 كلمة المرور
-              </label>
+              </Label>
               <div className="relative">
                 <Input
                   id="password"
@@ -239,23 +248,25 @@ const Register: React.FC = () => {
                   placeholder="أدخل كلمة المرور"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 pr-4 py-3 rounded-lg border-orange-200 focus:border-orange-400 focus:ring-orange-300 transition-all"
+                  className="pl-10 pr-12 py-3 rounded-xl border-2 border-orange-200 focus:border-orange-400 focus:ring-orange-300 transition-all shadow-sm text-base"
                   required
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                   <Lock className="h-5 w-5 text-orange-500" />
                 </div>
-                <button
+                <motion.button
                   type="button"
                   className="absolute inset-y-0 left-0 flex items-center pl-3"
                   onClick={() => setShowPassword(!showPassword)}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
                 >
                   {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-orange-400 hover:text-orange-600 transition-colors" />
+                    <EyeOff className="h-5 w-5 text-orange-500" />
                   ) : (
-                    <Eye className="h-5 w-5 text-orange-400 hover:text-orange-600 transition-colors" />
+                    <Eye className="h-5 w-5 text-orange-500" />
                   )}
-                </button>
+                </motion.button>
               </div>
             </motion.div>
             
@@ -263,9 +274,9 @@ const Register: React.FC = () => {
               className="space-y-2"
               variants={itemVariants}
             >
-              <label htmlFor="confirmPassword" className="text-sm font-medium text-orange-800 block">
+              <Label htmlFor="confirmPassword" className="text-md font-semibold text-orange-800 block pr-1">
                 تأكيد كلمة المرور
-              </label>
+              </Label>
               <div className="relative">
                 <Input
                   id="confirmPassword"
@@ -273,7 +284,7 @@ const Register: React.FC = () => {
                   placeholder="أعد إدخال كلمة المرور"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="pl-10 pr-4 py-3 rounded-lg border-orange-200 focus:border-orange-400 focus:ring-orange-300 transition-all"
+                  className="pl-10 pr-12 py-3 rounded-xl border-2 border-orange-200 focus:border-orange-400 focus:ring-orange-300 transition-all shadow-sm text-base"
                   required
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
@@ -282,10 +293,13 @@ const Register: React.FC = () => {
               </div>
             </motion.div>
             
-            <motion.div variants={itemVariants} className="pt-2">
+            <motion.div 
+              variants={itemVariants}
+              className="pt-3"
+            >
               <Button 
                 type="submit" 
-                className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white py-6 rounded-lg shadow-md relative overflow-hidden group transition-all duration-300 transform hover:-translate-y-1"
+                className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white py-6 rounded-xl shadow-lg relative overflow-hidden group transition-all duration-300 transform hover:-translate-y-1"
                 disabled={loading}
               >
                 <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-orange-300 to-transparent opacity-30 transform -skew-x-30 transition-all duration-1000 group-hover:translate-x-full"></span>
@@ -306,9 +320,9 @@ const Register: React.FC = () => {
           className="text-center"
           variants={itemVariants}
         >
-          <p className="text-orange-800">
+          <p className="text-orange-800 text-lg">
             لديك حساب بالفعل؟{" "}
-            <Link to="/login" className="text-orange-600 font-medium hover:underline transition-colors">
+            <Link to="/login" className="text-orange-600 font-bold hover:text-orange-700 transition-colors hover:underline">
               تسجيل الدخول
             </Link>
           </p>
@@ -320,7 +334,7 @@ const Register: React.FC = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8, duration: 0.5 }}
         >
-          <div className="text-xs text-gray-500 text-center w-full mb-2">
+          <div className="text-sm text-gray-500 text-center w-full">
             جميع الحقوق محفوظة © {new Date().getFullYear()}
           </div>
         </motion.div>

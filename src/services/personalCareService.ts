@@ -99,38 +99,38 @@ export async function fetchProductById(id: string): Promise<PersonalCareProduct>
  */
 export async function fetchProductCategories(): Promise<string[]> {
   try {
-    // أولاً نحاول استخدام RPC إذا كانت متاحة
+    // Try using RPC if available
     try {
       const { data, error } = await supabase.rpc('get_distinct_category_ids');
       
       if (!error && data && Array.isArray(data)) {
-        // تحويل صريح إلى مصفوفة نصوص
-        return data as string[];
+        // Explicit conversion to string array
+        return data.map(item => String(item));
       }
     } catch (rpcError) {
       console.log('RPC not available, falling back to direct query', rpcError);
     }
     
-    // استخدام استعلام مباشر إذا فشل RPC
+    // Use direct query if RPC fails
     const { data, error } = await supabase
       .from('personal_care_products')
       .select('category_id');
     
     if (error) throw error;
     
-    // استخدام Set للحصول على القيم الفريدة
+    // Use Set for unique values
     const categorySet = new Set<string>();
     
     if (data && Array.isArray(data)) {
       data.forEach(item => {
         if (item.category_id) {
-          // تحويل صريح إلى نص لتجنب مشاكل النوع
+          // Explicit conversion to string
           categorySet.add(String(item.category_id));
         }
       });
     }
     
-    // إرجاع مصفوفة من الفئات الفريدة
+    // Return array of unique categories
     return Array.from(categorySet);
   } catch (error) {
     console.error('Error fetching product categories:', error);

@@ -1,9 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, Mail, Lock, EyeOff, Eye } from 'lucide-react';
+import { ArrowLeft, Mail, Lock, EyeOff, Eye, UserCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
 import { motion } from 'framer-motion';
@@ -54,7 +55,7 @@ const Login: React.FC = () => {
     }
   };
   
-  // متغيرات للرسوم المتحركة
+  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { 
@@ -75,11 +76,28 @@ const Login: React.FC = () => {
       transition: { duration: 0.5 }
     }
   };
+
+  const logoVariants = {
+    hidden: { scale: 0 },
+    visible: {
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 260,
+        damping: 20,
+        delay: 0.2
+      }
+    }
+  };
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white overflow-hidden" dir="rtl">
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-white to-orange-100 overflow-hidden relative" dir="rtl">
+      {/* Background decorations */}
+      <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-orange-100 opacity-40 -z-10 transform translate-x-1/4 -translate-y-1/4"></div>
+      <div className="absolute bottom-0 left-0 w-80 h-80 rounded-full bg-orange-100 opacity-50 -z-10 transform -translate-x-1/3 translate-y-1/4"></div>
+      
       <motion.div 
-        className="max-w-md mx-auto pt-8 pb-16 px-4"
+        className="max-w-md mx-auto pt-8 pb-16 px-6"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -89,12 +107,13 @@ const Login: React.FC = () => {
             <motion.div 
               whileHover={{ scale: 1.1 }} 
               whileTap={{ scale: 0.95 }}
+              className="bg-white p-2 rounded-full shadow-sm"
             >
               <ArrowLeft className="w-6 h-6" />
             </motion.div>
           </Link>
           <motion.h1 
-            className="text-2xl font-bold text-orange-900 flex-1 text-center"
+            className="text-2xl font-bold text-orange-800 flex-1 text-center"
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
@@ -105,9 +124,8 @@ const Login: React.FC = () => {
         </div>
         
         <motion.div 
-          className="bg-white rounded-2xl shadow-lg p-8 mb-8"
-          variants={itemVariants}
-          initial={{ y: 40, opacity: 0 }}
+          className="bg-white rounded-3xl shadow-xl p-8 mb-8 border border-orange-100"
+          initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ 
             duration: 0.6,
@@ -116,27 +134,20 @@ const Login: React.FC = () => {
           }}
         >
           <motion.div 
-            className="w-24 h-24 bg-gradient-to-tr from-orange-400 to-orange-600 rounded-full mx-auto mb-6 flex items-center justify-center"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ 
-              duration: 0.5, 
-              delay: 0.3,
-              type: "spring",
-              stiffness: 200
-            }}
+            className="w-24 h-24 bg-gradient-to-tr from-orange-500 to-orange-400 rounded-full mx-auto mb-8 flex items-center justify-center shadow-lg"
+            variants={logoVariants}
           >
-            <Mail className="w-12 h-12 text-white" />
+            <UserCheck className="w-12 h-12 text-white" />
           </motion.div>
           
           <form onSubmit={handleSubmit} className="space-y-6">
             <motion.div 
-              className="space-y-2"
+              className="space-y-3"
               variants={itemVariants}
             >
-              <label htmlFor="email" className="text-sm font-medium text-orange-800 block">
+              <Label htmlFor="email" className="text-md font-semibold text-orange-800 block pr-1">
                 البريد الإلكتروني
-              </label>
+              </Label>
               <div className="relative">
                 <Input
                   id="email"
@@ -144,7 +155,7 @@ const Login: React.FC = () => {
                   placeholder="أدخل بريدك الإلكتروني"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 pr-4 py-3 rounded-lg border-orange-200 focus:border-orange-400 focus:ring-orange-300 transition-all"
+                  className="pl-10 pr-12 py-3 rounded-xl border-2 border-orange-200 focus:border-orange-400 focus:ring-orange-300 transition-all shadow-sm text-base"
                   required
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
@@ -154,12 +165,12 @@ const Login: React.FC = () => {
             </motion.div>
             
             <motion.div 
-              className="space-y-2"
+              className="space-y-3"
               variants={itemVariants}
             >
-              <label htmlFor="password" className="text-sm font-medium text-orange-800 block">
+              <Label htmlFor="password" className="text-md font-semibold text-orange-800 block pr-1">
                 كلمة المرور
-              </label>
+              </Label>
               <div className="relative">
                 <Input
                   id="password"
@@ -167,38 +178,43 @@ const Login: React.FC = () => {
                   placeholder="أدخل كلمة المرور"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 pr-4 py-3 rounded-lg border-orange-200 focus:border-orange-400 focus:ring-orange-300 transition-all"
+                  className="pl-10 pr-12 py-3 rounded-xl border-2 border-orange-200 focus:border-orange-400 focus:ring-orange-300 transition-all shadow-sm text-base"
                   required
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                   <Lock className="h-5 w-5 text-orange-500" />
                 </div>
-                <button
+                <motion.button
                   type="button"
                   className="absolute inset-y-0 left-0 flex items-center pl-3"
                   onClick={() => setShowPassword(!showPassword)}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
                 >
                   {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-orange-400 hover:text-orange-600 transition-colors" />
+                    <EyeOff className="h-5 w-5 text-orange-500" />
                   ) : (
-                    <Eye className="h-5 w-5 text-orange-400 hover:text-orange-600 transition-colors" />
+                    <Eye className="h-5 w-5 text-orange-500" />
                   )}
-                </button>
+                </motion.button>
               </div>
               <div className="text-right">
                 <Link 
                   to="/forgot-password"
-                  className="text-sm text-orange-600 hover:text-orange-800 hover:underline transition-colors"
+                  className="text-sm text-orange-600 hover:text-orange-800 hover:underline transition-colors font-medium"
                 >
                   نسيت كلمة المرور؟
                 </Link>
               </div>
             </motion.div>
             
-            <motion.div variants={itemVariants}>
+            <motion.div 
+              variants={itemVariants}
+              className="pt-2"
+            >
               <Button 
                 type="submit" 
-                className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white py-6 rounded-lg shadow-md relative overflow-hidden group transition-all duration-300 transform hover:-translate-y-1"
+                className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white py-6 rounded-xl shadow-lg relative overflow-hidden group transition-all duration-300 transform hover:-translate-y-1"
                 disabled={loading}
               >
                 <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-orange-300 to-transparent opacity-30 transform -skew-x-30 transition-all duration-1000 group-hover:translate-x-full"></span>
@@ -219,9 +235,9 @@ const Login: React.FC = () => {
           className="text-center"
           variants={itemVariants}
         >
-          <p className="text-orange-800">
+          <p className="text-orange-800 text-lg">
             ليس لديك حساب؟{" "}
-            <Link to="/register" className="text-orange-600 font-medium hover:underline transition-colors">
+            <Link to="/register" className="text-orange-600 font-bold hover:text-orange-700 transition-colors hover:underline">
               إنشاء حساب جديد
             </Link>
           </p>
@@ -233,7 +249,7 @@ const Login: React.FC = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8, duration: 0.5 }}
         >
-          <div className="text-xs text-gray-500 text-center w-full mb-2">
+          <div className="text-sm text-gray-500 text-center w-full">
             جميع الحقوق محفوظة © {new Date().getFullYear()}
           </div>
         </motion.div>
