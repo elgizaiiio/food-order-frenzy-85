@@ -105,13 +105,13 @@ export async function fetchProductCategories(): Promise<string[]> {
     
     if (error) throw error;
     
-    // Extract unique categories
-    const categories = data
+    // Extract unique categories and avoid type instantiation issues
+    const validCategories = data
       .filter(item => item.category_id) // Filter out null/undefined
-      .map(item => item.category_id);
+      .map(item => item.category_id as string);
     
     // Use Set to get unique values and convert back to array
-    return [...new Set(categories)];
+    return Array.from(new Set(validCategories));
   } catch (error) {
     console.error('Error fetching product categories:', error);
     throw error;

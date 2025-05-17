@@ -20,23 +20,23 @@ const MarketCartContent: React.FC = () => {
 
   // منتجات مقترحة
   const suggestedItems = [{
-    id: 4,
+    id: "4", // Changed from number to string
     name: "بيبسي",
     price: 5.5,
     image: "https://images.unsplash.com/photo-1629203432180-71e9b1b8742c?auto=format&fit=crop&q=80&w=200&h=200"
   }, {
-    id: 5,
+    id: "5", // Changed from number to string
     name: "سفن أب",
     price: 5.5,
     image: "https://images.unsplash.com/photo-1624552184280-9e9631bbeee9?auto=format&fit=crop&q=80&w=200&h=200"
   }, {
-    id: 6,
+    id: "6", // Changed from number to string
     name: "عصير تفاح",
     price: 11,
     image: "https://images.unsplash.com/photo-1576673442511-7e39b6545c87?auto=format&fit=crop&q=80&w=200&h=200"
   }];
   
-  const removeItem = (id: number) => {
+  const removeItem = (id: string) => { // Changed from number to string
     const itemToRemove = items.find(item => item.id === id);
     if (itemToRemove) {
       removeFromCart(id);
@@ -48,7 +48,7 @@ const MarketCartContent: React.FC = () => {
     const productToAdd = {
       ...item,
       quantity: '',
-      categoryId: 0,
+      categoryId: '',  // Changed from 0 to empty string
       inStock: true,
       description: ''
     };
