@@ -99,34 +99,36 @@ export async function fetchProductById(id: string): Promise<PersonalCareProduct>
  */
 export async function fetchProductCategories(): Promise<string[]> {
   try {
-    // Using a different approach with raw SQL to avoid type issues
-    const { data, error } = await supabase
+    // First try to use an RPC function, which would be more efficient
+    const { data: rpcData, error: rpcError } = await supabase
       .rpc('get_distinct_category_ids');
+    
+    // If the RPC exists and works, use it
+    if (!rpcError && rpcData) {
+      return rpcData as string[];
+    }
+    
+    // Fallback to direct query
+    const { data, error } = await supabase
+      .from('personal_care_products')
+      .select('category_id');
     
     if (error) throw error;
     
-    // The RPC function doesn't exist yet, so as a fallback
-    // let's query the table directly but handle the results differently
-    if (!data) {
-      const { data: rawData, error: rawError } = await supabase
-        .from('personal_care_products')
-        .select('category_id');
-      
-      if (rawError) throw rawError;
-      
-      // Use Set for unique values then convert back to array
-      const categorySet = new Set<string>();
-      
-      rawData.forEach(item => {
+    // Create a Set to store unique category IDs
+    const categorySet = new Set<string>();
+    
+    // Process each item and add non-null category_ids to the Set
+    if (data) {
+      data.forEach(item => {
         if (item.category_id) {
           categorySet.add(String(item.category_id));
         }
       });
-      
-      return Array.from(categorySet);
     }
     
-    return data;
+    // Convert the Set back to an array
+    return Array.from(categorySet);
   } catch (error) {
     console.error('Error fetching product categories:', error);
     throw error;
