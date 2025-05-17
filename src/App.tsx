@@ -135,7 +135,7 @@ const PersonalCareRoutes = () => (
 const AppContent = () => {
   return (
     <>
-      <div className="pb-20"> {/* زيادة التباعد السفلي لإفساح مجال لشريط التنقل الثابت */}
+      <div className="pb-24"> {/* زيادة التباعد السفلي لإفساح مجال أكبر لشريط التنقل الثابت */}
         <Routes>
           {/* Authentication Routes - Not Protected */}
           <Route path="/login" element={<Login />} />

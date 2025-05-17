@@ -208,7 +208,7 @@ const CheckoutContent = () => {
 const Checkout: React.FC = () => {
   return <CheckoutProvider>
       <div className="min-h-screen bg-blue-50" dir="rtl">
-        <div className="max-w-md mx-auto bg-white pb-24">
+        <div className="max-w-md mx-auto bg-white pb-28"> {/* زيادة التباعد السفلي لمراعاة الشريط السفلي */}
           {/* الرأس */}
           <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-md z-20">
             <div className="flex items-center justify-between p-4">
@@ -227,7 +227,7 @@ const Checkout: React.FC = () => {
         </div>
         
         {/* شريط الدفع السفلي الثابت */}
-        <div className="fixed bottom-16 left-0 right-0 shadow-lg border-t p-3 z-50 max-w-md mx-auto bg-white">
+        <div className="fixed bottom-16 left-0 right-0 shadow-lg border-t p-3 z-40 max-w-md mx-auto bg-white">
           <CheckoutButton />
         </div>
       </div>
