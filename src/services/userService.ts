@@ -8,6 +8,10 @@ export interface UserAddress {
   fullAddress: string;
   phone: string;
   isDefault?: boolean;
+  // Add these aliases for backward compatibility
+  label?: string; 
+  full_address?: string;
+  is_default?: boolean;
 }
 
 // واجهة بيانات طريقة الدفع
@@ -16,6 +20,8 @@ export interface PaymentMethod {
   type: string;
   last4: string;
   isDefault?: boolean;
+  // Add alias for backward compatibility
+  is_default?: boolean;
 }
 
 /**
@@ -41,8 +47,11 @@ export async function fetchUserAddresses(): Promise<UserAddress[]> {
       id: address.id,
       title: address.label,
       fullAddress: address.full_address,
+      label: address.label, // Add alias
+      full_address: address.full_address, // Add alias
       phone: address.phone_number,
-      isDefault: address.is_default
+      isDefault: address.is_default,
+      is_default: address.is_default // Add alias
     }));
   } catch (error) {
     console.error('خطأ في استرجاع العناوين:', error);

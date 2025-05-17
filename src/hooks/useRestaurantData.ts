@@ -1,6 +1,6 @@
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchRestaurants, fetchRestaurantById, fetchRestaurantMenu, fetchMenuItemsByCategory } from '@/services/restaurantService';
+import { fetchRestaurants, fetchRestaurantDetails, fetchRestaurantMenu, Restaurant, MenuItem } from '@/services/restaurantService';
 import { useState, useEffect, useMemo } from 'react';
 
 // استخدام الذاكرة المؤقتة المُحسّنة وتحسينات الأداء
@@ -33,7 +33,7 @@ export function useRestaurantById(id: string | undefined) {
 
   return useQuery({
     queryKey: ['restaurant', id],
-    queryFn: () => fetchRestaurantById(id!),
+    queryFn: () => fetchRestaurantDetails(id!),
     // منع الاستدعاء إذا كان المعرف غير متوفر
     enabled: !!id,
     // تحسين أداء الذاكرة المؤقتة
@@ -76,11 +76,16 @@ export function useMenuCategories(restaurantId: string | undefined) {
 }
 
 export function useMenuItemsByCategory(restaurantId: string | undefined, category: string) {
-  return useQuery({
-    queryKey: ['menuItems', restaurantId, category],
-    queryFn: () => fetchMenuItemsByCategory(restaurantId!, category),
-    enabled: !!restaurantId && !!category,
-    // تحسين أداء الذاكرة المؤقتة
-    staleTime: 1000 * 60 * 5
-  });
+  const { data: menuItems } = useRestaurantMenu(restaurantId);
+  
+  // استخدام useMemo لتصفية العناصر حسب الفئة
+  const filteredItems = useMemo(() => {
+    if (!menuItems) return [];
+    return menuItems.filter(item => item.category === category);
+  }, [menuItems, category]);
+  
+  return {
+    data: filteredItems,
+    isLoading: !menuItems
+  };
 }

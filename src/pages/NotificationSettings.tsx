@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Bell, BellOff } from 'lucide-react';
 import { Switch } from "@/components/ui/switch";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const NotificationSettings: React.FC = () => {
@@ -14,15 +14,16 @@ const NotificationSettings: React.FC = () => {
     system: false,
     marketing: false
   });
-  const { toast } = useToast();
   
   const handleNotificationChange = (type: string, checked: boolean) => {
     setNotifications(prev => ({ ...prev, [type]: checked }));
     
-    toast({
-      title: checked ? "تم تفعيل الإشعارات" : "تم إلغاء الإشعارات",
-      description: `تم تحديث إعدادات ${getNotificationTypeName(type)}`,
-    });
+    toast.success(
+      checked ? "تم تفعيل الإشعارات" : "تم إلغاء الإشعارات", 
+      {
+        description: `تم تحديث إعدادات ${getNotificationTypeName(type)}`
+      }
+    );
   };
   
   const getNotificationTypeName = (type: string): string => {

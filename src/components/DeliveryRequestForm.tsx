@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, Package, Truck, CreditCard, FileText, AlertCircle } from 'lucide-react';
@@ -55,7 +54,7 @@ const DeliveryRequestForm: React.FC = () => {
     if (selectedPickupAddressId && addresses) {
       const selectedAddress = addresses.find(addr => addr.id === selectedPickupAddressId);
       if (selectedAddress) {
-        setFormData(prev => ({ ...prev, pickup_address: selectedAddress.full_address }));
+        setFormData(prev => ({ ...prev, pickup_address: selectedAddress.fullAddress }));
       }
     }
   }, [selectedPickupAddressId, addresses]);
@@ -64,7 +63,7 @@ const DeliveryRequestForm: React.FC = () => {
     if (selectedDeliveryAddressId && addresses) {
       const selectedAddress = addresses.find(addr => addr.id === selectedDeliveryAddressId);
       if (selectedAddress) {
-        setFormData(prev => ({ ...prev, delivery_address: selectedAddress.full_address }));
+        setFormData(prev => ({ ...prev, delivery_address: selectedAddress.fullAddress }));
       }
     }
   }, [selectedDeliveryAddressId, addresses]);
@@ -158,8 +157,8 @@ const DeliveryRequestForm: React.FC = () => {
                   <div key={address.id} className="flex items-center space-x-2 space-x-reverse">
                     <RadioGroupItem value={address.id} id={`pickup-${address.id}`} />
                     <Label htmlFor={`pickup-${address.id}`} className="text-sm flex-grow">
-                      <div className="font-medium">{address.label}</div>
-                      <div className="text-gray-500 text-xs">{address.full_address}</div>
+                      <div className="font-medium">{address.title}</div>
+                      <div className="text-gray-500 text-xs">{address.fullAddress}</div>
                     </Label>
                   </div>
                 ))}
@@ -221,8 +220,8 @@ const DeliveryRequestForm: React.FC = () => {
                   <div key={address.id} className="flex items-center space-x-2 space-x-reverse">
                     <RadioGroupItem value={address.id} id={`delivery-${address.id}`} />
                     <Label htmlFor={`delivery-${address.id}`} className="text-sm flex-grow">
-                      <div className="font-medium">{address.label}</div>
-                      <div className="text-gray-500 text-xs">{address.full_address}</div>
+                      <div className="font-medium">{address.title}</div>
+                      <div className="text-gray-500 text-xs">{address.fullAddress}</div>
                     </Label>
                   </div>
                 ))}

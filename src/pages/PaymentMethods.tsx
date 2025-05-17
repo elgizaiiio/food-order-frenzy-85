@@ -5,13 +5,12 @@ import { ArrowLeft, PlusCircle, CreditCard, Trash } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { useUserPaymentMethods, useSetDefaultPaymentMethod, useDeletePaymentMethod } from '@/hooks/useUserData';
 import { PaymentMethod } from '@/services/userService';
 import { useAuth } from '@/context/AuthContext';
 
 const PaymentMethods: React.FC = () => {
-  const { toast } = useToast();
   const { user } = useAuth();
   const { data: paymentMethods, isLoading, refetch } = useUserPaymentMethods();
   const setDefaultPaymentMethod = useSetDefaultPaymentMethod();
@@ -22,19 +21,12 @@ const PaymentMethods: React.FC = () => {
     setIsDeleting(id);
     deletePaymentMethod.mutate(id, {
       onSuccess: () => {
-        toast({
-          title: "تم حذف البطاقة",
-          description: "تم حذف البطاقة بنجاح"
-        });
+        toast.success("تم حذف البطاقة بنجاح");
         refetch();
       },
       onError: (error) => {
         console.error('Error deleting payment method:', error);
-        toast({
-          title: "حدث خطأ",
-          description: "لم نتمكن من حذف البطاقة",
-          variant: "destructive"
-        });
+        toast.error("لم نتمكن من حذف البطاقة");
       },
       onSettled: () => {
         setIsDeleting(null);
@@ -45,19 +37,12 @@ const PaymentMethods: React.FC = () => {
   const handleSetAsDefault = (id: string) => {
     setDefaultPaymentMethod.mutate(id, {
       onSuccess: () => {
-        toast({
-          title: "تم تغيير البطاقة الافتراضية",
-          description: "تم تحديث البطاقة الافتراضية بنجاح"
-        });
+        toast.success("تم تحديث البطاقة الافتراضية بنجاح");
         refetch();
       },
       onError: (error) => {
         console.error('Error setting default payment method:', error);
-        toast({
-          title: "حدث خطأ",
-          description: "لم نتمكن من تحديث البطاقة الافتراضية",
-          variant: "destructive"
-        });
+        toast.error("لم نتمكن من تحديث البطاقة الافتراضية");
       }
     });
   };
@@ -96,7 +81,7 @@ const PaymentMethods: React.FC = () => {
         <div className="px-4 py-2 space-y-4">
           {paymentMethods && paymentMethods.length > 0 ? (
             paymentMethods.map((card) => (
-              <Card key={card.id} className={`overflow-hidden ${card.is_default ? 'bg-gradient-to-r from-brand-100 to-orange-50 border-brand-200' : ''}`}>
+              <Card key={card.id} className={`overflow-hidden ${card.isDefault ? 'bg-gradient-to-r from-brand-100 to-orange-50 border-brand-200' : ''}`}>
                 <CardContent className="p-6">
                   <div className="flex items-start justify-between">
                     <div>
@@ -105,7 +90,7 @@ const PaymentMethods: React.FC = () => {
                         <h3 className="font-medium">{card.type} •••• {card.last4}</h3>
                       </div>
                       <div className="text-sm text-gray-600 space-y-1">
-                        {card.is_default && (
+                        {card.isDefault && (
                           <span className="inline-block mt-2 text-xs bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full">
                             البطاقة الافتراضية
                           </span>
@@ -151,7 +136,7 @@ const PaymentMethods: React.FC = () => {
                     </Dialog>
                   </div>
 
-                  {!card.is_default && (
+                  {!card.isDefault && (
                     <Button 
                       variant="ghost" 
                       className="mt-3 text-brand-600 hover:text-brand-700 hover:bg-brand-50 text-sm px-2 h-8"

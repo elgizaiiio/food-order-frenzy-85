@@ -40,11 +40,7 @@ export function useOrderTracking(orderId: string) {
         
         const { data, error } = await supabase
           .from('orders')
-          .select(`
-            *,
-            driver_id,
-            status
-          `)
+          .select('*')
           .eq('id', orderId)
           .single();
           
@@ -54,7 +50,7 @@ export function useOrderTracking(orderId: string) {
         if (data) {
           setOrderState(prevState => ({
             ...prevState,
-            status: data.status,
+            status: data.status || 'pending',
             estimatedDeliveryTime: data.estimated_delivery_time || null,
             driver: {
               ...prevState.driver,
@@ -90,7 +86,7 @@ export function useOrderTracking(orderId: string) {
         
         setOrderState(prevState => ({
           ...prevState,
-          status: data.status,
+          status: data.status || prevState.status,
           estimatedDeliveryTime: data.estimated_delivery_time || prevState.estimatedDeliveryTime,
           driver: {
             ...prevState.driver,
@@ -100,8 +96,8 @@ export function useOrderTracking(orderId: string) {
           updates: [
             {
               timestamp: new Date().toISOString(),
-              message: getStatusMessage(data.status),
-              status: data.status
+              message: getStatusMessage(data.status || 'pending'),
+              status: data.status || 'pending'
             },
             ...prevState.updates
           ]
