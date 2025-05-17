@@ -13,7 +13,7 @@ import {
   PaymentMethod
 } from '@/services/userService';
 import { getUserProfile, updateUserProfile, UserProfile } from '@/services/userProfileService';
-import { addProfileImage } from '@/services/storageService';
+import { uploadProfileImage } from '@/services/storageService';
 import { useAuth } from '@/context/AuthContext';
 
 // ثوابت لتكوين التخزين المؤقت
@@ -152,14 +152,14 @@ export function useUploadProfileImage() {
   const { user } = useAuth();
   
   return useMutation({
-    mutationFn: addProfileImage,
-    onSuccess: (data) => {
+    mutationFn: (file: File) => uploadProfileImage(file, user?.id || ''),
+    onSuccess: (data: { publicUrl: string }) => {
       // تحديث ذاكرة التخزين المؤقت للملف الشخصي
       queryClient.setQueryData(['user-profile', user?.id], (oldData: UserProfile | undefined) => {
         if (!oldData) return undefined;
         return {
           ...oldData,
-          profile_image: data.image_url
+          profile_image: data.publicUrl
         };
       });
       

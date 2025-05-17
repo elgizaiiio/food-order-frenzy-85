@@ -2,7 +2,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Gym, GymSubscription } from '@/types/gym';
 
-// بيانات وهمية لعرض الصالات الرياضية
+// Mock data for gyms
 const MOCK_GYMS: Gym[] = [
   {
     id: '1',
@@ -26,13 +26,13 @@ const MOCK_GYMS: Gym[] = [
   }
 ];
 
-// استرداد قائمة الصالات الرياضية
+// Retrieve list of gyms
 export async function fetchGyms(): Promise<Gym[]> {
   try {
-    // في المستقبل، سنقوم بالاستعلام من قاعدة البيانات
-    // هنا نستخدم البيانات الوهمية
+    // In future, we'll query from database
+    // Here we use mock data
     
-    // محاكاة تأخير الشبكة
+    // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 800));
     
     return MOCK_GYMS;
@@ -42,10 +42,10 @@ export async function fetchGyms(): Promise<Gym[]> {
   }
 }
 
-// استرداد صالة رياضية بالمعرف
+// Retrieve gym by ID
 export async function fetchGymById(gymId: string): Promise<Gym | null> {
   try {
-    // محاكاة تأخير الشبكة
+    // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 500));
     
     return MOCK_GYMS.find(gym => gym.id === gymId) || null;
@@ -54,3 +54,7 @@ export async function fetchGymById(gymId: string): Promise<Gym | null> {
     return null;
   }
 }
+
+// Make sure to export the GymSubscription type and fetchUserSubscriptions function
+export { fetchUserSubscriptions } from '@/services/gymSubscriptionService';
+export type { Gym, GymSubscription };

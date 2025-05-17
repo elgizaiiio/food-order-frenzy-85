@@ -11,6 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Locale } from "date-fns";
 
 interface DatePickerProps {
   selected?: Date;
@@ -70,8 +71,10 @@ export function DatePicker({
           onSelect={handleSelect}
           initialFocus
           locale={locale}
-          minDate={minDate}
-          maxDate={maxDate}
+          // Pass these props conditionally to avoid the type error
+          {...(minDate ? { fromDate: minDate } : {})}
+          {...(maxDate ? { toDate: maxDate } : {})}
+          className="pointer-events-auto"
         />
       </PopoverContent>
     </Popover>

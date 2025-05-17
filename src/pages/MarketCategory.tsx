@@ -9,15 +9,15 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useProductsByCategory, useCategories } from '@/hooks/useMarketData';
 import { useMarketCart, MarketCartProvider } from '@/context/MarketCartContext';
-import { Product } from '@/api/market';
 import { toast } from 'sonner';
+import { Product } from '@/services/marketService';
 
 // Filter types
 type FilterOption = 'all' | 'inStock' | 'priceAsc' | 'priceDesc';
 
 const MarketCategoryContent: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const categoryId = parseInt(id || '1');
+  const categoryId = id || '';
   
   const { data: categories, isLoading: categoriesLoading } = useCategories();
   const { data: products, isLoading: productsLoading, error } = useProductsByCategory(categoryId);
@@ -70,7 +70,7 @@ const MarketCategoryContent: React.FC = () => {
   }, [products, searchQuery, activeFilter]);
 
   // Get cart item quantity
-  const getCartItemQuantity = (productId: number) => {
+  const getCartItemQuantity = (productId: string) => {
     const item = items.find(item => item.id === productId);
     return item ? item.quantity : 0;
   };

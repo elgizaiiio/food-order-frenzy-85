@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ChevronLeft, Camera } from 'lucide-react';
@@ -94,10 +93,11 @@ const EditProfile: React.FC = () => {
       toast.success("تم رفع الصورة بنجاح");
       
       // تحديث الصورة في الواجهة
-      setImagePreview(result.image_url);
-      setImageChanged(true);
-      
-      console.log('تم تحديث صورة الملف الشخصي بنجاح:', result.image_url);
+      if (result && typeof result === 'object' && 'publicUrl' in result) {
+        setImagePreview(result.publicUrl);
+        setImageChanged(true);
+        console.log('تم تحديث صورة الملف الشخصي بنجاح:', result.publicUrl);
+      }
     } catch (error: any) {
       console.error('خطأ في رفع الصورة:', error);
       toast.error(`فشل في رفع الصورة: ${error.message || 'خطأ غير معروف'}`);

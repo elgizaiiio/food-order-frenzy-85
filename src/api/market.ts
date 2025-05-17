@@ -1,27 +1,27 @@
 
-// واجهة فئة المنتجات
+// Interface for the product categories
 export interface Category {
-  id: number;
+  id: string;
   name: string;
   description: string;
   image: string;
 }
 
-// واجهة المنتج
+// Interface for the product
 export interface Product {
-  id: number;
+  id: string;
   name: string;
   price: number;
   quantity: string;
   image: string;
-  categoryId: number;
+  categoryId: string;
   description?: string;
   inStock: boolean;
 }
 
-// واجهة العروض
+// Interface for offers
 export interface Offer {
-  id: number;
+  id: string;
   title: string;
   description: string;
   discount: number;

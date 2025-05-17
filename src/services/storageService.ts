@@ -2,7 +2,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { v4 as uuidv4 } from 'uuid';
 
-// تحميل صورة إلى Supabase Storage
+// Upload a file to Supabase Storage
 export async function uploadFile(file: File, bucket: string = 'public') {
   try {
     const fileExt = file.name.split('.').pop();
@@ -17,7 +17,7 @@ export async function uploadFile(file: File, bucket: string = 'public') {
       throw error;
     }
     
-    // الحصول على URL العام للملف
+    // Get public URL for the file
     const { data: { publicUrl } } = supabase.storage
       .from(bucket)
       .getPublicUrl(filePath);
@@ -32,7 +32,7 @@ export async function uploadFile(file: File, bucket: string = 'public') {
   }
 }
 
-// حذف ملف من Supabase Storage
+// Delete a file from Supabase Storage
 export async function deleteFile(filePath: string, bucket: string = 'public') {
   try {
     const { error } = await supabase.storage
@@ -50,13 +50,13 @@ export async function deleteFile(filePath: string, bucket: string = 'public') {
   }
 }
 
-// تحميل صورة ملف شخصي للمستخدم وتحديث بيانات المستخدم
+// Upload profile image and update user data
 export async function uploadProfileImage(file: File, userId: string) {
   try {
-    // تحميل الصورة إلى تخزين Supabase
+    // Upload image to Supabase storage
     const { publicUrl } = await uploadFile(file, 'avatars');
     
-    // تحديث بيانات المستخدم بمسار الصورة الجديدة
+    // Update user profile with new image path
     const { error } = await supabase
       .from('users')
       .update({

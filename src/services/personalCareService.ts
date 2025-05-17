@@ -16,7 +16,7 @@ export async function fetchPersonalCareProducts(): Promise<PersonalCareProduct[]
     return data.map(item => ({
       ...item,
       inStock: item.stock > 0,
-      category: item.category_id || '' // Ensure category is set from category_id
+      category: item.category_id || ''
     })) || [];
   } catch (error) {
     console.error('Error fetching personal care products:', error);
@@ -39,7 +39,7 @@ export async function fetchProductsByCategory(category: string): Promise<Persona
     return data.map(item => ({
       ...item,
       inStock: item.stock > 0,
-      category: item.category_id || '' // Ensure category is set from category_id
+      category: item.category_id || ''
     })) || [];
   } catch (error) {
     console.error(`Error fetching products for category ${category}:`, error);
@@ -62,7 +62,7 @@ export async function fetchProductsByGender(gender: string): Promise<PersonalCar
     return data.map(item => ({
       ...item,
       inStock: item.stock > 0,
-      category: item.category_id || '' // Ensure category is set from category_id
+      category: item.category_id || ''
     })) || [];
   } catch (error) {
     console.error(`Error fetching products for gender ${gender}:`, error);
@@ -86,7 +86,7 @@ export async function fetchProductById(id: string): Promise<PersonalCareProduct>
     return {
       ...data,
       inStock: data.stock > 0,
-      category: data.category_id || '' // Ensure category is set from category_id
+      category: data.category_id || ''
     };
   } catch (error) {
     console.error(`Error fetching product with ID ${id}:`, error);
@@ -106,7 +106,8 @@ export async function fetchProductCategories(): Promise<string[]> {
     if (error) throw error;
     
     // Extract unique categories
-    const uniqueCategories = [...new Set(data.map(item => item.category_id).filter(Boolean))];
+    const categories = data.map(item => item.category_id).filter(Boolean);
+    const uniqueCategories = [...new Set(categories)];
     return uniqueCategories;
   } catch (error) {
     console.error('Error fetching product categories:', error);
