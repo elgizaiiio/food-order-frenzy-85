@@ -109,3 +109,90 @@ export const getFilePathFromUrl = (url: string): string | null => {
     return null;
   }
 };
+
+/**
+ * إضافة صورة الملف الشخصي للمستخدم وتسجيلها في قاعدة البيانات
+ * @param file ملف الصورة
+ * @returns وعد يحل إلى بيانات الصورة المضافة
+ */
+export const addProfileImage = async (file: File): Promise<{ image_url: string, storage_path: string }> => {
+  try {
+    // التحقق من المستخدم الحالي
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error('يجب تسجيل الدخول لإضافة صورة شخصية');
+    }
+    
+    // إنشاء مسار فريد للملف
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${user.id}/${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
+    
+    // رفع الملف
+    const imageUrl = await uploadFile('avatars', fileName, file);
+    
+    if (!imageUrl) {
+      throw new Error('فشل في رفع الصورة');
+    }
+    
+    // إضافة سجل الصورة إلى قاعدة البيانات
+    const { data, error } = await supabase
+      .from('profile_images')
+      .insert({
+        user_id: user.id,
+        image_url: imageUrl,
+        storage_path: fileName,
+        is_active: true
+      })
+      .select('*')
+      .single();
+    
+    if (error) {
+      // إذا فشل إنشاء السجل، نحذف الملف المرفوع
+      await deleteFile('avatars', fileName);
+      throw error;
+    }
+    
+    // إلغاء تنشيط جميع الصور الأخرى السابقة
+    await supabase
+      .from('profile_images')
+      .update({ is_active: false })
+      .eq('user_id', user.id)
+      .neq('id', data.id);
+    
+    return {
+      image_url: imageUrl,
+      storage_path: fileName
+    };
+  } catch (error: any) {
+    console.error('خطأ في إضافة صورة الملف الشخصي:', error);
+    throw error;
+  }
+};
+
+/**
+ * الحصول على صورة الملف الشخصي النشطة للمستخدم
+ * @returns وعد يحل إلى رابط الصورة النشطة أو null إذا لم تكن موجودة
+ */
+export const getActiveProfileImage = async (): Promise<string | null> => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return null;
+    
+    const { data, error } = await supabase
+      .from('profile_images')
+      .select('image_url')
+      .eq('user_id', user.id)
+      .eq('is_active', true)
+      .maybeSingle();
+    
+    if (error) {
+      console.error('خطأ في الحصول على صورة الملف الشخصي:', error);
+      return null;
+    }
+    
+    return data?.image_url || null;
+  } catch (error) {
+    console.error('خطأ غير متوقع أثناء الحصول على صورة الملف الشخصي:', error);
+    return null;
+  }
+};

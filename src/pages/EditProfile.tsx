@@ -8,26 +8,23 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useAuth } from '@/context/AuthContext';
-import { useUserProfile, useUpdateUserProfile } from '@/hooks/useUserData';
-import { uploadFile } from '@/services/storageService';
-import { Skeleton } from "@/components/ui/skeleton";
+import { useUserProfile, useUpdateUserProfile, useUploadProfileImage } from '@/hooks/useUserData';
 import { useLazyImage } from '@/hooks/useLazyImage';
 
 const EditProfile: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { data: userProfile, isLoading, error: profileError, refetch } = useUserProfile();
+  const { data: userProfile, isLoading, error: profileError } = useUserProfile();
   const updateProfile = useUpdateUserProfile();
+  const uploadImage = useUploadProfileImage();
   
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
-    imageFile: null as File | null,
-    imagePreview: '',
   });
 
+  const [imagePreview, setImagePreview] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isUploadingImage, setIsUploadingImage] = useState(false);
   
   // تحديث البيانات عند تحميلها
   useEffect(() => {
@@ -36,14 +33,14 @@ const EditProfile: React.FC = () => {
         ...prev,
         name: userProfile.name || '',
         phone: userProfile.phone || '',
-        imagePreview: userProfile.profile_image || userProfile.avatar_url || '',
       }));
+      setImagePreview(userProfile.profile_image || userProfile.avatar_url || '');
     }
   }, [userProfile]);
 
   // Use lazy loading for profile image preview
   const { imageSrc: profileImageSrc } = useLazyImage({
-    src: formData.imagePreview,
+    src: imagePreview,
     placeholder: ''
   });
 
@@ -52,7 +49,7 @@ const EditProfile: React.FC = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       // Validate file type
@@ -68,40 +65,29 @@ const EditProfile: React.FC = () => {
         return;
       }
 
-      // Optimize image preview loading
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData(prev => ({ 
-          ...prev, 
-          imageFile: file,
-          imagePreview: reader.result as string 
-        }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const uploadProfileImage = async (file: File): Promise<string | null> => {
-    try {
-      setIsUploadingImage(true);
-      
-      if (!user?.id) {
-        throw new Error("يجب تسجيل الدخول لرفع صورة");
+      try {
+        // عرض الصورة مؤقتاً قبل الرفع للتحسين من تجربة المستخدم
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setImagePreview(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+        
+        // عرض رسالة التحميل
+        const uploadToast = toast.loading("جاري رفع الصورة...");
+        
+        // رفع الصورة إلى السيرفر
+        const result = await uploadImage.mutateAsync(file);
+        
+        toast.dismiss(uploadToast);
+        toast.success("تم رفع الصورة بنجاح");
+        
+        // تحديث الصورة في الواجهة
+        setImagePreview(result.image_url);
+      } catch (error: any) {
+        console.error('خطأ في رفع الصورة:', error);
+        toast.error(`فشل في رفع الصورة: ${error.message || 'خطأ غير معروف'}`);
       }
-      
-      // إنشاء اسم فريد للملف
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}/${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
-
-      console.log('سيتم رفع ملف في المسار:', fileName);
-      
-      // رفع الصورة إلى Supabase
-      return await uploadFile('avatars', fileName, file);
-    } catch (error: any) {
-      console.error('خطأ في رفع الصورة الشخصية:', error);
-      throw new Error(`فشل في رفع الصورة: ${error.message || 'خطأ غير معروف'}`);
-    } finally {
-      setIsUploadingImage(false);
     }
   };
 
@@ -121,37 +107,10 @@ const EditProfile: React.FC = () => {
       // إظهار رسالة التحميل
       const loadingToast = toast.loading("جاري تحديث الملف الشخصي...");
       
-      let profileImageUrl = userProfile?.profile_image || null;
-      
-      // رفع الصورة إذا تم اختيارها
-      if (formData.imageFile) {
-        try {
-          console.log('بدء رفع الصورة الشخصية');
-          const uploadedUrl = await uploadProfileImage(formData.imageFile);
-          if (uploadedUrl) {
-            console.log('تم رفع الصورة بنجاح:', uploadedUrl);
-            profileImageUrl = uploadedUrl;
-          }
-        } catch (error: any) {
-          toast.dismiss(loadingToast);
-          toast.error(`فشل في رفع الصورة: ${error.message || 'خطأ غير معروف'}`);
-          console.error('خطأ مفصل في رفع الصورة:', error);
-          setIsSubmitting(false);
-          return;
-        }
-      }
-      
       // تحديث بيانات الملف الشخصي
-      console.log('تحديث بيانات الملف الشخصي:', {
-        name: formData.name,
-        phone: formData.phone,
-        profile_image: profileImageUrl
-      });
-      
       await updateProfile.mutateAsync({
         name: formData.name,
-        phone: formData.phone,
-        profile_image: profileImageUrl
+        phone: formData.phone
       });
       
       toast.dismiss(loadingToast);
@@ -160,8 +119,6 @@ const EditProfile: React.FC = () => {
     } catch (error: any) {
       console.error('خطأ في تحديث الملف الشخصي:', error);
       toast.error(`فشل في تحديث الملف الشخصي: ${error.message || 'خطأ غير معروف'}`);
-      // محاولة إعادة تحميل بيانات الملف الشخصي بعد الخطأ
-      refetch();
     } finally {
       setIsSubmitting(false);
     }
@@ -176,14 +133,13 @@ const EditProfile: React.FC = () => {
     );
   }
 
-  // أظهر الخطأ إذا لم يتمكن من تحميل الملف الشخصي بعد عدة محاولات
   if (profileError) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center" dir="rtl">
         <div className="text-red-500 text-xl mb-4">حدث خطأ أثناء تحميل الملف الشخصي</div>
         <p className="text-gray-600 mb-6">يرجى التأكد من تسجيل الدخول والمحاولة مرة أخرى</p>
         <div className="flex gap-4">
-          <Button onClick={() => refetch()} className="bg-orange-500 hover:bg-orange-600">
+          <Button onClick={() => window.location.reload()} className="bg-orange-500 hover:bg-orange-600">
             إعادة المحاولة
           </Button>
           <Button onClick={() => navigate('/profile')} variant="outline">
@@ -222,8 +178,8 @@ const EditProfile: React.FC = () => {
                     </AvatarFallback>
                   )}
                 </Avatar>
-                <label htmlFor="profile-picture" className={`absolute bottom-0 right-0 rounded-full p-2 cursor-pointer shadow-md transition-colors ${isUploadingImage ? 'bg-gray-400' : 'bg-orange-500 hover:bg-orange-600'}`}>
-                  {isUploadingImage ? (
+                <label htmlFor="profile-picture" className={`absolute bottom-0 right-0 rounded-full p-2 cursor-pointer shadow-md transition-colors ${uploadImage.isPending ? 'bg-gray-400' : 'bg-orange-500 hover:bg-orange-600'}`}>
+                  {uploadImage.isPending ? (
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                   ) : (
                     <Camera className="w-4 h-4 text-white" />
@@ -235,10 +191,10 @@ const EditProfile: React.FC = () => {
                   className="hidden" 
                   accept="image/*"
                   onChange={handleImageUpload}
-                  disabled={isUploadingImage}
+                  disabled={uploadImage.isPending}
                 />
               </div>
-              <p className="text-sm text-orange-600">{isUploadingImage ? 'جاري رفع الصورة...' : 'اضغط على الأيقونة لتغيير الصورة الشخصية'}</p>
+              <p className="text-sm text-orange-600">{uploadImage.isPending ? 'جاري رفع الصورة...' : 'اضغط على الأيقونة لتغيير الصورة الشخصية'}</p>
             </div>
 
             {/* Name Input */}
@@ -270,8 +226,8 @@ const EditProfile: React.FC = () => {
             {/* Submit Button */}
             <Button 
               type="submit" 
-              className={`w-full text-white font-medium py-3 rounded-xl shadow-md ${isSubmitting || isUploadingImage ? 'bg-gray-400 hover:bg-gray-400' : 'bg-orange-500 hover:bg-orange-600'}`}
-              disabled={updateProfile.isPending || isSubmitting || isUploadingImage}
+              className={`w-full text-white font-medium py-3 rounded-xl shadow-md ${isSubmitting || updateProfile.isPending ? 'bg-gray-400 hover:bg-gray-400' : 'bg-orange-500 hover:bg-orange-600'}`}
+              disabled={updateProfile.isPending || isSubmitting || uploadImage.isPending}
             >
               {updateProfile.isPending || isSubmitting ? 'جاري الحفظ...' : 'حفظ التغييرات'}
             </Button>

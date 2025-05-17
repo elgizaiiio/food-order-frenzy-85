@@ -9,11 +9,11 @@ import {
   addPaymentMethod, 
   setDefaultPaymentMethod,
   deletePaymentMethod,
-  getUserProfile,
-  updateUserProfile,
   UserAddress,
   PaymentMethod
 } from '@/services/userService';
+import { getUserProfile, updateUserProfile, UserProfile } from '@/services/userProfileService';
+import { addProfileImage } from '@/services/storageService';
 import { useAuth } from '@/context/AuthContext';
 
 // Constants for cache configuration
@@ -177,5 +177,31 @@ export function useUpdateUserProfile() {
         );
       }
     },
+  });
+}
+
+/**
+ * Hook لرفع صورة الملف الشخصي
+ */
+export function useUploadProfileImage() {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  
+  return useMutation({
+    mutationFn: addProfileImage,
+    onSuccess: (data) => {
+      // تحديث ذاكرة التخزين المؤقت للملف الشخصي
+      queryClient.setQueryData(['user-profile', user?.id], (oldData: UserProfile | undefined) => {
+        if (!oldData) return undefined;
+        return {
+          ...oldData,
+          profile_image: data.image_url
+        };
+      });
+      queryClient.invalidateQueries({ queryKey: ['user-profile', user?.id] });
+    },
+    onError: (error) => {
+      console.error('خطأ في رفع صورة الملف الشخصي:', error);
+    }
   });
 }
