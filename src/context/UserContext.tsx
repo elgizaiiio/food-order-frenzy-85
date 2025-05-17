@@ -76,6 +76,19 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
           } else if (session.user.user_metadata?.name) {
             setUserName(session.user.user_metadata.name);
           }
+        } else if (event === 'USER_UPDATED' && session?.user) {
+          // عند تحديث بيانات المستخدم
+          const { data: userData, error } = await supabase
+            .from('users')
+            .select('name')
+            .eq('id', session.user.id)
+            .single();
+            
+          if (!error && userData && userData.name) {
+            setUserName(userData.name);
+          } else if (session.user.user_metadata?.name) {
+            setUserName(session.user.user_metadata.name);
+          }
         } else if (event === 'SIGNED_OUT') {
           setUserName("محمد");
           setVerified(false);

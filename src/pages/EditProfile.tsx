@@ -10,10 +10,12 @@ import { toast } from "sonner";
 import { useAuth } from '@/context/AuthContext';
 import { useUserProfile, useUpdateUserProfile, useUploadProfileImage } from '@/hooks/useUserData';
 import { useLazyImage } from '@/hooks/useLazyImage';
+import { useUser } from '@/context/UserContext';
 
 const EditProfile: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { setUserName: updateContextUserName } = useUser();
   const { data: userProfile, isLoading, error: profileError } = useUserProfile();
   const updateProfile = useUpdateUserProfile();
   const uploadImage = useUploadProfileImage();
@@ -131,12 +133,16 @@ const EditProfile: React.FC = () => {
       // تحديث بيانات الملف الشخصي
       const updatedProfile = await updateProfile.mutateAsync(updateData);
       
+      // تحديث اسم المستخدم في السياق
+      if (updatedProfile.name) {
+        updateContextUserName(updatedProfile.name);
+      }
+      
       toast.dismiss(loadingToast);
       toast.success("تم تحديث الملف الشخصي بنجاح");
       
-      // تفعيل تحديث سياق المستخدم
       // اضافة تأخير قبل الانتقال للتأكد من تحديث البيانات
-      setTimeout(() => navigate('/profile'), 800);
+      setTimeout(() => navigate('/profile'), 1000);
       
       console.log("الملف الشخصي المحدث:", updatedProfile);
       

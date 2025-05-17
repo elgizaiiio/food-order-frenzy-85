@@ -96,6 +96,19 @@ export async function updateUserProfile(updates: Partial<UserProfile>): Promise<
       console.error('خطأ في التحقق من وجود المستخدم:', checkError);
       throw checkError;
     }
+
+    // إذا تم تقديم اسم، قم أيضًا بتحديث بيانات تعريف المستخدم
+    if (updates.name) {
+      const { error: updateMetaError } = await supabase.auth.updateUser({
+        data: { name: updates.name }
+      });
+      
+      if (updateMetaError) {
+        console.warn('تحذير: لم يتم تحديث بيانات المستخدم الوصفية:', updateMetaError);
+      } else {
+        console.log('تم تحديث بيانات المستخدم الوصفية بنجاح');
+      }
+    }
     
     // إذا لم يكن المستخدم موجودًا، قم بإنشائه
     if (!existingUser) {
@@ -108,7 +121,6 @@ export async function updateUserProfile(updates: Partial<UserProfile>): Promise<
         username: updates.username || user.email?.split('@')[0] || '',
         phone: updates.phone || null,
         profile_image: updates.profile_image || null,
-        ...updates
       };
       
       const { data: newUser, error: insertError } = await supabase
@@ -123,18 +135,6 @@ export async function updateUserProfile(updates: Partial<UserProfile>): Promise<
       }
       
       console.log("تم إنشاء ملف مستخدم جديد:", newUser);
-      
-      // تحديث اسم المستخدم أيضًا في بيانات المستخدم الأساسية إذا تم تقديمه
-      if (updates.name) {
-        const { error: updateMetaError } = await supabase.auth.updateUser({
-          data: { name: updates.name }
-        });
-        
-        if (updateMetaError) {
-          console.warn('تحذير: لم يتم تحديث بيانات المستخدم الوصفية:', updateMetaError);
-        }
-      }
-      
       return newUser;
     }
     
@@ -152,18 +152,6 @@ export async function updateUserProfile(updates: Partial<UserProfile>): Promise<
     }
     
     console.log("تم تحديث ملف المستخدم:", updatedUser);
-    
-    // تحديث اسم المستخدم أيضًا في بيانات المستخدم الأساسية إذا تم تقديمه
-    if (updates.name) {
-      const { error: updateMetaError } = await supabase.auth.updateUser({
-        data: { name: updates.name }
-      });
-      
-      if (updateMetaError) {
-        console.warn('تحذير: لم يتم تحديث بيانات المستخدم الوصفية:', updateMetaError);
-      }
-    }
-    
     return updatedUser;
   } catch (error) {
     console.error('خطأ في تحديث معلومات الملف الشخصي:', error);
