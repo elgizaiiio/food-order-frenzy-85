@@ -1,7 +1,7 @@
 
 import { toast as sonnerToast } from "sonner";
 
-type ToastProps = {
+export type ToastProps = {
   title?: React.ReactNode;
   description?: React.ReactNode;
   variant?: "default" | "destructive";
@@ -25,7 +25,7 @@ const toast = (props: ToastProps | string) => {
   return sonnerToast(title as string, rest);
 };
 
-// Adding helper methods to match the expected API
+// تحديث طرق المساعدة لتتوافق مع الاستخدام الحالي
 toast.success = (message: string, options = {}) => {
   return sonnerToast.success(message, options);
 };
