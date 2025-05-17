@@ -18,6 +18,16 @@ export const uploadFile = async (
   try {
     console.log(`محاولة رفع ملف إلى البكت ${bucketName} في المسار ${filePath}`);
     
+    // التحقق من وجود البكت
+    const { data: bucket, error: bucketError } = await supabase
+      .storage
+      .getBucket(bucketName);
+    
+    if (bucketError) {
+      console.error('خطأ في التحقق من دلو التخزين:', bucketError);
+      throw new Error(`فشل في العثور على دلو التخزين: ${bucketError.message}`);
+    }
+    
     // رفع الملف إلى Supabase Storage
     const { data, error } = await supabase
       .storage
@@ -29,17 +39,28 @@ export const uploadFile = async (
 
     if (error) {
       console.error('خطأ في رفع الملف:', error);
-      throw error;
+      throw new Error(`فشل في رفع الملف: ${error.message}`);
     }
 
+    if (!data || !data.path) {
+      throw new Error('لم يتم استلام بيانات الملف المرفوع');
+    }
+
+    console.log('تم رفع الملف بنجاح:', data.path);
+    
     // الحصول على URL العام للملف
     const { data: publicURL } = supabase
       .storage
       .from(bucketName)
-      .getPublicUrl(filePath);
+      .getPublicUrl(data.path);
 
+    if (!publicURL || !publicURL.publicUrl) {
+      throw new Error('فشل في الحصول على الرابط العام للملف');
+    }
+    
+    console.log('تم الحصول على الرابط العام:', publicURL.publicUrl);
     return publicURL.publicUrl;
-  } catch (error) {
+  } catch (error: any) {
     console.error('خطأ غير متوقع أثناء رفع الملف:', error);
     throw error;
   }

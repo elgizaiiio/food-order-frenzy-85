@@ -27,6 +27,7 @@ const EditProfile: React.FC = () => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   
   // تحديث البيانات عند تحميلها
   useEffect(() => {
@@ -82,22 +83,25 @@ const EditProfile: React.FC = () => {
 
   const uploadProfileImage = async (file: File): Promise<string | null> => {
     try {
+      setIsUploadingImage(true);
+      
       if (!user?.id) {
         throw new Error("يجب تسجيل الدخول لرفع صورة");
       }
       
       // إنشاء اسم فريد للملف
       const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
-      const filePath = `${user.id}/${fileName}`;
+      const fileName = `${user.id}/${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
 
-      console.log('سيتم رفع ملف في المسار:', filePath);
+      console.log('سيتم رفع ملف في المسار:', fileName);
       
-      // استخدام خدمة التخزين لرفع الملف
-      return await uploadFile('avatars', filePath, file);
+      // رفع الصورة إلى Supabase
+      return await uploadFile('avatars', fileName, file);
     } catch (error: any) {
       console.error('خطأ في رفع الصورة الشخصية:', error);
       throw new Error(`فشل في رفع الصورة: ${error.message || 'خطأ غير معروف'}`);
+    } finally {
+      setIsUploadingImage(false);
     }
   };
 
@@ -110,11 +114,11 @@ const EditProfile: React.FC = () => {
     }
     
     try {
-      // Prevent multiple submissions
+      // منع تقديم النموذج عدة مرات
       if (isSubmitting) return;
       setIsSubmitting(true);
       
-      // Show loading toast
+      // إظهار رسالة التحميل
       const loadingToast = toast.loading("جاري تحديث الملف الشخصي...");
       
       let profileImageUrl = userProfile?.profile_image || null;
@@ -156,7 +160,7 @@ const EditProfile: React.FC = () => {
     } catch (error: any) {
       console.error('خطأ في تحديث الملف الشخصي:', error);
       toast.error(`فشل في تحديث الملف الشخصي: ${error.message || 'خطأ غير معروف'}`);
-      // Try to refetch user profile after error
+      // محاولة إعادة تحميل بيانات الملف الشخصي بعد الخطأ
       refetch();
     } finally {
       setIsSubmitting(false);
@@ -218,8 +222,12 @@ const EditProfile: React.FC = () => {
                     </AvatarFallback>
                   )}
                 </Avatar>
-                <label htmlFor="profile-picture" className="absolute bottom-0 right-0 bg-orange-500 hover:bg-orange-600 rounded-full p-2 cursor-pointer shadow-md transition-colors">
-                  <Camera className="w-4 h-4 text-white" />
+                <label htmlFor="profile-picture" className={`absolute bottom-0 right-0 rounded-full p-2 cursor-pointer shadow-md transition-colors ${isUploadingImage ? 'bg-gray-400' : 'bg-orange-500 hover:bg-orange-600'}`}>
+                  {isUploadingImage ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  ) : (
+                    <Camera className="w-4 h-4 text-white" />
+                  )}
                 </label>
                 <input 
                   type="file" 
@@ -227,9 +235,10 @@ const EditProfile: React.FC = () => {
                   className="hidden" 
                   accept="image/*"
                   onChange={handleImageUpload}
+                  disabled={isUploadingImage}
                 />
               </div>
-              <p className="text-sm text-orange-600">اضغط على الأيقونة لتغيير الصورة الشخصية</p>
+              <p className="text-sm text-orange-600">{isUploadingImage ? 'جاري رفع الصورة...' : 'اضغط على الأيقونة لتغيير الصورة الشخصية'}</p>
             </div>
 
             {/* Name Input */}
@@ -261,8 +270,8 @@ const EditProfile: React.FC = () => {
             {/* Submit Button */}
             <Button 
               type="submit" 
-              className="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-3 rounded-xl shadow-md"
-              disabled={updateProfile.isPending || isSubmitting}
+              className={`w-full text-white font-medium py-3 rounded-xl shadow-md ${isSubmitting || isUploadingImage ? 'bg-gray-400 hover:bg-gray-400' : 'bg-orange-500 hover:bg-orange-600'}`}
+              disabled={updateProfile.isPending || isSubmitting || isUploadingImage}
             >
               {updateProfile.isPending || isSubmitting ? 'جاري الحفظ...' : 'حفظ التغييرات'}
             </Button>
