@@ -91,11 +91,13 @@ const EditProfile: React.FC = () => {
       const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
       const filePath = `${user.id}/${fileName}`;
 
+      console.log('سيتم رفع ملف في المسار:', filePath);
+      
       // استخدام خدمة التخزين لرفع الملف
       return await uploadFile('avatars', filePath, file);
-    } catch (error) {
-      console.error('خطأ غير متوقع أثناء رفع الصورة:', error);
-      throw error;
+    } catch (error: any) {
+      console.error('خطأ في رفع الصورة الشخصية:', error);
+      throw new Error(`فشل في رفع الصورة: ${error.message || 'خطأ غير معروف'}`);
     }
   };
 
@@ -120,19 +122,28 @@ const EditProfile: React.FC = () => {
       // رفع الصورة إذا تم اختيارها
       if (formData.imageFile) {
         try {
+          console.log('بدء رفع الصورة الشخصية');
           const uploadedUrl = await uploadProfileImage(formData.imageFile);
           if (uploadedUrl) {
+            console.log('تم رفع الصورة بنجاح:', uploadedUrl);
             profileImageUrl = uploadedUrl;
           }
         } catch (error: any) {
           toast.dismiss(loadingToast);
-          toast.error(`حدث خطأ أثناء رفع الصورة: ${error.message || 'خطأ غير معروف'}`);
+          toast.error(`فشل في رفع الصورة: ${error.message || 'خطأ غير معروف'}`);
+          console.error('خطأ مفصل في رفع الصورة:', error);
           setIsSubmitting(false);
           return;
         }
       }
       
       // تحديث بيانات الملف الشخصي
+      console.log('تحديث بيانات الملف الشخصي:', {
+        name: formData.name,
+        phone: formData.phone,
+        profile_image: profileImageUrl
+      });
+      
       await updateProfile.mutateAsync({
         name: formData.name,
         phone: formData.phone,
@@ -143,8 +154,8 @@ const EditProfile: React.FC = () => {
       toast.success("تم تحديث الملف الشخصي بنجاح");
       navigate('/profile');
     } catch (error: any) {
-      console.error('Error updating profile:', error);
-      toast.error(`حدث خطأ أثناء تحديث الملف الشخصي: ${error.message || 'خطأ غير معروف'}`);
+      console.error('خطأ في تحديث الملف الشخصي:', error);
+      toast.error(`فشل في تحديث الملف الشخصي: ${error.message || 'خطأ غير معروف'}`);
       // Try to refetch user profile after error
       refetch();
     } finally {

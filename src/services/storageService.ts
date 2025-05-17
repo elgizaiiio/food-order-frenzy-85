@@ -2,57 +2,7 @@
 import { supabase } from '@/integrations/supabase/client';
 
 /**
- * التأكد من وجود دلو التخزين أو إنشائه إذا لم يكن موجوداً
- * @param bucketName اسم دلو التخزين
- * @returns وعد يحل إلى حالة نجاح أو فشل العملية
- */
-export const ensureStorageBucket = async (bucketName: string): Promise<boolean> => {
-  try {
-    console.log(`التحقق من وجود البكت: ${bucketName}`);
-    
-    // محاولة جلب معلومات البكت للتحقق من وجوده
-    const { data, error } = await supabase.storage.getBucket(bucketName);
-    
-    // إذا لم يكن البكت موجوداً، نقوم بإنشائه
-    if (error && error.message?.includes('not found')) {
-      console.log(`البكت ${bucketName} غير موجود، سيتم إنشائه`);
-      
-      const { data: newBucket, error: createError } = await supabase.storage.createBucket(bucketName, {
-        public: true,
-        fileSizeLimit: 5 * 1024 * 1024 // 5MB
-      });
-      
-      if (createError) {
-        console.error('خطأ في إنشاء البكت:', createError);
-        return false;
-      }
-      
-      console.log(`تم إنشاء البكت ${bucketName} بنجاح`);
-      
-      // إنشاء سياسات أمان للبكت تسمح بالقراءة والكتابة للمستخدمين المسجلين
-      try {
-        // هذه العملية قد تحتاج صلاحيات خاصة وقد لا تعمل مباشرة من الواجهة الأمامية
-        console.log('سيتم محاولة إنشاء سياسات RLS للبكت');
-      } catch (policyError) {
-        console.error('تم إنشاء البكت لكن قد تكون هناك حاجة لضبط سياسات RLS يدوياً');
-      }
-      
-      return true;
-    } else if (error) {
-      console.error('خطأ غير متوقع أثناء التحقق من البكت:', error);
-      return false;
-    }
-    
-    console.log(`البكت ${bucketName} موجود بالفعل`);
-    return true;
-  } catch (error) {
-    console.error('خطأ في التحقق من البكت:', error);
-    return false;
-  }
-};
-
-/**
- * رفع ملف إلى التخزين مع التحقق من وجود دلو التخزين
+ * رفع ملف إلى التخزين
  * @param bucketName اسم دلو التخزين
  * @param filePath مسار الملف ضمن الدلو
  * @param file الملف المراد رفعه
@@ -66,11 +16,7 @@ export const uploadFile = async (
   contentType?: string
 ): Promise<string | null> => {
   try {
-    // التأكد من وجود البكت أولاً
-    const bucketReady = await ensureStorageBucket(bucketName);
-    if (!bucketReady) {
-      throw new Error("فشل في إعداد مساحة التخزين");
-    }
+    console.log(`محاولة رفع ملف إلى البكت ${bucketName} في المسار ${filePath}`);
     
     // رفع الملف إلى Supabase Storage
     const { data, error } = await supabase
