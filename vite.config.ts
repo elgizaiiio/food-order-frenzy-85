@@ -9,11 +9,21 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
-    // تمكين Hot Module Replacement لتحديثات سريعة
-    hmr: true
+    hmr: true,
+    // تحسين استجابة الخادم
+    watch: {
+      usePolling: false,
+    },
+    // تمكين ضغط GZIP للحصول على استجابة أسرع
+    cors: true
   },
   plugins: [
-    react(),
+    react({
+      // تحسينات لـ SWC
+      plugins: [],
+      tsDecorators: true,
+      fastRefresh: true
+    }),
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
@@ -26,55 +36,69 @@ export default defineConfig(({ mode }) => ({
     target: 'esnext',
     minify: 'terser',
     cssMinify: true,
+    // تحسين تقسيم الشيفرات
+    modulePreload: true, 
+    reportCompressedSize: false,
+    chunkSizeWarningLimit: 1200,
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor': [
-            'react', 
-            'react-dom',
-            'react-router-dom',
-          ],
-          'ui': [
-            'framer-motion',
-            'lucide-react',
-            '@radix-ui/react-accordion',
-            '@radix-ui/react-alert-dialog',
-            '@radix-ui/react-avatar'
-          ],
-          'form-components': [
-            'react-hook-form',
-            'zod',
-            '@hookform/resolvers'
-          ]
+        manualChunks: (id) => {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom')) {
+              return 'vendor-react';
+            }
+            if (id.includes('@radix-ui') || id.includes('lucide-react')) {
+              return 'vendor-ui';
+            }
+            if (id.includes('react-hook-form') || id.includes('zod')) {
+              return 'vendor-forms';
+            }
+            if (id.includes('tanstack')) {
+              return 'vendor-query';
+            }
+            return 'vendor';
+          }
         }
       }
     },
-    // تحسينات إضافية لتسريع التحميل
-    assetsInlineLimit: 4096, // دمج الملفات الصغيرة كـ base64
-    chunkSizeWarningLimit: 1000, // زيادة حد التحذير لحجم الملفات
-    reportCompressedSize: false, // تسريع عملية البناء
-    // تحسينات للتطبيقات المحمولة
-    sourcemap: false, // تعطيل الـ sourcemaps للإنتاج لتقليل حجم الملفات
-    emptyOutDir: true, // إفراغ مجلد المخرجات قبل البناء
+    // تسريع عملية البناء وتقليل حجم الملفات
+    assetsInlineLimit: 5120,
+    sourcemap: false,
+    emptyOutDir: true,
+    // تقليل حجم CSS
+    cssCodeSplit: true
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom', 'framer-motion'],
+    include: [
+      'react', 
+      'react-dom', 
+      'react-router-dom', 
+      '@tanstack/react-query',
+      'lucide-react',
+      'framer-motion'
+    ],
+    // تمكين التحسين المسبق للتبعيات
     esbuildOptions: {
-      target: 'esnext', // استخدام أحدث الميزات المتاحة
-      // تمكين الضغط المسبق لتسريع الوقت التفاعلي الأول
+      target: 'esnext',
+      splitting: true,
+      treeShaking: true,
       legalComments: 'none',
-      // تحسين الترميز للحصول على حجم أصغر
       charset: 'utf8',
+      logLevel: 'error'
     }
   },
-  // تحسينات خاصة بالهواتف المحمولة
+  // تمكين تفتيت الملفات الكبيرة
   preview: {
     port: 4173,
-    host: true
+    host: true,
+    cors: true,
+    open: false
   },
+  // تسريع عمليات المعالجة
   esbuild: {
-    // تحسينات لعملية التجميع
     logOverride: { 'this-is-undefined-in-esm': 'silent' },
     legalComments: 'none',
+    target: 'esnext',
+    treeShaking: true
   }
 }));
