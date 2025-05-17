@@ -36,14 +36,21 @@ export async function saveCart(type: string, items: CartItem[]): Promise<boolean
 export function loadCart(type: string): CartItem[] {
   try {
     // التحقق إذا كان المستخدم مسجل دخوله
-    const currentUser = supabase.auth.getUser();
-    if (!currentUser) {
+    const getUserData = async () => {
+      const { data } = await supabase.auth.getUser();
+      return data.user;
+    };
+    
+    const user = getUserData();
+    const userId = user ? user.id : null;
+    
+    if (!userId) {
       const savedCart = localStorage.getItem(`cart_${type}`);
       return savedCart ? JSON.parse(savedCart) : [];
     }
     
     // أحضر السلة المخزنة للمستخدم المحدد
-    const savedUserCart = localStorage.getItem(`cart_${type}_${currentUser.id}`);
+    const savedUserCart = localStorage.getItem(`cart_${type}_${userId}`);
     const savedGeneralCart = localStorage.getItem(`cart_${type}`);
     
     if (savedUserCart) {
@@ -67,9 +74,16 @@ export function loadCart(type: string): CartItem[] {
 export function clearCart(type: string): boolean {
   try {
     // التحقق إذا كان المستخدم مسجل دخوله
-    const currentUser = supabase.auth.getUser();
-    if (currentUser) {
-      localStorage.removeItem(`cart_${type}_${currentUser.id}`);
+    const getUserData = async () => {
+      const { data } = await supabase.auth.getUser();
+      return data.user;
+    };
+    
+    const user = getUserData();
+    const userId = user ? user.id : null;
+    
+    if (userId) {
+      localStorage.removeItem(`cart_${type}_${userId}`);
     } else {
       localStorage.removeItem(`cart_${type}`);
     }

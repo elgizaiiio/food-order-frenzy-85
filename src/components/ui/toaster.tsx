@@ -1,9 +1,9 @@
 
-import { Toaster } from "sonner";
+import { Toaster as SonnerToaster } from "sonner";
 
 export function Toaster() {
   return (
-    <Toaster 
+    <SonnerToaster 
       position="top-center"
       toastOptions={{
         style: {

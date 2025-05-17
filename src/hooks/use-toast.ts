@@ -1,7 +1,7 @@
 
-import { toast as sonnerToast, type Toast as SonnerToast } from "sonner";
+import { toast as sonnerToast, ToastT } from "sonner";
 
-type ToastProps = SonnerToast & {
+type ToastProps = Omit<ToastT, "id"> & {
   title?: React.ReactNode;
   description?: React.ReactNode;
 };
@@ -27,7 +27,6 @@ export { toast };
 
 export function useToast() {
   return {
-    toast,
-    toasts: [] // Add this to fix the type error in toaster.tsx
+    toast
   };
 }

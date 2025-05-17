@@ -48,14 +48,17 @@ export function useOrderTracking(orderId: string) {
         
         // تحديث حالة الطلب
         if (data) {
+          // Handle order data mapping based on the actual schema
+          // The order table doesn't have driver fields, so we initialize with defaults
           setOrderState(prevState => ({
             ...prevState,
             status: data.status || 'pending',
-            estimatedDeliveryTime: data.estimated_delivery_time || null,
+            // Use empty values since these fields don't exist in the current schema
+            estimatedDeliveryTime: null,
             driver: {
               ...prevState.driver,
-              name: data.driver_name || null,
-              phone: data.driver_phone || null
+              name: null,
+              phone: null
             }
           }));
         }
@@ -87,12 +90,7 @@ export function useOrderTracking(orderId: string) {
         setOrderState(prevState => ({
           ...prevState,
           status: data.status || prevState.status,
-          estimatedDeliveryTime: data.estimated_delivery_time || prevState.estimatedDeliveryTime,
-          driver: {
-            ...prevState.driver,
-            name: data.driver_name || prevState.driver.name,
-            phone: data.driver_phone || prevState.driver.phone
-          },
+          // We don't update the estimated delivery time or driver info since the schema doesn't have these fields
           updates: [
             {
               timestamp: new Date().toISOString(),
