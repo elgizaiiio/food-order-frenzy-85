@@ -105,13 +105,20 @@ export async function fetchProductCategories(): Promise<string[]> {
     
     if (error) throw error;
     
-    // Extract unique categories and avoid type instantiation issues
-    const validCategories = data
-      .filter(item => item.category_id) // Filter out null/undefined
-      .map(item => item.category_id as string);
+    // Explicitly type and extract unique categories to avoid type instantiation issues
+    const categories: string[] = [];
     
-    // Use Set to get unique values and convert back to array
-    return Array.from(new Set(validCategories));
+    // Process each item individually to ensure proper typing
+    data.forEach(item => {
+      if (item.category_id) {
+        const category = String(item.category_id);
+        if (!categories.includes(category)) {
+          categories.push(category);
+        }
+      }
+    });
+    
+    return categories;
   } catch (error) {
     console.error('Error fetching product categories:', error);
     throw error;
