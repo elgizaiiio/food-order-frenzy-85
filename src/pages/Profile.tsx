@@ -34,7 +34,7 @@ const ProfileHeader = ({ displayName, profileImage }: { displayName: string, pro
               <AvatarImage 
                 src={profileImage} 
                 loading="lazy"
-                fetchpriority="high"
+                fetchPriority="high"
                 alt={displayName}
                 onError={(e) => {
                   // Fallback if image fails to load

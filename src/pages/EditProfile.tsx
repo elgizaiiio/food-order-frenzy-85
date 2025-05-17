@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ChevronLeft, Camera } from 'lucide-react';
@@ -210,7 +209,7 @@ const EditProfile: React.FC = () => {
                       src={imagePreview} 
                       alt={formData.name} 
                       loading="eager"
-                      fetchpriority="high"
+                      fetchPriority="high"
                     />
                   ) : (
                     <AvatarFallback className="bg-orange-100 text-orange-800 text-2xl">
