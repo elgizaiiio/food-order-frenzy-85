@@ -94,17 +94,11 @@ export async function initializeCardPayment(paymentDetails: CardPaymentInit): Pr
   error?: string;
 }> {
   try {
-    // In a real app, this would integrate with a payment gateway API
-    const { data, error } = await supabase.functions.invoke('create-payment-intent', {
-      body: paymentDetails
-    });
-    
-    if (error) throw error;
-    
+    // Mock payment intent data since we're not connecting to a real payment API yet
     return {
       success: true,
-      paymentIntentId: data.paymentIntentId,
-      clientSecret: data.clientSecret
+      paymentIntentId: `pi_${Math.random().toString(36).substring(2, 15)}`,
+      clientSecret: `cs_${Math.random().toString(36).substring(2, 15)}`,
     };
   } catch (error) {
     console.error('Payment initialization error:', error);

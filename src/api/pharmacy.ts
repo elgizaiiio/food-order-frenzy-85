@@ -43,7 +43,8 @@ export async function fetchPharmacyCategoryProducts(categoryId: string): Promise
     return data?.map(item => ({
       ...item,
       inStock: item.stock > 0,
-      image: item.image_url
+      image: item.image_url,
+      requires_prescription: item.requires_prescription || false
     })) || [];
   } catch (error) {
     console.error('Error in fetchPharmacyCategoryProducts:', error);
@@ -69,7 +70,8 @@ export async function fetchRecommendedProducts(): Promise<PharmacyProduct[]> {
     return data?.map(item => ({
       ...item,
       inStock: item.stock > 0,
-      image: item.image_url
+      image: item.image_url,
+      requires_prescription: item.requires_prescription || false
     })) || [];
   } catch (error) {
     console.error('Error in fetchRecommendedProducts:', error);

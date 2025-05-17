@@ -26,12 +26,7 @@ export function useUserDeliveryRequests() {
     gcTime: DELIVERY_DATA_GC_TIME,
     enabled: !!user?.id,
     retry: 1,
-    refetchOnWindowFocus: true,
-    meta: {
-      onError: (error: Error) => {
-        console.error('Error fetching delivery requests:', error);
-      }
-    }
+    refetchOnWindowFocus: true
   });
 }
 
@@ -45,12 +40,7 @@ export function useDeliveryRequestDetails(requestId: string | undefined) {
     gcTime: DELIVERY_DATA_GC_TIME,
     enabled: !!user?.id && !!requestId,
     retry: 1,
-    refetchOnWindowFocus: true,
-    meta: {
-      onError: (error: Error) => {
-        console.error('Error fetching delivery request details:', error);
-      }
-    }
+    refetchOnWindowFocus: true
   });
 }
 
@@ -62,7 +52,7 @@ export function useCreateDeliveryRequest() {
     mutationFn: createDeliveryRequest,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-delivery-requests', user?.id] });
-    },
+    }
   });
 }
 
@@ -76,7 +66,7 @@ export function useUpdateDeliveryStatus() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['delivery-request', variables.requestId] });
       queryClient.invalidateQueries({ queryKey: ['user-delivery-requests', user?.id] });
-    },
+    }
   });
 }
 
@@ -89,13 +79,13 @@ export function useCancelDeliveryRequest() {
     onSuccess: (_, requestId) => {
       queryClient.invalidateQueries({ queryKey: ['delivery-request', requestId] });
       queryClient.invalidateQueries({ queryKey: ['user-delivery-requests', user?.id] });
-    },
+    }
   });
 }
 
 export function useEstimateDelivery() {
   return useMutation({
     mutationFn: ({ pickupAddress, deliveryAddress }: { pickupAddress: string; deliveryAddress: string }) => 
-      estimateDeliveryPrice(pickupAddress, deliveryAddress),
+      estimateDeliveryPrice(pickupAddress, deliveryAddress)
   });
 }

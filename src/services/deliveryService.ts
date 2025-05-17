@@ -24,6 +24,21 @@ export interface DeliveryRequest {
   notes?: string | null;
 }
 
+// Mock data for delivery requests until the table is created
+const mockDeliveryRequests: DeliveryRequest[] = [
+  {
+    id: '1',
+    user_id: 'current-user',
+    pickup_address: 'شارع الملك فيصل، الرياض',
+    delivery_address: 'حي النخيل، الرياض',
+    items_description: 'وثائق هامة',
+    status: 'pending',
+    created_at: new Date().toISOString(),
+    estimated_price: 25,
+    distance: 5.2
+  }
+];
+
 // استعلام طلبات التوصيل للمستخدم الحالي
 export const fetchUserDeliveryRequests = async (): Promise<DeliveryRequest[]> => {
   console.log('Fetching user delivery requests');
@@ -33,22 +48,10 @@ export const fetchUserDeliveryRequests = async (): Promise<DeliveryRequest[]> =>
     throw new Error("يجب تسجيل الدخول لعرض طلبات التوصيل");
   }
 
-  const { data, error } = await supabase
-    .from('delivery_requests')
-    .select('*')
-    .eq('user_id', sessionData.session.user.id)
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    console.error('Error fetching delivery requests:', error);
-    throw new Error('حدث خطأ أثناء استرجاع طلبات التوصيل');
-  }
-
-  // تأكد من أن حقل status يتوافق مع النوع المتوقع
-  return (data || []).map(item => ({
-    ...item,
-    status: item.status as DeliveryStatus
-  }));
+  // Use mock data for now
+  return mockDeliveryRequests.filter(req => 
+    req.user_id === 'current-user' || req.user_id === sessionData.session.user.id
+  );
 };
 
 // إنشاء طلب توصيل جديد
@@ -65,24 +68,14 @@ export const createDeliveryRequest = async (requestData: DeliveryRequest): Promi
     ...requestData,
     user_id: sessionData.session.user.id,
     status: 'pending' as DeliveryStatus,
-    created_at: new Date().toISOString()
+    created_at: new Date().toISOString(),
+    id: `mock-${Date.now()}`  // Generate a mock ID for now
   };
 
-  const { data, error } = await supabase
-    .from('delivery_requests')
-    .insert([request])
-    .select()
-    .single();
-
-  if (error) {
-    console.error('Error creating delivery request:', error);
-    throw new Error('حدث خطأ أثناء إنشاء طلب التوصيل');
-  }
-
-  return {
-    ...data,
-    status: data.status as DeliveryStatus
-  };
+  // Add to mock data
+  mockDeliveryRequests.push(request);
+  
+  return request;
 };
 
 // تحديث حالة طلب التوصيل
@@ -94,15 +87,10 @@ export const updateDeliveryRequestStatus = async (requestId: string, status: Del
     throw new Error("يجب تسجيل الدخول لتحديث حالة الطلب");
   }
 
-  const { error } = await supabase
-    .from('delivery_requests')
-    .update({ status })
-    .eq('id', requestId)
-    .eq('user_id', sessionData.session.user.id);
-
-  if (error) {
-    console.error('Error updating delivery request:', error);
-    throw new Error('حدث خطأ أثناء تحديث حالة طلب التوصيل');
+  // Update in mock data
+  const requestIndex = mockDeliveryRequests.findIndex(req => req.id === requestId);
+  if (requestIndex !== -1) {
+    mockDeliveryRequests[requestIndex].status = status;
   }
 };
 
@@ -142,15 +130,10 @@ export const cancelDeliveryRequest = async (requestId: string): Promise<void> =>
     throw new Error("يجب تسجيل الدخول لإلغاء الطلب");
   }
 
-  const { error } = await supabase
-    .from('delivery_requests')
-    .update({ status: 'cancelled' as DeliveryStatus })
-    .eq('id', requestId)
-    .eq('user_id', sessionData.session.user.id);
-
-  if (error) {
-    console.error('Error cancelling delivery request:', error);
-    throw new Error('حدث خطأ أثناء إلغاء طلب التوصيل');
+  // Update in mock data
+  const requestIndex = mockDeliveryRequests.findIndex(req => req.id === requestId);
+  if (requestIndex !== -1) {
+    mockDeliveryRequests[requestIndex].status = 'cancelled';
   }
 };
 
@@ -163,24 +146,12 @@ export const getDeliveryRequestDetails = async (requestId: string): Promise<Deli
     throw new Error("يجب تسجيل الدخول لعرض تفاصيل الطلب");
   }
 
-  const { data, error } = await supabase
-    .from('delivery_requests')
-    .select('*')
-    .eq('id', requestId)
-    .eq('user_id', sessionData.session.user.id)
-    .single();
-
-  if (error) {
-    console.error('Error fetching delivery request details:', error);
-    throw new Error('حدث خطأ أثناء استرجاع تفاصيل طلب التوصيل');
-  }
-
-  if (!data) {
+  // Find in mock data
+  const request = mockDeliveryRequests.find(req => req.id === requestId);
+  
+  if (!request) {
     throw new Error('لم يتم العثور على طلب التوصيل');
   }
 
-  return {
-    ...data,
-    status: data.status as DeliveryStatus
-  };
+  return request;
 };

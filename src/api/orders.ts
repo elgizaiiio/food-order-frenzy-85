@@ -107,6 +107,14 @@ export async function fetchUserOrders(): Promise<Order[]> {
         price: item.price,
         options: item.options
       }));
+
+      // Get payment method
+      let paymentMethod = 'كاش';
+      if (order.user_payment_methods) {
+        paymentMethod = order.user_payment_methods.type === 'card' 
+          ? `بطاقة ****${order.user_payment_methods.last4}` 
+          : order.user_payment_methods.type || 'كاش';
+      }
       
       return {
         id: order.id,
@@ -118,7 +126,7 @@ export async function fetchUserOrders(): Promise<Order[]> {
         total: order.total_amount,
         deliveryFee: 15, // Hardcoded for now
         address: order.user_addresses?.full_address || 'عنوان غير معروف',
-        paymentMethod: order.user_payment_methods?.type || 'كاش',
+        paymentMethod,
         estimatedDelivery: status === 'جاري التوصيل' ? '١٥ دقيقة' : undefined,
         trackingUrl: status === 'جاري التوصيل' || status === 'قيد التجهيز' ? '/tracking' : undefined
       };

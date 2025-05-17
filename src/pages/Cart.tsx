@@ -81,6 +81,7 @@ const Cart: React.FC = () => {
         .upsert({ 
           user_id: user.id, 
           status: 'cart',
+          order_type: 'restaurant', // Set default order type
           items: updatedItems as unknown as Json, // Type casting to Json for Supabase
           total_amount: calculateSubtotal()
         });
@@ -108,6 +109,7 @@ const Cart: React.FC = () => {
         .upsert({ 
           user_id: user.id, 
           status: 'cart',
+          order_type: 'restaurant', // Set default order type
           items: updatedItems as unknown as Json, // Type casting to Json for Supabase
           total_amount: calculateSubtotal() - (itemToRemove.price * itemToRemove.quantity)
         });

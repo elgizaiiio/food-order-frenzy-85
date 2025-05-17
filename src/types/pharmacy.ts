@@ -10,6 +10,7 @@ export interface PharmacyProduct {
   requires_prescription: boolean;
   stock: number;
   created_at?: string;
+  is_recommended?: boolean;
   // Added properties needed for compatibility with the UI
   image?: string;
   categoryId?: string;
