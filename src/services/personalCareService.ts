@@ -99,19 +99,7 @@ export async function fetchProductById(id: string): Promise<PersonalCareProduct>
  */
 export async function fetchProductCategories(): Promise<string[]> {
   try {
-    // Try using RPC if available
-    try {
-      const { data, error } = await supabase.rpc('get_distinct_category_ids');
-      
-      if (!error && data) {
-        // Fix: Type the response properly and use map safely
-        return (data as any[]).map(item => String(item));
-      }
-    } catch (rpcError) {
-      console.log('RPC not available, falling back to direct query', rpcError);
-    }
-    
-    // Use direct query if RPC fails
+    // Use direct query
     const { data, error } = await supabase
       .from('personal_care_products')
       .select('category_id');

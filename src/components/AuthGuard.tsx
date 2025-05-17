@@ -2,18 +2,25 @@
 import { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { toast } from 'sonner';
 
 interface AuthGuardProps {
   children: React.ReactNode;
+  requireMFA?: boolean;
 }
 
-const AuthGuard = ({ children }: AuthGuardProps) => {
+const AuthGuard = ({ children, requireMFA = false }: AuthGuardProps) => {
   const { user, isLoading } = useAuth();
   const location = useLocation();
 
   useEffect(() => {
     console.log("AuthGuard: المستخدم:", user?.email, "جاري التحميل:", isLoading, "المسار:", location.pathname);
-  }, [user, isLoading, location]);
+    
+    // Check if MFA is required but not enabled
+    if (requireMFA && user && !user.factors) {
+      toast.warning("المصادقة الثنائية مطلوبة لهذه الصفحة. يرجى إعدادها في صفحة الإعدادات.");
+    }
+  }, [user, isLoading, location, requireMFA]);
 
   // تقليل وقت الانتظار - عرض شاشة التحميل فقط إذا كان الوقت أكثر من 1 ثانية
   if (isLoading) {
@@ -29,6 +36,12 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
   if (!user) {
     console.log("AuthGuard: جاري التوجيه إلى صفحة تسجيل الدخول. لم يتم العثور على مستخدم. المسار الحالي:", location.pathname);
     return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  // If MFA is required for this route but not enabled, redirect to MFA setup
+  if (requireMFA && (!user.factors || Object.keys(user.factors).length === 0)) {
+    console.log("AuthGuard: جاري التوجيه إلى صفحة إعداد المصادقة الثنائية");
+    return <Navigate to="/settings/security" state={{ from: location }} replace />;
   }
 
   // إذا وصلنا هنا، فالمستخدم مصادق ويمكننا عرض المحتوى المحمي

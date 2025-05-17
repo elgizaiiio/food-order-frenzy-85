@@ -103,6 +103,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signUp = async (email: string, password: string, userData?: any) => {
     try {
       setIsLoading(true);
+      
+      // Check password strength before registration
+      if (password.length < 8) {
+        throw new Error('كلمة المرور يجب أن تتكون من 8 أحرف على الأقل');
+      }
+      
+      if (!/\d/.test(password)) {
+        throw new Error('كلمة المرور يجب أن تحتوي على رقم واحد على الأقل');
+      }
+      
+      if (!/[a-zA-Z]/.test(password)) {
+        throw new Error('كلمة المرور يجب أن تحتوي على حرف واحد على الأقل');
+      }
+      
+      // Common password check (simplified version)
+      const commonPasswords = ['password', '12345678', 'qwerty123', '123456789'];
+      if (commonPasswords.includes(password.toLowerCase())) {
+        throw new Error('كلمة المرور غير آمنة وقابلة للتخمين بسهولة');
+      }
+      
       const { data, error } = await supabase.auth.signUp({ 
         email, 
         password,
@@ -202,14 +222,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       const { data, error } = await supabase.auth.mfa.challenge({
         factorId: 'totp',
-        code,
+        code
       });
       
       if (error) {
         throw error;
       }
       
-      return data?.challenge?.verified || false;
+      return data?.verified || false;
     } catch (error) {
       console.error('خطأ في التحقق من رمز المصادقة الثنائية', error);
       throw error;
