@@ -9,8 +9,10 @@ import { MarketCartProvider } from "@/context/MarketCartContext";
 import { PharmacyCartProvider } from "@/context/PharmacyCartContext";
 import { PersonalCareCartProvider } from "@/context/PersonalCareCartContext";
 import { AuthProvider } from "@/context/AuthContext";
+import { FirebaseProvider } from "@/context/FirebaseContext";
 import BottomNav from "./components/BottomNav";
 import AuthGuard from "./components/AuthGuard";
+import { useState } from "react";
 
 // Delivery Section - إضافة صفحات التوصيل الجديدة
 import DeliveryRequest from "./pages/DeliveryRequest";
@@ -83,13 +85,15 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <UserProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <AppContent />
-          </TooltipProvider>
-        </UserProvider>
+        <FirebaseProvider>
+          <UserProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <AppContent />
+            </TooltipProvider>
+          </UserProvider>
+        </FirebaseProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
