@@ -129,16 +129,19 @@ const EditProfile: React.FC = () => {
       }
       
       // تحديث بيانات الملف الشخصي
-      await updateProfile.mutateAsync(updateData);
+      const updatedProfile = await updateProfile.mutateAsync(updateData);
       
       toast.dismiss(loadingToast);
       toast.success("تم تحديث الملف الشخصي بنجاح");
       
+      // تفعيل تحديث سياق المستخدم
+      // اضافة تأخير قبل الانتقال للتأكد من تحديث البيانات
+      setTimeout(() => navigate('/profile'), 800);
+      
+      console.log("الملف الشخصي المحدث:", updatedProfile);
+      
       // إعادة تعيين علامة تغيير الصورة
       setImageChanged(false);
-      
-      // الانتقال إلى صفحة الملف الشخصي بعد التأكد من اكتمال التحديث
-      setTimeout(() => navigate('/profile'), 500);
     } catch (error: any) {
       console.error('خطأ في تحديث الملف الشخصي:', error);
       toast.error(`فشل في تحديث الملف الشخصي: ${error.message || 'خطأ غير معروف'}`);

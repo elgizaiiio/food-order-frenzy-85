@@ -1,5 +1,6 @@
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface UserContextType {
   userName: string;
@@ -35,6 +36,58 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   
   // تحديد ما إذا كان المستخدم قد سجل دخوله بناءً على اسم المستخدم
   const isLoggedIn = userName !== "محمد";
+
+  // استعلم عن اسم المستخدم عندما يتغير حالة الاتصال
+  useEffect(() => {
+    // التحقق من جلسة المستخدم الحالية عند بدء التطبيق
+    const checkUserSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session?.user) {
+        // استعلام عن بيانات الملف الشخصي
+        const { data: userData, error } = await supabase
+          .from('users')
+          .select('name')
+          .eq('id', data.session.user.id)
+          .single();
+          
+        if (!error && userData && userData.name) {
+          setUserName(userData.name);
+        } else if (data.session.user.user_metadata?.name) {
+          setUserName(data.session.user.user_metadata.name);
+        }
+      }
+    };
+    
+    checkUserSession();
+    
+    // الاستماع لتغييرات حالة الاتصال
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === 'SIGNED_IN' && session?.user) {
+          // استعلام عن بيانات الملف الشخصي عند تسجيل الدخول
+          const { data: userData, error } = await supabase
+            .from('users')
+            .select('name')
+            .eq('id', session.user.id)
+            .single();
+            
+          if (!error && userData && userData.name) {
+            setUserName(userData.name);
+          } else if (session.user.user_metadata?.name) {
+            setUserName(session.user.user_metadata.name);
+          }
+        } else if (event === 'SIGNED_OUT') {
+          setUserName("محمد");
+          setVerified(false);
+          setBroMember(false);
+        }
+      }
+    );
+    
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const value = {
     userName,
