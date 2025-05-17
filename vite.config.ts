@@ -1,4 +1,3 @@
-
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -21,8 +20,7 @@ export default defineConfig(({ mode }) => ({
     react({
       // تحسينات لـ SWC
       plugins: [],
-      tsDecorators: true,
-      fastRefresh: true
+      tsDecorators: true
     }),
     mode === 'development' &&
     componentTagger(),
