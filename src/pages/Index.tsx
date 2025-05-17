@@ -2,23 +2,26 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { useUserProfile } from '@/hooks/useUserData';
 import Categories from '@/components/Categories';
 import PopularRestaurants from '@/components/PopularRestaurants';
 import { MapPin, ChevronDown, ShoppingBag } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 
 const Index = () => {
   const { user } = useAuth();
+  const { data: userProfile, isLoading: profileLoading } = useUserProfile();
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
   const { toast } = useToast();
   
   // الحصول على اسم المستخدم من البريد الإلكتروني أو عرض تحية عامة
-  const firstName = user?.email ? user.email.split('@')[0] : 'صديقي';
+  const firstName = userProfile?.name || (user?.email ? user.email.split('@')[0] : 'صديقي');
   
   // بيانات العناوين - في تطبيق حقيقي ستأتي من API
   const [address, setAddress] = useState('شارع الملك فهد');
@@ -31,6 +34,9 @@ const Index = () => {
       description: "يمكنك اختيار مطعمك المفضل الآن",
     });
   };
+  
+  // الحصول على صورة الملف الشخصي
+  const profileImage = userProfile?.profile_image || userProfile?.avatar_url || null;
 
   return (
     <div className="min-h-screen bg-gray-50 pb-16" dir="rtl">
@@ -85,11 +91,19 @@ const Index = () => {
               <p className="text-white/90 mt-1 text-sm">عايز تطلب إيه النهاردة؟</p>
             </div>
             <Link to="/profile">
-              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-all">
-                {user?.email ? (
-                  <span className="text-white font-bold text-lg">{user.email.charAt(0).toUpperCase()}</span>
+              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-all overflow-hidden">
+                {profileLoading ? (
+                  <Skeleton className="h-full w-full rounded-full" />
+                ) : profileImage ? (
+                  <AvatarImage 
+                    src={profileImage} 
+                    alt={firstName}
+                    className="h-full w-full object-cover"
+                  />
                 ) : (
-                  <span className="text-white font-bold">؟</span>
+                  <span className="text-white font-bold text-lg">
+                    {firstName.charAt(0).toUpperCase()}
+                  </span>
                 )}
               </div>
             </Link>

@@ -78,6 +78,7 @@ const Profile: React.FC = () => {
                   <AvatarImage 
                     src={profileImage} 
                     loading="lazy"
+                    alt={displayName}
                     onError={(e) => {
                       // Fallback if image fails to load
                       const target = e.target as HTMLImageElement;
