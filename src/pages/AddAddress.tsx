@@ -8,9 +8,9 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
-import { firestore } from '@/integrations/firebase/client';
+import { useUser } from '@/context/UserContext';
 
 type AddressType = 'home' | 'work' | 'other';
 
@@ -24,6 +24,7 @@ interface AddressFormData {
 const AddAddress: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { userName } = useUser();
   const { register, handleSubmit, formState: { errors, isSubmitting }, setValue, watch } = useForm<AddressFormData>({
     defaultValues: {
       name: '',
@@ -42,16 +43,25 @@ const AddAddress: React.FC = () => {
         return;
       }
 
-      // إضافة عنوان جديد إلى Firebase
-      await addDoc(collection(firestore, "addresses"), {
-        userId: user.id,
-        name: data.name,
-        address: data.address,
-        type: data.type,
-        details: data.details || '',
-        isDefault: false,
-        createdAt: serverTimestamp()
-      });
+      // إضافة عنوان جديد إلى Supabase
+      const { data: addressData, error } = await supabase
+        .from('addresses')
+        .insert([{
+          user_id: user.id,
+          name: data.name,
+          address: data.address,
+          type: data.type,
+          details: data.details || '',
+          is_default: false,
+          created_at: new Date().toISOString()
+        }])
+        .select();
+
+      if (error) {
+        console.error("خطأ في إضافة العنوان:", error);
+        toast.error("حدث خطأ أثناء إضافة العنوان");
+        return;
+      }
 
       toast.success("تم إضافة العنوان بنجاح");
       navigate('/addresses');
