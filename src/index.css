@@ -77,10 +77,26 @@
   body {
     @apply bg-gray-50 text-foreground;
     font-family: 'Tajawal', sans-serif;
+    /* تحسينات للأجهزة المحمولة */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    overscroll-behavior-y: none;
   }
   
   h1, h2, h3, h4, h5, h6 {
     @apply font-bold;
+  }
+
+  /* تعديلات لتحسين إمكانية الوصول على الأجهزة المحمولة */
+  input, button, a, textarea, select {
+    @apply touch-manipulation;
+  }
+
+  /* منع سحب الصور على الهواتف المحمولة */
+  img {
+    -webkit-user-drag: none;
+    user-select: none;
+    -webkit-user-select: none;
   }
 }
 
@@ -149,6 +165,30 @@
   
   .bottom-nav-icon.active {
     @apply text-orange-600 scale-110;
+  }
+
+  /* حل مشكلة تراكب لوحة المفاتيح على الشاشة */
+  .keyboard-avoid {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* حل لمشكلة التنقل السفلي */
+  .nav-hidden {
+    transform: translateY(100%);
+  }
+
+  /* تحسينات للأزرار الكبيرة على الهواتف */
+  .mobile-touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* حل مشكلة notch الآيفون */
+  .ios-notch-padding {
+    padding-top: env(safe-area-inset-top);
+    padding-right: env(safe-area-inset-right);
+    padding-left: env(safe-area-inset-left);
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }
 
@@ -246,4 +286,37 @@
 
 .mobile-bottom-bar-item.active {
   @apply text-orange-500;
+}
+
+/* تحسينات خاصة بالهواتف المحمولة */
+@media (max-width: 768px) {
+  /* تكبير أهداف اللمس */
+  .mobile-button {
+    @apply py-3 px-4;
+    min-height: 48px;
+  }
+
+  /* زيادة حجم الخط لتحسين القراءة على الأجهزة الصغيرة */
+  .mobile-text-larger {
+    font-size: 110%;
+  }
+}
+
+/* تحسينات للمزيد من المساحة للعناصر القابلة للنقر */
+button, 
+[role="button"], 
+.clickable {
+  @apply cursor-pointer touch-manipulation;
+}
+
+/* تحسين حالة الضغط على عناصر التطبيق */
+.mobile-tap-state {
+  @apply active:opacity-70 transition-opacity;
+}
+
+/* تحسينات لشريط التنقل السفلي مع دعم الإيماءات اللمسية */
+#mobile-bottom-nav {
+  -webkit-user-select: none;
+  user-select: none;
+  overscroll-behavior: none;
 }

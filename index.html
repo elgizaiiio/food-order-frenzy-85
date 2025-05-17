@@ -12,12 +12,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="theme-color" content="#9333EA" />
     
-    <!-- تحسين وقت الاتصال المسبق للموارد الخارجية -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
-    <link rel="preconnect" href="https://hvpjsittuozquoehqwvm.supabase.co" crossorigin />
-    <link rel="dns-prefetch" href="https://hvpjsittuozquoehqwvm.supabase.co" />
-    
-    <!-- بيانات الشبكات الاجتماعية -->
+    <!-- تكوين التطبيق كموقع تطبيقات PWA -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- تحسين العرض في مشاركات الشبكات الاجتماعية -->
     <meta property="og:title" content="تطبيق دام" />
     <meta property="og:description" content="تطبيق دام - خدمة التوصيل السريع" />
     <meta property="og:type" content="website" />
@@ -26,20 +27,14 @@
     <meta name="twitter:site" content="@lovable_dev" />
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
     
-    <!-- تسريع تحميل الموارد الأساسية -->
-    <link rel="preload" href="/dam-logo.png" as="image" fetchpriority="high" />
-    <link rel="preload" href="/src/main.tsx" as="script" fetchpriority="high" />
-    <link rel="modulepreload" href="/src/App.tsx" />
-    <link rel="modulepreload" href="/src/index.css" />
-    
-    <!-- تحميل مسبق للخطوط -->
-    <link rel="preload" as="font" href="/fonts/arabic-font.woff2" type="font/woff2" crossorigin />
-    
-    <!-- إعدادات التطبيق للهواتف -->
+    <!-- دعم التجربة على الجوالات -->
     <link rel="apple-touch-icon" href="/dam-logo.png" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="manifest" href="/manifest.json" />
+    
+    <!-- تحميل مسبق للموارد الهامة -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link rel="preload" href="/dam-logo.png" as="image" fetchpriority="high" />
+    <link rel="preload" href="/fonts/arabic-font.woff2" type="font/woff2" crossorigin />
     
     <!-- تحسينات أداء CSS المضمن للتحميل الأولي السريع -->
     <style>
@@ -48,9 +43,12 @@
       @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
       .fade-in { animation: fadeIn 0.3s ease forwards; }
       
-      /* تحسين المظهر الأولي - يعرض بسرعة قبل تحميل CSS كامل */
+      /* تعديلات لتجربة أفضل على الهواتف */
       :root {
         color-scheme: light dark;
+        /* منع الزووم للنصوص */
+        -webkit-text-size-adjust: 100%; 
+        text-size-adjust: 100%;
       }
       
       html, body {
@@ -59,15 +57,18 @@
         padding: 0;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         background-color: #f9fafb;
+        overscroll-behavior-y: none;
+        touch-action: manipulation;
       }
       
       #root {
         display: flex;
         flex-direction: column;
         min-height: 100%;
+        overflow-x: hidden;
       }
       
-      /* تحسينات للأجهزة المحمولة */
+      /* تحسينات خاصة بالأجهزة المحمولة */
       body {
         -webkit-tap-highlight-color: transparent;
         -webkit-touch-callout: none;
@@ -81,14 +82,15 @@
         -webkit-touch-callout: none;
         -webkit-user-select: none;
         user-select: none;
-      }
-      
-      /* تحسين ظهور العناصر القابلة للنقر */
-      a, button, [role="button"] {
-        cursor: pointer;
         touch-action: manipulation;
       }
 
+      /* مساحة للأزرار للمس أفضل */
+      button, a, [role="button"] {
+        min-height: 44px;
+        min-width: 44px;
+      }
+      
       /* تحسين أداء التمرير */
       .no-scrollbar {
         -ms-overflow-style: none;
@@ -96,16 +98,6 @@
       }
       .no-scrollbar::-webkit-scrollbar {
         display: none;
-      }
-
-      /* تسريع تقديم الخطوط */
-      html {
-        font-display: swap;
-      }
-
-      /* تحسين أداء ظهور الصور */
-      img {
-        content-visibility: auto;
       }
       
       /* تحسين التحميل الأولي */
@@ -131,11 +123,21 @@
         height: 100vh;
         text-align: center;
       }
+
+      /* تحسينات لشاشة الآيفون مع notch */
+      @supports (padding: max(0px)) {
+        .ios-safe-padding {
+          padding-left: max(15px, env(safe-area-inset-left));
+          padding-right: max(15px, env(safe-area-inset-right));
+          padding-top: max(0px, env(safe-area-inset-top));
+          padding-bottom: max(0px, env(safe-area-inset-bottom));
+        }
+      }
     </style>
   </head>
 
   <body class="hidden-splash">
-    <div id="root">
+    <div id="root" class="ios-safe-padding">
       <!-- حالة التحميل الأولي - تحسين First Contentful Paint -->
       <div class="loading-container">
         <img src="/dam-logo.png" alt="شعار دام" width="80" height="80" />
@@ -189,76 +191,48 @@
         lastTouchEnd = now;
       }, { passive: false });
       
-      // تحسين تحميل الصور
-      if ('loading' in HTMLImageElement.prototype) {
-        // استخدام native lazy loading
-        const images = document.querySelectorAll('img[loading="lazy"]');
-        images.forEach(img => {
-          if (img.dataset.src) {
-            img.src = img.dataset.src;
-          }
-        });
-      } else {
-        // استخدام الحل البديل للمتصفحات القديمة
-        const script = document.createElement('script');
-        script.src = '/lazy-loading-fallback.js';
-        document.body.appendChild(script);
+      // تسجيل متصفح iOS
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      if (isIOS) {
+        document.documentElement.classList.add('ios');
       }
-      
-      // تحسين قياس الأداء وتسجيل الأحداث
-      if ('performance' in window) {
-        // قياس أداء الصفحة ووقت التحميل
-        const observer = new PerformanceObserver(list => {
-          list.getEntries().forEach(entry => {
-            // تسجيل قياسات LCP و FID و CLS
-            if (entry.name === 'largest-contentful-paint') {
-              console.info('LCP:', Math.round(entry.startTime));
-            }
-            if (entry.name === 'first-input-delay') {
-              console.info('FID:', Math.round(entry.processingStart - entry.startTime));
-            }
-            if (entry.name === 'cumulative-layout-shift') {
-              console.info('CLS:', entry.value);
-            }
-          });
-        });
-        
-        // مراقبة قياسات Web Vitals
-        observer.observe({ entryTypes: ['paint', 'largest-contentful-paint', 'first-input', 'layout-shift'] });
-        
-        window.addEventListener('load', () => {
-          // تسجيل وقت تحميل الصفحة الكامل
-          setTimeout(() => {
-            const perfData = window.performance.timing;
-            const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
-            console.info('وقت تحميل الصفحة:', pageLoadTime + 'ms');
-          }, 0);
-        });
+
+      // مساعدة المستخدم لإضافة التطبيق إلى الشاشة الرئيسية
+      // فقط عند استخدام الجوال وليس مثبتًا بالفعل
+      if (isIOS && !window.navigator.standalone) {
+        // المنطق لإظهار تعليمات الإضافة إلى الشاشة الرئيسية
       }
-      
-      // تحميل مسبق للصفحات المحتملة
-      function prefetchPages() {
-        if (!navigator.serviceWorker.controller) return;
-        
-        // قائمة الصفحات الأكثر زيارة للتحميل المسبق
-        const pagesToPrefetch = [
-          '/restaurants',
-          '/market',
-          '/profile'
-        ];
-        
-        // إرسال رسالة للـ Service Worker لتحميل الصفحات مسبقًا
-        navigator.serviceWorker.controller.postMessage({
-          type: 'PREFETCH',
-          urls: pagesToPrefetch
-        });
+
+      // تحسين أداء التفاعل للهاتف المحمول
+      if ('ontouchstart' in window) {
+        document.documentElement.classList.add('touchevents');
       }
-      
-      // تحميل الصفحات الشائعة مسبقًا بعد اكتمال تحميل الصفحة الرئيسية
-      window.addEventListener('load', () => {
-        // تأخير التحميل المسبق لضمان تحميل الصفحة الحالية أولاً
-        setTimeout(prefetchPages, 2000);
+
+      // تعطيل السحب للتنقل في Safari على iOS
+      document.addEventListener('touchmove', function(event) {
+        if (event.scale !== 1) { event.preventDefault(); }
+      }, { passive: false });
+
+      // التعامل مع تغيير اتجاه الشاشة
+      window.addEventListener('orientationchange', function() {
+        // إعادة تعيين أي تحسينات مطلوبة لاتجاه الشاشة
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+        }, 100);
       });
+
+      // إضافة بيانات PWA
+      if ('BeforeInstallPromptEvent' in window) {
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+          e.preventDefault();
+          deferredPrompt = e;
+          // يمكن إظهار زر التثبيت هنا
+        });
+
+        // تكوين التطبيق لإمكانية تثبيته عند الحاجة
+        // عن طريق زر مخصص أو دعوة لتثبيت التطبيق
+      }
     </script>
   </body>
 </html>
