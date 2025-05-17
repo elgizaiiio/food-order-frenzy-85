@@ -35,7 +35,7 @@ const SplashScreen: React.FC = () => {
   }, [navigate, user]);
 
   return (
-    <div className="h-screen w-full overflow-hidden fixed inset-0 bg-gradient-to-b from-orange-500 to-orange-700 flex flex-col items-center justify-center z-50">
+    <div className="h-screen w-full overflow-hidden fixed inset-0 bg-[#ea580c] flex flex-col items-center justify-center z-50">
       <motion.div 
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: animationComplete ? 0.8 : 1, opacity: animationComplete ? 0 : 1 }}
@@ -46,55 +46,46 @@ const SplashScreen: React.FC = () => {
         }}
         className="relative z-10"
       >
-        {/* لوجو التطبيق */}
-        <div className="relative">
-          <motion.div
-            initial={{ scale: 0.5, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-            className="w-32 h-32 rounded-full bg-white shadow-xl flex items-center justify-center"
-          >
-            <img 
-              src="/dam-logo.png" 
-              alt="دام" 
-              className="w-24 h-24 object-contain"
-              style={{ filter: "drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1))" }} 
-            />
-          </motion.div>
-          
-          {/* مؤثرات حركية حول اللوجو */}
-          <motion.div
-            initial={{ scale: 0.5, opacity: 0 }}
-            animate={{ scale: 1.2, opacity: [0, 0.5, 0] }}
-            transition={{ 
-              delay: 0.5,
-              duration: 1.5,
-              repeat: 2,
-              repeatType: "reverse"
-            }}
-            className="absolute inset-0 rounded-full border-4 border-white/30"
+        {/* لوجو التطبيق الجديد */}
+        <motion.div
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.8 }}
+          className="w-40 h-40 flex items-center justify-center"
+        >
+          <img 
+            src="/lovable-uploads/38d086d7-420f-49f9-9212-a4196a8e1f6d.png" 
+            alt="دام" 
+            className="w-40 h-40 object-contain"
+            style={{ filter: "drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1))" }} 
           />
-        </div>
+        </motion.div>
         
-        {/* اسم التطبيق */}
-        <motion.h1 
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.8, duration: 0.5 }}
-          className="mt-6 text-4xl font-bold text-white text-center tracking-wider"
-          style={{ textShadow: "0 2px 10px rgba(0, 0, 0, 0.2)" }}
-        >
-          دام
-        </motion.h1>
+        {/* مؤثرات حركية حول اللوجو */}
+        <motion.div
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{ scale: 1.2, opacity: [0, 0.5, 0] }}
+          transition={{ 
+            delay: 0.5,
+            duration: 1.5,
+            repeat: 2,
+            repeatType: "reverse"
+          }}
+          className="absolute inset-0 rounded-full border-4 border-white/30"
+        />
         
-        <motion.p
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 1, duration: 0.5 }}
-          className="mt-2 text-white/90 text-center"
+        {/* نص تحميل في الأسفل */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2, duration: 0.8 }}
+          className="mt-16"
         >
-          توصيل سريع لجميع طلباتك
-        </motion.p>
+          <div className="flex flex-col items-center">
+            <div className="mt-8 w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin" />
+            <p className="mt-4 text-white/80 text-sm">جاري التحميل...</p>
+          </div>
+        </motion.div>
       </motion.div>
       
       {/* تأثيرات متحركة في الخلفية */}
@@ -125,19 +116,6 @@ const SplashScreen: React.FC = () => {
           />
         ))}
       </div>
-      
-      {/* نص تحميل في الأسفل */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.2, duration: 0.8 }}
-        className="absolute bottom-20"
-      >
-        <div className="flex flex-col items-center">
-          <div className="mt-8 w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin" />
-          <p className="mt-4 text-white/80 text-sm">جاري التحميل...</p>
-        </div>
-      </motion.div>
     </div>
   );
 };

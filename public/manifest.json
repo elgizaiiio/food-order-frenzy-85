@@ -27,19 +27,19 @@
   "prefer_related_applications": false,
   "icons": [
     {
-      "src": "/dam-logo.png",
+      "src": "/lovable-uploads/38d086d7-420f-49f9-9212-a4196a8e1f6d.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/dam-logo.png",
+      "src": "/lovable-uploads/38d086d7-420f-49f9-9212-a4196a8e1f6d.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/dam-logo-maskable.png",
+      "src": "/lovable-uploads/38d086d7-420f-49f9-9212-a4196a8e1f6d.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

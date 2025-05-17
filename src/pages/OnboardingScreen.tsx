@@ -10,26 +10,26 @@ const features = [
   {
     title: "توصيل سريع",
     description: "استلم طلباتك في أقل من 30 دقيقة",
-    icon: <Rocket className="w-10 h-10 text-purple-300" />,
-    color: "from-purple-600 to-purple-800"
+    icon: <Rocket className="w-10 h-10 text-orange-100" />,
+    color: "from-orange-600 to-orange-700"
   },
   {
     title: "خدمة متنوعة",
     description: "من المطاعم إلى البقالة والأدوية ومستلزمات التجميل",
-    icon: <Heart className="w-10 h-10 text-pink-300" />,
-    color: "from-pink-600 to-purple-700"
+    icon: <Heart className="w-10 h-10 text-orange-100" />,
+    color: "from-orange-700 to-orange-800"
   },
   {
     title: "دفع آمن",
     description: "طرق دفع متعددة وآمنة لراحتك",
-    icon: <ShieldCheck className="w-10 h-10 text-blue-300" />,
-    color: "from-blue-600 to-indigo-700"
+    icon: <ShieldCheck className="w-10 h-10 text-orange-100" />,
+    color: "from-orange-500 to-orange-600"
   },
   {
     title: "تطبيق محسن",
     description: "تجربة استخدام سلسة على جميع الأجهزة المحمولة",
-    icon: <Smartphone className="w-10 h-10 text-green-300" />,
-    color: "from-indigo-600 to-blue-700"
+    icon: <Smartphone className="w-10 h-10 text-orange-100" />,
+    color: "from-orange-600 to-orange-500"
   }
 ];
 
@@ -83,15 +83,19 @@ const OnboardingScreen: React.FC = () => {
   const isLastSlide = currentSlide === features.length - 1;
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-b from-purple-800 to-purple-950 flex flex-col items-center justify-center text-center p-6">
+    <div className="fixed inset-0 bg-gradient-to-b from-[#ea580c] to-orange-800 flex flex-col items-center justify-center text-center p-6">
       {/* شعار التطبيق */}
       <motion.div 
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="mb-4"
+        className="mb-6"
       >
-        <img src="/dam-logo.png" alt="دام" className="w-20 h-20 rounded-full shadow-lg" />
+        <img 
+          src="/lovable-uploads/38d086d7-420f-49f9-9212-a4196a8e1f6d.png" 
+          alt="دام" 
+          className="w-24 h-24 rounded-md shadow-lg"
+        />
       </motion.div>
 
       {/* عنوان التطبيق */}
@@ -129,7 +133,7 @@ const OnboardingScreen: React.FC = () => {
               {currentFeature.icon}
             </motion.div>
             <h2 className="text-xl font-bold text-white mb-2">{currentFeature.title}</h2>
-            <p className="text-purple-100">{currentFeature.description}</p>
+            <p className="text-orange-100">{currentFeature.description}</p>
           </motion.div>
         </AnimatePresence>
       </div>
@@ -168,7 +172,7 @@ const OnboardingScreen: React.FC = () => {
         <Button 
           variant="default" 
           onClick={isLastSlide ? completeOnboarding : nextSlide}
-          className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-8 hover:from-purple-600 hover:to-indigo-700"
+          className="bg-white text-[#ea580c] px-8 hover:bg-orange-50"
         >
           {isLastSlide ? "ابدأ الآن" : "التالي"}
         </Button>
@@ -178,7 +182,7 @@ const OnboardingScreen: React.FC = () => {
       {!isLastSlide && (
         <button
           onClick={completeOnboarding}
-          className="mt-8 text-sm text-purple-300 hover:text-white transition-colors"
+          className="mt-8 text-sm text-orange-200 hover:text-white transition-colors"
         >
           تخطي
         </button>
