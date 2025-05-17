@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Mail, Lock, EyeOff, Eye, UserCheck } from 'lucide-react';
@@ -236,11 +235,17 @@ const Login: React.FC = () => {
           variants={itemVariants}
         >
           <p className="text-orange-800 text-lg">
-            ليس لديك حساب؟{" "}
+            معندكش حساب؟{" "}
             <Link to="/register" className="text-orange-600 font-bold hover:text-orange-700 transition-colors hover:underline">
-              إنشاء حساب جديد
+              سجل دلوقتي
             </Link>
           </p>
+          <motion.div 
+            className="w-16 h-1 bg-gradient-to-r from-orange-500 to-orange-300 mx-auto mt-2 rounded-full"
+            initial={{ width: 0 }}
+            animate={{ width: 64 }}
+            transition={{ delay: 0.5, duration: 0.5 }}
+          />
         </motion.div>
         
         <motion.div 

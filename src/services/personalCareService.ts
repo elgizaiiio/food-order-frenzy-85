@@ -103,9 +103,9 @@ export async function fetchProductCategories(): Promise<string[]> {
     try {
       const { data, error } = await supabase.rpc('get_distinct_category_ids');
       
-      if (!error && data && Array.isArray(data)) {
-        // Explicit conversion to string array
-        return data.map(item => String(item));
+      if (!error && data) {
+        // Ensure we have an array and convert items to strings
+        return Array.isArray(data) ? data.map(item => String(item)) : [];
       }
     } catch (rpcError) {
       console.log('RPC not available, falling back to direct query', rpcError);
@@ -124,7 +124,6 @@ export async function fetchProductCategories(): Promise<string[]> {
     if (data && Array.isArray(data)) {
       data.forEach(item => {
         if (item.category_id) {
-          // Explicit conversion to string
           categorySet.add(String(item.category_id));
         }
       });
