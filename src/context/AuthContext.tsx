@@ -25,26 +25,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // استرجاع جلسة المستخدم عند تحميل الصفحة
     const initSession = async () => {
       setIsLoading(true);
+      
       try {
-        // إعداد الاستماع لتغييرات حالة المصادقة أولاً
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-          console.log("Auth state changed:", _event, session?.user?.email);
-          setSession(session);
-          setUser(session?.user ?? null);
-          setIsLoading(false);
-        });
-
-        // ثم التحقق من وجود جلسة حالية
-        const { data: { session }, error } = await supabase.auth.getSession();
+        // التحقق من وجود جلسة حالية أولاً
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
         
-        if (error) {
-          console.error('خطأ في جلب بيانات الجلسة', error);
-          throw error;
+        if (sessionError) {
+          console.error('خطأ في جلب بيانات الجلسة', sessionError);
+          throw sessionError;
         }
         
-        setSession(session);
-        setUser(session?.user ?? null);
-        setIsLoading(false);
+        console.log("جلسة المستخدم الحالية:", sessionData?.session?.user?.email);
+        
+        if (sessionData?.session) {
+          setSession(sessionData.session);
+          setUser(sessionData.session.user);
+        }
+        
+        // إعداد الاستماع لتغييرات حالة المصادقة
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, currentSession) => {
+          console.log("تغيير حالة المصادقة:", _event, currentSession?.user?.email);
+          
+          if (currentSession) {
+            setSession(currentSession);
+            setUser(currentSession.user);
+          } else {
+            setSession(null);
+            setUser(null);
+          }
+          
+          setIsLoading(false);
+        });
+        
+        // إذا لم يكن هناك تغيير في حالة المصادقة، نحدّث حالة التحميل
+        if (!sessionData?.session) {
+          setIsLoading(false);
+        }
 
         return () => {
           subscription.unsubscribe();
@@ -57,8 +73,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     
     // تنفيذ التهيئة
     initSession();
-    
-    // لا نحتاج لإرجاع دالة تنظيف هنا لأننا نقوم بذلك داخل الدالة initSession نفسها
   }, []);
 
   // تسجيل الدخول
@@ -73,7 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       setSession(data.session);
       setUser(data.user);
-      console.log("Signed in successfully:", data.user?.email);
+      console.log("تم تسجيل الدخول بنجاح:", data.user?.email);
       return;
     } catch (error: any) {
       console.error('خطأ في تسجيل الدخول', error);
@@ -104,7 +118,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (data.session) {
         setSession(data.session);
         setUser(data.user);
-        console.log("Signed up and logged in:", data.user?.email);
+        console.log("تم إنشاء الحساب وتسجيل الدخول:", data.user?.email);
       }
     } catch (error: any) {
       console.error('خطأ في إنشاء الحساب', error);

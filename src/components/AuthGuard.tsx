@@ -12,7 +12,7 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
   const location = useLocation();
 
   useEffect(() => {
-    console.log("AuthGuard: User:", user?.email, "isLoading:", isLoading, "location:", location.pathname);
+    console.log("AuthGuard: المستخدم:", user?.email, "جاري التحميل:", isLoading, "المسار:", location.pathname);
   }, [user, isLoading, location]);
 
   // أثناء التحقق من حالة المصادقة، نعرض شاشة التحميل
@@ -26,7 +26,7 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
 
   // إذا لم يكن المستخدم مصادقًا، إعادة التوجيه إلى تسجيل الدخول
   if (!user) {
-    console.log("AuthGuard: Redirecting to login. No user found. Current location:", location.pathname);
+    console.log("AuthGuard: جاري التوجيه إلى صفحة تسجيل الدخول. لم يتم العثور على مستخدم. المسار الحالي:", location.pathname);
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 

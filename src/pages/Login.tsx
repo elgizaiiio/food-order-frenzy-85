@@ -23,9 +23,7 @@ const Login: React.FC = () => {
   useEffect(() => {
     if (!isLoading && user) {
       console.log("تم تسجيل الدخول بالفعل، جاري التوجيه إلى:", from);
-      setTimeout(() => {
-        navigate(from, { replace: true });
-      }, 100);
+      navigate(from, { replace: true });
     }
   }, [user, navigate, from, isLoading]);
 
