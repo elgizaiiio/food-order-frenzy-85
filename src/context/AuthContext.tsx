@@ -220,16 +220,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const verifyMFA = async (code: string): Promise<boolean> => {
     try {
       setIsLoading(true);
+      // Fix: Pass the verification code correctly according to Supabase API
       const { data, error } = await supabase.auth.mfa.challenge({
-        factorId: 'totp',
-        code
+        factorId: 'totp'
       });
       
       if (error) {
         throw error;
       }
       
-      return data?.verified || false;
+      // After getting the challenge, verify the code
+      if (data) {
+        const verifyResult = await supabase.auth.mfa.verify({
+          factorId: 'totp',
+          challengeId: data.id,
+          code
+        });
+        
+        if (verifyResult.error) {
+          throw verifyResult.error;
+        }
+        
+        return verifyResult.data?.verified || false;
+      }
+      
+      return false;
     } catch (error) {
       console.error('خطأ في التحقق من رمز المصادقة الثنائية', error);
       throw error;

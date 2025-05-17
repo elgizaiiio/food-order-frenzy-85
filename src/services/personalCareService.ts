@@ -59,11 +59,12 @@ export async function fetchProductsByGender(gender: string): Promise<PersonalCar
     
     if (error) throw error;
     
-    return data.map(item => ({
+    // Fix: Remove the unnecessary type recursion
+    return (data || []).map(item => ({
       ...item,
       inStock: item.stock > 0,
       category: item.category_id || ''
-    })) || [];
+    }));
   } catch (error) {
     console.error(`Error fetching products for gender ${gender}:`, error);
     throw error;
