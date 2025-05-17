@@ -16,9 +16,7 @@ export default defineConfig(({ mode }) => ({
     react({
       jsxImportSource: 'react',
       // تحسين عملية الترجمة والتجميع
-      plugins: mode === 'development' ? [[
-        '@swc/plugin-react-refresh'
-      ]] : []
+      refresh: mode === 'development' // Use built-in refresh option instead of plugin
     }),
     mode === 'development' &&
     componentTagger(),
