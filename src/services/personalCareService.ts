@@ -99,27 +99,28 @@ export async function fetchProductById(id: string): Promise<PersonalCareProduct>
  */
 export async function fetchProductCategories(): Promise<string[]> {
   try {
-    // First try to use an RPC function, which would be more efficient
-    const { data: rpcData, error: rpcError } = await supabase
-      .rpc('get_distinct_category_ids');
-    
-    // If the RPC exists and works, use it
-    if (!rpcError && rpcData) {
-      return rpcData as string[];
+    // First approach: Use RPC if available
+    try {
+      const { data, error } = await supabase.rpc('get_distinct_category_ids');
+      
+      if (!error && data) {
+        return data as string[];
+      }
+    } catch (rpcError) {
+      console.log('RPC not available, falling back to direct query', rpcError);
     }
     
-    // Fallback to direct query
+    // Second approach: Direct query with explicit handling
     const { data, error } = await supabase
       .from('personal_care_products')
       .select('category_id');
     
     if (error) throw error;
     
-    // Create a Set to store unique category IDs
+    const categories: string[] = [];
     const categorySet = new Set<string>();
     
-    // Process each item and add non-null category_ids to the Set
-    if (data) {
+    if (data && Array.isArray(data)) {
       data.forEach(item => {
         if (item.category_id) {
           categorySet.add(String(item.category_id));
@@ -127,7 +128,6 @@ export async function fetchProductCategories(): Promise<string[]> {
       });
     }
     
-    // Convert the Set back to an array
     return Array.from(categorySet);
   } catch (error) {
     console.error('Error fetching product categories:', error);
