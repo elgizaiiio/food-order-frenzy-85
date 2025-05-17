@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 
 /**
@@ -72,12 +71,17 @@ export async function addUserAddress(address: Omit<UserAddress, 'id' | 'user_id'
       throw new Error('يجب تسجيل الدخول لإضافة عنوان');
     }
     
+    // Ensure city is provided with a default value if it's missing
+    const addressData = {
+      ...address,
+      city: address.city || 'Unknown', // Default value for city
+      phone_number: address.phone_number || '', // Default value for phone number
+      user_id: user.id
+    };
+    
     const { data, error } = await supabase
       .from('user_addresses')
-      .insert({
-        ...address,
-        user_id: user.id
-      })
+      .insert(addressData)
       .select('*')
       .single();
       
@@ -173,7 +177,18 @@ export async function fetchUserPaymentMethods(): Promise<PaymentMethod[]> {
       throw error;
     }
     
-    return data || [];
+    // Map the database fields to match the PaymentMethod interface
+    // Adding title based on the payment method type
+    const paymentMethods: PaymentMethod[] = (data || []).map(method => ({
+      id: method.id,
+      user_id: method.user_id || user.id,
+      type: (method.type as 'cash' | 'card' | 'wallet') || 'cash',
+      title: getTitleFromType(method.type || 'cash', method.last4),
+      last4: method.last4,
+      is_default: !!method.is_default
+    }));
+    
+    return paymentMethods;
   } catch (error) {
     console.error('خطأ في جلب وسائل الدفع:', error);
     throw error;
@@ -191,12 +206,18 @@ export async function addPaymentMethod(paymentMethod: Omit<PaymentMethod, 'id' |
       throw new Error('يجب تسجيل الدخول لإضافة وسيلة دفع');
     }
     
+    // Prepare data for insertion, mapping fields to match the database schema
+    const dbPaymentMethod = {
+      type: paymentMethod.type,
+      last4: paymentMethod.last4,
+      is_default: paymentMethod.is_default,
+      user_id: user.id,
+      // Title is not stored directly in the database
+    };
+    
     const { data, error } = await supabase
       .from('user_payment_methods')
-      .insert({
-        ...paymentMethod,
-        user_id: user.id
-      })
+      .insert(dbPaymentMethod)
       .select('*')
       .single();
       
@@ -205,7 +226,15 @@ export async function addPaymentMethod(paymentMethod: Omit<PaymentMethod, 'id' |
       throw error;
     }
     
-    return data;
+    // Return data in the format expected by the PaymentMethod interface
+    return {
+      id: data.id,
+      user_id: data.user_id || user.id,
+      type: (data.type as 'cash' | 'card' | 'wallet') || 'cash',
+      title: getTitleFromType(data.type || 'cash', data.last4),
+      last4: data.last4,
+      is_default: !!data.is_default
+    };
   } catch (error) {
     console.error('خطأ في إضافة وسيلة دفع جديدة:', error);
     throw error;
@@ -267,5 +296,20 @@ export async function deletePaymentMethod(paymentMethodId: string): Promise<void
   } catch (error) {
     console.error('خطأ في حذف وسيلة الدفع:', error);
     throw error;
+  }
+}
+
+/**
+ * Helper function to generate a title from payment method type
+ */
+function getTitleFromType(type: string, last4?: string | null): string {
+  switch (type) {
+    case 'card':
+      return last4 ? `بطاقة ائتمان (...${last4})` : 'بطاقة ائتمان';
+    case 'wallet':
+      return 'محفظة إلكترونية';
+    case 'cash':
+    default:
+      return 'الدفع عند الاستلام';
   }
 }
