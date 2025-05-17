@@ -35,35 +35,27 @@ export async function saveCart(type: string, items: CartItem[]): Promise<boolean
 // عملية استرجاع عناصر السلة
 export function loadCart(type: string): CartItem[] {
   try {
-    // التحقق إذا كان المستخدم مسجل دخوله
-    const getUserData = async () => {
-      const { data } = await supabase.auth.getUser();
-      return data.user;
-    };
-    
-    const user = getUserData();
-    const userId = user ? user.id : null;
-    
-    if (!userId) {
-      const savedCart = localStorage.getItem(`cart_${type}`);
-      return savedCart ? JSON.parse(savedCart) : [];
-    }
-    
-    // أحضر السلة المخزنة للمستخدم المحدد
-    const savedUserCart = localStorage.getItem(`cart_${type}_${userId}`);
+    // نتحقق أولا من التخزين المحلي للسلة العامة
     const savedGeneralCart = localStorage.getItem(`cart_${type}`);
+    const generalCart = savedGeneralCart ? JSON.parse(savedGeneralCart) : [];
+
+    // محاولة الحصول على المستخدم الحالي
+    // نلاحظ: هذا يرجع Promise لذلك لا نستطيع استخدامه مباشرة هنا
+    // لكن يمكن التعامل مع الحالة الأساسية
     
-    if (savedUserCart) {
-      return JSON.parse(savedUserCart);
-    } else if (savedGeneralCart) {
-      // إذا وجدت سلة عامة، انقلها إلى حساب المستخدم
-      const generalCart = JSON.parse(savedGeneralCart);
-      saveCart(type, generalCart);
-      localStorage.removeItem(`cart_${type}`);
-      return generalCart;
+    // التحقق من وجود سلة خاصة للمستخدم المسجل
+    // نفحص وجود بيانات في localStorage باسم المستخدم
+    for (const key of Object.keys(localStorage)) {
+      if (key.startsWith(`cart_${type}_`)) {
+        const userCart = localStorage.getItem(key);
+        if (userCart) {
+          return JSON.parse(userCart);
+        }
+      }
     }
     
-    return [];
+    // إذا لم نجد سلة خاصة بالمستخدم، نرجع السلة العامة
+    return generalCart;
   } catch (error) {
     console.error('خطأ في استرجاع السلة:', error);
     return [];
@@ -71,19 +63,12 @@ export function loadCart(type: string): CartItem[] {
 }
 
 // عملية مسح السلة
-export function clearCart(type: string): boolean {
+export async function clearCart(type: string): Promise<boolean> {
   try {
-    // التحقق إذا كان المستخدم مسجل دخوله
-    const getUserData = async () => {
-      const { data } = await supabase.auth.getUser();
-      return data.user;
-    };
+    const { data: { user } } = await supabase.auth.getUser();
     
-    const user = getUserData();
-    const userId = user ? user.id : null;
-    
-    if (userId) {
-      localStorage.removeItem(`cart_${type}_${userId}`);
+    if (user) {
+      localStorage.removeItem(`cart_${type}_${user.id}`);
     } else {
       localStorage.removeItem(`cart_${type}`);
     }
