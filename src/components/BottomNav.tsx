@@ -1,14 +1,13 @@
 
 import React, { memo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, ClipboardList, Truck, UserRound } from 'lucide-react';
+import { Home, ClipboardList, UserRound } from 'lucide-react';
 import { useTouch } from "@/hooks/use-touch";
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const BottomNav: React.FC = () => {
   const location = useLocation();
   const path = location.pathname;
-  const isMobile = useIsMobile();
 
   // التحقق إذا كانت الصفحة الحالية هي صفحة دفع أو صفحات تسجيل الدخول/التسجيل
   const isAuthPage = path === '/login' || path === '/register' || path === '/forgot-password';
@@ -21,25 +20,19 @@ const BottomNav: React.FC = () => {
   const navItems = [
     {
       name: 'الرئيسية',
-      icon: <Home className="w-5 h-5" />,
+      icon: <Home className="w-6 h-6" />,
       path: '/',
       active: path === '/',
     },
     {
       name: 'طلباتي',
-      icon: <ClipboardList className="w-5 h-5" />,
+      icon: <ClipboardList className="w-6 h-6" />,
       path: '/orders',
       active: path === '/orders' || path.includes('/order'),
     },
     {
-      name: 'توصيل',
-      icon: <Truck className="w-5 h-5" />,
-      path: '/delivery-request',
-      active: path.includes('/delivery'),
-    },
-    {
       name: 'حسابي',
-      icon: <UserRound className="w-5 h-5" />,
+      icon: <UserRound className="w-6 h-6" />,
       path: '/profile',
       active: path === '/profile' || path.includes('/edit-profile'),
     },
@@ -48,23 +41,30 @@ const BottomNav: React.FC = () => {
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50">
       <nav 
-        className="bg-white shadow-[0_-2px_10px_rgba(0,0,0,0.1)] border-t border-gray-200 max-w-md mx-auto"
+        className="bg-white shadow-[0_-4px_12px_rgba(0,0,0,0.08)] border-t border-gray-100 max-w-md mx-auto"
         style={{ 
           paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-          borderTopLeftRadius: '16px',
-          borderTopRightRadius: '16px',
+          borderTopLeftRadius: '20px',
+          borderTopRightRadius: '20px',
         }}
       >
-        <div className="flex justify-around items-center h-16 px-4">
+        <div className="flex justify-around items-center h-16">
           {navItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
-              className={`flex flex-col items-center justify-center py-2 px-3 rounded-lg transition-all 
-                ${item.active ? 'text-orange-600 bg-orange-50' : 'text-gray-500 hover:bg-gray-50'}`}
+              className={`flex flex-col items-center justify-center py-2 px-5 relative transition-all duration-300 ${
+                item.active ? 'text-orange-600' : 'text-gray-500'
+              }`}
             >
+              {item.active && (
+                <div className="absolute -top-1 w-12 h-1 bg-orange-500 rounded-full animate-fade-in" />
+              )}
               <div 
-                className={`${item.active ? 'text-orange-600' : 'text-gray-500'} ${item.active ? 'scale-110' : ''} transition-transform`}
+                className={`
+                  ${item.active ? 'text-orange-600 scale-110' : 'text-gray-500'} 
+                  transition-all duration-300
+                `}
               >
                 {item.icon}
               </div>
