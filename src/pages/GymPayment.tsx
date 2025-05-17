@@ -1,675 +1,405 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ArrowLeft, CreditCard, Building, Check, Home, MapPin, Phone, Wallet, Apple } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Card, CardContent } from '@/components/ui/card';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { ArrowLeft, CreditCard, Calendar, Wallet, CheckCircle } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { toast } from 'sonner';
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { format, addMonths, addYears } from 'date-fns';
+import { ar } from 'date-fns/locale';
 import { useAuth } from '@/context/AuthContext';
-import { createSubscription, GymItem } from '@/services/gymService';
+import { createSubscription } from '@/services/gymService';
+import { Gym } from '@/services/gymService';
+import { useCreateSubscription } from '@/hooks/useGymData';
 
-type GymInfo = {
-  id: string;
-  name: string;
-  image: string;
-};
-
-type PlanInfo = {
+interface PaymentOptionProps {
   id: string;
   title: string;
-  duration: string;
-  price: number;
-  features: string[];
-};
+  icon: React.ReactNode;
+  description: string;
+}
 
-type Address = {
-  id: string;
-  title: string;
-  address: string;
-  phone: string;
-  isDefault?: boolean;
-};
+const PaymentOption: React.FC<PaymentOptionProps> = ({ id, title, icon, description }) => (
+  <div className="relative">
+    <RadioGroupItem value={id} id={`r-${id}`} className="peer sr-only" />
+    <Label
+      htmlFor={`r-${id}`}
+      className="flex p-4 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 peer-data-[state=checked]:border-brand-500 peer-data-[state=checked]:bg-brand-50 cursor-pointer"
+    >
+      <div className="flex items-center">
+        <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center ml-3">
+          {icon}
+        </div>
+        <div>
+          <h3 className="font-medium text-lg">{title}</h3>
+          <p className="text-gray-500 text-sm">{description}</p>
+        </div>
+      </div>
+    </Label>
+  </div>
+);
 
-// Define the form schema
-const formSchema = z.object({
-  name: z.string().optional(),
-  phone: z.string().min(10, { message: "رقم هاتف غير صالح" }),
-  paymentMethod: z.enum(["card", "cash", "wallet", "applepay"]),
-  saveCard: z.boolean().optional(),
-  addressId: z.string().optional(),
-});
-
-const GymPayment: React.FC = () => {
+const GymPayment = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { gym, plan } = location.state as { gym: GymItem; plan: any };
-  const [loading, setLoading] = useState(false);
-  const [isAddingAddress, setIsAddingAddress] = useState(false);
-  const [showDialog, setShowDialog] = useState(false);
-  const [selectedCoupon, setSelectedCoupon] = useState<string | null>(null);
-  const [discount, setDiscount] = useState(0);
+  const { mutateAsync: createSubscription, isPending: isSubmitting } = useCreateSubscription();
   
-  const [addresses, setAddresses] = useState<Address[]>([
-    { 
-      id: '1', 
-      title: 'المنزل', 
-      address: 'شارع الملك فهد، حي الورود، الرياض',
-      phone: '05xxxxxxxx',
-      isDefault: true
-    },
-    { 
-      id: '2', 
-      title: 'العمل', 
-      address: 'برج المملكة، طريق الملك فهد، الرياض',
-      phone: '05xxxxxxxx',
-    }
-  ]);
+  // Get gym and plan details from navigation state
+  const gymId = location.state?.gymId;
+  const gymName = location.state?.gymName;
+  const selectedPlan = location.state?.plan;
+  const price = location.state?.price;
+  
+  const [paymentMethod, setPaymentMethod] = useState<'card' | 'wallet'>('card');
+  const [saveCard, setSaveCard] = useState(false);
+  const [cardNumber, setCardNumber] = useState('');
+  const [cardName, setCardName] = useState('');
+  const [expiryDate, setExpiryDate] = useState('');
+  const [cvv, setCvv] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  // Coupons data
-  const coupons = [
-    { code: 'NEWUSER', discount: 10, description: 'خصم 10% للمستخدمين الجدد' },
-    { code: 'SUMMER', discount: 15, description: 'خصم 15% لفصل الصيف' },
-    { code: 'WEEKEND', discount: 5, description: 'خصم 5% لعروض نهاية الأسبوع' },
-  ];
+  useEffect(() => {
+    // Set document direction to right-to-left
+    document.documentElement.setAttribute('dir', 'rtl');
 
-  // Initialize the form
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      phone: "",
-      paymentMethod: "card",
-      saveCard: false,
-      addressId: "1",
-    },
-  });
-
-  // Get form values
-  const paymentMethod = form.watch("paymentMethod");
-  const addressId = form.watch("addressId");
-
-  // New address form
-  const addressForm = useForm({
-    defaultValues: {
-      title: '',
-      address: '',
-      phone: ''
-    }
-  });
-
-  const handleApplyCoupon = (code: string) => {
-    const coupon = coupons.find(c => c.code === code);
-    if (coupon) {
-      setSelectedCoupon(code);
-      setDiscount(coupon.discount);
-      setShowDialog(false);
-      toast.success(`تم تطبيق الكوبون بنجاح! خصم ${coupon.discount}%`);
-    }
-  };
-
-  const calculateTotal = () => {
-    const serviceCharge = 25; // رسوم خدمة ثابتة
-    const subtotal = plan.price;
-    const discountAmount = subtotal * (discount / 100);
-    const finalTotal = subtotal + serviceCharge - discountAmount;
-    return {
-      subtotal,
-      serviceCharge,
-      discountAmount,
-      finalTotal
+    // Cleanup function to reset direction when component unmounts
+    return () => {
+      document.documentElement.removeAttribute('dir');
     };
+  }, []);
+
+  // Validation functions
+  const validateCardNumber = (number: string): boolean => {
+    const regex = new RegExp('^[0-9]{16}$');
+    return regex.test(number.replace(/\s/g, ''));
   };
 
-  const handleAddAddress = (data: any) => {
-    const newAddress = {
-      id: Date.now().toString(),
-      title: data.title,
-      address: data.address,
-      phone: data.phone
-    };
-    
-    setAddresses([...addresses, newAddress]);
-    form.setValue("addressId", newAddress.id);
-    setIsAddingAddress(false);
-    toast.success("تم إضافة العنوان بنجاح");
-  };
+  const validateExpiryDate = (date: string): boolean => {
+    const regex = new RegExp('^(0[1-9]|1[0-2])/?([0-9]{2})$');
+    if (!regex.test(date)) return false;
 
-  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-    if (!user) {
-      toast.error('يجب تسجيل الدخول أولاً');
-      return;
+    const [month, year] = date.split('/').map(Number);
+    const currentYear = new Date().getFullYear() % 100;
+    const currentMonth = new Date().getMonth() + 1;
+
+    if (year < currentYear || (year === currentYear && month < currentMonth)) {
+      return false;
     }
-    
-    setLoading(true);
-    
+
+    return true;
+  };
+
+  const validateCvv = (cvv: string): boolean => {
+    const regex = new RegExp('^[0-9]{3}$');
+    return regex.test(cvv);
+  };
+
+  // Formatting functions
+  const formatCardNumber = (value: string): string => {
+    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+    const matches = v.match(/\d{4,16}/g);
+    const match = matches && matches[0] || '';
+    const parts = [];
+
+    for (let i = 0, len = match.length; i < len; i += 4) {
+      parts.push(match.substring(i, i + 4));
+    }
+
+    if (parts.length) {
+      return parts.join(' ');
+    } else {
+      return value;
+    }
+  };
+
+  const formatExpiryDate = (value: string): string => {
+    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+    const matches = v.match(/\d{2,4}/g);
+    const match = matches && matches[0] || '';
+    const parts = [];
+
+    for (let i = 0, len = match.length; i < len; i += 2) {
+      parts.push(match.substring(i, i + 2));
+    }
+
+    if (parts.length) {
+      return parts.join('/');
+    } else {
+      return value;
+    }
+  };
+
+  const formatCvv = (value: string): string => {
+    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+    return v.slice(0, 3);
+  };
+  
+  const handlePayment = async () => {
     try {
-      // Create the gym subscription in Supabase
-      const selectedAddress = addresses.find(addr => addr.id === values.addressId);
-      const totals = calculateTotal();
-      
-      // Calculate start and end dates
-      const startDate = new Date();
-      const endDate = new Date();
-      
-      // Set end date based on plan duration
-      if (plan.id === 'monthly') {
-        endDate.setMonth(endDate.getMonth() + 1);
-      } else if (plan.id === 'quarterly') {
-        endDate.setMonth(endDate.getMonth() + 3);
-      } else if (plan.id === 'yearly') {
-        endDate.setFullYear(endDate.getFullYear() + 1);
+      // Validation for card payment
+      if (paymentMethod === 'card') {
+        if (!cardNumber || !cardName || !expiryDate || !cvv) {
+          toast.error('يرجى إدخال جميع بيانات البطاقة');
+          return;
+        }
+        
+        if (!validateCardNumber(cardNumber)) {
+          toast.error('رقم البطاقة غير صالح');
+          return;
+        }
+        
+        if (!validateExpiryDate(expiryDate)) {
+          toast.error('تاريخ انتهاء البطاقة غير صالح');
+          return;
+        }
+        
+        if (!validateCvv(cvv)) {
+          toast.error('رمز CVV غير صالح');
+          return;
+        }
       }
       
+      setIsProcessing(true);
+      
+      // Calculate subscription dates
+      const startDate = format(new Date(), 'yyyy-MM-dd');
+      let endDate;
+      
+      switch (selectedPlan) {
+        case 'monthly':
+          endDate = format(addMonths(new Date(), 1), 'yyyy-MM-dd');
+          break;
+        case 'quarterly':
+          endDate = format(addMonths(new Date(), 3), 'yyyy-MM-dd');
+          break;
+        case 'yearly':
+          endDate = format(addYears(new Date(), 1), 'yyyy-MM-dd');
+          break;
+        default:
+          endDate = format(addMonths(new Date(), 1), 'yyyy-MM-dd');
+      }
+      
+      // Create subscription in database
       await createSubscription({
-        user_id: user.id,
-        gym_id: gym.id,
-        plan_name: plan.title,
-        start_date: startDate.toISOString(),
-        end_date: endDate.toISOString(),
-        price: totals.finalTotal,
+        user_id: user?.id || '',
+        gym_id: gymId,
+        gym_name: gymName,
+        plan_name: selectedPlan,
+        start_date: startDate,
+        end_date: endDate,
+        price: price,
         status: 'active'
       });
       
-      // Simulate a delay for the payment process
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      toast.success("تم تأكيد الطلب بنجاح!");
-      
       // Navigate to success page
-      navigate('/gym/success', {
-        state: {
-          gym,
-          plan,
-          payment: {
-            ...values,
-            phone: selectedAddress?.phone || values.phone,
-            discount: discount > 0 ? { code: selectedCoupon, percentage: discount } : null,
-            total: totals.finalTotal
-          }
+      navigate('/gym/success', { 
+        state: { 
+          gymId,
+          gymName,
+          plan: selectedPlan,
+          price,
+          startDate,
+          endDate
         }
       });
+      
     } catch (error) {
-      console.error('Error creating subscription:', error);
-      toast.error('حدث خطأ أثناء إنشاء الاشتراك. يرجى المحاولة مرة أخرى.');
+      console.error('Payment error:', error);
+      toast.error('حدث خطأ أثناء معالجة الدفع. الرجاء المحاولة مرة أخرى.');
     } finally {
-      setLoading(false);
+      setIsProcessing(false);
     }
   };
-  
-  const totals = calculateTotal();
+
+  // Formatting functions
+  const getPlanName = (plan: string): string => {
+    switch(plan) {
+      case 'monthly':
+        return 'اشتراك شهري';
+      case 'quarterly':
+        return 'اشتراك ربع سنوي';
+      case 'yearly':
+        return 'اشتراك سنوي';
+      default:
+        return 'اشتراك';
+    }
+  };
+
+  // If no gym details are provided, redirect to gyms list
+  if (!gymId || !selectedPlan || !price) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen p-4 bg-gray-50" dir="rtl">
+        <div className="w-full max-w-md p-6 bg-white rounded-xl shadow-md text-center">
+          <h2 className="text-xl font-bold mb-4">لم يتم العثور على تفاصيل الاشتراك</h2>
+          <p className="text-gray-600 mb-6">يرجى تحديد صالة رياضية وخطة اشتراك أولاً</p>
+          <Link to="/gym">
+            <Button className="w-full">الذهاب إلى قائمة الصالات الرياضية</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50" dir="rtl">
-      <div className="max-w-md mx-auto bg-white pb-20">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-700 to-indigo-700 text-white sticky top-0 z-10 shadow-md">
-          <Link to={`/gym/${gym.id}/subscribe`} className="text-white hover:text-blue-200 transition-colors">
-            <ArrowLeft className="w-6 h-6" />
-          </Link>
-          <h1 className="text-xl font-bold">الدفع</h1>
-          <div className="w-6"></div> {/* Empty div for spacing */}
+    <div className="bg-gray-50 min-h-screen pb-20" dir="rtl">
+      {/* Header */}
+      <div className="bg-white p-4 flex items-center shadow-sm">
+        <Link to={`/gym/${gymId}`} className="ml-2">
+          <ArrowLeft className="h-6 w-6" />
+        </Link>
+        <h1 className="text-xl font-bold">تأكيد الدفع</h1>
+      </div>
+      
+      {/* Subscription summary */}
+      <div className="bg-white p-4 mt-2">
+        <h2 className="text-lg font-bold mb-2">ملخص الاشتراك</h2>
+        <div className="bg-gray-50 rounded-xl p-4">
+          <div className="flex justify-between mb-2">
+            <span className="text-gray-600">الصالة الرياضية:</span>
+            <span className="font-medium">{gymName}</span>
+          </div>
+          <div className="flex justify-between mb-2">
+            <span className="text-gray-600">خطة الاشتراك:</span>
+            <span className="font-medium">{getPlanName(selectedPlan)}</span>
+          </div>
+          <div className="flex justify-between pt-2 border-t border-gray-200 mt-2">
+            <span className="font-medium">المبلغ الإجمالي:</span>
+            <span className="font-bold text-brand-600">{price.toFixed(2)} ر.س</span>
+          </div>
         </div>
-
-        {/* Main content */}
-        <div className="px-4 py-4">
-          {/* Order summary card */}
-          <Card className="overflow-hidden mb-6 border-0 shadow-md">
-            <div className="p-4 bg-gradient-to-r from-blue-100 to-indigo-50 border-b">
-              <div className="flex justify-between items-center">
-                <h3 className="font-bold text-lg text-blue-800">ملخص الاشتراك</h3>
-                <span className="text-sm text-blue-700">{gym.name}</span>
+      </div>
+      
+      {/* Payment methods */}
+      <div className="bg-white p-4 mt-2">
+        <h2 className="text-lg font-bold mb-3">اختر طريقة الدفع</h2>
+        
+        <RadioGroup value={paymentMethod} onValueChange={(value) => setPaymentMethod(value as 'card' | 'wallet')}>
+          <div className="space-y-3">
+            <PaymentOption 
+              id="card"
+              title="بطاقة ائتمان/مدى"
+              icon={<CreditCard className="h-5 w-5" />}
+              description="الدفع باستخدام بطاقة فيزا، ماستركارد أو مدى"
+            />
+            
+            <PaymentOption 
+              id="wallet"
+              title="محفظة إلكترونية"
+              icon={<Wallet className="h-5 w-5" />}
+              description="الدفع باستخدام Apple Pay أو STC Pay"
+            />
+          </div>
+        </RadioGroup>
+      </div>
+      
+      {/* Card details section (shown only for card payment) */}
+      {paymentMethod === 'card' && (
+        <div className="bg-white p-4 mt-2">
+          <h2 className="text-lg font-bold mb-3">تفاصيل البطاقة</h2>
+          
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="cardNumber">رقم البطاقة</Label>
+              <input
+                id="cardNumber"
+                type="text"
+                value={cardNumber}
+                onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
+                placeholder="0000 0000 0000 0000"
+                className="w-full mt-1 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
+                maxLength={19}
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="cardName">الاسم على البطاقة</Label>
+              <input
+                id="cardName"
+                type="text"
+                value={cardName}
+                onChange={(e) => setCardName(e.target.value)}
+                placeholder="الاسم الكامل كما في البطاقة"
+                className="w-full mt-1 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="expiryDate">تاريخ الانتهاء</Label>
+                <input
+                  id="expiryDate"
+                  type="text"
+                  value={expiryDate}
+                  onChange={(e) => setExpiryDate(formatExpiryDate(e.target.value))}
+                  placeholder="MM/YY"
+                  className="w-full mt-1 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  maxLength={5}
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="cvv">CVV</Label>
+                <input
+                  id="cvv"
+                  type="text"
+                  value={cvv}
+                  onChange={(e) => setCvv(formatCvv(e.target.value))}
+                  placeholder="123"
+                  className="w-full mt-1 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  maxLength={3}
+                />
               </div>
             </div>
-            <CardContent className="p-4">
-              <div className="flex justify-between mb-2">
-                <span className="text-blue-700">نوع الاشتراك</span>
-                <span className="font-medium text-blue-900">{plan.title} ({plan.duration})</span>
-              </div>
-              <div className="flex justify-between mb-4">
-                <span className="text-blue-700">قيمة الاشتراك</span>
-                <span className="font-medium text-blue-900">{plan.price} جنيه</span>
-              </div>
-              
-              <div className="flex justify-between border-t border-blue-100 pt-3">
-                <span className="text-blue-700">رسوم خدمة</span>
-                <span className="text-blue-900">25 جنيه</span>
-              </div>
-              
-              {discount > 0 && (
-                <div className="flex justify-between mt-2 text-green-600">
-                  <span className="flex items-center">
-                    <Check className="w-4 h-4 mr-1" />
-                    خصم ({selectedCoupon})
-                  </span>
-                  <span>- {totals.discountAmount} جنيه</span>
-                </div>
-              )}
-              
-              <div className="flex justify-between mt-2 pb-1 pt-2 border-t border-blue-100">
-                <span className="font-bold text-blue-800">المجموع</span>
-                <span className="font-bold text-lg text-blue-700">{totals.finalTotal} جنيه</span>
-              </div>
-              
-              <Button 
-                type="button"
-                variant="outlineBlue" 
-                className="w-full mt-3 text-blue-700 border-blue-200 hover:bg-blue-50"
-                onClick={() => setShowDialog(true)}
-              >
-                {selectedCoupon ? 'تغيير كوبون الخصم' : 'إضافة كوبون خصم'}
-              </Button>
-            </CardContent>
-          </Card>
-          
-          {isAddingAddress ? (
-            <Card className="border-0 shadow-md mb-6">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-4">
-                  <button 
-                    onClick={() => setIsAddingAddress(false)} 
-                    className="text-blue-600 hover:text-blue-800 transition-colors"
-                    type="button"
-                  >
-                    <ArrowLeft className="w-5 h-5" />
-                  </button>
-                  <h3 className="text-lg font-bold text-blue-800">إضافة عنوان جديد</h3>
-                  <div className="w-5"></div>
-                </div>
-                
-                <form onSubmit={addressForm.handleSubmit(handleAddAddress)} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="title" className="text-blue-800">اسم العنوان</Label>
-                    <Input
-                      id="title"
-                      placeholder="المنزل، العمل، ..."
-                      className="border-blue-200 focus:border-blue-400 focus:ring-blue-300"
-                      {...addressForm.register('title', { required: true })}
-                    />
-                    {addressForm.formState.errors.title && (
-                      <p className="text-red-500 text-xs">هذا الحقل مطلوب</p>
-                    )}
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="address" className="flex items-center text-blue-800">
-                      <MapPin className="w-4 h-4 mr-1 text-blue-600" />
-                      العنوان
-                    </Label>
-                    <Input
-                      id="address"
-                      placeholder="الحي، الشارع، رقم المبنى"
-                      className="border-blue-200 focus:border-blue-400 focus:ring-blue-300"
-                      {...addressForm.register('address', { required: true })}
-                    />
-                    {addressForm.formState.errors.address && (
-                      <p className="text-red-500 text-xs">هذا الحقل مطلوب</p>
-                    )}
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="phone" className="flex items-center text-blue-800">
-                      <Phone className="w-4 h-4 mr-1 text-blue-600" />
-                      رقم الهاتف
-                    </Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      placeholder="05xxxxxxxx"
-                      className="border-blue-200 focus:border-blue-400 focus:ring-blue-300"
-                      {...addressForm.register('phone', { 
-                        required: true,
-                        pattern: /^(05)[0-9]{8}$/ 
-                      })}
-                    />
-                    {addressForm.formState.errors.phone && (
-                      <p className="text-red-500 text-xs">رقم هاتف غير صالح</p>
-                    )}
-                  </div>
-                  
-                  <div className="flex gap-2 pt-2">
-                    <Button 
-                      type="submit" 
-                      className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
-                    >
-                      إضافة
-                    </Button>
-                    <Button 
-                      type="button" 
-                      variant="outlineBlue" 
-                      className="flex-1 border-blue-200 text-blue-700"
-                      onClick={() => setIsAddingAddress(false)}
-                    >
-                      إلغاء
-                    </Button>
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
-          ) : (
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-                {/* Address section */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-bold flex items-center text-blue-800">
-                    <MapPin className="w-5 h-5 mr-2 text-blue-600" />
-                    عنوان الإشتراك
-                  </h3>
-                  
-                  <Card className="border-0 shadow-md">
-                    <CardContent className="p-4">
-                      <FormField
-                        control={form.control}
-                        name="addressId"
-                        render={({ field }) => (
-                          <RadioGroup 
-                            value={field.value} 
-                            onValueChange={field.onChange}
-                            className="space-y-3"
-                          >
-                            {addresses.map((address) => (
-                              <div key={address.id} className="relative">
-                                <RadioGroupItem
-                                  value={address.id}
-                                  id={`address-${address.id}`}
-                                  className="peer sr-only"
-                                />
-                                <Label
-                                  htmlFor={`address-${address.id}`}
-                                  className="flex flex-col space-y-1 cursor-pointer rounded-lg border border-gray-200 p-4 hover:bg-blue-50 peer-data-[state=checked]:border-blue-500 peer-data-[state=checked]:bg-blue-50"
-                                >
-                                  <div className="flex items-start justify-between">
-                                    <div>
-                                      <div className="flex items-center">
-                                        <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center mr-2">
-                                          <Home className="w-3 h-3 text-blue-600" />
-                                        </div>
-                                        <span className="font-medium text-blue-900">{address.title}</span>
-                                      </div>
-                                      <p className="text-sm text-blue-700 mt-1">{address.address}</p>
-                                      <p className="text-xs text-blue-600 mt-1">{address.phone}</p>
-                                    </div>
-                                    {addressId === address.id && (
-                                      <div className="h-5 w-5 rounded-full bg-blue-100 flex items-center justify-center">
-                                        <Check className="h-3 w-3 text-blue-600" />
-                                      </div>
-                                    )}
-                                  </div>
-                                </Label>
-                              </div>
-                            ))}
-                          </RadioGroup>
-                        )}
-                      />
-                      
-                      <Button 
-                        type="button"
-                        variant="outlineBlue" 
-                        className="w-full mt-3 border-dashed border-blue-200 hover:bg-blue-50 text-blue-700"
-                        onClick={() => setIsAddingAddress(true)}
-                      >
-                        <Plus className="w-4 h-4 mr-2" />
-                        إضافة عنوان جديد
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </div>
-                
-                {/* Phone number field */}
-                <FormField
-                  control={form.control}
-                  name="phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-lg font-bold flex items-center text-blue-800">
-                        <Phone className="w-5 h-5 mr-2 text-blue-600" />
-                        رقم الهاتف للتواصل
-                      </FormLabel>
-                      <FormControl>
-                        <Input 
-                          placeholder="05XXXXXXXX" 
-                          type="tel" 
-                          className="border-blue-200 focus:border-blue-400 focus:ring-blue-300"
-                          {...field} 
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                {/* Payment method */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-bold flex items-center text-blue-800">
-                    <CreditCard className="w-5 h-5 mr-2 text-blue-600" />
-                    طريقة الدفع
-                  </h3>
-                  
-                  <Card className="border-0 shadow-md">
-                    <CardContent className="p-4">
-                      <FormField
-                        control={form.control}
-                        name="paymentMethod"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <RadioGroup
-                                onValueChange={field.onChange}
-                                defaultValue={field.value}
-                                className="space-y-3"
-                              >
-                                <div className="relative">
-                                  <RadioGroupItem value="card" id="card" className="peer sr-only" />
-                                  <Label htmlFor="card" className="flex items-center justify-between p-4 rounded-lg border border-gray-200 cursor-pointer hover:bg-blue-50 peer-data-[state=checked]:border-blue-500 peer-data-[state=checked]:bg-blue-50">
-                                    <div className="flex items-center">
-                                      <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                                        <CreditCard className="w-4 h-4 text-blue-600" />
-                                      </div>
-                                      <div>
-                                        <p className="font-medium text-blue-900">فيزا / ماستركارد</p>
-                                        <p className="text-xs text-blue-700">الدفع بالبطاقة الائتمانية</p>
-                                      </div>
-                                    </div>
-                                    {paymentMethod === "card" && (
-                                      <div className="h-5 w-5 rounded-full bg-blue-100 flex items-center justify-center">
-                                        <Check className="h-3 w-3 text-blue-600" />
-                                      </div>
-                                    )}
-                                  </Label>
-                                </div>
-                                
-                                <div className="relative">
-                                  <RadioGroupItem value="wallet" id="wallet" className="peer sr-only" />
-                                  <Label htmlFor="wallet" className="flex items-center justify-between p-4 rounded-lg border border-gray-200 cursor-pointer hover:bg-blue-50 peer-data-[state=checked]:border-blue-500 peer-data-[state=checked]:bg-blue-50">
-                                    <div className="flex items-center">
-                                      <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                                        <Wallet className="w-4 h-4 text-blue-600" />
-                                      </div>
-                                      <div>
-                                        <p className="font-medium text-blue-900">المحافظ الإلكترونية</p>
-                                        <p className="text-xs text-blue-700">فودافون كاش، محفظة مصر الرقمية</p>
-                                      </div>
-                                    </div>
-                                    {paymentMethod === "wallet" && (
-                                      <div className="h-5 w-5 rounded-full bg-blue-100 flex items-center justify-center">
-                                        <Check className="h-3 w-3 text-blue-600" />
-                                      </div>
-                                    )}
-                                  </Label>
-                                </div>
-                                
-                                <div className="relative">
-                                  <RadioGroupItem value="applepay" id="applepay" className="peer sr-only" />
-                                  <Label htmlFor="applepay" className="flex items-center justify-between p-4 rounded-lg border border-gray-200 cursor-pointer hover:bg-blue-50 peer-data-[state=checked]:border-blue-500 peer-data-[state=checked]:bg-blue-50">
-                                    <div className="flex items-center">
-                                      <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                                        <Apple className="w-4 h-4 text-blue-800" />
-                                      </div>
-                                      <div>
-                                        <p className="font-medium text-blue-900">Apple Pay</p>
-                                        <p className="text-xs text-blue-700">الدفع السريع والآمن</p>
-                                      </div>
-                                    </div>
-                                    {paymentMethod === "applepay" && (
-                                      <div className="h-5 w-5 rounded-full bg-blue-100 flex items-center justify-center">
-                                        <Check className="h-3 w-3 text-blue-600" />
-                                      </div>
-                                    )}
-                                  </Label>
-                                </div>
-                                
-                                <div className="relative">
-                                  <RadioGroupItem value="cash" id="cash" className="peer sr-only" />
-                                  <Label htmlFor="cash" className="flex items-center justify-between p-4 rounded-lg border border-gray-200 cursor-pointer hover:bg-blue-50 peer-data-[state=checked]:border-blue-500 peer-data-[state=checked]:bg-blue-50">
-                                    <div className="flex items-center">
-                                      <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center mr-3">
-                                        <Building className="w-4 h-4 text-green-600" />
-                                      </div>
-                                      <div>
-                                        <p className="font-medium text-blue-900">الدفع في النادي</p>
-                                        <p className="text-xs text-blue-700">ادفع عند أول زيارة</p>
-                                      </div>
-                                    </div>
-                                    {paymentMethod === "cash" && (
-                                      <div className="h-5 w-5 rounded-full bg-blue-100 flex items-center justify-center">
-                                        <Check className="h-3 w-3 text-blue-600" />
-                                      </div>
-                                    )}
-                                  </Label>
-                                </div>
-                              </RadioGroup>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      {paymentMethod === "card" && (
-                        <div className="mt-4">
-                          <div className="bg-blue-50 rounded-lg p-3 flex justify-between items-center">
-                            <div className="flex gap-2">
-                              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png" alt="Visa" className="h-6" />
-                              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/MasterCard_Logo.svg/2560px-MasterCard_Logo.svg.png" alt="MasterCard" className="h-6" />
-                              <img src="https://upload.wikimedia.org/wikipedia/ar/b/bd/Mada_Logo.svg" alt="Mada" className="h-6" />
-                            </div>
-                            <span className="text-xs text-blue-700">معاملات آمنة 100%</span>
-                          </div>
-                          
-                          <FormField
-                            control={form.control}
-                            name="saveCard"
-                            render={({ field }) => (
-                              <FormItem className="flex flex-row items-start space-x-3 space-x-reverse mt-3">
-                                <FormControl>
-                                  <Checkbox
-                                    checked={field.value}
-                                    onCheckedChange={field.onChange}
-                                    className="border-blue-300 text-blue-600 focus:ring-blue-300"
-                                  />
-                                </FormControl>
-                                <FormLabel className="text-blue-800">
-                                  حفظ بيانات البطاقة للمستقبل
-                                </FormLabel>
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                </div>
-                
-                <Button 
-                  type="submit" 
-                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md py-6"
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <div className="flex items-center">
-                      <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                      <span>جاري التأكيد...</span>
-                    </div>
-                  ) : (
-                    <>تأكيد الدفع - {totals.finalTotal} جنيه</>
-                  )}
-                </Button>
-              </form>
-            </Form>
-          )}
-
-          {/* Coupon dialog */}
-          <Dialog open={showDialog} onOpenChange={setShowDialog}>
-            <DialogContent className="sm:max-w-md" dir="rtl">
-              <DialogHeader>
-                <DialogTitle className="text-center text-blue-800 mb-4">اختر كوبون خصم</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-3">
-                {coupons.map((coupon) => (
-                  <div 
-                    key={coupon.code}
-                    className={`border rounded-lg p-3 cursor-pointer transition-all ${selectedCoupon === coupon.code ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-200 hover:bg-blue-50'}`}
-                    onClick={() => handleApplyCoupon(coupon.code)}
-                  >
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-2">
-                        <div className="bg-blue-100 text-blue-800 font-bold px-2 py-1 rounded">
-                          {coupon.code}
-                        </div>
-                        <span className="font-medium text-blue-900">خصم {coupon.discount}%</span>
-                      </div>
-                      {selectedCoupon === coupon.code && (
-                        <div className="h-5 w-5 rounded-full bg-blue-500 flex items-center justify-center">
-                          <Check className="h-3 w-3 text-white" />
-                        </div>
-                      )}
-                    </div>
-                    <p className="text-sm text-gray-600 mt-1">{coupon.description}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="flex justify-end mt-4">
-                <Button 
-                  variant="outlineBlue"
-                  onClick={() => setShowDialog(false)}
-                >
-                  إغلاق
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
+            
+            <div className="flex items-center">
+              <Switch
+                checked={saveCard}
+                onCheckedChange={setSaveCard}
+                id="save-card"
+              />
+              <Label htmlFor="save-card" className="mr-2">حفظ بيانات البطاقة للمرة القادمة</Label>
+            </div>
+          </div>
         </div>
+      )}
+      
+      {/* Payment button */}
+      <div className="fixed bottom-0 right-0 left-0 p-4 bg-white border-t border-gray-200">
+        <Button 
+          onClick={handlePayment}
+          className="w-full bg-brand-500 hover:bg-brand-600 h-14 text-lg"
+          disabled={isSubmitting || isProcessing}
+        >
+          {isSubmitting || isProcessing ? (
+            <span className="flex items-center">
+              <svg className="animate-spin ml-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              جاري معالجة الدفع
+            </span>
+          ) : (
+            <>إتمام الدفع ({price.toFixed(2)} ر.س)</>
+          )}
+        </Button>
       </div>
     </div>
   );
-};
-
-// Missing Plus icon component
-const Plus = ({ className }: { className?: string }) => {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-    >
-      <path d="M5 12h14" />
-      <path d="M12 5v14" />
-    </svg>
-  );
+  
+  function getPlanName(plan: string): string {
+    switch(plan) {
+      case 'monthly':
+        return 'اشتراك شهري';
+      case 'quarterly':
+        return 'اشتراك ربع سنوي';
+      case 'yearly':
+        return 'اشتراك سنوي';
+      default:
+        return 'اشتراك';
+    }
+  }
 };
 
 export default GymPayment;

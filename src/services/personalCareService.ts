@@ -26,7 +26,8 @@ export async function fetchPersonalCareProducts(): Promise<PersonalCareProduct[]
     
     return data.map(item => ({
       ...item,
-      inStock: item.stock > 0
+      inStock: item.stock > 0,
+      category: item.category_id || '' // Ensure category is set from category_id
     })) || [];
   } catch (error) {
     console.error('Error fetching personal care products:', error);
@@ -42,13 +43,14 @@ export async function fetchProductsByCategory(category: string): Promise<Persona
     const { data, error } = await supabase
       .from('personal_care_products')
       .select('*')
-      .eq('category', category);
+      .eq('category_id', category);
     
     if (error) throw error;
     
     return data.map(item => ({
       ...item,
-      inStock: item.stock > 0
+      inStock: item.stock > 0,
+      category: item.category_id || '' // Ensure category is set from category_id
     })) || [];
   } catch (error) {
     console.error(`Error fetching products for category ${category}:`, error);
@@ -70,7 +72,8 @@ export async function fetchProductsByGender(gender: string): Promise<PersonalCar
     
     return data.map(item => ({
       ...item,
-      inStock: item.stock > 0
+      inStock: item.stock > 0,
+      category: item.category_id || '' // Ensure category is set from category_id
     })) || [];
   } catch (error) {
     console.error(`Error fetching products for gender ${gender}:`, error);
@@ -93,7 +96,8 @@ export async function fetchProductById(id: string): Promise<PersonalCareProduct>
     
     return {
       ...data,
-      inStock: data.stock > 0
+      inStock: data.stock > 0,
+      category: data.category_id || '' // Ensure category is set from category_id
     };
   } catch (error) {
     console.error(`Error fetching product with ID ${id}:`, error);
@@ -108,12 +112,12 @@ export async function fetchProductCategories(): Promise<string[]> {
   try {
     const { data, error } = await supabase
       .from('personal_care_products')
-      .select('category');
+      .select('category_id');
     
     if (error) throw error;
     
     // Extract unique categories
-    const uniqueCategories = [...new Set(data.map(item => item.category))];
+    const uniqueCategories = [...new Set(data.map(item => item.category_id).filter(Boolean))];
     return uniqueCategories;
   } catch (error) {
     console.error('Error fetching product categories:', error);

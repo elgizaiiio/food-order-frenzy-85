@@ -95,6 +95,42 @@ export type Database = {
           },
         ]
       }
+      personal_care_products: {
+        Row: {
+          category_id: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          is_popular: boolean | null
+          name: string
+          price: number
+          stock: number | null
+        }
+        Insert: {
+          category_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_popular?: boolean | null
+          name: string
+          price: number
+          stock?: number | null
+        }
+        Update: {
+          category_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_popular?: boolean | null
+          name?: string
+          price?: number
+          stock?: number | null
+        }
+        Relationships: []
+      }
       pharmacy_categories: {
         Row: {
           created_at: string
@@ -126,6 +162,7 @@ export type Database = {
           is_recommended: boolean | null
           name: string
           price: number
+          requires_prescription: boolean | null
           stock: number | null
         }
         Insert: {
@@ -137,6 +174,7 @@ export type Database = {
           is_recommended?: boolean | null
           name: string
           price: number
+          requires_prescription?: boolean | null
           stock?: number | null
         }
         Update: {
@@ -148,6 +186,7 @@ export type Database = {
           is_recommended?: boolean | null
           name?: string
           price?: number
+          requires_prescription?: boolean | null
           stock?: number | null
         }
         Relationships: [

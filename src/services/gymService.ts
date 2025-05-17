@@ -1,7 +1,4 @@
 
-// هذا ملف مؤقت لخدمة الصالات الرياضية
-// عندما يتم إنشاء جداول الصالات الرياضية في قاعدة البيانات، يمكن تحديث هذا الملف
-
 import { supabase } from '@/integrations/supabase/client';
 
 export interface Gym {
@@ -103,7 +100,11 @@ export async function fetchUserSubscriptions(userId: string): Promise<GymSubscri
       throw error;
     }
     
-    return data || [];
+    // Convert database status string to the union type
+    return data?.map(subscription => ({
+      ...subscription,
+      status: subscription.status as 'active' | 'expired' | 'cancelled'
+    })) || [];
   } catch (error) {
     console.error('Error in fetchUserSubscriptions:', error);
     return [];
@@ -124,7 +125,11 @@ export async function createSubscription(subscriptionData: Omit<GymSubscription,
       throw error;
     }
     
-    return data;
+    // Convert database status string to the union type
+    return {
+      ...data,
+      status: data.status as 'active' | 'expired' | 'cancelled'
+    };
   } catch (error) {
     console.error('Error in createSubscription:', error);
     throw error;

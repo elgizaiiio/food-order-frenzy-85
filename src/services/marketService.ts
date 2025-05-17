@@ -15,7 +15,7 @@ export async function fetchCategories(): Promise<Category[]> {
     
     // Transform the data to match our Category interface
     return data.map(item => ({
-      id: parseInt(item.id),
+      id: item.id,
       name: item.name,
       description: item.description || '',
       image: item.image_url || 'https://via.placeholder.com/200?text=صورة+غير+متوفرة'
@@ -29,9 +29,8 @@ export async function fetchCategories(): Promise<Category[]> {
 /**
  * Get products by category
  */
-export async function fetchProductsByCategory(categoryId: number): Promise<Product[]> {
+export async function fetchProductsByCategory(categoryId: string): Promise<Product[]> {
   try {
-    // Convert the categoryId to a number before passing it to the query
     const { data, error } = await supabase
       .from('supermarket_products')
       .select('*')
@@ -41,12 +40,12 @@ export async function fetchProductsByCategory(categoryId: number): Promise<Produ
     
     // Transform the data to match our Product interface
     return data.map(item => ({
-      id: parseInt(item.id),
+      id: item.id,
       name: item.name,
       price: item.price,
       quantity: item.quantity || '',
       image: item.image_url || 'https://via.placeholder.com/400?text=صورة+غير+متوفرة',
-      categoryId: item.category_id ? parseInt(item.category_id) : 0,
+      categoryId: item.category_id || '',
       description: item.description || '',
       inStock: item.stock > 0
     }));
@@ -69,7 +68,7 @@ export async function fetchOffers(): Promise<Offer[]> {
     
     // Transform the data to match our Offer interface
     return data.map(item => ({
-      id: parseInt(item.id),
+      id: item.id,
       title: item.title,
       description: item.description || '',
       discount: item.discount || 0,
@@ -96,12 +95,12 @@ export async function fetchPopularProducts(): Promise<Product[]> {
     
     // Transform the data to match our Product interface
     return data.map(item => ({
-      id: parseInt(item.id),
+      id: item.id,
       name: item.name,
       price: item.price,
       quantity: item.quantity || '',
       image: item.image_url || 'https://via.placeholder.com/400?text=صورة+غير+متوفرة',
-      categoryId: item.category_id ? parseInt(item.category_id) : 0,
+      categoryId: item.category_id || '',
       description: item.description || '',
       inStock: item.stock > 0
     }));

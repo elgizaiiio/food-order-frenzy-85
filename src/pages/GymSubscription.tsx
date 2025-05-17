@@ -1,256 +1,223 @@
-
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Check, Star, MapPin, Clock, Users } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { ArrowLeft, MapPin, Clock, Dumbbell, Check, CalendarDays } from 'lucide-react';
+import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { toast } from 'sonner';
-import { fetchGymById, GymItem } from '@/services/gymService';
+import { Skeleton } from "@/components/ui/skeleton";
+import { fetchGymById, Gym } from '@/services/gymService';
 import { useAuth } from '@/context/AuthContext';
+import { toast } from 'sonner';
 
 type SubscriptionPlan = {
   id: string;
   title: string;
-  duration: string;
   price: number;
-  features: string[];
+  description: string;
   recommended?: boolean;
-  priceDiscount?: number;
 };
 
-const GymSubscription: React.FC = () => {
-  // Get gym id from URL
+type DescriptionItemProps = {
+  icon: React.ReactNode;
+  text: string;
+};
+
+const DescriptionItem: React.FC<DescriptionItemProps> = ({ icon, text }) => {
+  return (
+    <div className="flex items-center space-x-2">
+      {icon}
+      <span className="text-sm">{text}</span>
+    </div>
+  );
+};
+
+const GymSubscription = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user } = useAuth(); // Get the authenticated user
-  const [loading, setLoading] = useState(true);
-  const [gymInfo, setGymInfo] = useState<GymItem | null>(null);
-  const [plans, setPlans] = useState<SubscriptionPlan[]>([
-    {
-      id: 'monthly',
-      title: 'شهرية',
-      duration: 'اشتراك لمدة شهر',
-      price: 1999,
-      features: [
-        'وصول كامل إلى صالة الألعاب الرياضية',
-        'وصول محدود للفصول الجماعية',
-        'استخدام مناشف مجانية'
-      ]
-    },
-    {
-      id: 'quarterly',
-      title: 'ربع سنوية',
-      duration: 'اشتراك لمدة ٣ شهور',
-      price: 4999,
-      priceDiscount: 5997,
-      recommended: true,
-      features: [
-        'وصول كامل إلى صالة الألعاب الرياضية',
-        'وصول كامل للفصول الجماعية',
-        'استشارة مجانية مع المدرب',
-        'استخدام مناشف مجانية'
-      ]
-    },
-    {
-      id: 'yearly',
-      title: 'سنوية',
-      duration: 'اشتراك لمدة سنة كاملة',
-      price: 14999,
-      priceDiscount: 23988,
-      features: [
-        'وصول كامل إلى صالة الألعاب الرياضية',
-        'وصول كامل للفصول الجماعية',
-        '٣ استشارات مجانية مع المدرب',
-        'جلسة تقييم لياقة بدنية',
-        'استخدام مناشف وخزانة مجانية',
-        'خصم 15٪ على المشروبات في كافتيريا النادي'
-      ]
-    }
-  ]);
+  const { user } = useAuth();
+  const [gym, setGym] = useState<Gym | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'quarterly' | 'yearly'>('monthly');
+  const [isLoading, setIsLoading] = useState(true);
   
-  // Fetch gym details from Supabase
   useEffect(() => {
-    const getGymDetails = async () => {
-      if (!id) return;
-      
+    const loadGym = async () => {
       try {
-        setLoading(true);
-        const gymData = await fetchGymById(id);
-        setGymInfo(gymData);
+        setIsLoading(true);
+        if (id) {
+          const gymData = await fetchGymById(id);
+          setGym(gymData);
+        }
       } catch (error) {
-        console.error('Error fetching gym details:', error);
+        console.error('Error loading gym details:', error);
         toast.error('حدث خطأ أثناء تحميل بيانات النادي');
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
     
-    getGymDetails();
+    loadGym();
   }, [id]);
 
-  const [selectedPlan, setSelectedPlan] = useState<string>('monthly');
-
-  const handleSubmit = () => {
-    const plan = plans.find(p => p.id === selectedPlan);
+  const handleSubscribe = () => {
     if (!user) {
-      toast.error('يجب تسجيل الدخول أولاً');
+      toast.error('يجب تسجيل الدخول للاشتراك');
+      navigate('/login', { state: { from: `/gym/${id}` } });
       return;
     }
     
-    navigate('/gym/payment', { 
+    // Navigate to payment page with gym and plan details
+    navigate(`/gym/payment`, { 
       state: { 
-        gym: gymInfo,
-        plan: plan
+        gymId: gym.id,
+        gymName: gym.name,
+        plan: selectedPlan,
+        price: calculatePrice()
       } 
     });
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50" dir="rtl">
-      <div className="max-w-md mx-auto bg-white pb-20">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-orange-600 to-orange-700 text-white sticky top-0 z-10 shadow-md rounded-b-xl">
-          <Link to="/gym" className="text-white hover:text-orange-100 transition-colors">
-            <ArrowLeft className="w-6 h-6" />
-          </Link>
-          <h1 className="text-xl font-bold">خطط الاشتراك</h1>
-          <div className="w-6"></div> {/* Empty div for spacing */}
-        </div>
+  const calculatePrice = (): number => {
+    const basePrice = gym?.price || 0;
+    
+    switch(selectedPlan) {
+      case 'monthly':
+        return basePrice;
+      case 'quarterly':
+        return basePrice * 3 * 0.9;
+      case 'yearly':
+        return basePrice * 12 * 0.75;
+      default:
+        return basePrice;
+    }
+  };
 
-        {/* Gym banner */}
-        {loading || !gymInfo ? (
-          <div className="relative h-48 bg-orange-100 animate-pulse"></div>
-        ) : (
-          <div className="relative">
-            <div className="h-48">
-              <img 
-                src={gymInfo.image} 
-                alt={gymInfo.name} 
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-orange-900/80 to-transparent"></div>
-            </div>
-            <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-              <div className="flex justify-between items-end">
-                <div>
-                  <h2 className="text-2xl font-bold">{gymInfo.name}</h2>
-                  {gymInfo.location && (
-                    <div className="flex items-center text-sm text-white/90 mt-1">
-                      <MapPin className="w-4 h-4 mr-1" />
-                      <span>{gymInfo.location}</span>
-                    </div>
-                  )}
-                </div>
-                {gymInfo.rating && (
-                  <div className="bg-white/20 px-2 py-1 rounded-lg backdrop-blur-sm">
-                    <div className="flex items-center">
-                      <Star className="w-4 h-4 text-yellow-400 fill-yellow-400 mr-1" />
-                      <span className="text-sm font-bold">{gymInfo.rating}</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Gym Info Cards */}
-        {gymInfo && (
-          <div className="px-4 py-4 flex justify-between gap-2">
-            {gymInfo.openHours && (
-              <Card className="border-0 shadow-sm flex-1 bg-orange-50 border border-orange-100">
-                <CardContent className="p-3 flex flex-col items-center">
-                  <Clock className="w-5 h-5 text-orange-600 mb-1" />
-                  <span className="text-xs text-orange-700">ساعات العمل</span>
-                  <span className="text-sm font-medium text-orange-900">{gymInfo.openHours}</span>
-                </CardContent>
-              </Card>
-            )}
-            <Card className="border-0 shadow-sm flex-1 bg-orange-50 border border-orange-100">
-              <CardContent className="p-3 flex flex-col items-center">
-                <Users className="w-5 h-5 text-orange-600 mb-1" />
-                <span className="text-xs text-orange-700">الأعضاء</span>
-                <span className="text-sm font-medium text-orange-900">500+</span>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {/* Subscription plans */}
-        <div className="px-4 py-2">
-          <h3 className="text-lg font-bold mb-4 text-orange-900">اختر خطة الاشتراك</h3>
+  // Display skeleton loader while loading
+  if (isLoading) {
+    return (
+      <div className="bg-gray-50 min-h-screen" dir="rtl">
+        <div className="relative bg-white pb-6">
+          {/* Header Skeleton */}
+          <Skeleton className="h-56 w-full" />
           
-          {loading ? (
+          {/* Content Skeleton */}
+          <div className="px-4 pt-4">
+            <Skeleton className="h-8 w-3/4 mb-2" />
+            <Skeleton className="h-6 w-1/2 mb-6" />
+            
             <div className="space-y-4">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="h-48 bg-orange-100 animate-pulse rounded-lg"></div>
-              ))}
+              <Skeleton className="h-20 w-full" />
+              <Skeleton className="h-20 w-full" />
+              <Skeleton className="h-20 w-full" />
             </div>
-          ) : (
-            <RadioGroup 
-              value={selectedPlan} 
-              onValueChange={setSelectedPlan}
-              className="space-y-4"
-            >
-              {plans.map((plan) => (
-                <div
-                  key={plan.id}
-                  className={`border rounded-xl transition-all overflow-hidden ${
-                    selectedPlan === plan.id 
-                      ? 'border-orange-500 ring-2 ring-orange-300 shadow-md' 
-                      : 'border-gray-200'
-                  } ${plan.recommended ? 'relative' : ''}`}
-                >
-                  {plan.recommended && (
-                    <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs py-1 px-3 text-center font-medium">
-                      الخيار الأفضل
-                    </div>
-                  )}
-                  <div className={`p-4 ${plan.recommended ? 'pt-8' : ''} ${selectedPlan === plan.id ? 'bg-orange-50' : 'bg-white'}`}>
-                    <div className="flex items-center space-x-2 space-x-reverse">
-                      <RadioGroupItem 
-                        value={plan.id} 
-                        id={plan.id} 
-                        className="border-orange-600 text-orange-600"
-                      />
-                      <div className="w-full flex justify-between items-center">
-                        <Label htmlFor={plan.id} className="flex-1 cursor-pointer">
-                          <div className="font-bold text-lg text-orange-800">{plan.title}</div>
-                          <div className="text-sm text-orange-700">{plan.duration}</div>
-                        </Label>
-                        <div className="text-right">
-                          <div className="font-bold text-lg text-orange-800">{plan.price} جنيه</div>
-                          {plan.priceDiscount && (
-                            <div className="text-xs line-through text-orange-400">{plan.priceDiscount} جنيه</div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-4 space-y-2 pl-8">
-                      {plan.features.map((feature, idx) => (
-                        <div key={idx} className="flex items-start">
-                          <div className="mt-0.5 min-w-4 w-4 h-4 bg-orange-100 rounded-full flex items-center justify-center mr-2">
-                            <Check className="w-3 h-3 text-orange-600" />
-                          </div>
-                          <span className="text-sm text-orange-700">{feature}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </RadioGroup>
-          )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Display message if gym not found
+  if (!gym) {
+    return (
+      <div className="bg-gray-50 min-h-screen flex items-center justify-center" dir="rtl">
+        <div className="text-center p-6 bg-white rounded-xl shadow-md">
+          <p className="text-lg text-gray-700 mb-4">لم يتم العثور على النادي المطلوب</p>
+          <Link to="/gym">
+            <Button>العودة إلى الصفحة الرئيسية</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-gray-50 min-h-screen pb-20" dir="rtl">
+      <div className="relative">
+        {/* Gym image */}
+        <div className="relative h-56 w-full">
+          <img src={gym.image} alt={gym.name} className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
           
+          {/* Back button */}
+          <Link to="/gym" className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm p-2 rounded-full">
+            <ArrowLeft className="h-6 w-6 text-white" />
+          </Link>
+          
+          {/* Gym info on image */}
+          <div className="absolute bottom-4 right-4 left-4 text-white">
+            <h1 className="text-2xl font-bold mb-1">{gym.name}</h1>
+            <div className="flex items-center text-white/90 text-sm">
+              <MapPin className="h-4 w-4 ml-1" />
+              <span>{gym.location}</span>
+            </div>
+          </div>
+        </div>
+        
+        {/* Subscription plans */}
+        <div className="p-4 bg-white">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold">خطط الاشتراك</h2>
+            <div className="flex items-center">
+              <Clock className="h-4 w-4 text-gray-500 ml-1" />
+              <span className="text-sm text-gray-500">{gym.open_hours}</span>
+            </div>
+          </div>
+          
+          <RadioGroup value={selectedPlan} onValueChange={(v) => setSelectedPlan(v as 'monthly' | 'quarterly' | 'yearly')}>
+            <div className="space-y-3">
+              <SubscriptionPlan
+                id="monthly"
+                title="شهري"
+                price={gym.price}
+                description="اشتراك لمدة شهر واحد"
+              />
+              
+              <SubscriptionPlan
+                id="quarterly"
+                title="ربع سنوي"
+                price={gym.price * 3 * 0.9}
+                description="اشتراك لمدة ثلاثة أشهر (خصم 10%)"
+                recommended
+              />
+              
+              <SubscriptionPlan
+                id="yearly"
+                title="سنوي"
+                price={gym.price * 12 * 0.75}
+                description="اشتراك لمدة سنة كاملة (خصم 25%)"
+              />
+            </div>
+          </RadioGroup>
+        </div>
+        
+        {/* Gym features */}
+        <div className="p-4 mt-2 bg-white">
+          <h2 className="text-xl font-bold mb-4">المميزات</h2>
+          <div className="space-y-3">
+            {gym.features.map((feature, index) => (
+              <DescriptionItem key={index} icon={<Check className="h-5 w-5 text-green-500" />} text={feature} />
+            ))}
+            <DescriptionItem 
+              icon={<Clock className="h-5 w-5 text-blue-500" />} 
+              text={`مواعيد العمل: ${gym.open_hours}`} 
+            />
+            <DescriptionItem 
+              icon={<Dumbbell className="h-5 w-5 text-brand-500" />} 
+              text="أحدث المعدات الرياضية"
+            />
+            <DescriptionItem 
+              icon={<CalendarDays className="h-5 w-5 text-purple-500" />} 
+              text="حجز حصص مجانية أسبوعياً"
+            />
+          </div>
+        </div>
+        
+        {/* Subscription button */}
+        <div className="fixed bottom-0 right-0 left-0 p-4 bg-white border-t border-gray-200">
           <Button 
-            onClick={handleSubmit}
-            disabled={loading || !gymInfo}
-            className="w-full mt-6 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-md py-6"
+            onClick={handleSubscribe}
+            className="w-full bg-brand-500 hover:bg-brand-600 h-14 text-lg"
           >
-            اختر هذه الخطة
+            اشترك الآن
           </Button>
         </div>
       </div>
