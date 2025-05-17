@@ -1,7 +1,6 @@
-
 import React, { memo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, ClipboardList, Motorcycle, UserRound } from 'lucide-react';
+import { Home, ClipboardList, motorcycle as Motorcycle, UserRound } from 'lucide-react';
 import { useTouch } from "@/hooks/use-touch";
 import { useIsMobile } from '@/hooks/use-mobile';
 
