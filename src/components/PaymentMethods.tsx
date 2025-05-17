@@ -1,94 +1,102 @@
 
 import React from 'react';
-import { CreditCard, Wallet, DollarSign, Phone } from 'lucide-react';
-import { useCheckout, PaymentMethod } from '@/context/CheckoutContext';
+import { CreditCard, Wallet, DollarSign } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { PaymentMethod } from '@/services/userService';
 
-const PaymentMethods: React.FC = () => {
-  const { paymentMethod, setPaymentMethod } = useCheckout();
+interface PaymentMethodsProps {
+  paymentMethods?: PaymentMethod[];
+  selectedPaymentMethod: string | null;
+  onPaymentMethodSelect: (id: string) => void;
+}
 
-  const payments = [
-    { 
-      id: 'cash', 
-      name: 'الدفع عند الاستلام', 
-      icon: <DollarSign className="h-5 w-5 text-green-600" />,
-      description: 'ادفع كاش عند استلام طلبك'
-    },
-    { 
-      id: 'card', 
-      name: 'بطاقة ائتمان / فيزا', 
-      icon: <CreditCard className="h-5 w-5 text-blue-600" />,
-      description: 'فيزا، ماستركارد، ميزة'
-    },
-    { 
-      id: 'wallet', 
-      name: 'المحافظ الإلكترونية', 
-      icon: <Wallet className="h-5 w-5 text-purple-600" />,
-      description: 'فودافون كاش، محفظة مصر الرقمية، وي باي'
-    },
-    { 
-      id: 'fawry', 
-      name: 'فوري', 
-      icon: <Phone className="h-5 w-5 text-orange-600" />,
-      description: 'الدفع من خلال خدمة فوري'
+const PaymentMethods: React.FC<PaymentMethodsProps> = ({
+  paymentMethods = [],
+  selectedPaymentMethod,
+  onPaymentMethodSelect
+}) => {
+  const getPaymentIcon = (type: string) => {
+    switch (type) {
+      case 'card':
+        return <CreditCard className="w-5 h-5" />;
+      case 'wallet':
+        return <Wallet className="w-5 h-5" />;
+      case 'cash':
+      default:
+        return <DollarSign className="w-5 h-5" />;
     }
-  ];
-
+  };
+  
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-bold flex items-center gap-2 text-blue-800">
+        <h3 className="text-lg font-bold flex items-center gap-2">
           <CreditCard className="w-5 h-5 text-blue-600" />
           طريقة الدفع
         </h3>
       </div>
-
-      <RadioGroup 
-        value={paymentMethod} 
-        onValueChange={(value) => setPaymentMethod(value as PaymentMethod)} 
-        className="space-y-2"
-      >
-        {payments.map((option) => (
-          <div key={option.id} className="relative">
-            <RadioGroupItem
-              value={option.id}
-              id={`payment-${option.id}`}
-              className="peer sr-only"
-            />
-            <Label
-              htmlFor={`payment-${option.id}`}
-              className="flex flex-col space-y-1 cursor-pointer rounded-lg border border-gray-200 p-4 hover:bg-gray-50 transition-all peer-data-[state=checked]:border-blue-500 peer-data-[state=checked]:bg-blue-50"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="rounded-full border border-gray-200 p-1.5 bg-white shadow-sm">
-                    {option.icon}
+      
+      <RadioGroup value={selectedPaymentMethod || undefined} onValueChange={onPaymentMethodSelect}>
+        <div className="space-y-3">
+          {paymentMethods && paymentMethods.length > 0 ? (
+            paymentMethods.map((method) => (
+              <div key={method.id} className="relative">
+                <RadioGroupItem
+                  value={method.id}
+                  id={`payment-${method.id}`}
+                  className="peer sr-only"
+                />
+                <Label
+                  htmlFor={`payment-${method.id}`}
+                  className="flex items-center gap-3 cursor-pointer rounded-lg border border-gray-200 p-4 hover:bg-gray-50 peer-data-[state=checked]:border-blue-500 peer-data-[state=checked]:bg-blue-50"
+                >
+                  <div className="p-2 bg-blue-100 rounded-full text-blue-600">
+                    {getPaymentIcon(method.type)}
                   </div>
                   <div>
-                    <p className="font-medium text-blue-900">{option.name}</p>
-                    <p className="text-xs text-gray-500">{option.description}</p>
+                    <p className="font-medium">{method.title}</p>
                   </div>
-                </div>
-                {paymentMethod === option.id && (
-                  <div className="h-3 w-3 rounded-full bg-blue-500"></div>
-                )}
+                </Label>
               </div>
-            </Label>
-          </div>
-        ))}
-      </RadioGroup>
+            ))
+          ) : (
+            <div className="text-center p-4 text-gray-500 bg-gray-50 rounded-lg">
+              لا توجد وسائل دفع محفوظة
+            </div>
+          )}
 
-      {paymentMethod === 'card' && (
-        <div className="flex items-center justify-between px-2 py-3 bg-blue-50 rounded-lg border border-blue-100 animate-fade-in">
-          <div className="flex gap-2">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-6" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b7/MasterCard_Logo.svg" alt="MasterCard" className="h-6" />
-            <img src="https://upload.wikimedia.org/wikipedia/ar/3/3d/Meeza_card_logo.jpg" alt="Meeza" className="h-6" />
-          </div>
-          <span className="text-xs text-gray-500">معاملات آمنة 100%</span>
+          {/* وسيلة الدفع عند الاستلام دائماً متاحة */}
+          {!paymentMethods.some(method => method.type === 'cash') && (
+            <div className="relative">
+              <RadioGroupItem
+                value="cash-default"
+                id="payment-cash-default"
+                className="peer sr-only"
+              />
+              <Label
+                htmlFor="payment-cash-default"
+                className="flex items-center gap-3 cursor-pointer rounded-lg border border-gray-200 p-4 hover:bg-gray-50 peer-data-[state=checked]:border-blue-500 peer-data-[state=checked]:bg-blue-50"
+              >
+                <div className="p-2 bg-blue-100 rounded-full text-blue-600">
+                  <DollarSign className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="font-medium">الدفع عند الاستلام</p>
+                </div>
+              </Label>
+            </div>
+          )}
         </div>
-      )}
+      </RadioGroup>
+      
+      <Link to="/add-payment-method">
+        <Button variant="outline" className="w-full mt-2">
+          إضافة وسيلة دفع جديدة
+        </Button>
+      </Link>
     </div>
   );
 };

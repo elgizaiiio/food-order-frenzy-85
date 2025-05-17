@@ -1,33 +1,43 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
-// واجهة معلومات الطلب
 export interface OrderDetails {
   addressId: string;
   phone: string;
   paymentMethod: string;
-  items: Array<{
-    id: number | string;
-    quantity: number;
-  }>;
+  items: OrderItem[];
   total: number;
   orderType: 'restaurant' | 'market' | 'pharmacy' | 'personal_care' | 'gym';
+  restaurantId?: string;
+  notes?: string;
 }
 
-// واجهة استجابة الطلب
-export interface OrderResponse {
+export interface OrderItem {
+  id: number | string;
+  quantity: number;
+  price?: number;
+  options?: Record<string, any>[];
+}
+
+export interface CheckoutResponse {
   success: boolean;
-  orderId?: string;
   message?: string;
-  estimatedDelivery?: string;
+  orderId?: string;
   trackingUrl?: string;
+  estimatedDelivery?: string;
 }
 
-// دالة لإرسال الطلب إلى واجهة برمجة التطبيقات
-export async function submitOrder(orderDetails: OrderDetails): Promise<OrderResponse> {
+/**
+ * تقديم طلب جديد
+ * @param orderDetails تفاصيل الطلب
+ * @returns استجابة تأكيد الطلب
+ */
+export const submitOrder = async (orderDetails: OrderDetails): Promise<CheckoutResponse> => {
   try {
-    // Get the authenticated user
+    // التحقق من تسجيل الدخول
     const { data: { user } } = await supabase.auth.getUser();
+    
     if (!user) {
       return {
         success: false,
@@ -35,132 +45,80 @@ export async function submitOrder(orderDetails: OrderDetails): Promise<OrderResp
       };
     }
     
-    // Create the order in Supabase
+    // إنشاء كائن الطلب الجديد
+    const order = {
+      user_id: user.id,
+      status: 'pending',
+      items: orderDetails.items,
+      total_amount: orderDetails.total,
+      address_id: orderDetails.addressId,
+      payment_method_id: orderDetails.paymentMethod,
+      order_type: orderDetails.orderType,
+      restaurant_id: orderDetails.restaurantId,
+      notes: orderDetails.notes,
+      created_at: new Date().toISOString()
+    };
+    
+    // إدخال الطلب في قاعدة البيانات
     const { data, error } = await supabase
       .from('orders')
-      .insert({
-        items: orderDetails.items,
-        total_amount: orderDetails.total,
-        delivery_address_id: orderDetails.addressId,
-        payment_method_id: orderDetails.paymentMethod,
-        order_type: orderDetails.orderType,
-        status: 'pending',
-        user_id: user.id
-      })
-      .select()
+      .insert(order)
+      .select('id')
       .single();
-    
-    if (error) throw error;
-    
-    // Determine the tracking URL based on order type
-    let trackingUrl = '/tracking';
-    if (orderDetails.orderType === 'market') {
-      trackingUrl = '/market/tracking';
-    } else if (orderDetails.orderType === 'pharmacy') {
-      trackingUrl = '/pharmacy/tracking';
-    } else if (orderDetails.orderType === 'personal_care') {
-      trackingUrl = '/personal-care/tracking';
-    } else if (orderDetails.orderType === 'gym') {
-      trackingUrl = '/gym/tracking';
+      
+    if (error) {
+      console.error('خطأ في إنشاء الطلب:', error);
+      return {
+        success: false,
+        message: 'حدث خطأ أثناء تقديم الطلب. يرجى المحاولة مرة أخرى.'
+      };
     }
+    
+    // الحصول على وقت التوصيل المقدر
+    const estimatedTime = await getDeliveryEstimate(orderDetails.orderType);
     
     return {
       success: true,
+      message: 'تم تقديم طلبك بنجاح',
       orderId: data.id,
-      estimatedDelivery: '30-45 دقيقة',
-      trackingUrl: trackingUrl
+      trackingUrl: `/tracking/${data.id}`,
+      estimatedDelivery: estimatedTime
     };
   } catch (error) {
-    console.error('Error submitting order:', error);
+    console.error('خطأ غير متوقع أثناء تقديم الطلب:', error);
     return {
       success: false,
-      message: 'حدث خطأ أثناء معالجة الطلب. الرجاء المحاولة مرة أخرى.',
+      message: 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.'
     };
   }
-}
+};
 
-// واجهة لتهيئة الدفع عبر البطاقات
-export interface CardPaymentInit {
-  amount: number;
-  currency: string;
-  customerId?: string;
-}
+/**
+ * الحصول على تقدير وقت التوصيل بناءً على نوع الطلب
+ */
+export const getDeliveryEstimate = async (orderType: string): Promise<string> => {
+  // يمكن استبدال هذا بمنطق حقيقي للتقدير بناءً على الموقع والمسافة
+  const estimates = {
+    restaurant: '30 - 45 دقيقة',
+    market: '45 - 60 دقيقة',
+    pharmacy: '20 - 30 دقيقة',
+    personal_care: '45 - 60 دقيقة',
+    gym: '30 - 45 دقيقة'
+  };
+  
+  return estimates[orderType as keyof typeof estimates] || '30 - 45 دقيقة';
+};
 
-// تهيئة معاملة الدفع ببطاقة
-export async function initializeCardPayment(paymentDetails: CardPaymentInit): Promise<{
-  success: boolean;
-  paymentIntentId?: string;
-  clientSecret?: string;
-  error?: string;
-}> {
+/**
+ * معالجة الدفع (يمكن تطويرها لتكامل مع بوابات الدفع)
+ */
+export const processPayment = async (paymentMethodId: string, amount: number): Promise<boolean> => {
   try {
-    // In a real app, this would integrate with a payment gateway API
-    const { data, error } = await supabase.functions.invoke('create-payment-intent', {
-      body: paymentDetails
-    });
-    
-    if (error) throw error;
-    
-    return {
-      success: true,
-      paymentIntentId: data.paymentIntentId,
-      clientSecret: data.clientSecret
-    };
+    // هنا يمكن إضافة تكامل مع بوابة دفع حقيقية
+    // حالياً، نفترض أن جميع المدفوعات ناجحة
+    return true;
   } catch (error) {
-    console.error('Payment initialization error:', error);
-    return {
-      success: false,
-      error: 'حدث خطأ أثناء إعداد الدفع'
-    };
+    console.error('خطأ في معالجة الدفع:', error);
+    return false;
   }
-}
-
-// التحقق من أن منطقة التوصيل مدعومة
-export async function isDeliveryAreaSupported(address: string): Promise<boolean> {
-  // For now, we'll assume all areas are supported
-  return true;
-}
-
-// واجهة التوقعات لتوقيت التوصيل
-export interface DeliveryEstimate {
-  minMinutes: number;
-  maxMinutes: number;
-  fee: number;
-}
-
-// الحصول على تقدير وقت التوصيل ورسومه
-export async function getDeliveryEstimate(addressId: string): Promise<DeliveryEstimate> {
-  try {
-    const { data, error } = await supabase
-      .from('user_addresses')
-      .select('city')
-      .eq('id', addressId)
-      .single();
-    
-    if (error) throw error;
-    
-    // Base estimate on city (simplified)
-    const city = data.city.toLowerCase();
-    if (city.includes('القاهرة')) {
-      return {
-        minMinutes: 30,
-        maxMinutes: 45,
-        fee: 10
-      };
-    } else {
-      return {
-        minMinutes: 45,
-        maxMinutes: 60,
-        fee: 15
-      };
-    }
-  } catch (error) {
-    console.error('Error getting delivery estimate:', error);
-    // Fallback default
-    return {
-      minMinutes: 30,
-      maxMinutes: 45,
-      fee: 10
-    };
-  }
-}
+};
