@@ -13,12 +13,7 @@ export default defineConfig(({ mode }) => ({
     hmr: true
   },
   plugins: [
-    react({
-      jsxImportSource: 'react',
-      // تحسين عملية الترجمة والتجميع
-      // Use development mode for HMR
-      development: mode === 'development'
-    }),
+    react(),
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
