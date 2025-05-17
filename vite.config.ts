@@ -15,6 +15,19 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react({
       jsxImportSource: 'react',
+      // تمكين تجميع أسرع مع SWC
+      swcOptions: {
+        jsc: {
+          transform: {
+            react: {
+              runtime: 'automatic',
+              // تحسين التجميع
+              development: mode === 'development',
+              refresh: mode === 'development',
+            },
+          },
+        },
+      }
     }),
     mode === 'development' &&
     componentTagger(),
@@ -63,11 +76,20 @@ export default defineConfig(({ mode }) => ({
     include: ['react', 'react-dom', 'react-router-dom', 'framer-motion'],
     esbuildOptions: {
       target: 'esnext', // استخدام أحدث الميزات المتاحة
+      // تمكين الضغط المسبق لتسريع الوقت التفاعلي الأول
+      legalComments: 'none',
+      // تحسين الترميز للحصول على حجم أصغر
+      charset: 'utf8',
     }
   },
   // تحسينات خاصة بالهواتف المحمولة
   preview: {
     port: 4173,
     host: true
+  },
+  esbuild: {
+    // تحسينات لعملية التجميع
+    logOverride: { 'this-is-undefined-in-esm': 'silent' },
+    legalComments: 'none',
   }
 }));

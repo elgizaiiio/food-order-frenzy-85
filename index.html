@@ -11,7 +11,9 @@
     <!-- تحسين SEO وتسريع تحميل الصفحة -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="theme-color" content="#9333EA" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://hvpjsittuozquoehqwvm.supabase.co" crossorigin />
+    <link rel="dns-prefetch" href="https://hvpjsittuozquoehqwvm.supabase.co" />
     <meta property="og:title" content="تطبيق دام" />
     <meta property="og:description" content="تطبيق دام - خدمة التوصيل السريع" />
     <meta property="og:type" content="website" />
@@ -24,6 +26,8 @@
     
     <!-- تسريع تحميل الشعار مسبقاً -->
     <link rel="preload" href="/dam-logo.png" as="image" fetchpriority="high" />
+    <link rel="preload" href="/src/main.tsx" as="script" fetchpriority="high" />
+    <link rel="modulepreload" href="/src/App.tsx" />
     
     <!-- الأيقونة للهاتف المحمول -->
     <link rel="apple-touch-icon" href="/dam-logo.png" />
@@ -57,6 +61,35 @@
         cursor: pointer;
         touch-action: manipulation;
       }
+
+      /* تحسينات أداء الرسوم المتحركة */
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
+        }
+      }
+
+      /* تحسين أداء التمرير */
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+
+      /* تسريع تقديم الخطوط */
+      html {
+        font-display: swap;
+      }
+
+      /* تحسين أداء ظهور الصور */
+      img {
+        content-visibility: auto;
+      }
     </style>
   </head>
 
@@ -68,8 +101,11 @@
     <script>
       // إظهار المحتوى بعد اكتمال التحميل
       document.addEventListener('DOMContentLoaded', function() {
-        document.body.classList.remove('hidden-splash');
-        document.body.classList.add('fade-in');
+        // تسريع ظهور المحتوى
+        setTimeout(function() {
+          document.body.classList.remove('hidden-splash');
+          document.body.classList.add('fade-in');
+        }, 0);
       });
       
       // منع التكبير المزدوج بواسطة النقر
@@ -88,6 +124,31 @@
         }
         lastTouchEnd = now;
       }, { passive: false });
+      
+      // تحسين أداء IntersectionObserver
+      if ('loading' in HTMLImageElement.prototype) {
+        const images = document.querySelectorAll('img[loading="lazy"]');
+        images.forEach(img => {
+          img.src = img.dataset.src;
+        });
+      } else {
+        // استخدام تحميل الصور المتأخر البديل
+        const script = document.createElement('script');
+        script.src = '/lazy-loading-fallback.js';
+        document.body.appendChild(script);
+      }
+      
+      // تحسين قياس الأداء
+      if ('performance' in window) {
+        window.addEventListener('load', () => {
+          // تسجيل أداء الصفحة
+          setTimeout(() => {
+            const perfData = window.performance.timing;
+            const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
+            console.info('Page load time:', pageLoadTime + 'ms');
+          }, 0);
+        });
+      }
     </script>
   </body>
 </html>

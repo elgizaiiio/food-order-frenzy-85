@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { MapPin, Plus, Home, Briefcase, Edit, Check, ChevronLeft } from 'lucide-react';
 import { useCheckout, Address } from '@/context/CheckoutContext';
 import { Card, CardContent } from '@/components/ui/card';
@@ -14,11 +14,17 @@ interface AddressSelectorProps {
 const AddressSelector: React.FC<AddressSelectorProps> = ({ onAddNewClick }) => {
   const { addresses, selectedAddressId, selectAddress } = useCheckout();
   
-  const getAddressIcon = (address: Address) => {
+  // تحسين الأداء باستخدام useMemo لمنع إعادة الحساب غير الضرورية
+  const getAddressIcon = useCallback((address: Address) => {
     if (address.title === 'المنزل') return <Home className="w-4 h-4" />;
     if (address.title === 'العمل') return <Briefcase className="w-4 h-4" />;
     return <MapPin className="w-4 h-4" />;
-  };
+  }, []);
+
+  // استخدام handleAddNewClick مع useCallback لتحسين الأداء
+  const handleAddNewClick = useCallback(() => {
+    onAddNewClick();
+  }, [onAddNewClick]);
 
   return (
     <div className="space-y-4">
@@ -65,7 +71,7 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({ onAddNewClick }) => {
         {/* زر إضافة عنوان جديد */}
         <Button 
           variant="outline" 
-          onClick={onAddNewClick}
+          onClick={handleAddNewClick}
           className="w-full flex justify-center items-center gap-2 border-dashed border-gray-300 h-16 hover:border-brand-400 hover:bg-brand-50"
         >
           <Plus className="w-4 h-4" />
@@ -76,4 +82,5 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({ onAddNewClick }) => {
   );
 };
 
-export default AddressSelector;
+// استخدام memo لمنع إعادة التقديم غير الضرورية
+export default React.memo(AddressSelector);
