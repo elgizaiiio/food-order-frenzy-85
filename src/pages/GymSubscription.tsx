@@ -1,21 +1,15 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, MapPin, Clock, Dumbbell, Check, CalendarDays } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
+import { RadioGroup } from "@/components/ui/radio-group";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fetchGymById, Gym } from '@/services/gymService';
+import { fetchGymById } from '@/services/gymService';
+import { Gym } from '@/types/gym';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
-
-type SubscriptionPlan = {
-  id: string;
-  title: string;
-  price: number;
-  description: string;
-  recommended?: boolean;
-};
+import SubscriptionPlan from '@/components/gym/SubscriptionPlan';
 
 type DescriptionItemProps = {
   icon: React.ReactNode;
@@ -68,8 +62,8 @@ const GymSubscription = () => {
     // Navigate to payment page with gym and plan details
     navigate(`/gym/payment`, { 
       state: { 
-        gymId: gym.id,
-        gymName: gym.name,
+        gymId: gym?.id,
+        gymName: gym?.name,
         plan: selectedPlan,
         price: calculatePrice()
       } 

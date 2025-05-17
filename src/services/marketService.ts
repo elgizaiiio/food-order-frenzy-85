@@ -1,6 +1,32 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { Category, Product, Offer } from '@/api/market';
+
+// تعريف الواجهات
+export interface Category {
+  id: string;  // تغيير النوع من number إلى string ليتوافق مع قاعدة البيانات
+  name: string;
+  description: string;
+  image: string;
+}
+
+export interface Product {
+  id: string;  // تغيير النوع من number إلى string ليتوافق مع قاعدة البيانات
+  name: string;
+  price: number;
+  quantity: string;
+  image: string;
+  categoryId: string;
+  description: string;
+  inStock: boolean;
+}
+
+export interface Offer {
+  id: string;  // تغيير النوع من number إلى string ليتوافق مع قاعدة البيانات
+  title: string;
+  description: string;
+  discount: number;
+  image: string;
+}
 
 /**
  * Get all supermarket categories

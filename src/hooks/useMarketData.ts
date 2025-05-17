@@ -46,7 +46,7 @@ export const usePopularProducts = () => {
  * @param categoryId معرّف الفئة
  * @returns بيانات المنتجات حسب الفئة وحالة التحميل
  */
-export const useProductsByCategory = (categoryId: number) => {
+export const useProductsByCategory = (categoryId: string) => {
   return useQuery({
     queryKey: ['marketProducts', categoryId],
     queryFn: () => fetchProductsByCategory(categoryId),

@@ -1,78 +1,76 @@
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from "@/integrations/supabase/client";
 import { v4 as uuidv4 } from 'uuid';
 
-/**
- * إضافة صورة الملف الشخصي
- * @param file ملف الصورة
- * @returns معلومات الصورة المضافة
- */
-export async function addProfileImage(file: File): Promise<{ success: boolean; image_url: string; message?: string }> {
+// تحميل صورة إلى Supabase Storage
+export async function uploadFile(file: File, bucket: string = 'public') {
   try {
-    if (!file) {
-      throw new Error('لا يوجد ملف للتحميل');
-    }
-
-    // الحصول على معلومات المستخدم المسجل
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      throw new Error('يجب تسجيل الدخول أولاً');
-    }
-
-    // إنشاء معرف فريد للصورة
     const fileExt = file.name.split('.').pop();
-    const fileName = `${user.id}_${uuidv4()}.${fileExt}`;
-    const filePath = `profiles/${fileName}`;
-
-    // تحميل الصورة إلى التخزين
-    const { error: uploadError } = await supabase.storage
-      .from('profiles')
+    const fileName = `${uuidv4()}.${fileExt}`;
+    const filePath = `${fileName}`;
+    
+    const { data, error } = await supabase.storage
+      .from(bucket)
       .upload(filePath, file);
-
-    if (uploadError) {
-      throw uploadError;
+    
+    if (error) {
+      throw error;
     }
-
-    // الحصول على رابط العام للصورة
-    const { data } = await supabase.storage
-      .from('profiles')
+    
+    // الحصول على URL العام للملف
+    const { data: { publicUrl } } = supabase.storage
+      .from(bucket)
       .getPublicUrl(filePath);
+      
+    return {
+      path: data.path,
+      publicUrl
+    };
+  } catch (error) {
+    console.error('Error uploading file:', error);
+    throw error;
+  }
+}
 
-    const publicUrl = data.publicUrl;
-
-    // تحديث معلومات صورة الملف الشخصي
-    const { error: updateError } = await supabase
-      .from('profile_images')
-      .insert({
-        user_id: user.id,
-        image_url: publicUrl,
-        storage_path: filePath
-      });
-
-    if (updateError) {
-      console.error('خطأ في حفظ معلومات الصورة في قاعدة البيانات:', updateError);
+// حذف ملف من Supabase Storage
+export async function deleteFile(filePath: string, bucket: string = 'public') {
+  try {
+    const { error } = await supabase.storage
+      .from(bucket)
+      .remove([filePath]);
+      
+    if (error) {
+      throw error;
     }
+    
+    return true;
+  } catch (error) {
+    console.error('Error deleting file:', error);
+    throw error;
+  }
+}
 
-    // تحديث معلومات المستخدم
-    const { error: userUpdateError } = await supabase
+// تحميل صورة ملف شخصي للمستخدم وتحديث بيانات المستخدم
+export async function uploadProfileImage(file: File, userId: string) {
+  try {
+    // تحميل الصورة إلى تخزين Supabase
+    const { publicUrl } = await uploadFile(file, 'avatars');
+    
+    // تحديث بيانات المستخدم بمسار الصورة الجديدة
+    const { error } = await supabase
       .from('users')
-      .update({ profile_image: publicUrl })
-      .eq('id', user.id);
-
-    if (userUpdateError) {
-      console.error('خطأ في تحديث صورة المستخدم:', userUpdateError);
+      .update({
+        profile_image: publicUrl
+      })
+      .eq('id', userId);
+    
+    if (error) {
+      throw error;
     }
-
-    return {
-      success: true,
-      image_url: publicUrl
-    };
-  } catch (error: any) {
-    console.error('خطأ في تحميل الصورة:', error);
-    return {
-      success: false,
-      image_url: '',
-      message: error.message || 'حدث خطأ أثناء تحميل الصورة'
-    };
+    
+    return { publicUrl };
+  } catch (error) {
+    console.error('Error uploading profile image:', error);
+    throw error;
   }
 }

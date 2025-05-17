@@ -1,6 +1,8 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchGyms, fetchGymById, fetchUserSubscriptions, createSubscription, GymSubscription } from '@/services/gymService';
+import { fetchGyms, fetchGymById } from '@/services/gymService';
+import { fetchUserSubscriptions, createSubscription } from '@/services/gymSubscriptionService';
+import { GymSubscription } from '@/types/gym';
 import { useAuth } from '@/context/AuthContext'; 
 
 export function useGyms() {
