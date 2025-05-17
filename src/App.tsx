@@ -20,7 +20,7 @@ const App = () => {
       <Route path="/signup" element={<Signup />} />
       <Route path="/cart" element={<UnifiedCart />} />
       
-      <Route element={<AuthGuard />}>
+      <Route path="/" element={<AuthGuard />}>
         <Route path="/profile" element={<Profile />} />
         <Route path="/payment-methods" element={<PaymentMethods />} />
         <Route path="/checkout" element={<UnifiedCheckout />} />

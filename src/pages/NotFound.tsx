@@ -1,30 +1,31 @@
 
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Home } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 const NotFound: React.FC = () => {
-  const navigate = useNavigate();
-  
-  const goToHome = () => {
-    navigate('/');
-  };
-  
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gray-50">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">404</h1>
-        <h2 className="text-2xl font-semibold text-gray-700 mb-6">الصفحة مش موجودة</h2>
-        <p className="text-gray-500 mb-8">معلش، الصفحة اللي بتدور عليها مش موجودة.</p>
+    <div className="min-h-screen flex items-center justify-center bg-blue-50 p-4" dir="rtl">
+      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
+        <div className="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <span className="text-red-500 text-4xl font-bold">404</span>
+        </div>
         
-        <Button 
-          onClick={goToHome} 
-          className="bg-primary text-white flex items-center gap-2"
-        >
-          <Home className="w-4 h-4" />
-          ارجع للصفحة الرئيسية
-        </Button>
+        <h1 className="text-2xl font-bold text-gray-800 mb-2">
+          الصفحة غير موجودة
+        </h1>
+        
+        <p className="text-gray-600 mb-6">
+          عذراً، الصفحة التي تبحث عنها غير موجودة أو ربما تم نقلها.
+        </p>
+        
+        <Link to="/">
+          <Button className="flex items-center gap-2 mx-auto">
+            <ArrowLeft className="w-4 h-4" />
+            العودة للصفحة الرئيسية
+          </Button>
+        </Link>
       </div>
     </div>
   );

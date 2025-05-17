@@ -83,9 +83,14 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
         
         if (data && data.items) {
-          // التحويل إلى تنسيق CartItem[]
-          const cartItems = Array.isArray(data.items) ? data.items : [];
-          setItems(cartItems as CartItem[]);
+          try {
+            // تحويل JSON إلى كائنات
+            const cartItems = JSON.parse(data.items);
+            setItems(Array.isArray(cartItems) ? cartItems : []);
+          } catch (error) {
+            console.error('خطأ في تحليل عناصر السلة:', error);
+            setItems([]);
+          }
         } else {
           setItems([]);
         }
@@ -116,7 +121,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
             .upsert({
               user_id: user.id,
               status: 'cart',
-              items: items,
+              items: JSON.stringify(items),
               total_amount: totalPrice,
               created_at: new Date().toISOString(),
               updated_at: new Date().toISOString()

@@ -1,37 +1,31 @@
 
-import { useEffect } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import React from 'react';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 
 interface AuthGuardProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
-const AuthGuard = ({ children }: AuthGuardProps) => {
+const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
   const { user, isLoading } = useAuth();
   const location = useLocation();
 
-  useEffect(() => {
-    console.log("AuthGuard: المستخدم:", user?.email, "جاري التحميل:", isLoading, "المسار:", location.pathname);
-  }, [user, isLoading, location]);
-
-  // أثناء التحقق من حالة المصادقة، نعرض شاشة التحميل
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-orange-50">
-        <div className="w-16 h-16 border-4 border-orange-400 border-t-transparent rounded-full animate-spin"></div>
+      <div className="flex items-center justify-center h-screen">
+        <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
-  // إذا لم يكن المستخدم مصادقًا، إعادة التوجيه إلى تسجيل الدخول
   if (!user) {
-    console.log("AuthGuard: جاري التوجيه إلى صفحة تسجيل الدخول. لم يتم العثور على مستخدم. المسار الحالي:", location.pathname);
+    // حفظ المسار الحالي ليتم إعادة التوجيه إليه بعد تسجيل الدخول
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // إذا وصلنا هنا، فالمستخدم مصادق ويمكننا عرض المحتوى المحمي
-  return <>{children}</>;
+  // إذا كان الطفل محددًا، قم بإرجاع الأطفال، وإلا ارجع Outlet
+  return children ? <>{children}</> : <Outlet />;
 };
 
 export default AuthGuard;

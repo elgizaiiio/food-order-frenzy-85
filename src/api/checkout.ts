@@ -49,14 +49,15 @@ export const submitOrder = async (orderDetails: OrderDetails): Promise<CheckoutR
     const order = {
       user_id: user.id,
       status: 'pending',
-      items: orderDetails.items,
+      items: JSON.stringify(orderDetails.items),
       total_amount: orderDetails.total,
-      address_id: orderDetails.addressId,
+      delivery_address_id: orderDetails.addressId,
       payment_method_id: orderDetails.paymentMethod,
       order_type: orderDetails.orderType,
       restaurant_id: orderDetails.restaurantId,
       notes: orderDetails.notes,
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     };
     
     // إدخال الطلب في قاعدة البيانات

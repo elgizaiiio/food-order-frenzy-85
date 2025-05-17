@@ -69,7 +69,7 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({
           )}
 
           {/* وسيلة الدفع عند الاستلام دائماً متاحة */}
-          {!paymentMethods.some(method => method.type === 'cash') && (
+          {(!paymentMethods || !paymentMethods.some(method => method.type === 'cash')) && (
             <div className="relative">
               <RadioGroupItem
                 value="cash-default"
@@ -92,7 +92,7 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({
         </div>
       </RadioGroup>
       
-      <Link to="/add-payment-method">
+      <Link to="/payment-methods">
         <Button variant="outline" className="w-full mt-2">
           إضافة وسيلة دفع جديدة
         </Button>
