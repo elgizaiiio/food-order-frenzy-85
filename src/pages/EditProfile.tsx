@@ -130,19 +130,25 @@ const EditProfile: React.FC = () => {
         updateData.profile_image = imagePreview;
       }
       
+      console.log("بيانات التحديث المرسلة:", updateData);
+      
       // تحديث بيانات الملف الشخصي
       const updatedProfile = await updateProfile.mutateAsync(updateData);
       
       // تحديث اسم المستخدم في السياق
       if (updatedProfile.name) {
         updateContextUserName(updatedProfile.name);
+        console.log("تم تحديث اسم المستخدم في السياق:", updatedProfile.name);
       }
       
       toast.dismiss(loadingToast);
       toast.success("تم تحديث الملف الشخصي بنجاح");
       
       // اضافة تأخير قبل الانتقال للتأكد من تحديث البيانات
-      setTimeout(() => navigate('/profile'), 1000);
+      setTimeout(() => {
+        console.log("جاري الانتقال إلى صفحة الملف الشخصي");
+        navigate('/profile');
+      }, 1500);
       
       console.log("الملف الشخصي المحدث:", updatedProfile);
       

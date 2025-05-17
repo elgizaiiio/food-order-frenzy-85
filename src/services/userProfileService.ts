@@ -84,18 +84,6 @@ export async function updateUserProfile(updates: Partial<UserProfile>): Promise<
     if (!user) throw new Error('يجب تسجيل الدخول أولاً');
     
     console.log("تحديث ملف المستخدم:", user.id, "بالبيانات:", updates);
-    
-    // أولاً، تحقق مما إذا كان المستخدم موجودًا
-    const { data: existingUser, error: checkError } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', user.id)
-      .maybeSingle();
-      
-    if (checkError && checkError.code !== 'PGRST204') {
-      console.error('خطأ في التحقق من وجود المستخدم:', checkError);
-      throw checkError;
-    }
 
     // إذا تم تقديم اسم، قم أيضًا بتحديث بيانات تعريف المستخدم
     if (updates.name) {
@@ -110,6 +98,18 @@ export async function updateUserProfile(updates: Partial<UserProfile>): Promise<
       }
     }
     
+    // أولاً، تحقق مما إذا كان المستخدم موجودًا
+    const { data: existingUser, error: checkError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('id', user.id)
+      .maybeSingle();
+      
+    if (checkError && checkError.code !== 'PGRST204') {
+      console.error('خطأ في التحقق من وجود المستخدم:', checkError);
+      throw checkError;
+    }
+
     // إذا لم يكن المستخدم موجودًا، قم بإنشائه
     if (!existingUser) {
       console.log("لم يتم العثور على ملف المستخدم، إنشاء ملف جديد");
