@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Clock, ShoppingBag } from 'lucide-react';
@@ -184,9 +183,7 @@ const OrderSummary = () => {
 const MarketCheckoutContent = () => {
   const [isAddingAddress, setIsAddingAddress] = useState(false);
   const {
-    setIsAddingNewAddress,
-    paymentMethod,
-    setPaymentMethod,
+    setIsAddingNewAddress
   } = useCheckout();
   const {
     items
@@ -217,7 +214,7 @@ const MarketCheckoutContent = () => {
       {/* قسم العناوين */}
       <Card className="border-none shadow-sm">
         <CardContent className="p-4">
-          {isAddingAddress ? <NewAddressForm onCancel={handleCancelAddAddress} /> : <AddressSelector onAddNewClick={handleAddNewAddress} selectedAddressId={null} onAddressSelect={() => {}} />}
+          {isAddingAddress ? <NewAddressForm onCancel={handleCancelAddAddress} /> : <AddressSelector onAddNewClick={handleAddNewAddress} />}
         </CardContent>
       </Card>
       
@@ -231,10 +228,7 @@ const MarketCheckoutContent = () => {
       {/* قسم طرق الدفع */}
       <Card className="border-none shadow-sm">
         <CardContent className="p-4">
-          <PaymentMethods 
-            selectedPaymentMethod={paymentMethod} 
-            onPaymentMethodSelect={setPaymentMethod}
-          />
+          <PaymentMethods />
         </CardContent>
       </Card>
       

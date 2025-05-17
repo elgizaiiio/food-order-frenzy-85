@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, MapPin, CreditCard, Clock, Package, Truck, Shield } from 'lucide-react';
@@ -15,7 +16,7 @@ const PersonalCareCheckoutContent: React.FC = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { items, totalPrice, clearCart } = usePersonalCareCart();
-  const { selectedAddressId, addresses, paymentMethod, isAddingNewAddress, setIsAddingNewAddress, setPaymentMethod } = useCheckout();
+  const { selectedAddressId, addresses, paymentMethod, isAddingNewAddress, setIsAddingNewAddress } = useCheckout();
   const [isProcessing, setIsProcessing] = useState(false);
 
   // رسوم التوصيل والإجمالي
@@ -115,11 +116,7 @@ const PersonalCareCheckoutContent: React.FC = () => {
                     <MapPin className="w-5 h-5 ml-2 text-pink-600" />
                     عنوان التوصيل
                   </h2>
-                  <AddressSelector 
-                    onAddNewClick={() => setIsAddingNewAddress(true)} 
-                    selectedAddressId={selectedAddressId}
-                    onAddressSelect={(id) => addresses.find(addr => addr.id === id)}
-                  />
+                  <AddressSelector onAddNewClick={() => setIsAddingNewAddress(true)} />
                 </div>
 
                 {/* وقت التوصيل */}
@@ -169,10 +166,7 @@ const PersonalCareCheckoutContent: React.FC = () => {
                     <CreditCard className="w-5 h-5 ml-2 text-pink-600" />
                     طريقة الدفع
                   </h2>
-                  <PaymentMethods 
-                    selectedPaymentMethod={paymentMethod}
-                    onPaymentMethodSelect={setPaymentMethod}
-                  />
+                  <PaymentMethods />
                 </div>
 
                 {/* ملخص الطلب */}
@@ -233,7 +227,7 @@ const PersonalCareCheckoutContent: React.FC = () => {
                     </CardContent>
                   </Card>
 
-                  {/* معلومات ا��ضمان */}
+                  {/* معلومات الضمان */}
                   <Card className="bg-green-50 border border-green-100">
                     <CardContent className="p-4">
                       <div className="flex items-start gap-3">
