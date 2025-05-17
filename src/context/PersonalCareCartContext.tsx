@@ -94,7 +94,7 @@ export const PersonalCareCartProvider: React.FC<{ children: React.ReactNode }> =
     setItems(prevItems => {
       const itemToRemove = prevItems.find(item => item.id === productId);
       if (itemToRemove) {
-        toast(`تمت إزالة ${itemToRemove.name} من سلة التسوق`);
+        toast(itemToRemove.name + " تمت إزالة من سلة التسوق");
       }
       return prevItems.filter(item => item.id !== productId);
     });
@@ -116,7 +116,7 @@ export const PersonalCareCartProvider: React.FC<{ children: React.ReactNode }> =
       
       if (existingItem && existingItem.quantity === 1) {
         // إزالة المنتج إذا كانت الكمية ستصبح صفر
-        toast(`تمت إزالة ${existingItem.name} من سلة التسوق`);
+        toast(existingItem.name + " تمت إزالة من سلة التسوق");
         return prevItems.filter(item => item.id !== productId);
       }
       
