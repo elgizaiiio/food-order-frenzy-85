@@ -25,6 +25,23 @@ const toast = (props: ToastProps | string) => {
   return sonnerToast(title as string, rest);
 };
 
+// Adding helper methods to match the expected API
+toast.success = (message: string, options = {}) => {
+  return sonnerToast.success(message, options);
+};
+
+toast.error = (message: string, options = {}) => {
+  return sonnerToast.error(message, options);
+};
+
+toast.info = (message: string, options = {}) => {
+  return sonnerToast.info(message, options);
+};
+
+toast.warning = (message: string, options = {}) => {
+  return sonnerToast.warning(message, options);
+};
+
 export { toast };
 
 export function useToast() {

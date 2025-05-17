@@ -3,10 +3,10 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { toast } from '@/hooks/use-toast';
 
 export interface PharmacyProduct {
-  id: string;  // تغيير من number إلى string
+  id: string;
   name: string;
   price: number;
-  image?: string;  // جعلها اختيارية
+  image?: string;
   gender?: string;
   description?: string;
   image_url?: string;
@@ -21,9 +21,9 @@ interface CartItem extends PharmacyProduct {
 interface PharmacyCartContextType {
   items: CartItem[];
   addToCart: (product: PharmacyProduct) => void;
-  removeFromCart: (productId: string) => void;  // تغيير من number إلى string
-  increaseQuantity: (productId: string) => void;  // تغيير من number إلى string
-  decreaseQuantity: (productId: string) => void;  // تغيير من number إلى string
+  removeFromCart: (productId: string) => void;
+  increaseQuantity: (productId: string) => void;
+  decreaseQuantity: (productId: string) => void;
   clearCart: () => void;
   itemCount: number;
   totalPrice: number;
@@ -94,10 +94,7 @@ export const PharmacyCartProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setItems(prevItems => {
       const itemToRemove = prevItems.find(item => item.id === productId);
       if (itemToRemove) {
-        toast(`تمت إزالة ${itemToRemove.name} من سلة التسوق`, {
-          position: "top-center",
-          className: "bg-red-500 text-white"
-        });
+        toast(`تمت إزالة ${itemToRemove.name} من سلة التسوق`);
       }
       return prevItems.filter(item => item.id !== productId);
     });
@@ -119,10 +116,7 @@ export const PharmacyCartProvider: React.FC<{ children: React.ReactNode }> = ({ 
       
       if (existingItem && existingItem.quantity === 1) {
         // إزالة المنتج إذا كانت الكمية ستصبح صفر
-        toast(`تمت إزالة ${existingItem.name} من سلة التسوق`, {
-          position: "top-center",
-          className: "bg-red-500 text-white"
-        });
+        toast(`تمت إزالة ${existingItem.name} من سلة التسوق`);
         return prevItems.filter(item => item.id !== productId);
       }
       
@@ -136,10 +130,7 @@ export const PharmacyCartProvider: React.FC<{ children: React.ReactNode }> = ({ 
   // تفريغ السلة بالكامل
   const clearCart = () => {
     setItems([]);
-    toast('تم تفريغ سلة التسوق بالكامل', {
-      position: "top-center",
-      className: "bg-blue-600 text-white border-blue-700"
-    });
+    toast('تم تفريغ سلة التسوق بالكامل');
   };
 
   return (

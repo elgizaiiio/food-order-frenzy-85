@@ -90,21 +90,18 @@ export const PersonalCareCartProvider: React.FC<{ children: React.ReactNode }> =
   };
 
   // إزالة منتج من السلة
-  const removeFromCart = (productId: string) => {  // تغيير من number إلى string
+  const removeFromCart = (productId: string) => {
     setItems(prevItems => {
       const itemToRemove = prevItems.find(item => item.id === productId);
       if (itemToRemove) {
-        toast(`تمت إزالة ${itemToRemove.name} من سلة التسوق`, {
-          position: "top-center",
-          className: "bg-red-500 text-white"
-        });
+        toast(`تمت إزالة ${itemToRemove.name} من سلة التسوق`);
       }
       return prevItems.filter(item => item.id !== productId);
     });
   };
 
   // زيادة كمية منتج
-  const increaseQuantity = (productId: string) => {  // تغيير من number إلى string
+  const increaseQuantity = (productId: string) => {
     setItems(prevItems => 
       prevItems.map(item => 
         item.id === productId ? { ...item, quantity: item.quantity + 1 } : item
@@ -113,16 +110,13 @@ export const PersonalCareCartProvider: React.FC<{ children: React.ReactNode }> =
   };
 
   // إنقاص كمية منتج
-  const decreaseQuantity = (productId: string) => {  // تغيير من number إلى string
+  const decreaseQuantity = (productId: string) => {
     setItems(prevItems => {
       const existingItem = prevItems.find(item => item.id === productId);
       
       if (existingItem && existingItem.quantity === 1) {
         // إزالة المنتج إذا كانت الكمية ستصبح صفر
-        toast(`تمت إزالة ${existingItem.name} من سلة التسوق`, {
-          position: "top-center",
-          className: "bg-red-500 text-white"
-        });
+        toast(`تمت إزالة ${existingItem.name} من سلة التسوق`);
         return prevItems.filter(item => item.id !== productId);
       }
       
@@ -136,10 +130,7 @@ export const PersonalCareCartProvider: React.FC<{ children: React.ReactNode }> =
   // تفريغ السلة بالكامل
   const clearCart = () => {
     setItems([]);
-    toast('تم تفريغ سلة التسوق بالكامل', {
-      position: "top-center",
-      className: "bg-blue-600 text-white border-blue-700"
-    });
+    toast('تم تفريغ سلة التسوق بالكامل');
   };
 
   return (
