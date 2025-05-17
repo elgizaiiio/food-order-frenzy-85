@@ -1,5 +1,5 @@
 
-import { toast as sonnerToast, ToastT } from "sonner";
+import { toast as sonnerToast, type ToasterToast as ToastT } from "sonner";
 
 type ToastProps = Omit<ToastT, "id"> & {
   title?: React.ReactNode;

@@ -15,7 +15,9 @@ export interface CartItem {
 // عملية تخزين عناصر السلة
 export async function saveCart(type: string, items: CartItem[]): Promise<boolean> {
   try {
+    // الحصول على المستخدم الحالي
     const { data: { user } } = await supabase.auth.getUser();
+    
     if (!user) {
       console.warn('لم يتم تسجيل الدخول، سيتم تخزين السلة محليًا');
       localStorage.setItem(`cart_${type}`, JSON.stringify(items));
@@ -25,6 +27,19 @@ export async function saveCart(type: string, items: CartItem[]): Promise<boolean
     // إذا كان المستخدم مسجل دخوله، قم بحفظ السلة في قاعدة البيانات (في الإنتاج)
     // الآن نحفظها في التخزين المحلي فقط
     localStorage.setItem(`cart_${type}_${user.id}`, JSON.stringify(items));
+    
+    // يمكن تنفيذ تخزين العناصر في قاعدة البيانات Supabase هنا
+    // مثال:
+    // const { error } = await supabase
+    //   .from('carts')
+    //   .upsert({
+    //     user_id: user.id,
+    //     type: type,
+    //     items: items,
+    //     updated_at: new Date()
+    //   });
+    // if (error) throw error;
+    
     return true;
   } catch (error) {
     console.error('خطأ في تخزين السلة:', error);
@@ -33,24 +48,39 @@ export async function saveCart(type: string, items: CartItem[]): Promise<boolean
 }
 
 // عملية استرجاع عناصر السلة
-export function loadCart(type: string): CartItem[] {
+export async function loadCart(type: string): Promise<CartItem[]> {
   try {
     // نتحقق أولا من التخزين المحلي للسلة العامة
     const savedGeneralCart = localStorage.getItem(`cart_${type}`);
     const generalCart = savedGeneralCart ? JSON.parse(savedGeneralCart) : [];
 
     // محاولة الحصول على المستخدم الحالي
-    // نلاحظ: هذا يرجع Promise لذلك لا نستطيع استخدامه مباشرة هنا
-    // لكن يمكن التعامل مع الحالة الأساسية
+    const { data: { user } } = await supabase.auth.getUser();
     
-    // التحقق من وجود سلة خاصة للمستخدم المسجل
-    // نفحص وجود بيانات في localStorage باسم المستخدم
-    for (const key of Object.keys(localStorage)) {
-      if (key.startsWith(`cart_${type}_`)) {
-        const userCart = localStorage.getItem(key);
-        if (userCart) {
-          return JSON.parse(userCart);
-        }
+    if (user) {
+      // التحقق من وجود سلة خاصة للمستخدم المسجل
+      const userCartKey = `cart_${type}_${user.id}`;
+      const userCart = localStorage.getItem(userCartKey);
+      
+      if (userCart) {
+        return JSON.parse(userCart);
+      }
+      
+      // يمكن تنفيذ استرجاع العناصر من قاعدة البيانات Supabase هنا
+      // مثال:
+      // const { data, error } = await supabase
+      //   .from('carts')
+      //   .select('items')
+      //   .eq('user_id', user.id)
+      //   .eq('type', type)
+      //   .single();
+      // if (data && !error) return data.items;
+      
+      // إذا وجدنا سلة عامة وليس هناك سلة خاصة بالمستخدم، انقل السلة العامة
+      if (generalCart.length > 0) {
+        await saveCart(type, generalCart);
+        localStorage.removeItem(`cart_${type}`);
+        return generalCart;
       }
     }
     
@@ -69,6 +99,15 @@ export async function clearCart(type: string): Promise<boolean> {
     
     if (user) {
       localStorage.removeItem(`cart_${type}_${user.id}`);
+      
+      // يمكن تنفيذ حذف العناصر من قاعدة البيانات Supabase هنا
+      // مثال:
+      // const { error } = await supabase
+      //   .from('carts')
+      //   .delete()
+      //   .eq('user_id', user.id)
+      //   .eq('type', type);
+      // if (error) throw error;
     } else {
       localStorage.removeItem(`cart_${type}`);
     }
