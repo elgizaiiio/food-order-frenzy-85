@@ -45,6 +45,7 @@ export async function fetchUserOrders(): Promise<Order[]> {
       .eq('user_id', user.id);
     
     if (ordersError) throw ordersError;
+    if (!ordersData) return [];
     
     // Format the orders to match the expected Order interface
     const formattedOrders: Order[] = await Promise.all(ordersData.map(async (order) => {
@@ -69,7 +70,7 @@ export async function fetchUserOrders(): Promise<Order[]> {
               
             if (restaurantData) {
               restaurantName = restaurantData.name;
-              restaurantLogo = restaurantData.logo_url;
+              restaurantLogo = restaurantData.logo_url || restaurantLogo;
             }
           }
         }
@@ -166,7 +167,7 @@ export async function reorder(orderId: string): Promise<{ success: boolean, cart
       .eq('id', orderId)
       .single();
     
-    if (orderError) throw orderError;
+    if (orderError || !order) throw orderError;
     
     // Store the items in session storage for the cart to pick up
     sessionStorage.setItem('reorderItems', JSON.stringify(order.items));

@@ -36,7 +36,7 @@ export function useChangePassword() {
     } catch (err: any) {
       console.error('خطأ في تغيير كلمة المرور:', err);
       
-      if (err.message.includes('auth')) {
+      if (err.message && err.message.includes('auth')) {
         setError('كلمة المرور الحالية غير صحيحة');
       } else {
         setError(err.message || 'حدث خطأ أثناء تغيير كلمة المرور');

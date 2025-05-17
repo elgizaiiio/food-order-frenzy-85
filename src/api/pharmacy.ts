@@ -100,6 +100,15 @@ export interface OrderConfirmation {
 // إرسال طلب إلى API
 export async function submitPharmacyOrder(order: PharmacyOrder): Promise<OrderConfirmation> {
   try {
+    // Get the authenticated user
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return {
+        success: false,
+        message: 'يجب تسجيل الدخول لإتمام الطلب'
+      };
+    }
+    
     // Create a new order in the orders table
     const { data, error } = await supabase
       .from('orders')
@@ -109,7 +118,8 @@ export async function submitPharmacyOrder(order: PharmacyOrder): Promise<OrderCo
         delivery_address_id: order.addressId,
         payment_method_id: order.paymentMethod,
         total_amount: 0, // We'll calculate this on the server side
-        status: 'pending'
+        status: 'pending',
+        user_id: user.id
       })
       .select()
       .single();

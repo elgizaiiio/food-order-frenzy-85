@@ -138,9 +138,10 @@ export async function getDeliveryEstimate(addressId: string): Promise<DeliveryEs
       .single();
     
     if (error) throw error;
+    if (!data) throw new Error('Address not found');
     
     // Base estimate on city (simplified)
-    const city = data.city.toLowerCase();
+    const city = data.city?.toLowerCase() || '';
     if (city.includes('القاهرة')) {
       return {
         minMinutes: 30,

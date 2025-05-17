@@ -9,7 +9,282 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      orders: {
+        Row: {
+          created_at: string
+          delivery_address_id: string | null
+          id: string
+          items: Json
+          order_type: string
+          payment_method_id: string | null
+          status: string
+          total_amount: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          delivery_address_id?: string | null
+          id?: string
+          items: Json
+          order_type: string
+          payment_method_id?: string | null
+          status?: string
+          total_amount: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          delivery_address_id?: string | null
+          id?: string
+          items?: Json
+          order_type?: string
+          payment_method_id?: string | null
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_delivery_address_id_fkey"
+            columns: ["delivery_address_id"]
+            isOneToOne: false
+            referencedRelation: "user_addresses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pharmacy_categories: {
+        Row: {
+          created_at: string
+          icon: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      pharmacy_products: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          is_recommended: boolean | null
+          name: string
+          price: number
+          stock: number | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_recommended?: boolean | null
+          name: string
+          price: number
+          stock?: number | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_recommended?: boolean | null
+          name?: string
+          price?: number
+          stock?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pharmacy_products_category_fkey"
+            columns: ["category"]
+            isOneToOne: false
+            referencedRelation: "pharmacy_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      restaurant_menu: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          name: string
+          price: number
+          restaurant_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          price: number
+          restaurant_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          price?: number
+          restaurant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "restaurant_menu_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      restaurants: {
+        Row: {
+          created_at: string
+          delivery_fee: number | null
+          delivery_time: string | null
+          description: string | null
+          id: string
+          logo_url: string | null
+          name: string
+          rating: number | null
+        }
+        Insert: {
+          created_at?: string
+          delivery_fee?: number | null
+          delivery_time?: string | null
+          description?: string | null
+          id?: string
+          logo_url?: string | null
+          name: string
+          rating?: number | null
+        }
+        Update: {
+          created_at?: string
+          delivery_fee?: number | null
+          delivery_time?: string | null
+          description?: string | null
+          id?: string
+          logo_url?: string | null
+          name?: string
+          rating?: number | null
+        }
+        Relationships: []
+      }
+      user_addresses: {
+        Row: {
+          city: string | null
+          created_at: string
+          full_address: string
+          id: string
+          is_default: boolean | null
+          label: string
+          phone_number: string | null
+          user_id: string
+        }
+        Insert: {
+          city?: string | null
+          created_at?: string
+          full_address: string
+          id?: string
+          is_default?: boolean | null
+          label: string
+          phone_number?: string | null
+          user_id: string
+        }
+        Update: {
+          city?: string | null
+          created_at?: string
+          full_address?: string
+          id?: string
+          is_default?: boolean | null
+          label?: string
+          phone_number?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_payment_methods: {
+        Row: {
+          created_at: string
+          id: string
+          is_default: boolean | null
+          last4: string | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          last4?: string | null
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          last4?: string | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      users: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          name: string | null
+          phone: string | null
+          profile_image: string | null
+          username: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id: string
+          name?: string | null
+          phone?: string | null
+          profile_image?: string | null
+          username?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string | null
+          phone?: string | null
+          profile_image?: string | null
+          username?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

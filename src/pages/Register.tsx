@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Mail, Lock, User, EyeOff, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { toast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
 
 const Register: React.FC = () => {
@@ -50,7 +50,7 @@ const Register: React.FC = () => {
       navigate('/login');
     } catch (error: any) {
       console.error('Registration error:', error);
-      if (error.message.includes('already registered')) {
+      if (error.message && error.message.includes('already registered')) {
         toast.error('البريد الإلكتروني مسجل بالفعل');
       } else {
         toast.error('حدث خطأ أثناء التسجيل');
