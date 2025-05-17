@@ -1,61 +1,51 @@
+
 import { supabase } from '@/integrations/supabase/client';
 
-/**
- * واجهة بيانات العنوان للمستخدم
- */
+// واجهة بيانات العنوان
 export interface UserAddress {
   id: string;
-  user_id: string;
-  label: string;
-  full_address: string;
-  city?: string;
-  district?: string;
-  street?: string;
-  building_no?: string;
-  apartment_no?: string;
-  floor_no?: string;
-  landmark?: string;
-  phone_number?: string;
-  is_default: boolean;
+  title: string;
+  fullAddress: string;
+  phone: string;
+  isDefault?: boolean;
 }
 
-/**
- * واجهة بيانات وسيلة الدفع للمستخدم
- */
+// واجهة بيانات طريقة الدفع
 export interface PaymentMethod {
   id: string;
-  user_id: string;
-  type: 'cash' | 'card' | 'wallet';
-  title: string;
-  last4?: string;
-  is_default: boolean;
+  type: string;
+  last4: string;
+  isDefault?: boolean;
 }
 
 /**
- * جلب عناوين المستخدم
+ * استرجاع عناوين المستخدم
  */
 export async function fetchUserAddresses(): Promise<UserAddress[]> {
   try {
+    // الحصول على المستخدم المسجل دخوله
     const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return [];
     
-    if (!user) {
-      throw new Error('يجب تسجيل الدخول لجلب العناوين');
-    }
-    
+    // جلب العناوين من سوبابيس
     const { data, error } = await supabase
       .from('user_addresses')
       .select('*')
       .eq('user_id', user.id)
       .order('is_default', { ascending: false });
-      
-    if (error) {
-      console.error('خطأ في جلب عناوين المستخدم:', error);
-      throw error;
-    }
     
-    return data || [];
+    if (error) throw error;
+    
+    // تحويل البيانات إلى الصيغة المطلوبة
+    return data.map(address => ({
+      id: address.id,
+      title: address.label,
+      fullAddress: address.full_address,
+      phone: address.phone_number,
+      isDefault: address.is_default
+    }));
   } catch (error) {
-    console.error('خطأ في جلب عناوين المستخدم:', error);
+    console.error('خطأ في استرجاع العناوين:', error);
     throw error;
   }
 }
@@ -63,36 +53,48 @@ export async function fetchUserAddresses(): Promise<UserAddress[]> {
 /**
  * إضافة عنوان جديد للمستخدم
  */
-export async function addUserAddress(address: Omit<UserAddress, 'id' | 'user_id'>): Promise<UserAddress> {
+export async function addUserAddress(addressData: Omit<UserAddress, 'id'>): Promise<UserAddress> {
   try {
+    // الحصول على المستخدم المسجل دخوله
     const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('يجب تسجيل الدخول لإضافة عنوان');
     
-    if (!user) {
-      throw new Error('يجب تسجيل الدخول لإضافة عنوان');
+    // التحقق ما إذا كان هذا هو العنوان الافتراضي
+    const isDefault = addressData.isDefault || false;
+    
+    // إذا كان العنوان افتراضيًا، إلغاء تعيين العناوين الأخرى كافتراضية
+    if (isDefault) {
+      await supabase
+        .from('user_addresses')
+        .update({ is_default: false })
+        .eq('user_id', user.id);
     }
     
-    // Ensure city is provided with a default value if it's missing
-    const addressData = {
-      ...address,
-      city: address.city || 'Unknown', // Default value for city
-      phone_number: address.phone_number || '', // Default value for phone number
-      user_id: user.id
-    };
-    
+    // إضافة العنوان الجديد
     const { data, error } = await supabase
       .from('user_addresses')
-      .insert(addressData)
-      .select('*')
+      .insert({
+        user_id: user.id,
+        label: addressData.title,
+        full_address: addressData.fullAddress,
+        phone_number: addressData.phone,
+        is_default: isDefault,
+        city: addressData.fullAddress.split(',').pop()?.trim() || 'غير معروف'
+      })
+      .select()
       .single();
-      
-    if (error) {
-      console.error('خطأ في إضافة عنوان جديد:', error);
-      throw error;
-    }
     
-    return data;
+    if (error) throw error;
+    
+    return {
+      id: data.id,
+      title: data.label,
+      fullAddress: data.full_address,
+      phone: data.phone_number,
+      isDefault: data.is_default
+    };
   } catch (error) {
-    console.error('خطأ في إضافة عنوان جديد:', error);
+    console.error('خطأ في إضافة العنوان:', error);
     throw error;
   }
 }
@@ -102,14 +104,41 @@ export async function addUserAddress(address: Omit<UserAddress, 'id' | 'user_id'
  */
 export async function deleteUserAddress(addressId: string): Promise<void> {
   try {
+    // الحصول على المستخدم المسجل دخوله
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('يجب تسجيل الدخول لحذف عنوان');
+    
+    // تحقق إذا كان العنوان المحذوف هو العنوان الافتراضي
+    const { data: addressData } = await supabase
+      .from('user_addresses')
+      .select('is_default')
+      .eq('id', addressId)
+      .eq('user_id', user.id)
+      .single();
+    
+    // حذف العنوان
     const { error } = await supabase
       .from('user_addresses')
       .delete()
-      .eq('id', addressId);
+      .eq('id', addressId)
+      .eq('user_id', user.id);
+    
+    if (error) throw error;
+    
+    // إذا كان العنوان المحذوف هو العنوان الافتراضي، قم بتعيين أول عنوان آخر كعنوان افتراضي
+    if (addressData?.is_default) {
+      const { data: addresses } = await supabase
+        .from('user_addresses')
+        .select('id')
+        .eq('user_id', user.id)
+        .limit(1);
       
-    if (error) {
-      console.error('خطأ في حذف العنوان:', error);
-      throw error;
+      if (addresses && addresses.length > 0) {
+        await supabase
+          .from('user_addresses')
+          .update({ is_default: true })
+          .eq('id', addresses[0].id);
+      }
     }
   } catch (error) {
     console.error('خطأ في حذف العنوان:', error);
@@ -118,37 +147,28 @@ export async function deleteUserAddress(addressId: string): Promise<void> {
 }
 
 /**
- * تعيين العنوان الافتراضي
+ * تعيين عنوان كعنوان افتراضي
  */
 export async function setDefaultAddress(addressId: string): Promise<void> {
   try {
+    // الحصول على المستخدم المسجل دخوله
     const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('يجب تسجيل الدخول لتعيين العنوان الافتراضي');
     
-    if (!user) {
-      throw new Error('يجب تسجيل الدخول لتعيين العنوان الافتراضي');
-    }
-    
-    // إلغاء تحديد جميع العناوين الافتراضية أولاً
-    const { error: resetError } = await supabase
+    // إلغاء تعيين جميع العناوين كعناوين افتراضية
+    await supabase
       .from('user_addresses')
       .update({ is_default: false })
       .eq('user_id', user.id);
-      
-    if (resetError) {
-      console.error('خطأ في إعادة تعيين العناوين الافتراضية:', resetError);
-      throw resetError;
-    }
     
-    // تعيين العنوان المحدد كافتراضي
+    // تعيين العنوان المحدد كعنوان افتراضي
     const { error } = await supabase
       .from('user_addresses')
       .update({ is_default: true })
-      .eq('id', addressId);
-      
-    if (error) {
-      console.error('خطأ في تعيين العنوان الافتراضي:', error);
-      throw error;
-    }
+      .eq('id', addressId)
+      .eq('user_id', user.id);
+    
+    if (error) throw error;
   } catch (error) {
     console.error('خطأ في تعيين العنوان الافتراضي:', error);
     throw error;
@@ -156,160 +176,154 @@ export async function setDefaultAddress(addressId: string): Promise<void> {
 }
 
 /**
- * جلب وسائل الدفع المخزنة للمستخدم
+ * جلب طرق الدفع للمستخدم
  */
 export async function fetchUserPaymentMethods(): Promise<PaymentMethod[]> {
   try {
+    // الحصول على المستخدم المسجل دخوله
     const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return [];
     
-    if (!user) {
-      throw new Error('يجب تسجيل الدخول لجلب وسائل الدفع');
-    }
-    
+    // جلب طرق الدفع من سوبابيس
     const { data, error } = await supabase
       .from('user_payment_methods')
       .select('*')
       .eq('user_id', user.id)
       .order('is_default', { ascending: false });
-      
-    if (error) {
-      console.error('خطأ في جلب وسائل الدفع:', error);
-      throw error;
-    }
     
-    // Map the database fields to match the PaymentMethod interface
-    // Adding title based on the payment method type
-    const paymentMethods: PaymentMethod[] = (data || []).map(method => ({
+    if (error) throw error;
+    
+    // تحويل البيانات إلى الصيغة المطلوبة
+    return data.map(method => ({
       id: method.id,
-      user_id: method.user_id || user.id,
-      type: (method.type as 'cash' | 'card' | 'wallet') || 'cash',
-      title: getTitleFromType(method.type || 'cash', method.last4),
-      last4: method.last4,
-      is_default: !!method.is_default
+      type: method.type || 'card',
+      last4: method.last4 || '****',
+      isDefault: method.is_default
     }));
-    
-    return paymentMethods;
   } catch (error) {
-    console.error('خطأ في جلب وسائل الدفع:', error);
+    console.error('خطأ في استرجاع طرق الدفع:', error);
     throw error;
   }
 }
 
 /**
- * إضافة وسيلة دفع جديدة
+ * إضافة طريقة دفع جديدة
  */
-export async function addPaymentMethod(paymentMethod: Omit<PaymentMethod, 'id' | 'user_id'>): Promise<PaymentMethod> {
+export async function addPaymentMethod(methodData: Omit<PaymentMethod, 'id'>): Promise<PaymentMethod> {
   try {
+    // الحصول على المستخدم المسجل دخوله
     const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('يجب تسجيل الدخول لإضافة طريقة دفع');
     
-    if (!user) {
-      throw new Error('يجب تسجيل الدخول لإضافة وسيلة دفع');
+    // التحقق ما إذا كان هذا هو طريقة الدفع الافتراضية
+    const isDefault = methodData.isDefault || false;
+    
+    // إذا كانت طريقة الدفع افتراضية، إلغاء تعيين الطرق الأخرى كافتراضية
+    if (isDefault) {
+      await supabase
+        .from('user_payment_methods')
+        .update({ is_default: false })
+        .eq('user_id', user.id);
     }
     
-    // Prepare data for insertion, mapping fields to match the database schema
-    const dbPaymentMethod = {
-      type: paymentMethod.type,
-      last4: paymentMethod.last4,
-      is_default: paymentMethod.is_default,
-      user_id: user.id,
-      // Title is not stored directly in the database
-    };
-    
+    // إضافة طريقة الدفع الجديدة
     const { data, error } = await supabase
       .from('user_payment_methods')
-      .insert(dbPaymentMethod)
-      .select('*')
+      .insert({
+        user_id: user.id,
+        type: methodData.type,
+        last4: methodData.last4,
+        is_default: isDefault
+      })
+      .select()
       .single();
-      
-    if (error) {
-      console.error('خطأ في إضافة وسيلة دفع جديدة:', error);
-      throw error;
-    }
     
-    // Return data in the format expected by the PaymentMethod interface
+    if (error) throw error;
+    
     return {
       id: data.id,
-      user_id: data.user_id || user.id,
-      type: (data.type as 'cash' | 'card' | 'wallet') || 'cash',
-      title: getTitleFromType(data.type || 'cash', data.last4),
+      type: data.type,
       last4: data.last4,
-      is_default: !!data.is_default
+      isDefault: data.is_default
     };
   } catch (error) {
-    console.error('خطأ في إضافة وسيلة دفع جديدة:', error);
+    console.error('خطأ في إضافة طريقة الدفع:', error);
     throw error;
   }
 }
 
 /**
- * تعيين وسيلة الدفع الافتراضية
+ * تعيين طريقة دفع كطريقة افتراضية
  */
-export async function setDefaultPaymentMethod(paymentMethodId: string): Promise<void> {
+export async function setDefaultPaymentMethod(methodId: string): Promise<void> {
   try {
+    // الحصول على المستخدم المسجل دخوله
     const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('يجب تسجيل الدخول لتعيين طريقة الدفع الافتراضية');
     
-    if (!user) {
-      throw new Error('يجب تسجيل الدخول لتعيين وسيلة الدفع الافتراضية');
-    }
-    
-    // إلغاء تحديد جميع وسائل الدفع الافتراضية أولاً
-    const { error: resetError } = await supabase
+    // إلغاء تعيين جميع طرق الدفع كطرق افتراضية
+    await supabase
       .from('user_payment_methods')
       .update({ is_default: false })
       .eq('user_id', user.id);
-      
-    if (resetError) {
-      console.error('خطأ في إعادة تعيين وسائل الدفع الافتراضية:', resetError);
-      throw resetError;
-    }
     
-    // تعيين وسيلة الدفع المحددة كافتراضية
+    // تعيين طريقة الدفع المحددة كطريقة افتراضية
     const { error } = await supabase
       .from('user_payment_methods')
       .update({ is_default: true })
-      .eq('id', paymentMethodId);
-      
-    if (error) {
-      console.error('خطأ في تعيين وسيلة الدفع الافتراضية:', error);
-      throw error;
-    }
+      .eq('id', methodId)
+      .eq('user_id', user.id);
+    
+    if (error) throw error;
   } catch (error) {
-    console.error('خطأ في تعيين وسيلة الدفع الافتراضية:', error);
+    console.error('خطأ في تعيين طريقة الدفع الافتراضية:', error);
     throw error;
   }
 }
 
 /**
- * حذف وسيلة دفع
+ * حذف طريقة دفع
  */
-export async function deletePaymentMethod(paymentMethodId: string): Promise<void> {
+export async function deletePaymentMethod(methodId: string): Promise<void> {
   try {
+    // الحصول على المستخدم المسجل دخوله
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('يجب تسجيل الدخول لحذف طريقة الدفع');
+    
+    // تحقق إذا كانت طريقة الدفع المحذوفة هي الطريقة الافتراضية
+    const { data: methodData } = await supabase
+      .from('user_payment_methods')
+      .select('is_default')
+      .eq('id', methodId)
+      .eq('user_id', user.id)
+      .single();
+    
+    // حذف طريقة الدفع
     const { error } = await supabase
       .from('user_payment_methods')
       .delete()
-      .eq('id', paymentMethodId);
+      .eq('id', methodId)
+      .eq('user_id', user.id);
+    
+    if (error) throw error;
+    
+    // إذا كانت طريقة الدفع المحذوفة هي الطريقة الافتراضية، قم بتعيين أول طريقة أخرى كطريقة افتراضية
+    if (methodData?.is_default) {
+      const { data: methods } = await supabase
+        .from('user_payment_methods')
+        .select('id')
+        .eq('user_id', user.id)
+        .limit(1);
       
-    if (error) {
-      console.error('خطأ في حذف وسيلة الدفع:', error);
-      throw error;
+      if (methods && methods.length > 0) {
+        await supabase
+          .from('user_payment_methods')
+          .update({ is_default: true })
+          .eq('id', methods[0].id);
+      }
     }
   } catch (error) {
-    console.error('خطأ في حذف وسيلة الدفع:', error);
+    console.error('خطأ في حذف طريقة الدفع:', error);
     throw error;
-  }
-}
-
-/**
- * Helper function to generate a title from payment method type
- */
-function getTitleFromType(type: string, last4?: string | null): string {
-  switch (type) {
-    case 'card':
-      return last4 ? `بطاقة ائتمان (...${last4})` : 'بطاقة ائتمان';
-    case 'wallet':
-      return 'محفظة إلكترونية';
-    case 'cash':
-    default:
-      return 'الدفع عند الاستلام';
   }
 }

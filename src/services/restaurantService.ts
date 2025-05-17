@@ -1,102 +1,92 @@
 
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from '@/integrations/supabase/client';
 
 export interface Restaurant {
   id: string;
   name: string;
   logo_url: string;
   description?: string;
-  delivery_fee: number;
-  rating: number;
+  delivery_fee?: number;
   delivery_time?: string;
+  rating?: number;
 }
 
 export interface MenuItem {
   id: string;
-  restaurant_id: string;
   name: string;
-  price: number;
-  category: string;
   description?: string;
+  price: number;
   image_url?: string;
+  category: string;
+  restaurant_id: string;
 }
 
-/**
- * Fetch all restaurants
- */
+// استرجاع قائمة المطاعم
 export async function fetchRestaurants(): Promise<Restaurant[]> {
   try {
     const { data, error } = await supabase
       .from('restaurants')
-      .select('*');
-    
-    if (error) throw error;
-    
-    return data || [];
-  } catch (error) {
-    console.error('Error fetching restaurants:', error);
-    throw error;
-  }
-}
-
-/**
- * Fetch restaurant by ID
- */
-export async function fetchRestaurantById(id: string): Promise<Restaurant> {
-  try {
-    const { data, error } = await supabase
-      .from('restaurants')
       .select('*')
-      .eq('id', id)
-      .single();
-    
+      .order('rating', { ascending: false });
+      
     if (error) throw error;
     
     return data;
   } catch (error) {
-    console.error(`Error fetching restaurant with ID ${id}:`, error);
+    console.error('خطأ في جلب المطاعم:', error);
     throw error;
   }
 }
 
-/**
- * Fetch restaurant menu
- */
+// استرجاع تفاصيل مطعم معين
+export async function fetchRestaurantDetails(restaurantId: string): Promise<Restaurant | null> {
+  try {
+    const { data, error } = await supabase
+      .from('restaurants')
+      .select('*')
+      .eq('id', restaurantId)
+      .single();
+      
+    if (error) throw error;
+    
+    return data;
+  } catch (error) {
+    console.error(`خطأ في جلب تفاصيل المطعم ${restaurantId}:`, error);
+    throw error;
+  }
+}
+
+// استرجاع قائمة طعام لمطعم معين
 export async function fetchRestaurantMenu(restaurantId: string): Promise<MenuItem[]> {
   try {
     const { data, error } = await supabase
       .from('restaurant_menu')
       .select('*')
-      .eq('restaurant_id', restaurantId);
-    
+      .eq('restaurant_id', restaurantId)
+      .order('category');
+      
     if (error) throw error;
     
-    return data || [];
+    return data;
   } catch (error) {
-    console.error(`Error fetching menu for restaurant ID ${restaurantId}:`, error);
+    console.error(`خطأ في جلب قائمة الطعام للمطعم ${restaurantId}:`, error);
     throw error;
   }
 }
 
-/**
- * Fetch restaurant menu items by category
- */
-export async function fetchMenuItemsByCategory(
-  restaurantId: string, 
-  category: string
-): Promise<MenuItem[]> {
+// البحث عن مطاعم
+export async function searchRestaurants(query: string): Promise<Restaurant[]> {
   try {
     const { data, error } = await supabase
-      .from('restaurant_menu')
+      .from('restaurants')
       .select('*')
-      .eq('restaurant_id', restaurantId)
-      .eq('category', category);
-    
+      .ilike('name', `%${query}%`);
+      
     if (error) throw error;
     
-    return data || [];
+    return data;
   } catch (error) {
-    console.error(`Error fetching menu items for category ${category}:`, error);
+    console.error('خطأ في البحث عن المطاعم:', error);
     throw error;
   }
 }
