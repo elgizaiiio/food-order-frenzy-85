@@ -1,6 +1,5 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { getActiveProfileImage } from './storageService';
 
 /**
  * واجهة بيانات الملف الشخصي للمستخدم
@@ -15,33 +14,17 @@ export interface UserProfile {
   profile_image?: string;
 }
 
-// كاش للملف الشخصي لتسريع تحميل البيانات
-let profileCache: UserProfile | null = null;
-let lastFetchTime = 0;
-const CACHE_TTL = 300000; // زيادة مدة صلاحية الكاش إلى 5 دقائق
-
 /**
  * الحصول على معلومات الملف الشخصي للمستخدم الحالي
- * يستخدم الملف الشخصي الموجود أو ينشئ ملفًا شخصيًا جديدًا إذا لم يكن موجودًا
  */
-export async function getUserProfile(): Promise<UserProfile> {
+export async function getUserProfile(): Promise<UserProfile | null> {
   try {
-    const now = Date.now();
-    
     // التحقق من وجود المستخدم أولاً قبل جلب البيانات
     const { data: { user } } = await supabase.auth.getUser();
     
-    if (!user) throw new Error('يجب تسجيل الدخول أولاً');
+    if (!user) return null;
     
-    // إذا كان الكاش موجود وحديث، استخدمه لتجنب استدعاء قاعدة البيانات
-    if (profileCache && lastFetchTime > now - CACHE_TTL && profileCache.id === user.id) {
-      console.log("استخدام الملف الشخصي من الكاش:", profileCache.id);
-      return profileCache;
-    }
-    
-    console.log("جلب ملف المستخدم من قاعدة البيانات:", user.id);
-    
-    // استخدم maybeSingle بدلاً من single لتجنب الأخطاء إذا لم يكن الملف موجودًا
+    // استخدم maybeSingle للتعامل مع الحالة التي لا يوجد فيها ملف شخصي بعد
     const { data, error } = await supabase
       .from('users')
       .select('*')
@@ -50,79 +33,24 @@ export async function getUserProfile(): Promise<UserProfile> {
       
     if (error) {
       console.error('خطأ في جلب الملف الشخصي:', error);
-      
-      // إذا كان الخطأ متعلقًا بسياسة الأمان، نستخدم معلومات المستخدم الأساسية
-      if (error.code === '42501') { // خطأ في سياسة الأمان RLS
-        const basicProfile = {
-          id: user.id,
-          email: user.email,
-          name: user.user_metadata?.name || user.email?.split('@')[0] || '',
-          username: user.email?.split('@')[0] || ''
-        };
-        
-        // تحديث الكاش
-        profileCache = basicProfile;
-        lastFetchTime = now;
-        
-        return basicProfile;
-      }
       throw error;
     }
     
     // إذا لم يكن المستخدم موجودًا، نعيد معلومات أساسية
     if (!data) {
-      const basicProfile = {
+      return {
         id: user.id,
         email: user.email,
         name: user.user_metadata?.name || user.email?.split('@')[0] || '',
         username: user.email?.split('@')[0] || '',
       };
-      
-      console.log("لم يتم العثور على ملف شخصي، استخدام ملف أساسي:", basicProfile);
-      
-      // تحديث الكاش
-      profileCache = basicProfile;
-      lastFetchTime = now;
-      
-      return basicProfile;
     }
     
-    // نقوم بتعبئة الكاش قبل تحميل الصورة لتوفير الوقت
-    const tempProfile = {...data};
-    profileCache = tempProfile;
-    lastFetchTime = now;
-    
-    // تحميل صورة الملف الشخصي بشكل منفصل
-    // هذا لا يؤثر على النتيجة المُرجعة الفورية، لكنه يحدّث الكاش للاستخدام المستقبلي
-    getActiveProfileImage().then(activeProfileImage => {
-      if (activeProfileImage) {
-        const updatedProfile = {
-          ...tempProfile,
-          profile_image: activeProfileImage
-        };
-        
-        // تحديث الكاش بالصورة
-        profileCache = updatedProfile;
-      }
-    }).catch(err => {
-      console.warn('خطأ في تحميل صورة الملف الشخصي:', err);
-      // لا نفعل شيئًا هنا - نستمر باستخدام البيانات بدون صورة
-    });
-    
-    return tempProfile;
+    return data;
   } catch (error) {
     console.error('خطأ في جلب معلومات الملف الشخصي:', error);
     throw error;
   }
-}
-
-/**
- * مسح الكاش للتأكد من تحديث البيانات
- */
-export function clearProfileCache() {
-  profileCache = null;
-  lastFetchTime = 0;
-  console.log("تم مسح كاش الملف الشخصي");
 }
 
 /**
@@ -133,8 +61,6 @@ export async function updateUserProfile(updates: Partial<UserProfile>): Promise<
   try {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('يجب تسجيل الدخول أولاً');
-    
-    console.log("تحديث ملف المستخدم:", user.id, "بالبيانات:", updates);
 
     // إذا تم تقديم اسم، قم أيضًا بتحديث بيانات تعريف المستخدم
     if (updates.name) {
@@ -144,8 +70,6 @@ export async function updateUserProfile(updates: Partial<UserProfile>): Promise<
       
       if (updateMetaError) {
         console.warn('تحذير: لم يتم تحديث بيانات المستخدم الوصفية:', updateMetaError);
-      } else {
-        console.log('تم تحديث بيانات المستخدم الوصفية بنجاح');
       }
     }
     
@@ -156,15 +80,15 @@ export async function updateUserProfile(updates: Partial<UserProfile>): Promise<
       .eq('id', user.id)
       .maybeSingle();
       
-    if (checkError && checkError.code !== 'PGRST204') {
+    if (checkError) {
       console.error('خطأ في التحقق من وجود المستخدم:', checkError);
       throw checkError;
     }
 
+    let result;
+    
     // إذا لم يكن المستخدم موجودًا، قم بإنشائه
     if (!existingUser) {
-      console.log("لم يتم العثور على ملف المستخدم، إنشاء ملف جديد");
-      
       const userData = {
         id: user.id,
         email: user.email,
@@ -179,41 +103,57 @@ export async function updateUserProfile(updates: Partial<UserProfile>): Promise<
         .insert([userData])
         .select()
         .single();
-      
+        
       if (insertError) {
-        console.error('خطأ في إنشاء ملف جديد:', insertError);
+        console.error('خطأ في إنشاء ملف المستخدم:', insertError);
         throw insertError;
       }
       
-      console.log("تم إنشاء ملف مستخدم جديد:", newUser);
+      result = newUser;
+    } else {
+      // إذا كان المستخدم موجودًا، قم بتحديث بياناته
+      const { data: updatedUser, error: updateError } = await supabase
+        .from('users')
+        .update(updates)
+        .eq('id', user.id)
+        .select()
+        .single();
+        
+      if (updateError) {
+        console.error('خطأ في تحديث ملف المستخدم:', updateError);
+        throw updateError;
+      }
       
-      // مسح الكاش بعد التحديث
-      clearProfileCache();
-      
-      return newUser;
+      result = updatedUser;
     }
     
-    // إذا كان المستخدم موجودًا، قم بتحديث بياناته
-    const { data: updatedUser, error: updateError } = await supabase
-      .from('users')
-      .update(updates)
-      .eq('id', user.id)
-      .select()
-      .single();
-    
-    if (updateError) {
-      console.error('خطأ في تحديث ملف المستخدم:', updateError);
-      throw updateError;
-    }
-    
-    console.log("تم تحديث ملف المستخدم:", updatedUser);
-    
-    // مسح الكاش بعد التحديث
-    clearProfileCache();
-    
-    return updatedUser;
+    return result;
   } catch (error) {
     console.error('خطأ في تحديث معلومات الملف الشخصي:', error);
+    throw error;
+  }
+}
+
+/**
+ * حذف الملف الشخصي للمستخدم
+ */
+export async function deleteUserProfile(): Promise<void> {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('يجب تسجيل الدخول أولاً');
+    
+    // حذف الملف الشخصي من جدول المستخدمين
+    const { error } = await supabase
+      .from('users')
+      .delete()
+      .eq('id', user.id);
+      
+    if (error) {
+      console.error('خطأ في حذف الملف الشخصي:', error);
+      throw error;
+    }
+  } catch (error) {
+    console.error('خطأ في حذف الملف الشخصي:', error);
     throw error;
   }
 }
