@@ -101,11 +101,10 @@ export async function fetchProductCategories(): Promise<string[]> {
   try {
     // Try using RPC if available
     try {
-      const { data, error } = await supabase.rpc('get_distinct_category_ids');
+      const { data, error } = await supabase.rpc<string[]>('get_distinct_category_ids');
       
       if (!error && data) {
-        // Ensure we have an array and convert items to strings
-        return Array.isArray(data) ? data.map(item => String(item)) : [];
+        return Array.isArray(data) ? data.map(String) : [];
       }
     } catch (rpcError) {
       console.log('RPC not available, falling back to direct query', rpcError);
