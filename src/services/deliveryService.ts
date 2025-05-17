@@ -48,7 +48,7 @@ export const fetchUserDeliveryRequests = async (): Promise<DeliveryRequest[]> =>
     throw new Error("يجب تسجيل الدخول لعرض طلبات التوصيل");
   }
 
-  // Use mock data for now
+  // Use mock data for now since delivery_requests table doesn't exist yet
   return mockDeliveryRequests.filter(req => 
     req.user_id === 'current-user' || req.user_id === sessionData.session.user.id
   );

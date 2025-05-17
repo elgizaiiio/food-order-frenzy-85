@@ -38,8 +38,7 @@ export async function fetchUserOrders(): Promise<Order[]> {
       .from('orders')
       .select(`
         *,
-        user_addresses (full_address),
-        user_payment_methods (type, last4)
+        user_addresses!left(full_address)
       `)
       .order('created_at', { ascending: false })
       .eq('user_id', user.id);
@@ -107,13 +106,23 @@ export async function fetchUserOrders(): Promise<Order[]> {
         price: item.price,
         options: item.options
       }));
-
+      
       // Get payment method
       let paymentMethod = 'كاش';
-      if (order.user_payment_methods) {
-        paymentMethod = order.user_payment_methods.type === 'card' 
-          ? `بطاقة ****${order.user_payment_methods.last4}` 
-          : order.user_payment_methods.type || 'كاش';
+      
+      // Fetch payment method details separately to avoid the join error
+      if (order.payment_method_id) {
+        const { data: paymentMethodData } = await supabase
+          .from('user_payment_methods')
+          .select('type, last4')
+          .eq('id', order.payment_method_id)
+          .single();
+          
+        if (paymentMethodData) {
+          paymentMethod = paymentMethodData.type === 'card' 
+            ? `بطاقة ****${paymentMethodData.last4}` 
+            : paymentMethodData.type || 'كاش';
+        }
       }
       
       return {
@@ -186,6 +195,10 @@ export async function reorder(orderId: string): Promise<{ success: boolean, cart
       cartUrl = '/market/cart';
     } else if (order.order_type === 'pharmacy') {
       cartUrl = '/pharmacy/cart';
+    } else if (order.order_type === 'personal_care') {
+      cartUrl = '/personal-care/cart';
+    } else if (order.order_type === 'gym') {
+      cartUrl = '/gym/tracking';
     }
     
     return { success: true, cartUrl };
