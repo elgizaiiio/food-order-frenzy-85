@@ -220,7 +220,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const verifyMFA = async (code: string): Promise<boolean> => {
     try {
       setIsLoading(true);
-      // Fix: Pass the verification code correctly according to Supabase API
+      // First, create a challenge
       const { data, error } = await supabase.auth.mfa.challenge({
         factorId: 'totp'
       });
@@ -241,7 +241,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           throw verifyResult.error;
         }
         
-        return verifyResult.data?.verified || false;
+        // Fix: Check if verification was successful
+        if (verifyResult.data) {
+          return true;
+        }
       }
       
       return false;

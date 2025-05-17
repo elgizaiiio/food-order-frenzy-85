@@ -13,11 +13,12 @@ export async function fetchPersonalCareProducts(): Promise<PersonalCareProduct[]
     
     if (error) throw error;
     
-    return data.map(item => ({
+    // Ensure we're always returning an array, even if data is null
+    return (data || []).map(item => ({
       ...item,
       inStock: item.stock > 0,
       category: item.category_id || ''
-    })) || [];
+    }));
   } catch (error) {
     console.error('Error fetching personal care products:', error);
     throw error;
@@ -36,11 +37,12 @@ export async function fetchProductsByCategory(category: string): Promise<Persona
     
     if (error) throw error;
     
-    return data.map(item => ({
+    // Ensure we're always returning an array, even if data is null
+    return (data || []).map(item => ({
       ...item,
       inStock: item.stock > 0,
       category: item.category_id || ''
-    })) || [];
+    }));
   } catch (error) {
     console.error(`Error fetching products for category ${category}:`, error);
     throw error;
