@@ -1,10 +1,21 @@
 
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { CheckoutProvider } from '@/context/CheckoutContext';
-import CheckoutContent from '@/components/checkout/CheckoutContent';
-import CheckoutButton from '@/components/checkout/CheckoutButton';
+
+// استخدام التحميل المُتأخر للمكونات لتحسين الأداء
+const CheckoutContent = lazy(() => import('@/components/checkout/CheckoutContent'));
+const CheckoutButton = lazy(() => import('@/components/checkout/CheckoutButton'));
+
+// مكون التحميل البسيط
+const LoadingFallback = () => (
+  <div className="animate-pulse flex flex-col space-y-4 p-4">
+    <div className="h-8 bg-blue-100 rounded w-3/4 mb-2"></div>
+    <div className="h-32 bg-blue-100 rounded"></div>
+    <div className="h-24 bg-blue-100 rounded"></div>
+  </div>
+);
 
 const Checkout: React.FC = () => {
   return (
@@ -24,13 +35,17 @@ const Checkout: React.FC = () => {
 
           {/* محتوى الصفحة */}
           <div className="p-4">
-            <CheckoutContent />
+            <Suspense fallback={<LoadingFallback />}>
+              <CheckoutContent />
+            </Suspense>
           </div>
         </div>
         
         {/* شريط الدفع السفلي الثابت */}
         <div className="fixed bottom-16 left-0 right-0 shadow-lg border-t p-3 z-40 max-w-md mx-auto bg-white">
-          <CheckoutButton />
+          <Suspense fallback={<div className="h-12 bg-blue-100 rounded animate-pulse"></div>}>
+            <CheckoutButton />
+          </Suspense>
         </div>
       </div>
     </CheckoutProvider>

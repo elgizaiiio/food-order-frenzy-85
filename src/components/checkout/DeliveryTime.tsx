@@ -1,13 +1,18 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Clock } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
 const DeliveryTime: React.FC = () => {
-  const [deliveryTime, setDeliveryTime] = useState({
+  const [deliveryTime] = useState({
     min: 30,
     max: 45
   });
+  
+  // استخدام useMemo لعرض وقت التوصيل
+  const formattedDeliveryTime = useMemo(() => {
+    return `${deliveryTime.min} - ${deliveryTime.max} دقيقة`;
+  }, [deliveryTime.min, deliveryTime.max]);
   
   return (
     <div className="space-y-2">
@@ -24,7 +29,7 @@ const DeliveryTime: React.FC = () => {
             <div className="flex-1">
               <p className="text-sm text-gray-600">هيوصل في حوالي</p>
               <p className="text-lg font-bold text-blue-700">
-                {deliveryTime.min} - {deliveryTime.max} دقيقة
+                {formattedDeliveryTime}
               </p>
             </div>
             <div className="w-12 h-12 flex items-center justify-center bg-blue-100 rounded-full shadow-sm">
@@ -37,4 +42,4 @@ const DeliveryTime: React.FC = () => {
   );
 };
 
-export default DeliveryTime;
+export default React.memo(DeliveryTime);
