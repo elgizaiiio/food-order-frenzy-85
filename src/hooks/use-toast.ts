@@ -1,7 +1,7 @@
 
-import { toast as sonnerToast, type ToasterToast as ToastT } from "sonner";
+import { toast as sonnerToast, type Toast } from "sonner";
 
-type ToastProps = Omit<ToastT, "id"> & {
+type ToastProps = Omit<Toast, "id"> & {
   title?: React.ReactNode;
   description?: React.ReactNode;
   variant?: "default" | "destructive";

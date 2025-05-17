@@ -1,8 +1,8 @@
 
 import { useState, useEffect } from 'react';
 import { MenuItem } from '@/services/restaurantService';
-import { saveCart, loadCart, clearCart } from '@/services/cartService';
-import { toast } from 'sonner';
+import { saveCart, loadCart, clearCart, CartItem } from '@/services/cartService';
+import { toast } from '@/hooks/use-toast';
 
 export interface RestaurantCartItem extends MenuItem {
   quantity: number;
@@ -19,11 +19,20 @@ export function useRestaurantCart(restaurantId: string | null = null) {
 
   // استرجاع عناصر السلة عند تحميل المكون
   useEffect(() => {
-    const savedCart = loadCart('restaurant');
-    if (savedCart && savedCart.length > 0) {
-      setItems(savedCart as RestaurantCartItem[]);
-    }
-    setLoading(false);
+    const fetchCart = async () => {
+      try {
+        const savedCart = await loadCart('restaurant');
+        if (savedCart && savedCart.length > 0) {
+          setItems(savedCart as RestaurantCartItem[]);
+        }
+      } catch (error) {
+        console.error('Error loading cart:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCart();
   }, []);
 
   // حفظ عناصر السلة عند تغييرها
