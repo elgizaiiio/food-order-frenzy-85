@@ -16,7 +16,7 @@ const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
       // تحسينات ذاكرة التخزين المؤقت لتقليل طلبات الشبكة
       staleTime: 1000 * 60 * 5, // 5 دقائق
-      cacheTime: 1000 * 60 * 30, // 30 دقيقة
+      gcTime: 1000 * 60 * 30, // 30 دقيقة (بديل عن cacheTime)
       // تحسين استجابة واجهة المستخدم
       refetchOnMount: true,
       // منع الإعادة المفرطة للطلبات

@@ -15,19 +15,10 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react({
       jsxImportSource: 'react',
-      // تمكين تجميع أسرع مع SWC
-      swcOptions: {
-        jsc: {
-          transform: {
-            react: {
-              runtime: 'automatic',
-              // تحسين التجميع
-              development: mode === 'development',
-              refresh: mode === 'development',
-            },
-          },
-        },
-      }
+      // تحسين عملية الترجمة والتجميع
+      plugins: mode === 'development' ? [[
+        '@swc/plugin-react-refresh'
+      ]] : []
     }),
     mode === 'development' &&
     componentTagger(),

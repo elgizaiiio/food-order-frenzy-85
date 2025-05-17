@@ -1,7 +1,7 @@
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchRestaurants, fetchRestaurantById, fetchRestaurantMenu, fetchMenuItemsByCategory } from '@/services/restaurantService';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 // استخدام الذاكرة المؤقتة المُحسّنة وتحسينات الأداء
 export function useRestaurants() {
@@ -15,7 +15,7 @@ export function useRestaurants() {
     // إعادة استخدام البيانات المخزنة مؤقتًا لتحسين الأداء
     placeholderData: () => {
       // التحقق من وجود بيانات سابقة في ذاكرة التخزين المؤقت
-      return queryClient.getQueryData(['restaurants']);
+      return queryClient.getQueryData(['restaurants']) as any[] || [];
     },
     // تحسين استراتيجية الإعادة
     retry: (failureCount, error) => {
@@ -64,7 +64,7 @@ export function useMenuCategories(restaurantId: string | undefined) {
   const { data: menuItems } = useRestaurantMenu(restaurantId);
   
   // استخدام useMemo لمنع إعادة الحساب غير الضرورية
-  const categories = React.useMemo(() => {
+  const categories = useMemo(() => {
     if (!menuItems) return [];
     
     // استخراج الفئات الفريدة
