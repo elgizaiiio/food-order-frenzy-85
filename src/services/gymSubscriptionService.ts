@@ -12,7 +12,11 @@ export async function fetchUserSubscriptions(userId: string): Promise<GymSubscri
     
     if (error) throw error;
     
-    return data || [];
+    // Convert the status to the proper type
+    return (data || []).map(item => ({
+      ...item,
+      status: item.status as 'active' | 'expired' | 'cancelled'
+    }));
   } catch (error) {
     console.error('Error fetching user subscriptions:', error);
     return [];
@@ -30,7 +34,11 @@ export async function createSubscription(subscription: Omit<GymSubscription, 'id
     
     if (error) throw error;
     
-    return data;
+    // Convert the status to the proper type
+    return {
+      ...data,
+      status: data.status as 'active' | 'expired' | 'cancelled'
+    };
   } catch (error) {
     console.error('Error creating subscription:', error);
     throw error;

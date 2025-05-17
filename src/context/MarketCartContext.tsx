@@ -1,23 +1,24 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Product } from '@/api/market';
+import { Product } from '@/services/marketService';
 import { toast } from '@/hooks/use-toast';
 
 interface CartItem {
-  id: number;
+  id: string;  // Changed from number to string to match Product.id type
   name: string;
   price: number;
   image: string;
   description: string;
-  category_id: number;
+  category_id: string;  // Changed from number to string to match Product.categoryId type
   quantity: number;
 }
 
 interface MarketCartContextType {
   items: CartItem[];
   addToCart: (product: Product) => void;
-  removeFromCart: (productId: number) => void;
-  increaseQuantity: (productId: number) => void;
-  decreaseQuantity: (productId: number) => void;
+  removeFromCart: (productId: string) => void;  // Changed from number to string
+  increaseQuantity: (productId: string) => void;  // Changed from number to string
+  decreaseQuantity: (productId: string) => void;  // Changed from number to string
   clearCart: () => void;
   itemCount: number;
   totalPrice: number;
@@ -86,7 +87,7 @@ export const MarketCartProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           price: typeof product.price === 'string' ? parseFloat(product.price) : product.price,
           image: product.image,
           description: product.description || '',
-          category_id: product.categoryId || 0,
+          category_id: product.categoryId || '',  // Changed to string
           quantity: 1
         };
         
@@ -96,7 +97,7 @@ export const MarketCartProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   // إزالة منتج من السلة
-  const removeFromCart = (productId: number) => {
+  const removeFromCart = (productId: string) => {  // Changed from number to string
     setItems(prevItems => {
       const itemToRemove = prevItems.find(item => item.id === productId);
       if (itemToRemove) {
@@ -110,7 +111,7 @@ export const MarketCartProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   // زيادة كمية منتج
-  const increaseQuantity = (productId: number) => {
+  const increaseQuantity = (productId: string) => {  // Changed from number to string
     setItems(prevItems => 
       prevItems.map(item => 
         item.id === productId ? { ...item, quantity: item.quantity + 1 } : item
@@ -119,7 +120,7 @@ export const MarketCartProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   // إنقاص كمية منتج
-  const decreaseQuantity = (productId: number) => {
+  const decreaseQuantity = (productId: string) => {  // Changed from number to string
     setItems(prevItems => {
       const existingItem = prevItems.find(item => item.id === productId);
       
