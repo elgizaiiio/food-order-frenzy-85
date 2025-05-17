@@ -12,6 +12,8 @@ interface AuthContextType {
   signUp: (email: string, password: string, userData?: any) => Promise<void>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
+  setupMFA: () => Promise<string>;
+  verifyMFA: (code: string) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -169,6 +171,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // إعداد المصادقة الثنائية
+  const setupMFA = async (): Promise<string> => {
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase.auth.mfa.enroll({
+        factorType: 'totp',
+      });
+      
+      if (error) {
+        throw error;
+      }
+      
+      if (!data?.totp) {
+        throw new Error('لم يتم إعداد المصادقة الثنائية بشكل صحيح');
+      }
+      
+      return data.totp.qr_code;
+    } catch (error) {
+      console.error('خطأ في إعداد المصادقة الثنائية', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // التحقق من رمز المصادقة الثنائية
+  const verifyMFA = async (code: string): Promise<boolean> => {
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase.auth.mfa.challenge({
+        factorId: 'totp',
+        code,
+      });
+      
+      if (error) {
+        throw error;
+      }
+      
+      return data?.challenge?.verified || false;
+    } catch (error) {
+      console.error('خطأ في التحقق من رمز المصادقة الثنائية', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const value: AuthContextType = {
     user,
     session,
@@ -177,6 +226,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signUp,
     signOut,
     resetPassword,
+    setupMFA,
+    verifyMFA,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
