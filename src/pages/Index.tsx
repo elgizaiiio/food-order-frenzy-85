@@ -95,15 +95,22 @@ const Index = () => {
                 {profileLoading ? (
                   <Skeleton className="h-full w-full rounded-full" />
                 ) : profileImage ? (
-                  <AvatarImage 
-                    src={profileImage} 
-                    alt={firstName}
-                    className="h-full w-full object-cover"
-                  />
+                  <Avatar className="h-full w-full">
+                    <AvatarImage 
+                      src={profileImage} 
+                      alt={firstName}
+                      className="h-full w-full object-cover"
+                    />
+                    <AvatarFallback className="text-white font-bold text-lg">
+                      {firstName.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
                 ) : (
-                  <span className="text-white font-bold text-lg">
-                    {firstName.charAt(0).toUpperCase()}
-                  </span>
+                  <Avatar className="h-full w-full">
+                    <AvatarFallback className="text-white font-bold text-lg bg-transparent">
+                      {firstName.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
                 )}
               </div>
             </Link>

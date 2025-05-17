@@ -70,7 +70,11 @@ const TopBar: React.FC<TopBarProps> = ({
                   </AvatarFallback>
                 </Avatar>
               ) : (
-                <User className="w-5 h-5" />
+                <Avatar className="h-full w-full">
+                  <AvatarFallback className="bg-blue-300 text-blue-800">
+                    <User className="w-5 h-5" />
+                  </AvatarFallback>
+                </Avatar>
               )}
             </div>
             <div className="flex flex-col">
