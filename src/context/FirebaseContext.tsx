@@ -1,7 +1,10 @@
 
 import React, { createContext, useContext, ReactNode } from 'react';
 import { firestore, database, auth, storage } from '@/integrations/firebase/client';
-import { collection, addDoc, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc, query, where } from 'firebase/firestore';
+import { 
+  collection, addDoc, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc, 
+  query, where, DocumentData, QueryConstraint, orderBy as fbOrderBy, limit as fbLimit
+} from 'firebase/firestore';
 import { ref, set, get, child, update, remove } from 'firebase/database';
 import { toast } from 'sonner';
 
@@ -19,6 +22,21 @@ interface FirebaseContextType {
   updateDocument: (collectionName: string, id: string, data: any) => Promise<boolean>;
   deleteDocument: (collectionName: string, id: string) => Promise<boolean>;
   queryDocuments: (collectionName: string, field: string, operator: any, value: any) => Promise<any[]>;
+  
+  // وظائف متقدمة للاستعلام
+  advancedQuery: (
+    collectionName: string, 
+    conditions?: {
+      field: string;
+      operator: "==" | "!=" | "<" | "<=" | ">" | ">=" | "array-contains" | "in" | "array-contains-any" | "not-in";
+      value: any;
+    }[],
+    orderBy?: {
+      field: string;
+      direction?: 'asc' | 'desc';
+    }[],
+    limit?: number
+  ) => Promise<any[]>;
   
   // وظائف Realtime Database
   setData: (path: string, data: any) => Promise<boolean>;
@@ -115,6 +133,49 @@ export function FirebaseProvider({ children }: { children: ReactNode }) {
       return [];
     }
   };
+  
+  // استعلام متقدم مع دعم للشروط المتعددة والترتيب والحد
+  const advancedQuery = async (
+    collectionName: string, 
+    conditions: { field: string; operator: any; value: any }[] = [],
+    orderByOptions: { field: string; direction?: 'asc' | 'desc' }[] = [],
+    limit?: number
+  ): Promise<DocumentData[]> => {
+    try {
+      const queryConstraints: QueryConstraint[] = [];
+      
+      // إضافة الشروط
+      conditions.forEach(condition => {
+        queryConstraints.push(where(condition.field, condition.operator, condition.value));
+      });
+      
+      // إضافة الترتيب
+      orderByOptions.forEach(option => {
+        queryConstraints.push(fbOrderBy(option.field, option.direction || 'asc'));
+      });
+      
+      // إضافة الحد إذا تم تعيينه
+      if (limit) {
+        queryConstraints.push(fbLimit(limit));
+      }
+      
+      // إنشاء استعلام Firebase
+      const q = query(collection(firestore, collectionName), ...queryConstraints);
+      
+      // تنفيذ الاستعلام
+      const querySnapshot = await getDocs(q);
+      const documents: DocumentData[] = [];
+      querySnapshot.forEach((doc) => {
+        documents.push({ id: doc.id, ...doc.data() });
+      });
+      
+      return documents;
+    } catch (error) {
+      console.error("خطأ في الاستعلام المتقدم عن المستندات:", error);
+      toast.error("خطأ في البحث عن البيانات");
+      return [];
+    }
+  };
 
   // وظائف Realtime Database
   const setData = async (path: string, data: any): Promise<boolean> => {
@@ -185,6 +246,7 @@ export function FirebaseProvider({ children }: { children: ReactNode }) {
     updateDocument,
     deleteDocument,
     queryDocuments,
+    advancedQuery,
     
     // وظائف Realtime Database
     setData,

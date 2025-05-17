@@ -14,6 +14,7 @@ const firebaseConfig = {
   storageBucket: "your-project-id.appspot.com",
   messagingSenderId: "xxxxxxxxxxxx",
   appId: "1:xxxxxxxxxxxx:web:xxxxxxxxxxxx",
+  databaseURL: "https://your-project-id-default-rtdb.firebaseio.com" // أضف هذا إذا كنت تستخدم Realtime Database
 };
 
 // تهيئة Firebase
@@ -25,5 +26,8 @@ export const database = getDatabase(firebaseApp);
 export const auth = getAuth(firebaseApp);
 export const storage = getStorage(firebaseApp);
 export const firebase = firebaseApp;
+
+// صادق للتحقق مما إذا كان Firebase متصل بشكل صحيح
+console.log("Firebase initialized:", firebaseApp.name);
 
 export default firebaseApp;

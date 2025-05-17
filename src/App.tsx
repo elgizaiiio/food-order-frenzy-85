@@ -68,7 +68,6 @@ import MarketCategory from "./pages/MarketCategory";
 import MarketCart from "./pages/MarketCart";
 import MarketCheckout from "./pages/MarketCheckout";
 import MarketTracking from "./pages/MarketTracking";
-import { useState } from "react";
 
 // إنشاء كائن QueryClient داخل دالة المكون لتفادي مشكلة القراءة من null
 const App = () => {
