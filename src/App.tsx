@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,7 +11,9 @@ import { AuthProvider } from "@/context/AuthContext";
 import { FirebaseProvider } from "@/context/FirebaseContext";
 import BottomNav from "./components/BottomNav";
 import AuthGuard from "./components/AuthGuard";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import SplashScreen from "./components/SplashScreen";
+import OnboardingScreen from "./pages/OnboardingScreen";
 
 // Delivery Section - إضافة صفحات التوصيل الجديدة
 import DeliveryRequest from "./pages/DeliveryRequest";
@@ -83,6 +84,22 @@ const App = () => {
     },
   }));
 
+  // إضافة حالة لتتبع ما إذا كان يجب عرض شاشة البداية
+  const [showSplash, setShowSplash] = useState(true);
+
+  // إخفاء شاشة البداية بعد مرور وقت معين
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+    }, 3000); // عرض شاشة البداية لمدة 3 ثواني
+    
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (showSplash) {
+    return <SplashScreen />;
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
@@ -142,6 +159,9 @@ const AppContent = () => {
     <>
       <div className="pb-24"> {/* زيادة التباعد السفلي لإفساح مجال أكبر لشريط التنقل الثابت */}
         <Routes>
+          {/* إضافة مسار للشاشة التعريفية */}
+          <Route path="/onboarding" element={<OnboardingScreen />} />
+          
           {/* Authentication Routes - Not Protected */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />

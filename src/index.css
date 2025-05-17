@@ -1,322 +1,181 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
- 
+
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 222.2 47.4% 11.2%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
- 
+    --card-foreground: 222.2 47.4% 11.2%;
+
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
- 
-    --primary: 24 100% 50%;
+    --popover-foreground: 222.2 47.4% 11.2%;
+
+    --primary: 222.1 83.2% 53.3%;
     --primary-foreground: 210 40% 98%;
- 
+
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
- 
+
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
- 
-    --accent: 24 100% 97%;
-    --accent-foreground: 24 70% 45%;
- 
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 24 100% 50%;
- 
+
+    --ring: 222.1 83.2% 53.3%;
+
     --radius: 0.5rem;
-  
-    --talabat-orange: 24 100% 50%;
-    --talabat-orange-dark: 24 100% 45%;
-    --talabat-orange-light: 24 100% 95%;
   }
- 
+
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
- 
+
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
- 
+
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
- 
-    --primary: 24 100% 50%;
-    --primary-foreground: 0 0% 100%;
- 
+
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
- 
+
     --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
- 
-    --accent: 24 70% 30%;
-    --accent-foreground: 24 100% 90%;
- 
+    --muted-foreground: 215 20.2% 65.9%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
- 
+
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 24 70% 50%;
+
+    --ring: 224.3 76.3% 48%;
   }
 }
- 
+
 @layer base {
   * {
     @apply border-border;
   }
   body {
-    @apply bg-gray-50 text-foreground;
-    font-family: 'Tajawal', sans-serif;
-    /* تحسينات للأجهزة المحمولة */
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-    overscroll-behavior-y: none;
-  }
-  
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-bold;
-  }
-
-  /* تعديلات لتحسين إمكانية الوصول على الأجهزة المحمولة */
-  input, button, a, textarea, select {
-    @apply touch-manipulation;
-  }
-
-  /* منع سحب الصور على الهواتف المحمولة */
-  img {
-    -webkit-user-drag: none;
-    user-select: none;
-    -webkit-user-select: none;
+    @apply bg-background text-foreground;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
   }
 }
 
-/* تحسينات على شريط التمرير الأفقي */
-.scroll-container {
-  @apply flex overflow-x-auto gap-3 pb-2 overflow-y-hidden;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-}
+/* إضافة هنا في نهاية ملف index.css الحالي */
 
-.scroll-container > * {
-  scroll-snap-align: start;
-}
-
-/* إخفاء شريط التمرير مع الحفاظ على الوظيفة */
-@layer utilities {
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  
-  .app-header {
-    @apply bg-gradient-to-r from-orange-600 to-orange-500 text-white;
-  }
-  
-  .talabat-button {
-    @apply bg-orange-500 hover:bg-orange-600 text-white transition-colors;
-  }
-  
-  .talabat-card {
-    @apply bg-white rounded-xl shadow-sm hover:shadow-md transition-all;
-  }
-  
-  .category-icon {
-    @apply bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-full p-2 shadow-md;
-  }
-  
-  .restaurant-card {
-    @apply bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all;
-  }
-  
-  .offer-card {
-    @apply rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all;
-  }
-  
-  .mobile-bottom-nav {
-    @apply fixed bottom-0 left-0 right-0 z-50 bg-white shadow-lg border-t border-gray-200;
-  }
-  
-  .bottom-nav-item {
-    @apply flex flex-col items-center justify-center p-2 rounded-lg transition-all;
-  }
-  
-  .bottom-nav-item.active {
-    @apply text-orange-600 bg-orange-50;
-  }
-  
-  .bottom-nav-icon {
-    @apply transition-transform;
-  }
-  
-  .bottom-nav-icon.active {
-    @apply text-orange-600 scale-110;
-  }
-
-  /* حل مشكلة تراكب لوحة المفاتيح على الشاشة */
-  .keyboard-avoid {
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-
-  /* حل لمشكلة التنقل السفلي */
-  .nav-hidden {
-    transform: translateY(100%);
-  }
-
-  /* تحسينات للأزرار الكبيرة على الهواتف */
-  .mobile-touch-target {
-    min-height: 44px;
-    min-width: 44px;
-  }
-
-  /* حل مشكلة notch الآيفون */
-  .ios-notch-padding {
-    padding-top: env(safe-area-inset-top);
-    padding-right: env(safe-area-inset-right);
-    padding-left: env(safe-area-inset-left);
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-}
-
-/* تأثيرات التلاشي */
-.animate-fade-in {
-  animation: fadeIn 0.6s ease-in-out forwards;
-}
-
-.animate-delay-1 {
-  animation-delay: 100ms;
-}
-
-.animate-delay-2 {
-  animation-delay: 200ms;
-}
-
-.animate-delay-3 {
-  animation-delay: 300ms;
-}
-
-.animate-delay-4 {
-  animation-delay: 400ms;
-}
-
+/* رسوم متحركة للشاشة الترحيبية */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
-@keyframes slideIn {
+@keyframes fadeOut {
   from {
-    transform: translateX(20px);
+    opacity: 1;
+  }
+  to {
     opacity: 0;
   }
-  to {
-    transform: translateX(0);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.05);
     opacity: 1;
   }
 }
 
-.animate-slide-in {
-  animation: slideIn 0.4s ease-out forwards;
-}
-
-@keyframes navItemAppear {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
+@keyframes float {
+  0%, 100% {
     transform: translateY(0);
   }
-}
-
-.nav-item-appear {
-  animation: navItemAppear 0.3s ease-out forwards;
-}
-
-/* تحسينات على مكونات طلبات */
-.talabat-header {
-  @apply bg-gradient-to-r from-orange-600 to-orange-500 text-white rounded-b-3xl shadow-lg py-4 px-4;
-}
-
-.talabat-section {
-  @apply bg-white rounded-xl shadow-sm my-3 py-3 px-4;
-}
-
-.talabat-section-title {
-  @apply text-lg font-bold text-gray-800;
-}
-
-.talabat-badge {
-  @apply bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full;
-}
-
-.talabat-rating {
-  @apply flex items-center gap-1 bg-orange-100 text-orange-800 text-xs px-2 py-0.5 rounded-full;
-}
-
-/* Mobile Bottom Bar */
-.mobile-bottom-bar {
-  @apply fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2 px-4 flex justify-around items-center;
-}
-
-.mobile-bottom-bar-item {
-  @apply flex flex-col items-center text-gray-500 hover:text-orange-500;
-}
-
-.mobile-bottom-bar-item.active {
-  @apply text-orange-500;
-}
-
-/* تحسينات خاصة بالهواتف المحمولة */
-@media (max-width: 768px) {
-  /* تكبير أهداف اللمس */
-  .mobile-button {
-    @apply py-3 px-4;
-    min-height: 48px;
-  }
-
-  /* زيادة حجم الخط لتحسين القراءة على الأجهزة الصغيرة */
-  .mobile-text-larger {
-    font-size: 110%;
+  50% {
+    transform: translateY(-10px);
   }
 }
 
-/* تحسينات للمزيد من المساحة للعناصر القابلة للنقر */
-button, 
-[role="button"], 
-.clickable {
-  @apply cursor-pointer touch-manipulation;
+/* تطبيق الرسوم المتحركة */
+.fade-in {
+  animation: fadeIn 0.5s ease forwards;
 }
 
-/* تحسين حالة الضغط على عناصر التطبيق */
-.mobile-tap-state {
-  @apply active:opacity-70 transition-opacity;
+.fade-out {
+  animation: fadeOut 0.3s ease forwards;
 }
 
-/* تحسينات لشريط التنقل السفلي مع دعم الإيماءات اللمسية */
-#mobile-bottom-nav {
-  -webkit-user-select: none;
-  user-select: none;
-  overscroll-behavior: none;
+.pulse {
+  animation: pulse 2s infinite ease-in-out;
+}
+
+.float {
+  animation: float 3s infinite ease-in-out;
+}
+
+/* تحسين التأثيرات البصرية للكارت والأزرار */
+.card-glow {
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.card-glow:hover {
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+/* تحسين الزر الرئيسي */
+.primary-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.primary-button::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to bottom right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(45deg);
+  animation: shine 3s infinite;
+}
+
+@keyframes shine {
+  0% {
+    transform: translateX(-100%) rotate(45deg);
+  }
+  20%, 100% {
+    transform: translateX(100%) rotate(45deg);
+  }
 }

@@ -31,6 +31,22 @@ const queryClient = new QueryClient({
   },
 });
 
+// معالجة التحميل الأولي وإزالة شاشة التحميل المؤقتة في HTML
+document.addEventListener('DOMContentLoaded', () => {
+  // إخفاء شاشة التحميل الأولية وإظهار التطبيق
+  const splashLoader = document.querySelector('.loading-container');
+  if (splashLoader && splashLoader.parentNode) {
+    setTimeout(() => {
+      splashLoader.classList.add('fade-out');
+      setTimeout(() => {
+        if (splashLoader.parentNode) {
+          splashLoader.parentNode.removeChild(splashLoader);
+        }
+      }, 300);
+    }, 200);
+  }
+});
+
 // استخدام createRoot بدلاً من ReactDOM.render للأداء الأفضل
 createRoot(document.getElementById("root")!).render(
   <BrowserRouter>
