@@ -85,7 +85,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (data && data.items) {
           try {
             // تحويل JSON إلى كائنات
-            const cartItems = JSON.parse(data.items);
+            const cartItems = JSON.parse(data.items as string);
             setItems(Array.isArray(cartItems) ? cartItems : []);
           } catch (error) {
             console.error('خطأ في تحليل عناصر السلة:', error);

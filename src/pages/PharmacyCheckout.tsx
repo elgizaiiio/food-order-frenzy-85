@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
@@ -17,7 +16,7 @@ const PharmacyCheckoutContent: React.FC = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { items, totalPrice, clearCart } = usePharmacyCart();
-  const { selectedAddressId, addresses, paymentMethod, isAddingNewAddress, setIsAddingNewAddress } = useCheckout();
+  const { selectedAddressId, addresses, paymentMethod, isAddingNewAddress, setIsAddingNewAddress, setPaymentMethod } = useCheckout();
   const [isProcessing, setIsProcessing] = useState(false);
 
   // رسوم التوصيل والإجمالي
@@ -101,13 +100,20 @@ const PharmacyCheckoutContent: React.FC = () => {
                 {/* قسم العنوان */}
                 <div className="space-y-2">
                   <h2 className="text-lg font-bold text-blue-800">عنوان التوصيل</h2>
-                  <AddressSelector onAddNewClick={() => setIsAddingNewAddress(true)} />
+                  <AddressSelector 
+                    onAddNewClick={() => setIsAddingNewAddress(true)} 
+                    selectedAddressId={selectedAddressId}
+                    onAddressSelect={(id) => addresses.find(addr => addr.id === id)}
+                  />
                 </div>
 
                 {/* قسم طريقة الدفع */}
                 <div className="space-y-2">
                   <h2 className="text-lg font-bold text-blue-800">طريقة الدفع</h2>
-                  <PaymentMethods />
+                  <PaymentMethods 
+                    selectedPaymentMethod={paymentMethod} 
+                    onPaymentMethodSelect={setPaymentMethod} 
+                  />
                 </div>
 
                 {/* ملخص الطلب */}

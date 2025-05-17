@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Clock, ShoppingBag } from 'lucide-react';
@@ -12,6 +11,7 @@ import PaymentMethods from '@/components/PaymentMethods';
 import { submitOrder, getDeliveryEstimate } from '@/api/checkout';
 import { useCart } from '@/context/CartContext';
 import { useUserAddresses, useUserPaymentMethods } from '@/hooks/useUserData';
+import { UserAddress } from '@/services/userService';
 
 // مكون ملخص الطلب
 const OrderSummary: React.FC<{
@@ -219,7 +219,7 @@ const UnifiedCheckout: React.FC = () => {
   
   return (
     <div className="min-h-screen bg-blue-50" dir="rtl">
-      <div className="max-w-md mx-auto bg-white pb-28"> {/* زيادة التباعد السفلي لمراعاة الشريط السفلي */}
+      <div className="max-w-md mx-auto bg-white pb-28">
         {/* الرأس */}
         <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-md z-20">
           <div className="flex items-center justify-between p-4">
@@ -240,8 +240,8 @@ const UnifiedCheckout: React.FC = () => {
                 <NewAddressForm onCancel={handleCancelAddAddress} />
               ) : (
                 <AddressSelector 
-                  onAddNewClick={handleAddNewAddress} 
-                  addresses={addresses || []}
+                  onAddNewClick={handleAddNewAddress}
+                  addresses={addresses as UserAddress[]} 
                   selectedAddressId={selectedAddressId}
                   onAddressSelect={handleAddressSelect}
                 />
