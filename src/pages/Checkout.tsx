@@ -4,7 +4,7 @@ import { ArrowLeft, Clock, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { toast } from "sonner";
+import { toast } from "@/hooks/use-toast";
 import { CheckoutProvider, useCheckout } from '@/context/CheckoutContext';
 import AddressSelector from '@/components/AddressSelector';
 import NewAddressForm from '@/components/NewAddressForm';

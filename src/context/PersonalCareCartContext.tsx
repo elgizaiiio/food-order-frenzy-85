@@ -1,12 +1,12 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { toast } from 'sonner';
+import { toast } from '@/hooks/use-toast';
 
 export interface PersonalCareProduct {
-  id: string;  // تغيير من number إلى string
+  id: string;
   name: string;
   price: number;
-  image?: string;  // جعلها اختيارية
+  image?: string;
   gender?: string;
   description?: string;
   image_url?: string;
@@ -21,9 +21,9 @@ interface CartItem extends PersonalCareProduct {
 interface PersonalCareCartContextType {
   items: CartItem[];
   addToCart: (product: PersonalCareProduct) => void;
-  removeFromCart: (productId: string) => void;  // تغيير من number إلى string
-  increaseQuantity: (productId: string) => void;  // تغيير من number إلى string
-  decreaseQuantity: (productId: string) => void;  // تغيير من number إلى string
+  removeFromCart: (productId: string) => void;
+  increaseQuantity: (productId: string) => void;
+  decreaseQuantity: (productId: string) => void;
   clearCart: () => void;
   itemCount: number;
   totalPrice: number;
@@ -73,16 +73,16 @@ export const PersonalCareCartProvider: React.FC<{ children: React.ReactNode }> =
         const updatedItems = prevItems.map(item => 
           item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
         );
-        toast(`تمت زيادة كمية ${product.name} في سلة التسوق`, {
-          position: "top-center",
-          className: "bg-blue-600 text-white border-blue-700"
+        toast({
+          title: "تمت الإضافة",
+          description: `تمت زيادة كمية ${product.name} في سلة التسوق`
         });
         return updatedItems;
       } else {
         // إضافة منتج جديد بكمية 1
-        toast(`تمت إضافة ${product.name} إلى سلة التسوق`, {
-          position: "top-center",
-          className: "bg-blue-600 text-white border-blue-700"
+        toast({
+          title: "تمت الإضافة",
+          description: `تمت إضافة ${product.name} إلى سلة التسوق`
         });
         return [...prevItems, { ...product, quantity: 1 }];
       }

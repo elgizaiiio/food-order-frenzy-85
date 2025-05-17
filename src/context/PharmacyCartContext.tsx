@@ -1,7 +1,18 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { PharmacyProduct } from '@/types/pharmacy';
-import { toast } from 'sonner';
+import { toast } from '@/hooks/use-toast';
+
+export interface PharmacyProduct {
+  id: string;  // تغيير من number إلى string
+  name: string;
+  price: number;
+  image?: string;  // جعلها اختيارية
+  gender?: string;
+  description?: string;
+  image_url?: string;
+  stock?: number;
+  inStock?: boolean;
+}
 
 interface CartItem extends PharmacyProduct {
   quantity: number;
@@ -10,9 +21,9 @@ interface CartItem extends PharmacyProduct {
 interface PharmacyCartContextType {
   items: CartItem[];
   addToCart: (product: PharmacyProduct) => void;
-  removeFromCart: (productId: string) => void;
-  increaseQuantity: (productId: string) => void;
-  decreaseQuantity: (productId: string) => void;
+  removeFromCart: (productId: string) => void;  // تغيير من number إلى string
+  increaseQuantity: (productId: string) => void;  // تغيير من number إلى string
+  decreaseQuantity: (productId: string) => void;  // تغيير من number إلى string
   clearCart: () => void;
   itemCount: number;
   totalPrice: number;
@@ -62,18 +73,18 @@ export const PharmacyCartProvider: React.FC<{ children: React.ReactNode }> = ({ 
         const updatedItems = prevItems.map(item => 
           item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
         );
-        toast(`تمت زيادة كمية ${product.name} في سلة التسوق`, {
-          position: "top-center",
-          className: "bg-blue-600 text-white border-blue-700"
+        toast({
+          title: "تمت الإضافة",
+          description: `تمت زيادة كمية ${product.name} في سلة التسوق`
         });
         return updatedItems;
       } else {
         // إضافة منتج جديد بكمية 1
-        toast(`تمت إضافة ${product.name} إلى سلة التسوق`, {
-          position: "top-center",
-          className: "bg-blue-600 text-white border-blue-700"
+        toast({
+          title: "تمت الإضافة",
+          description: `تمت إضافة ${product.name} إلى سلة التسوق`
         });
-        return [...prevItems, { ...product, quantity: 1, image: product.image_url }];
+        return [...prevItems, { ...product, quantity: 1 }];
       }
     });
   };

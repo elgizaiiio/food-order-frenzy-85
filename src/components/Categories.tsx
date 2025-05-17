@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -10,11 +9,10 @@ import {
 } from 'lucide-react';
 import { useHomeCategories } from '@/hooks/useHomeData';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/use-toast';
 
 const Categories: React.FC = () => {
   const { data: categories, isLoading, error } = useHomeCategories();
-  const { toast } = useToast();
 
   // رسائل الخطأ
   if (error) {

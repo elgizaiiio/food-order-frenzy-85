@@ -1,7 +1,6 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Product } from '@/api/market';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/use-toast';
 
 interface CartItem {
   id: number;
@@ -36,8 +35,7 @@ export const useMarketCart = () => {
 
 export const MarketCartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);
-  const { toast } = useToast();
-
+  
   // حساب إجمالي العناصر والسعر
   const itemCount = items.reduce((total, item) => total + item.quantity, 0);
   const totalPrice = items.reduce((total, item) => total + (item.price * item.quantity), 0);

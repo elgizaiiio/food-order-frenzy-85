@@ -21,8 +21,9 @@ export function useRestaurantCart(restaurantId: string | null = null) {
   useEffect(() => {
     const fetchCart = async () => {
       try {
+        setLoading(true);
         const savedCart = await loadCart('restaurant');
-        if (savedCart && savedCart.length > 0) {
+        if (savedCart && Array.isArray(savedCart) && savedCart.length > 0) {
           setItems(savedCart as RestaurantCartItem[]);
         }
       } catch (error) {
