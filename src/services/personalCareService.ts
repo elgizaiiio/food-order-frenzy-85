@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { PersonalCareProduct } from "@/types/personalCare";
 
@@ -105,20 +104,19 @@ export async function fetchProductCategories(): Promise<string[]> {
     
     if (error) throw error;
     
-    // Explicitly type and extract unique categories to avoid type instantiation issues
-    const categories: string[] = [];
+    // Create a simple array to store unique category IDs
+    const uniqueCategories: string[] = [];
     
-    // Process each item individually to ensure proper typing
-    data.forEach(item => {
-      if (item.category_id) {
-        const category = String(item.category_id);
-        if (!categories.includes(category)) {
-          categories.push(category);
+    // Iterate through the data and collect unique category IDs
+    if (data) {
+      data.forEach(item => {
+        if (item.category_id && !uniqueCategories.includes(item.category_id)) {
+          uniqueCategories.push(String(item.category_id));
         }
-      }
-    });
+      });
+    }
     
-    return categories;
+    return uniqueCategories;
   } catch (error) {
     console.error('Error fetching product categories:', error);
     throw error;
