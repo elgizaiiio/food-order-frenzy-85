@@ -1,4 +1,3 @@
-
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { 
   fetchUserAddresses, 
@@ -12,7 +11,7 @@ import {
   UserAddress,
   PaymentMethod
 } from '@/services/userService';
-import { getUserProfile, updateUserProfile, UserProfile } from '@/services/userProfileService';
+import { getUserProfile, updateUserProfile, UserProfile, clearProfileCache } from '@/services/userProfileService';
 import { addProfileImage } from '@/services/storageService';
 import { useAuth } from '@/context/AuthContext';
 
@@ -20,6 +19,7 @@ import { useAuth } from '@/context/AuthContext';
 const USER_DATA_STALE_TIME = 5 * 60 * 1000; // 5 minutes
 const USER_DATA_GC_TIME = 10 * 60 * 1000; // 10 minutes
 
+// تنفيذ نظام متطور للتخزين المؤقت لتحسين الأداء
 export function useUserAddresses() {
   const { user } = useAuth();
   
@@ -29,7 +29,7 @@ export function useUserAddresses() {
     staleTime: USER_DATA_STALE_TIME,
     gcTime: USER_DATA_GC_TIME,
     enabled: !!user?.id,
-    // Optimize for better user experience
+    // تحسين تجربة المستخدم
     retry: 1,
     refetchOnWindowFocus: false,
   });
@@ -128,11 +128,13 @@ export function useUserProfile() {
   return useQuery({
     queryKey: ['user-profile', user?.id],
     queryFn: getUserProfile,
-    staleTime: USER_DATA_STALE_TIME,
+    staleTime: USER_DATA_STALE_TIME / 2, // نصف الوقت للتأكد من تحديث البيانات
     gcTime: USER_DATA_GC_TIME,
     enabled: !!user?.id,
     retry: 2,
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: false, 
+    // تعطيل التحميل التلقائي عند تفعيل النافذة لمنع التأثير على الأداء
+    refetchOnMount: true, // تحديث البيانات عند تحميل المكون
     meta: {
       onError: (error: any) => {
         console.error('خطأ في استرجاع بيانات الملف الشخصي:', error);
@@ -149,35 +151,49 @@ export function useUpdateUserProfile() {
     mutationFn: updateUserProfile,
     onSuccess: (updatedProfile) => {
       console.log('تم تحديث الملف الشخصي بنجاح:', updatedProfile);
+      
+      // مسح الكاش لضمان تحديث البيانات
+      clearProfileCache();
+      
+      // تحديث البيانات المخزنة مؤقتاً
       queryClient.invalidateQueries({ queryKey: ['user-profile', user?.id] });
+      
+      // تحديث جميع الاستعلامات المتعلقة بالمستخدم
+      queryClient.invalidateQueries({ 
+        predicate: (query) => (query.queryKey[0] as string).startsWith('user-')
+      });
     },
-    // Show optimistic updates to improve perceived performance
+    // إظهار التحديثات المتفائلة لتحسين الأداء المتصور
     onMutate: async (newData) => {
-      // Cancel any outgoing refetches
+      // إلغاء أي استعلامات خارجية
       await queryClient.cancelQueries({ queryKey: ['user-profile', user?.id] });
       
-      // Snapshot the previous value
+      // لقطة للقيمة السابقة
       const previousProfile = queryClient.getQueryData(['user-profile', user?.id]);
       
-      // Optimistically update
+      // تحديث متفائل
       queryClient.setQueryData(['user-profile', user?.id], (old: any) => ({
         ...old,
         ...newData
       }));
       
-      // Return a context object with the snapshotted value
+      // إرجاع كائن السياق مع القيمة التي تم التقاطها
       return { previousProfile };
     },
     onError: (err, newProfile, context) => {
       console.error('خطأ في تحديث الملف الشخصي:', err);
       if (context?.previousProfile) {
-        // If there was an error, roll back
+        // إذا كان هناك خطأ، قم بالتراجع
         queryClient.setQueryData(
           ['user-profile', user?.id],
           context.previousProfile
         );
       }
     },
+    onSettled: () => {
+      // إعادة طلب البيانات المحدثة بعد نجاح أو فشل التحديث
+      queryClient.invalidateQueries({ queryKey: ['user-profile', user?.id] });
+    }
   });
 }
 
@@ -192,6 +208,9 @@ export function useUploadProfileImage() {
     mutationFn: addProfileImage,
     onSuccess: (data) => {
       console.log('تم رفع الصورة بنجاح، تحديث ذاكرة التخزين المؤقت', data);
+      
+      // مسح الكاش لضمان تحديث البيانات
+      clearProfileCache();
       
       // تحديث ذاكرة التخزين المؤقت للملف الشخصي
       queryClient.setQueryData(['user-profile', user?.id], (oldData: UserProfile | undefined) => {

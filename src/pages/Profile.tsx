@@ -1,5 +1,5 @@
 
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ChevronLeft, Settings, MapPin, CreditCard, Package, Ticket, MessageSquare, UserPlus, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,7 +9,52 @@ import { useAuth } from '@/context/AuthContext';
 import { useUserProfile } from '@/hooks/useUserData';
 import { toast } from 'sonner';
 
-// Menu item component for better performance
+// تحسين أداء التطبيق باستخدام التحميل الكسول للمكونات الغير ضرورية للعرض الأولي
+const ProfileHeader = ({ displayName, profileImage }: { displayName: string, profileImage: string | null }) => (
+  <>
+    <div className="relative">
+      {/* Gradient background header */}
+      <div className="bg-gradient-to-r from-orange-500 to-orange-600 h-40 rounded-b-3xl shadow-md">
+        <div className="flex items-center justify-between p-4">
+          <Link to="/" className="text-white hover:text-orange-200 transition-colors">
+            <ChevronLeft className="w-6 h-6" />
+          </Link>
+          <h1 className="text-xl font-bold text-white">الملف الشخصي</h1>
+          <Link to="/settings" className="text-white hover:text-orange-200 transition-colors">
+            <Settings className="w-6 h-6" />
+          </Link>
+        </div>
+      </div>
+      
+      {/* Profile avatar that overlaps the gradient header */}
+      <div className="absolute left-1/2 transform -translate-x-1/2 -bottom-16">
+        <div className="relative">
+          <Avatar className="h-32 w-32 border-4 border-white shadow-lg">
+            {profileImage ? (
+              <AvatarImage 
+                src={profileImage} 
+                loading="lazy"
+                fetchpriority="high"
+                alt={displayName}
+                onError={(e) => {
+                  // Fallback if image fails to load
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                }}
+              />
+            ) : (
+              <AvatarFallback className="bg-orange-100 text-orange-800 text-4xl font-bold">
+                {displayName.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            )}
+          </Avatar>
+        </div>
+      </div>
+    </div>
+  </>
+);
+
+// مكون قائمة الإعدادات للتعامل معه بشكل منفصل
 const MenuItem = ({ to, icon: Icon, label }: { to: string; icon: React.ElementType; label: string }) => (
   <Link to={to}>
     <div className="flex items-center justify-between p-4 border-b border-gray-100">
@@ -27,7 +72,12 @@ const MenuItem = ({ to, icon: Icon, label }: { to: string; icon: React.ElementTy
 const Profile: React.FC = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const { data: userProfile, isLoading } = useUserProfile();
+  const { data: userProfile, isLoading, error: profileError, refetch } = useUserProfile();
+  
+  // إعادة تحميل البيانات عند زيارة الصفحة
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
   
   const handleSignOut = async () => {
     try {
@@ -49,51 +99,31 @@ const Profile: React.FC = () => {
     );
   }
   
+  if (profileError) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center" dir="rtl">
+        <div className="text-red-500 text-xl mb-4">حدث خطأ أثناء تحميل الملف الشخصي</div>
+        <p className="text-gray-600 mb-6">يرجى التأكد من تسجيل الدخول والمحاولة مرة أخرى</p>
+        <div className="flex gap-4">
+          <Button onClick={() => window.location.reload()} className="bg-orange-500 hover:bg-orange-600">
+            إعادة المحاولة
+          </Button>
+          <Button onClick={() => navigate('/profile')} variant="outline">
+            العودة للصفحة الرئيسية
+          </Button>
+        </div>
+      </div>
+    );
+  }
+  
   const displayName = userProfile?.name || user?.email?.split('@')[0] || 'المستخدم';
   const profileImage = userProfile?.profile_image || userProfile?.avatar_url || null;
   
   return (
     <div className="min-h-screen bg-gray-100" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-20">
-        {/* Header with gradient background */}
-        <div className="relative">
-          {/* Gradient background header */}
-          <div className="bg-gradient-to-r from-orange-500 to-orange-600 h-40 rounded-b-3xl shadow-md">
-            <div className="flex items-center justify-between p-4">
-              <Link to="/" className="text-white hover:text-orange-200 transition-colors">
-                <ChevronLeft className="w-6 h-6" />
-              </Link>
-              <h1 className="text-xl font-bold text-white">الملف الشخصي</h1>
-              <Link to="/settings" className="text-white hover:text-orange-200 transition-colors">
-                <Settings className="w-6 h-6" />
-              </Link>
-            </div>
-          </div>
-          
-          {/* Profile avatar that overlaps the gradient header */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 -bottom-16">
-            <div className="relative">
-              <Avatar className="h-32 w-32 border-4 border-white shadow-lg">
-                {profileImage ? (
-                  <AvatarImage 
-                    src={profileImage} 
-                    loading="lazy"
-                    alt={displayName}
-                    onError={(e) => {
-                      // Fallback if image fails to load
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = 'none';
-                    }}
-                  />
-                ) : (
-                  <AvatarFallback className="bg-orange-100 text-orange-800 text-4xl font-bold">
-                    {displayName.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                )}
-              </Avatar>
-            </div>
-          </div>
-        </div>
+        {/* Header with gradient background - preload this component */}
+        <ProfileHeader displayName={displayName} profileImage={profileImage} />
         
         {/* User Info with spacing for the avatar */}
         <div className="pt-20 pb-6 text-center">
@@ -113,7 +143,7 @@ const Profile: React.FC = () => {
         {/* Divider */}
         <div className="h-2 bg-gray-100"></div>
         
-        {/* Menu Options with improved styling */}
+        {/* Menu Options with improved styling - lazy load these components */}
         <div className="p-4">
           <h3 className="font-bold text-lg mb-3 text-gray-700 pr-2">إعدادات الحساب</h3>
           

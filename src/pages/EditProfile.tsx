@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ChevronLeft, Camera } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,6 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useAuth } from '@/context/AuthContext';
 import { useUserProfile, useUpdateUserProfile, useUploadProfileImage } from '@/hooks/useUserData';
-import { useLazyImage } from '@/hooks/useLazyImage';
 import { useUser } from '@/context/UserContext';
 
 const EditProfile: React.FC = () => {
@@ -29,29 +28,30 @@ const EditProfile: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imageChanged, setImageChanged] = useState(false);
   
-  // تحديث البيانات عند تحميلها
-  useEffect(() => {
-    if (userProfile) {
+  // تحسين التحديث وتجنب إعادة الرسم غير الضرورية
+  const updateFormData = useCallback((profile: any) => {
+    if (profile) {
       setFormData(prev => ({
         ...prev,
-        name: userProfile.name || '',
-        phone: userProfile.phone || '',
+        name: profile.name || '',
+        phone: profile.phone || '',
       }));
       
       // تعيين صورة الملف الشخصي إذا كانت موجودة
-      if (userProfile.profile_image) {
-        setImagePreview(userProfile.profile_image);
-      } else if (userProfile.avatar_url) {
-        setImagePreview(userProfile.avatar_url);
+      if (profile.profile_image) {
+        setImagePreview(profile.profile_image);
+      } else if (profile.avatar_url) {
+        setImagePreview(profile.avatar_url);
       }
     }
-  }, [userProfile]);
-
-  // Use lazy loading for profile image preview
-  const { imageSrc: profileImageSrc } = useLazyImage({
-    src: imagePreview,
-    placeholder: ''
-  });
+  }, []);
+  
+  // تحديث البيانات عند تحميلها
+  useEffect(() => {
+    if (userProfile) {
+      updateFormData(userProfile);
+    }
+  }, [userProfile, updateFormData]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -60,47 +60,47 @@ const EditProfile: React.FC = () => {
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      // Validate file type
-      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-      if (!allowedTypes.includes(file.type)) {
-        toast.error("صيغة الملف غير مدعومة. الرجاء اختيار صورة بصيغة JPEG أو PNG أو GIF أو WEBP");
-        return;
-      }
-      
-      // Validate file size before processing
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
-        toast.error("حجم الصورة كبير جداً. الرجاء اختيار صورة أقل من 5 ميجابايت");
-        return;
-      }
+    if (!file) return;
+    
+    // التحقق من نوع الملف
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("صيغة الملف غير مدعومة. الرجاء اختيار صورة بصيغة JPEG أو PNG أو GIF أو WEBP");
+      return;
+    }
+    
+    // التحقق من حجم الملف قبل المعالجة
+    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      toast.error("حجم الصورة كبير جداً. الرجاء اختيار صورة أقل من 5 ميجابايت");
+      return;
+    }
 
-      try {
-        // عرض الصورة مؤقتاً قبل الرفع للتحسين من تجربة المستخدم
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setImagePreview(reader.result as string);
-          setImageChanged(true);
-        };
-        reader.readAsDataURL(file);
-        
-        // عرض رسالة التحميل
-        const uploadToast = toast.loading("جاري رفع الصورة...");
-        
-        // رفع الصورة إلى السيرفر
-        const result = await uploadImage.mutateAsync(file);
-        
-        toast.dismiss(uploadToast);
-        toast.success("تم رفع الصورة بنجاح");
-        
-        // تحديث الصورة في الواجهة
-        setImagePreview(result.image_url);
+    try {
+      // معاينة الصورة فوراً لتحسين تجربة المستخدم
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
         setImageChanged(true);
-        
-        console.log('تم تحديث صورة الملف الشخصي بنجاح:', result.image_url);
-      } catch (error: any) {
-        console.error('خطأ في رفع الصورة:', error);
-        toast.error(`فشل في رفع الصورة: ${error.message || 'خطأ غير معروف'}`);
-      }
+      };
+      reader.readAsDataURL(file);
+      
+      // عرض رسالة التحميل
+      const uploadToast = toast.loading("جاري رفع الصورة...");
+      
+      // رفع الصورة إلى السيرفر
+      const result = await uploadImage.mutateAsync(file);
+      
+      toast.dismiss(uploadToast);
+      toast.success("تم رفع الصورة بنجاح");
+      
+      // تحديث الصورة في الواجهة
+      setImagePreview(result.image_url);
+      setImageChanged(true);
+      
+      console.log('تم تحديث صورة الملف الشخصي بنجاح:', result.image_url);
+    } catch (error: any) {
+      console.error('خطأ في رفع الصورة:', error);
+      toast.error(`فشل في رفع الصورة: ${error.message || 'خطأ غير معروف'}`);
     }
   };
 
@@ -205,10 +205,12 @@ const EditProfile: React.FC = () => {
             <div className="flex flex-col items-center mb-8">
               <div className="relative mb-4">
                 <Avatar className="w-24 h-24 border-4 border-white shadow-lg">
-                  {profileImageSrc ? (
+                  {imagePreview ? (
                     <AvatarImage 
-                      src={profileImageSrc} 
+                      src={imagePreview} 
                       alt={formData.name} 
+                      loading="eager"
+                      fetchpriority="high"
                     />
                   ) : (
                     <AvatarFallback className="bg-orange-100 text-orange-800 text-2xl">

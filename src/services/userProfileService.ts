@@ -15,14 +15,27 @@ export interface UserProfile {
   profile_image?: string;
 }
 
+// كاش للملف الشخصي لتسريع تحميل البيانات
+let profileCache: UserProfile | null = null;
+let lastFetchTime = 0;
+const CACHE_TTL = 60000; // مدة صلاحية الكاش - دقيقة واحدة
+
 /**
  * الحصول على معلومات الملف الشخصي للمستخدم الحالي
  * يستخدم الملف الشخصي الموجود أو ينشئ ملفًا شخصيًا جديدًا إذا لم يكن موجودًا
  */
 export async function getUserProfile(): Promise<UserProfile> {
   try {
+    const now = Date.now();
     const { data: { user } } = await supabase.auth.getUser();
+    
     if (!user) throw new Error('يجب تسجيل الدخول أولاً');
+    
+    // إذا كان الكاش موجود وحديث، استخدمه
+    if (profileCache && lastFetchTime > now - CACHE_TTL && profileCache.id === user.id) {
+      console.log("استخدام الملف الشخصي من الكاش:", profileCache.id);
+      return profileCache;
+    }
     
     console.log("جلب ملف المستخدم:", user.id);
     
@@ -36,18 +49,21 @@ export async function getUserProfile(): Promise<UserProfile> {
     if (error) {
       console.error('خطأ في جلب الملف الشخصي:', error);
       if (error.code === '42501') { // خطأ في سياسة الأمان RLS
-        return {
+        const basicProfile = {
           id: user.id,
           email: user.email,
           name: user.user_metadata?.name || user.email?.split('@')[0] || '',
           username: user.email?.split('@')[0] || ''
         };
+        
+        // تحديث الكاش
+        profileCache = basicProfile;
+        lastFetchTime = now;
+        
+        return basicProfile;
       }
       throw error;
     }
-    
-    // الحصول على صورة الملف الشخصي النشطة
-    const activeProfileImage = await getActiveProfileImage();
     
     // إذا لم يكن المستخدم موجودًا، نعيد معلومات أساسية
     if (!data) {
@@ -56,22 +72,43 @@ export async function getUserProfile(): Promise<UserProfile> {
         email: user.email,
         name: user.user_metadata?.name || user.email?.split('@')[0] || '',
         username: user.email?.split('@')[0] || '',
-        profile_image: activeProfileImage || undefined
       };
       
       console.log("لم يتم العثور على ملف شخصي، استخدام ملف أساسي:", basicProfile);
+      
+      // تحديث الكاش
+      profileCache = basicProfile;
+      lastFetchTime = now;
+      
       return basicProfile;
     }
     
-    // إضافة صورة الملف الشخصي النشطة إلى البيانات المسترجعة
-    return {
+    // تحميل صورة الملف الشخصي بشكل منفصل ومتوازي لتسريع التحميل
+    const activeProfileImage = await getActiveProfileImage();
+    
+    const profile = {
       ...data,
       profile_image: activeProfileImage || data.profile_image || data.avatar_url
     };
+    
+    // تحديث الكاش
+    profileCache = profile;
+    lastFetchTime = now;
+    
+    return profile;
   } catch (error) {
     console.error('خطأ في جلب معلومات الملف الشخصي:', error);
     throw error;
   }
+}
+
+/**
+ * مسح الكاش للتأكد من تحديث البيانات
+ */
+export function clearProfileCache() {
+  profileCache = null;
+  lastFetchTime = 0;
+  console.log("تم مسح كاش الملف الشخصي");
 }
 
 /**
@@ -135,6 +172,10 @@ export async function updateUserProfile(updates: Partial<UserProfile>): Promise<
       }
       
       console.log("تم إنشاء ملف مستخدم جديد:", newUser);
+      
+      // مسح الكاش بعد التحديث
+      clearProfileCache();
+      
       return newUser;
     }
     
@@ -152,6 +193,10 @@ export async function updateUserProfile(updates: Partial<UserProfile>): Promise<
     }
     
     console.log("تم تحديث ملف المستخدم:", updatedUser);
+    
+    // مسح الكاش بعد التحديث
+    clearProfileCache();
+    
     return updatedUser;
   } catch (error) {
     console.error('خطأ في تحديث معلومات الملف الشخصي:', error);
