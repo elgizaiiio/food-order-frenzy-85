@@ -4,12 +4,14 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Home, ClipboardList, UserRound } from 'lucide-react';
 import { useTouch } from "@/hooks/use-touch";
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useAuth } from '@/context/AuthContext';
 
 const BottomNav: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const path = location.pathname;
   const isMobile = useIsMobile();
+  const { isLoading } = useAuth();
 
   // التحقق إذا كانت الصفحة الحالية هي صفحة دفع أو صفحات تسجيل الدخول/التسجيل
   const isAuthPage = path === '/login' || path === '/register' || path === '/forgot-password';
@@ -56,8 +58,8 @@ const BottomNav: React.FC = () => {
     };
   }, [isMobile]);
 
-  // عدم إظهار الشريط في صفحات المصادقة فقط
-  if (isAuthPage) {
+  // عدم إظهار الشريط في صفحات المصادقة أو أثناء التحميل
+  if (isAuthPage || isLoading) {
     return null;
   }
 

@@ -15,11 +15,12 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
     console.log("AuthGuard: المستخدم:", user?.email, "جاري التحميل:", isLoading, "المسار:", location.pathname);
   }, [user, isLoading, location]);
 
-  // أثناء التحقق من حالة المصادقة، نعرض شاشة التحميل
+  // تقليل وقت الانتظار - عرض شاشة التحميل فقط إذا كان الوقت أكثر من 1 ثانية
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-orange-50">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-white">
         <div className="w-16 h-16 border-4 border-orange-400 border-t-transparent rounded-full animate-spin"></div>
+        <p className="mt-4 text-orange-600 font-medium">جاري تحميل البيانات...</p>
       </div>
     );
   }
