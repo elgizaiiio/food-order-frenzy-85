@@ -16,7 +16,8 @@ export default defineConfig(({ mode }) => ({
     react({
       jsxImportSource: 'react',
       // تحسين عملية الترجمة والتجميع
-      refresh: mode === 'development' // Use built-in refresh option instead of plugin
+      // Use development mode for HMR
+      development: mode === 'development'
     }),
     mode === 'development' &&
     componentTagger(),
