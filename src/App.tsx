@@ -52,7 +52,6 @@ const PaymentMethods = lazy(() => import("./pages/PaymentMethods"));
 const AddPaymentMethod = lazy(() => import("./pages/AddPaymentMethod"));
 const Orders = lazy(() => import("./pages/Orders"));
 const Coupons = lazy(() => import("./pages/Coupons"));
-const About = lazy(() => import("./pages/About"));
 const ChatSupport = lazy(() => import("./pages/ChatSupport"));
 const InviteFriends = lazy(() => import("./pages/InviteFriends"));
 const DamBro = lazy(() => import("./pages/DamBro"));
@@ -105,9 +104,13 @@ const App = () => {
         <Toaster />
         <Sonner />
         {showSplash ? (
-          <Suspense fallback={<LoadingFallback />}>
-            <SplashScreen />
-          </Suspense>
+          <Routes>
+            <Route path="*" element={
+              <Suspense fallback={<LoadingFallback />}>
+                <SplashScreen setShowSplash={setShowSplash} />
+              </Suspense>
+            } />
+          </Routes>
         ) : (
           <AppContent />
         )}
