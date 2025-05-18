@@ -95,21 +95,16 @@ export function useViewport(): ViewportSize {
       };
     } else {
       // التراجع للطريقة التقليدية
-      // تأكد من أن window موجود قبل إضافة أحداث المستمع
-      if (typeof window !== 'undefined') {
-        window.addEventListener('resize', updateViewport, { passive: true });
-        window.addEventListener('orientationchange', () => {
-          setTimeout(updateViewport, 100);
-        });
-        
-        return () => {
-          if (timeoutId) window.clearTimeout(timeoutId);
-          window.removeEventListener('resize', updateViewport);
-          window.removeEventListener('orientationchange', updateViewport);
-        };
-      }
-      // إضافة return فارغ لتجنب أخطاء TypeScript
-      return undefined;
+      window.addEventListener('resize', updateViewport, { passive: true });
+      window.addEventListener('orientationchange', () => {
+        setTimeout(updateViewport, 100);
+      });
+      
+      return () => {
+        if (timeoutId) window.clearTimeout(timeoutId);
+        window.removeEventListener('resize', updateViewport);
+        window.removeEventListener('orientationchange', updateViewport);
+      };
     }
   }, []);
 

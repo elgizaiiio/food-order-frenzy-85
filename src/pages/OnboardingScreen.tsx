@@ -33,7 +33,7 @@ const features = [
   }
 ];
 
-const OnboardingScreen: React.FC = () => {
+const OnboardingScreen = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [exitDirection, setExitDirection] = useState<"left" | "right">("left");
   const navigate = useNavigate();
