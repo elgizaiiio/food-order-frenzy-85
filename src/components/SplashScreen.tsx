@@ -10,16 +10,16 @@ const SplashScreen: React.FC = () => {
   const [animationComplete, setAnimationComplete] = useState(false);
   const { isMobile } = useViewport();
   
-  // إضافة حالة للمستخدم محليًا بدلاً من استخدام useAuth مباشرة
-  const [userState, setUserState] = useState<'loading' | 'authenticated' | 'unauthenticated'>('loading');
+  // استخدام useAuth مع التحقق من وجود AuthProvider
   const auth = useAuth();
+  const [authState, setAuthState] = useState<'loading' | 'authenticated' | 'unauthenticated'>('loading');
   
+  // التحقق من حالة المستخدم
   useEffect(() => {
-    // التحقق من المستخدم
     if (auth.user) {
-      setUserState('authenticated');
+      setAuthState('authenticated');
     } else if (!auth.isLoading) {
-      setUserState('unauthenticated');
+      setAuthState('unauthenticated');
     }
   }, [auth.user, auth.isLoading]);
   
@@ -27,26 +27,25 @@ const SplashScreen: React.FC = () => {
     const onboardingComplete = localStorage.getItem('onboardingComplete') === 'true';
     
     // تسريع وقت ظهور الشاشة المبدئية
-    const splashTimeout = isMobile ? 1300 : 1800;
+    const splashTimeout = isMobile ? 1000 : 1500;
 
     const timer = setTimeout(() => {
       setAnimationComplete(true);
       
       setTimeout(() => {
-        if (userState === 'authenticated') {
+        if (authState === 'authenticated') {
           navigate('/', { replace: true });
         } else if (onboardingComplete) {
           navigate('/login', { replace: true });
         } else {
           navigate('/onboarding', { replace: true });
         }
-      }, 100); // تسريع وقت الانتقال أكثر
+      }, 100);
     }, splashTimeout);
 
     return () => clearTimeout(timer);
-  }, [navigate, userState, isMobile]);
+  }, [navigate, authState, isMobile]);
 
-  // تبسيط المكونات لتحسين الأداء
   return (
     <div className="fixed inset-0 bg-gradient-to-br from-orange-300 via-orange-400 to-orange-500 flex items-center justify-center overflow-hidden">
       <div className="relative z-10 flex flex-col items-center justify-center px-6">

@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (splashLoader.parentNode) {
           splashLoader.parentNode.removeChild(splashLoader);
         }
-      }, 100); // تسريع وقت الإزالة
+      }, 100);
     });
   }
 });

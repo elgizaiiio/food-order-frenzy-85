@@ -1,12 +1,11 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { UserProvider } from "@/context/UserContext";
 import { MarketCartProvider } from "@/context/MarketCartContext";
-import { PharmacyCartProvider } from "@/context/PharmacyCartContext";
-import { PersonalCareCartProvider } from "@/context/PersonalCareCartContext";
+import { PharmacyCartProvider } from "@/context/PharmacyCartProvider";
+import { PersonalCareCartProvider } from "@/context/PersonalCareCartProvider";
 import { AuthProvider } from "@/context/AuthContext";
 import { FirebaseProvider } from "@/context/FirebaseContext";
 import BottomNav from "./components/BottomNav";
@@ -88,51 +87,95 @@ const LoadingFallback = () => (
 // إنشاء كائن QueryClient داخل دالة المكون لتفادي مشكلة القراءة من null
 const App = () => {
   // تأكد من إنشاء queryClient داخل المكون مع إعدادات تحسين الأداء
-  const [queryClient] = useState(() => new QueryClient({
-    defaultOptions: {
-      queries: {
-        staleTime: 5 * 60 * 1000, // 5 دقائق
-        refetchOnWindowFocus: false,
-        gcTime: 10 * 60 * 1000, // 10 دقائق - تم تغيير cacheTime إلى gcTime
-        retry: 1, // تقليل محاولات إعادة المحاولة
-        refetchOnMount: false, // منع إعادة الاستعلام عند تركيب المكون
-        networkMode: 'offlineFirst', // تحسين أداء الشبكة
-      },
-    },
-  }));
-
-  // إضافة حالة لتتبع ما إذا كان يجب عرض شاشة البداية
   const [showSplash, setShowSplash] = useState(true);
-
+  
   // إخفاء شاشة البداية بعد مرور وقت معين
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowSplash(false);
-    }, 2000); // عرض شاشة البداية لوقت أقصر
+    }, 1800); // عرض شاشة البداية لوقت أقصر
     
     return () => clearTimeout(timer);
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <FirebaseProvider>
-          <UserProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              {showSplash ? (
-                <Suspense fallback={<LoadingFallback />}>
-                  <SplashScreen />
-                </Suspense>
-              ) : (
-                <AppContent />
-              )}
-            </TooltipProvider>
-          </UserProvider>
-        </FirebaseProvider>
-      </AuthProvider>
-    </QueryClientProvider>
+    <FirebaseProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        {showSplash ? (
+          <Suspense fallback={<LoadingFallback />}>
+            <SplashScreen />
+          </Suspense>
+        ) : (
+          <AppContent />
+        )}
+      </TooltipProvider>
+    </FirebaseProvider>
+  );
+};
+
+// إنشاء مكون AppContent لتنظيم الشيفرة وفصل المكونات
+const AppContent = () => {
+  return (
+    <>
+      <div className="pb-24">
+        <Suspense fallback={<LoadingFallback />}>
+          <Routes>
+            {/* صفحة الترحيب يمكن الوصول إليها بدون مصادقة */}
+            <Route path="/onboarding" element={<OnboardingScreen />} />
+            
+            {/* مسارات المصادقة - لا تتطلب مصادقة */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            
+            {/* المسارات المحمية */}
+            <Route path="/" element={<AuthGuard><Index /></AuthGuard>} />
+            
+            {/* مسارات التوصيل */}
+            <Route path="/delivery-request" element={<AuthGuard><DeliveryRequest /></AuthGuard>} />
+            <Route path="/delivery-tracking" element={<AuthGuard><DeliveryTracking /></AuthGuard>} />
+            <Route path="/delivery-tracking/:id" element={<AuthGuard><DeliveryDetails /></AuthGuard>} />
+            <Route path="/delivery-help" element={<AuthGuard><DeliveryHelp /></AuthGuard>} />
+            
+            {/* Nested Route Sections */}
+            <Route path="/pharmacy/*" element={<PharmacyRoutes />} />
+            <Route path="/market/*" element={<MarketRoutes />} />
+            <Route path="/personal-care/*" element={<PersonalCareRoutes />} />
+            
+            {/* Gym Routes */}
+            <Route path="/gym" element={<AuthGuard><Gym /></AuthGuard>} />
+            <Route path="/gym/:id/subscribe" element={<AuthGuard><GymSubscription /></AuthGuard>} />
+            <Route path="/gym/payment" element={<AuthGuard><GymPayment /></AuthGuard>} />
+            <Route path="/gym/success" element={<AuthGuard><GymSuccess /></AuthGuard>} />
+            <Route path="/gym/subscriptions" element={<AuthGuard><GymSubscriptions /></AuthGuard>} />
+            
+            {/* مسارات الملف الشخصي */}
+            <Route path="/profile" element={<AuthGuard><Profile /></AuthGuard>} />
+            <Route path="/edit-profile" element={<AuthGuard><EditProfile /></AuthGuard>} />
+            <Route path="/settings" element={<AuthGuard><Settings /></AuthGuard>} />
+            <Route path="/edit-contact-info" element={<AuthGuard><EditContactInfo /></AuthGuard>} />
+            <Route path="/change-password" element={<AuthGuard><ChangePassword /></AuthGuard>} />
+            <Route path="/notification-settings" element={<AuthGuard><NotificationSettings /></AuthGuard>} />
+            <Route path="/addresses" element={<AuthGuard><Addresses /></AuthGuard>} />
+            <Route path="/add-address" element={<AuthGuard><AddAddress /></AuthGuard>} />
+            <Route path="/edit-address/:addressId" element={<AuthGuard><EditAddress /></AuthGuard>} />
+            <Route path="/payment-methods" element={<AuthGuard><PaymentMethods /></AuthGuard>} />
+            <Route path="/add-payment-method" element={<AuthGuard><AddPaymentMethod /></AuthGuard>} />
+            <Route path="/orders" element={<AuthGuard><Orders /></AuthGuard>} />
+            <Route path="/coupons" element={<AuthGuard><Coupons /></AuthGuard>} />
+            <Route path="/chat-support" element={<AuthGuard><ChatSupport /></AuthGuard>} />
+            <Route path="/invite-friends" element={<AuthGuard><InviteFriends /></AuthGuard>} />
+            <Route path="/dam-bro" element={<AuthGuard><DamBro /></AuthGuard>} />
+            
+            {/* مسار التقاط الكل */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
+      </div>
+      <BottomNav />
+    </>
   );
 };
 
@@ -263,68 +306,16 @@ const PersonalCareRoutes = () => (
   </PersonalCareCartProvider>
 );
 
-// استخدام Suspense للتحميل الكسول
-const AppContent = () => {
-  return (
-    <>
-      <div className="pb-24">
-        <Suspense fallback={<LoadingFallback />}>
-          <Routes>
-            {/* صفحة الترحيب يمكن الوصول إليها بدون مصادقة */}
-            <Route path="/onboarding" element={<OnboardingScreen />} />
-            
-            {/* Authentication Routes - Not Protected */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            
-            {/* Protected Routes */}
-            <Route path="/" element={<AuthGuard><Index /></AuthGuard>} />
-            
-            {/* Delivery Routes */}
-            <Route path="/delivery-request" element={<AuthGuard><DeliveryRequest /></AuthGuard>} />
-            <Route path="/delivery-tracking" element={<AuthGuard><DeliveryTracking /></AuthGuard>} />
-            <Route path="/delivery-tracking/:id" element={<AuthGuard><DeliveryDetails /></AuthGuard>} />
-            <Route path="/delivery-help" element={<AuthGuard><DeliveryHelp /></AuthGuard>} />
-            
-            {/* Nested Route Sections */}
-            <Route path="/pharmacy/*" element={<PharmacyRoutes />} />
-            <Route path="/market/*" element={<MarketRoutes />} />
-            <Route path="/personal-care/*" element={<PersonalCareRoutes />} />
-            
-            {/* Gym Routes */}
-            <Route path="/gym" element={<AuthGuard><Gym /></AuthGuard>} />
-            <Route path="/gym/:id/subscribe" element={<AuthGuard><GymSubscription /></AuthGuard>} />
-            <Route path="/gym/payment" element={<AuthGuard><GymPayment /></AuthGuard>} />
-            <Route path="/gym/success" element={<AuthGuard><GymSuccess /></AuthGuard>} />
-            <Route path="/gym/subscriptions" element={<AuthGuard><GymSubscriptions /></AuthGuard>} />
-            
-            {/* Profile Routes */}
-            <Route path="/profile" element={<AuthGuard><Profile /></AuthGuard>} />
-            <Route path="/edit-profile" element={<AuthGuard><EditProfile /></AuthGuard>} />
-            <Route path="/settings" element={<AuthGuard><Settings /></AuthGuard>} />
-            <Route path="/edit-contact-info" element={<AuthGuard><EditContactInfo /></AuthGuard>} />
-            <Route path="/change-password" element={<AuthGuard><ChangePassword /></AuthGuard>} />
-            <Route path="/notification-settings" element={<AuthGuard><NotificationSettings /></AuthGuard>} />
-            <Route path="/addresses" element={<AuthGuard><Addresses /></AuthGuard>} />
-            <Route path="/add-address" element={<AuthGuard><AddAddress /></AuthGuard>} />
-            <Route path="/edit-address/:addressId" element={<AuthGuard><EditAddress /></AuthGuard>} />
-            <Route path="/payment-methods" element={<AuthGuard><PaymentMethods /></AuthGuard>} />
-            <Route path="/add-payment-method" element={<AuthGuard><AddPaymentMethod /></AuthGuard>} />
-            <Route path="/orders" element={<AuthGuard><Orders /></AuthGuard>} />
-            <Route path="/coupons" element={<AuthGuard><Coupons /></AuthGuard>} />
-            <Route path="/chat-support" element={<AuthGuard><ChatSupport /></AuthGuard>} />
-            <Route path="/invite-friends" element={<AuthGuard><InviteFriends /></AuthGuard>} />
-            <Route path="/dam-bro" element={<AuthGuard><DamBro /></AuthGuard>} />
-            
-            {/* Catch-All Route */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
-      </div>
-      <BottomNav />
-    </>
-  );
-};
+// تصحيح استيراد المكونات الناقصة
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const Index = lazy(() => import("./pages/Index"));
+const Profile = lazy(() => import("./pages/Profile"));
+const EditProfile = lazy(() => import("./pages/EditProfile"));
+const Settings = lazy(() => import("./pages/Settings"));
+const EditContactInfo = lazy(() => import("./pages/EditContactInfo"));
+const ChangePassword = lazy(() => import("./pages/ChangePassword"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 export default App;
