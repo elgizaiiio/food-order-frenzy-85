@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
@@ -21,29 +22,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [authInitialized, setAuthInitialized] = useState(false);
 
+  // تحسين استرجاع جلسة المستخدم والاشتراك في التغييرات
   useEffect(() => {
-    // استرجاع جلسة المستخدم عند تحميل الصفحة
-    const initSession = async () => {
-      setIsLoading(true);
+    console.log("AuthProvider: تهيئة جلسة المستخدم");
+    
+    // إعداد الاستماع لتغييرات حالة المصادقة أولاً
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, currentSession) => {
+      console.log("تغيير حالة المصادقة:", _event, currentSession?.user?.email);
       
+      if (currentSession) {
+        setSession(currentSession);
+        setUser(currentSession.user);
+      } else if (_event === 'SIGNED_OUT') {
+        // تأكد من تحديث الحالة فقط عند تسجيل الخروج
+        setSession(null);
+        setUser(null);
+      }
+      
+      // لا تغير isLoading هنا
+    });
+    
+    // ثم التحقق من وجود جلسة حالية
+    const initSession = async () => {
       try {
-        // إعداد الاستماع لتغييرات حالة المصادقة أولاً
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, currentSession) => {
-          console.log("تغيير حالة المصادقة:", _event, currentSession?.user?.email);
-          
-          if (currentSession) {
-            setSession(currentSession);
-            setUser(currentSession.user);
-          } else {
-            setSession(null);
-            setUser(null);
-          }
-          
-          setIsLoading(false);
-        });
-        
-        // ثم التحقق من وجود جلسة حالية
         const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
@@ -57,23 +60,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setSession(sessionData.session);
           setUser(sessionData.session.user);
         }
-        
-        // إذا لم يكن هناك جلسة، نحدّث حالة التحميل
-        if (!sessionData?.session) {
-          setIsLoading(false);
-        }
-
-        return () => {
-          subscription.unsubscribe();
-        };
       } catch (error) {
         console.error('خطأ في تهيئة الجلسة', error);
+      } finally {
         setIsLoading(false);
+        setAuthInitialized(true);
       }
     };
     
-    // تنفيذ التهيئة
     initSession();
+    
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   // تسجيل الدخول
@@ -266,6 +265,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setupMFA,
     verifyMFA,
   };
+  
+  // إذا لم تكتمل التهيئة بعد، نعرض placeholder لتجنب الأخطاء
+  if (!authInitialized && isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

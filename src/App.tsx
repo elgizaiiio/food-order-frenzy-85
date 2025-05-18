@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -269,6 +268,7 @@ const AppContent = () => {
       <div className="pb-24">
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
+            {/* صفحة الترحيب يمكن الوصول إليها بدون مصادقة */}
             <Route path="/onboarding" element={<OnboardingScreen />} />
             
             {/* Authentication Routes - Not Protected */}
@@ -278,12 +278,6 @@ const AppContent = () => {
             
             {/* Protected Routes */}
             <Route path="/" element={<AuthGuard><Index /></AuthGuard>} />
-            <Route path="/restaurants" element={<AuthGuard><Restaurants /></AuthGuard>} />
-            <Route path="/restaurant/:id" element={<AuthGuard><RestaurantMenu /></AuthGuard>} />
-            <Route path="/cart" element={<AuthGuard><Cart /></AuthGuard>} />
-            <Route path="/checkout" element={<AuthGuard><Checkout /></AuthGuard>} />
-            <Route path="/tracking" element={<AuthGuard><OrderTracking /></AuthGuard>} />
-            <Route path="/about" element={<AuthGuard><About /></AuthGuard>} />
             
             {/* Delivery Routes */}
             <Route path="/delivery-request" element={<AuthGuard><DeliveryRequest /></AuthGuard>} />

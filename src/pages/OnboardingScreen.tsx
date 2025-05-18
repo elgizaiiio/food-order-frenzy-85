@@ -34,7 +34,7 @@ const features = [
   }
 ];
 
-// Main component - ensure it's properly defined with React
+// Main component
 const OnboardingScreen = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [exitDirection, setExitDirection] = useState<"left" | "right">("left");

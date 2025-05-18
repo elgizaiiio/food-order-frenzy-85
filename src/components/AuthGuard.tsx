@@ -22,6 +22,11 @@ const AuthGuard = ({ children, requireMFA = false }: AuthGuardProps) => {
     }
   }, [user, isLoading, location, requireMFA]);
 
+  // إذا كان المسار هو صفحة الترحيب أو تسجيل الدخول، فلا حاجة للتحقق من المصادقة
+  if (location.pathname === '/onboarding' || location.pathname === '/login' || location.pathname === '/register' || location.pathname === '/forgot-password') {
+    return <>{children}</>;
+  }
+
   // إضافة حالة معالجة للتحميل المستمر
   if (isLoading) {
     // إظهار شاشة تحميل أكثر وضوحًا مع معلومات إضافية

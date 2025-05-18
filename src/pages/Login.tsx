@@ -13,6 +13,7 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { signIn, user, isLoading } = useAuth();
@@ -21,17 +22,22 @@ const Login: React.FC = () => {
   
   // تعديل منطق إعادة التوجيه لمنع الحلقة اللانهائية
   useEffect(() => {
-    // فقط إذا كان المستخدم موجودًا والتحميل اكتمل، قم بإعادة التوجيه
-    if (!isLoading && user) {
+    // تجنب إعادة التوجيه أثناء تحميل حالة المستخدم
+    if (isLoading) return;
+    
+    // فقط إذا كان المستخدم موجودًا، قم بإعادة التوجيه
+    if (user && !redirecting) {
+      setRedirecting(true);
       console.log("تم تسجيل الدخول بالفعل، جاري التوجيه إلى:", from);
+      
       // استخدام setTimeout لتأخير إعادة التوجيه وتجنب حلقات التحديث اللانهائية
       const redirectTimer = setTimeout(() => {
         navigate(from, { replace: true });
-      }, 100);
+      }, 500);
       
       return () => clearTimeout(redirectTimer);
     }
-  }, [user, navigate, from, isLoading]);
+  }, [user, navigate, from, isLoading, redirecting]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -110,6 +116,16 @@ const Login: React.FC = () => {
       <div className="flex flex-col items-center justify-center min-h-screen bg-orange-50">
         <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
         <p className="mt-4 text-orange-600 font-medium">جاري التحقق من بيانات الدخول...</p>
+      </div>
+    );
+  }
+  
+  // إذا كان المستخدم مسجل دخوله بالفعل وفي طور إعادة التوجيه
+  if (user && redirecting) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-orange-50">
+        <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+        <p className="mt-4 text-orange-600 font-medium">أنت مسجل دخول بالفعل، جاري إعادة التوجيه...</p>
       </div>
     );
   }
