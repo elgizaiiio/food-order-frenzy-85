@@ -34,97 +34,88 @@ const SplashScreen: React.FC = () => {
     return () => clearTimeout(timer);
   }, [navigate, user]);
 
-  // تكوين المتغيرات الرسومية للتحريك
-  const logoVariants = {
-    hidden: { scale: 0, opacity: 0 },
-    visible: { 
-      scale: 1, 
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 260,
-        damping: 20,
-        duration: 0.8
-      }
-    },
-    exit: { 
-      scale: animationComplete ? 1.2 : 1, 
-      opacity: 0,
-      transition: {
-        duration: 0.5
-      }
-    }
-  };
-
-  const textVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        delay: 0.3,
-        duration: 0.8,
-        ease: "easeOut"
-      }
-    }
-  };
-
-  const backgroundVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: { duration: 1 }
-    },
-    exit: { 
-      opacity: 0,
-      transition: { duration: 0.5 }
-    }
-  };
-
   return (
     <motion.div 
-      className="fixed inset-0 bg-gradient-to-br from-[#1A1F2C] via-[#221F26] to-[#1A1F2C] overflow-hidden flex items-center justify-center"
-      variants={backgroundVariants}
-      initial="hidden"
-      animate="visible"
-      exit="exit"
+      className="fixed inset-0 bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0F172A] overflow-hidden flex items-center justify-center"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, transition: { duration: 0.5 } }}
     >
-      {/* إضافة أشكال هندسية متحركة في الخلفية */}
+      {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
-        {Array.from({ length: 30 }).map((_, index) => (
+        {/* Animated stars */}
+        {Array.from({ length: 50 }).map((_, index) => (
           <motion.div
-            key={index}
-            className="absolute rounded-full bg-white/5"
+            key={`star-${index}`}
+            className="absolute rounded-full bg-white/10"
             style={{
-              width: Math.random() * 12 + 4,
-              height: Math.random() * 12 + 4,
+              width: Math.random() * 3 + 1,
+              height: Math.random() * 3 + 1,
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`
             }}
             animate={{
-              y: [0, Math.random() * -100 - 50],
-              opacity: [0, 0.5, 0]
+              opacity: [0.2, 0.8, 0.2],
+              scale: [1, 1.2, 1],
             }}
             transition={{
               repeat: Infinity,
-              duration: Math.random() * 10 + 20,
-              ease: "linear",
-              delay: Math.random() * 5
+              duration: Math.random() * 3 + 2,
+              ease: "easeInOut",
+              delay: Math.random() * 2
             }}
           />
         ))}
-
-        {/* إضافة حلقات دائرية تنتشر من المنتصف */}
-        {Array.from({ length: 3 }).map((_, index) => (
+        
+        {/* Animated geometric shapes */}
+        {Array.from({ length: 10 }).map((_, index) => {
+          const shapes = ["rounded-full", "rounded-md", "rounded"];
+          const colors = [
+            "bg-purple-500/10", 
+            "bg-indigo-500/10", 
+            "bg-blue-500/10",
+            "bg-violet-500/10"
+          ];
+          
+          return (
+            <motion.div
+              key={`shape-${index}`}
+              className={`absolute ${shapes[index % shapes.length]} ${colors[index % colors.length]} backdrop-blur-sm`}
+              style={{
+                width: Math.random() * 80 + 40,
+                height: Math.random() * 80 + 40,
+                left: `${Math.random() * 90 + 5}%`,
+                top: `${Math.random() * 90 + 5}%`,
+                filter: "blur(8px)",
+              }}
+              animate={{
+                x: [0, Math.random() * 50 - 25],
+                y: [0, Math.random() * 50 - 25],
+                rotate: [0, Math.random() * 90 - 45],
+                opacity: [0.2, 0.5, 0.2],
+              }}
+              transition={{
+                repeat: Infinity,
+                duration: Math.random() * 15 + 15,
+                ease: "easeInOut",
+                repeatType: "reverse"
+              }}
+            />
+          );
+        })}
+        
+        {/* Expanding rings */}
+        {Array.from({ length: 4 }).map((_, index) => (
           <motion.div
             key={`ring-${index}`}
-            className="absolute rounded-full border border-white/10"
+            className="absolute rounded-full border border-purple-500/20"
             style={{
               width: 100,
               height: 100,
               left: "calc(50% - 50px)",
-              top: "calc(50% - 50px)"
+              top: "calc(50% - 50px)",
             }}
+            initial={{ scale: 0, opacity: 0.5 }}
             animate={{
               scale: [1, 4],
               opacity: [0.2, 0]
@@ -132,109 +123,152 @@ const SplashScreen: React.FC = () => {
             transition={{
               repeat: Infinity,
               duration: 4,
-              delay: index * 1.3,
-              ease: "easeOut"
+              delay: index * 1,
+              ease: "easeOut",
+              repeatDelay: 0
             }}
           />
         ))}
       </div>
 
-      <div className="z-10 flex flex-col items-center justify-center">
-        {/* لوجو محسن */}
+      {/* Main content */}
+      <div className="z-20 flex flex-col items-center justify-center px-6">
+        {/* Logo container with enhanced design */}
         <motion.div
           className="relative mb-12"
-          variants={logoVariants}
-          initial="hidden"
-          animate="visible"
-          exit="exit"
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ 
+            scale: 1, 
+            opacity: 1,
+            transition: {
+              type: "spring",
+              stiffness: 260,
+              damping: 20,
+              duration: 1
+            }
+          }}
+          exit={{ 
+            scale: animationComplete ? 1.2 : 1, 
+            opacity: 0,
+            transition: { duration: 0.5 }
+          }}
         >
-          {/* إضافة تأثير رئيسي للوجو */}
-          <div className="relative">
-            {/* تأثير الهالة حول الشعار */}
-            <motion.div 
-              className="absolute inset-0 rounded-full bg-[#7E69AB]/20 blur-2xl"
-              animate={{ 
-                scale: [1, 1.2, 1],
-              }}
-              transition={{ 
-                duration: 3, 
-                repeat: Infinity,
-                repeatType: "reverse" 
-              }}
-            />
+          {/* Glass effect background */}
+          <motion.div 
+            className="absolute inset-[-10px] rounded-full backdrop-blur-md bg-white/5 border border-white/10"
+            animate={{ 
+              boxShadow: ["0 0 20px rgba(167, 139, 250, 0.3)", "0 0 40px rgba(167, 139, 250, 0.5)", "0 0 20px rgba(167, 139, 250, 0.3)"] 
+            }}
+            transition={{ duration: 3, repeat: Infinity }}
+          />
+          
+          {/* Main logo with gradient */}
+          <div className="relative w-40 h-40 overflow-hidden">
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-600 via-violet-600 to-indigo-600 opacity-80" />
             
-            {/* الدائرة الرئيسية */}
-            <div className="relative w-36 h-36 bg-gradient-to-br from-[#7E69AB] to-[#6E59A5] rounded-full flex items-center justify-center shadow-lg shadow-[#7E69AB]/30">
-              {/* اسم التطبيق بخط حديث وأنيق */}
-              <motion.span
-                className="text-5xl font-extrabold tracking-wider text-white"
-                initial={{ opacity: 0, y: 10 }}
+            <div className="absolute inset-1 rounded-full bg-black/20 backdrop-blur-sm" />
+            
+            <motion.div 
+              className="absolute inset-2 rounded-full bg-gradient-to-br from-purple-500 via-violet-600 to-indigo-500 flex items-center justify-center"
+              animate={{ 
+                background: [
+                  "linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)",
+                  "linear-gradient(225deg, #8b5cf6 0%, #6366f1 100%)",
+                  "linear-gradient(315deg, #8b5cf6 0%, #6366f1 100%)",
+                  "linear-gradient(45deg, #8b5cf6 0%, #6366f1 100%)"
+                ],
+                boxShadow: [
+                  "inset 0 0 20px rgba(0,0,0,0.3)",
+                  "inset 0 0 30px rgba(0,0,0,0.5)",
+                  "inset 0 0 20px rgba(0,0,0,0.3)"
+                ]
+              }}
+              transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+            >
+              <motion.div
+                className="text-6xl font-extrabold text-white tracking-wider flex items-center justify-center w-full h-full"
                 animate={{ 
-                  opacity: 1, 
-                  y: 0,
-                  textShadow: ["0 0 5px rgba(255,255,255,0.5)", "0 0 20px rgba(255,255,255,0.5)", "0 0 5px rgba(255,255,255,0.5)"]
+                  textShadow: [
+                    "0 0 8px rgba(255,255,255,0.6)", 
+                    "0 0 16px rgba(255,255,255,0.8)", 
+                    "0 0 8px rgba(255,255,255,0.6)"
+                  ]
                 }}
-                transition={{ 
-                  duration: 2.5,
-                  repeat: Infinity,
-                  repeatType: "reverse"
-                }}
+                transition={{ duration: 2, repeat: Infinity }}
               >
                 DAM
-              </motion.span>
-            </div>
-            
-            {/* دوائر نابضة حول الشعار */}
-            {[1, 2, 3].map((_, index) => (
-              <motion.div 
-                key={`pulse-${index}`}
-                className="absolute inset-[-5px] rounded-full border border-[#7E69AB]/40"
-                animate={{
-                  scale: [1, 1.6],
-                  opacity: [0.7, 0]
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  delay: index * 0.6,
-                  ease: "easeOut"
-                }}
-              />
-            ))}
+              </motion.div>
+            </motion.div>
           </div>
+          
+          {/* Animated particles around logo */}
+          {Array.from({ length: 8 }).map((_, index) => (
+            <motion.div
+              key={`particle-${index}`}
+              className="absolute w-2 h-2 rounded-full bg-purple-400"
+              style={{
+                top: "50%",
+                left: "50%"
+              }}
+              animate={{
+                x: [0, Math.cos(index * (Math.PI / 4)) * 100],
+                y: [0, Math.sin(index * (Math.PI / 4)) * 100],
+                opacity: [0, 1, 0],
+                scale: [0, 1.5, 0]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                delay: index * 0.2,
+                ease: "easeInOut"
+              }}
+            />
+          ))}
         </motion.div>
         
-        {/* شعار التطبيق */}
-        <motion.h2 
-          variants={textVariants}
-          initial="hidden"
-          animate="visible"
-          className="text-3xl font-bold bg-gradient-to-r from-purple-100 to-purple-300 bg-clip-text text-transparent mb-4"
+        {/* App name with animated text effect */}
+        <motion.div
+          className="mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.8 }}
         >
-          دام
-        </motion.h2>
+          <motion.h2 
+            className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-300 via-violet-300 to-indigo-300 text-center"
+            animate={{ 
+              backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] 
+            }}
+            transition={{ 
+              duration: 5, 
+              repeat: Infinity,
+              ease: "linear" 
+            }}
+          >
+            دام
+          </motion.h2>
+        </motion.div>
         
-        {/* وصف التطبيق */}
+        {/* Tagline with animated fade in */}
         <motion.p 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.6 }}
-          className="text-lg text-[#aaadb0] mb-10 tracking-wide"
+          transition={{ delay: 0.8, duration: 0.8 }}
+          className="text-xl text-gray-300 mb-12 tracking-wide text-center"
         >
           خدمة التوصيل الأسرع في المملكة
         </motion.p>
         
-        {/* مؤشر التحميل المحسن */}
+        {/* Enhanced loading indicator */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.9 }}
+          transition={{ delay: 1 }}
           className="flex flex-col items-center"
         >
-          <div className="relative w-14 h-14">
-            {/* تأثير دوران الدائرة */}
+          <div className="relative w-16 h-16">
+            {/* Outer spinning circle */}
             <motion.div 
-              className="absolute w-full h-full border-t-4 border-r-2 border-[#7E69AB] rounded-full"
+              className="absolute w-full h-full rounded-full border-t-4 border-r-2 border-purple-500"
               animate={{ rotate: 360 }}
               transition={{
                 duration: 1.5,
@@ -243,23 +277,43 @@ const SplashScreen: React.FC = () => {
               }}
             />
             
-            {/* دائرة ثانوية بسرعة مختلفة */}
+            {/* Middle spinning circle */}
             <motion.div 
-              className="absolute w-10 h-10 m-2 border-b-4 border-l-2 border-white/30 rounded-full"
+              className="absolute w-12 h-12 m-2 rounded-full border-b-4 border-l-2 border-indigo-400"
               animate={{ rotate: -360 }}
               transition={{
-                duration: 2.2,
+                duration: 2,
                 repeat: Infinity,
                 ease: "linear"
+              }}
+            />
+            
+            {/* Inner pulsing circle */}
+            <motion.div
+              className="absolute w-6 h-6 m-5 rounded-full bg-violet-500/30"
+              animate={{ 
+                scale: [1, 1.5, 1],
+                opacity: [0.5, 0.8, 0.5],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
               }}
             />
           </div>
           
           <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: [0, 1, 0.5, 1] }}
-            transition={{ delay: 1.1, duration: 2, repeat: Infinity }}
-            className="mt-5 text-[#aaadb0] text-sm font-light"
+            className="mt-6 text-gray-400 text-sm font-light"
+            animate={{ 
+              opacity: [0.5, 1, 0.5],
+              y: [0, -2, 0]
+            }}
+            transition={{ 
+              duration: 1.8, 
+              repeat: Infinity,
+              ease: "easeInOut" 
+            }}
           >
             جاري التحميل...
           </motion.p>
