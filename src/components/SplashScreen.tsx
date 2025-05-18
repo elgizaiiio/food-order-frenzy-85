@@ -3,14 +3,12 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 import { useViewport } from '@/hooks/useViewport';
-import { useNavigate } from 'react-router-dom';
 
 interface SplashScreenProps {
   setShowSplash: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const SplashScreen: React.FC<SplashScreenProps> = ({ setShowSplash }) => {
-  const navigate = useNavigate();
   const [animationComplete, setAnimationComplete] = useState(false);
   const { isMobile } = useViewport();
   
@@ -37,22 +35,13 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ setShowSplash }) => {
       setAnimationComplete(true);
       
       setTimeout(() => {
-        // تغيير طريقة التنقل لاستخدام setShowSplash أولاً
+        // إخفاء شاشة البداية
         setShowSplash(false);
-        
-        // ثم بعد إخفاء شاشة البداية، التوجيه إلى الصفحة المناسبة
-        if (authState === 'authenticated') {
-          navigate('/', { replace: true });
-        } else if (onboardingComplete) {
-          navigate('/login', { replace: true });
-        } else {
-          navigate('/onboarding', { replace: true });
-        }
       }, 100);
     }, splashTimeout);
 
     return () => clearTimeout(timer);
-  }, [navigate, authState, isMobile, setShowSplash]);
+  }, [isMobile, setShowSplash]);
 
   return (
     <div className="fixed inset-0 bg-gradient-to-br from-orange-300 via-orange-400 to-orange-500 flex items-center justify-center overflow-hidden">

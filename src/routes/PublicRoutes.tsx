@@ -1,6 +1,6 @@
 
-import React, { Suspense } from "react";
-import { Route, Routes } from "react-router-dom";
+import React, { Suspense, useEffect } from "react";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import LoadingFallback from "@/components/LoadingFallback";
 
 // تحميل كسول لصفحات المصادقة
@@ -11,10 +11,26 @@ const ForgotPassword = React.lazy(() => import("@/pages/ForgotPassword"));
 const NotFound = React.lazy(() => import("@/pages/NotFound"));
 
 const PublicRoutes: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  // التوجيه المناسب عند تحميل المكون
+  useEffect(() => {
+    const onboardingComplete = localStorage.getItem('onboardingComplete') === 'true';
+    
+    if (location.pathname === '/' || location.pathname === '') {
+      if (onboardingComplete) {
+        navigate('/login', { replace: true });
+      } else {
+        navigate('/onboarding', { replace: true });
+      }
+    }
+  }, [navigate, location.pathname]);
+
   return (
     <Routes>
       <Route
-        path="/"
+        path="/onboarding"
         element={
           <Suspense fallback={<LoadingFallback />}>
             <OnboardingScreen />
