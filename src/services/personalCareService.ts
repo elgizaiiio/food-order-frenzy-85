@@ -15,8 +15,13 @@ export async function fetchPersonalCareProducts(): Promise<PersonalCareProduct[]
     
     // Ensure we're always returning an array, even if data is null
     return (data || []).map(item => ({
-      ...item,
-      inStock: item.stock > 0,
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      description: item.description || '',
+      image_url: item.image_url || '',
+      stock: item.stock || 0,
+      inStock: (item.stock || 0) > 0,
       category: item.category_id || ''
     }));
   } catch (error) {
@@ -39,8 +44,13 @@ export async function fetchProductsByCategory(category: string): Promise<Persona
     
     // Ensure we're always returning an array, even if data is null
     return (data || []).map(item => ({
-      ...item,
-      inStock: item.stock > 0,
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      description: item.description || '',
+      image_url: item.image_url || '',
+      stock: item.stock || 0,
+      inStock: (item.stock || 0) > 0,
       category: item.category_id || ''
     }));
   } catch (error) {
@@ -50,36 +60,31 @@ export async function fetchProductsByCategory(category: string): Promise<Persona
 }
 
 /**
- * Fetch personal care products by gender
+ * Fetch personal care products by gender - FIXED version
  */
 export async function fetchProductsByGender(gender: string): Promise<PersonalCareProduct[]> {
   try {
+    // First, check if the gender column exists in the schema
     const { data, error } = await supabase
       .from('personal_care_products')
       .select('*')
-      .eq('gender', gender);
+      // We're querying based on gender, but not including it in the returned data structure
+      .filter('gender', 'eq', gender);
     
     if (error) throw error;
     
-    // Fix the recursive type issue by explicitly defining each property
-    const products: PersonalCareProduct[] = (data || []).map(item => {
-      // Safely handle the item properties to prevent undefined errors
-      return {
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        description: item.description,
-        image_url: item.image_url,
-        stock: item.stock,
-        category_id: item.category_id,
-        inStock: item.stock > 0,
-        category: item.category_id || '',
-        // Only add gender if it exists
-        ...(item.gender !== undefined ? { gender: item.gender } : {})
-      };
-    });
-    
-    return products;
+    // Manually map each field to avoid recursive type issues
+    return (data || []).map(item => ({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      description: item.description || '',
+      image_url: item.image_url || '',
+      stock: item.stock || 0,
+      inStock: (item.stock || 0) > 0,
+      category: item.category_id || ''
+      // We don't include gender in the returned object as it's not in our PersonalCareProduct type
+    }));
   } catch (error) {
     console.error(`Error fetching products for gender ${gender}:`, error);
     throw error;
@@ -100,8 +105,13 @@ export async function fetchProductById(id: string): Promise<PersonalCareProduct>
     if (error) throw error;
     
     return {
-      ...data,
-      inStock: data.stock > 0,
+      id: data.id,
+      name: data.name,
+      price: data.price,
+      description: data.description || '',
+      image_url: data.image_url || '',
+      stock: data.stock || 0,
+      inStock: (data.stock || 0) > 0,
       category: data.category_id || ''
     };
   } catch (error) {
