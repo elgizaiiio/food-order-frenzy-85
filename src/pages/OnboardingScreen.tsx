@@ -1,4 +1,5 @@
 
+// Make sure to properly import React and useState from react
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -33,6 +34,7 @@ const features = [
   }
 ];
 
+// Main component - ensure it's properly defined with React
 const OnboardingScreen = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [exitDirection, setExitDirection] = useState<"left" | "right">("left");

@@ -104,7 +104,9 @@ export function useViewport(): ViewportSize {
       return () => {
         if (timeoutId) win.clearTimeout(timeoutId);
         win.removeEventListener('resize', updateViewport);
-        win.removeEventListener('orientationchange', updateViewport);
+        win.removeEventListener('orientationchange', () => {
+          setTimeout(updateViewport, 100);
+        });
       };
     }
   }, []);
