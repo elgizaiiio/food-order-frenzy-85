@@ -12,10 +12,10 @@ import { FirebaseProvider } from "@/context/FirebaseContext";
 import BottomNav from "./components/BottomNav";
 import AuthGuard from "./components/AuthGuard";
 import { Suspense, lazy, useState, useEffect } from "react";
-import SplashScreen from "./components/SplashScreen";
 
 // استخدام التحميل الكسول للصفحات لتحسين الأداء
 const OnboardingScreen = lazy(() => import("./pages/OnboardingScreen"));
+const SplashScreen = lazy(() => import("./components/SplashScreen"));
 
 // تحميل كسول لصفحات التوصيل
 const DeliveryRequest = lazy(() => import("./pages/DeliveryRequest"));
@@ -108,14 +108,10 @@ const App = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowSplash(false);
-    }, 2500); // عرض شاشة البداية لوقت أقصر
+    }, 2000); // عرض شاشة البداية لوقت أقصر
     
     return () => clearTimeout(timer);
   }, []);
-
-  if (showSplash) {
-    return <SplashScreen />;
-  }
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -125,7 +121,13 @@ const App = () => {
             <TooltipProvider>
               <Toaster />
               <Sonner />
-              <AppContent />
+              {showSplash ? (
+                <Suspense fallback={<LoadingFallback />}>
+                  <SplashScreen />
+                </Suspense>
+              ) : (
+                <AppContent />
+              )}
             </TooltipProvider>
           </UserProvider>
         </FirebaseProvider>

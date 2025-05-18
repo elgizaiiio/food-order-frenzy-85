@@ -48,26 +48,22 @@ document.addEventListener('DOMContentLoaded', () => {
 const container = document.getElementById("root")!;
 const root = createRoot(container);
 
-// تعزيز أداء التصيير الأولي
+// تعزيز أداء التصيير الأولي - تم إزالة AuthProvider و UserProvider من هنا لمنع التكرار
 root.render(
   <BrowserRouter>
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <UserProvider>
-          <App />
-          <Toaster 
-            position="top-center" 
-            richColors 
-            closeButton 
-            duration={2500} // تقليل مدة عرض الإشعارات
-            toastOptions={{
-              style: { 
-                maxWidth: '400px',
-              }
-            }} 
-          />
-        </UserProvider>
-      </AuthProvider>
+      <App />
+      <Toaster 
+        position="top-center" 
+        richColors 
+        closeButton 
+        duration={2000} // تقليل مدة عرض الإشعارات أكثر
+        toastOptions={{
+          style: { 
+            maxWidth: '400px',
+          }
+        }} 
+      />
     </QueryClientProvider>
   </BrowserRouter>
 );

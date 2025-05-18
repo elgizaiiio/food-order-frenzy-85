@@ -7,32 +7,44 @@ import { useViewport } from '@/hooks/useViewport';
 
 const SplashScreen: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const [animationComplete, setAnimationComplete] = useState(false);
   const { isMobile } = useViewport();
+  
+  // إضافة حالة للمستخدم محليًا بدلاً من استخدام useAuth مباشرة
+  const [userState, setUserState] = useState<'loading' | 'authenticated' | 'unauthenticated'>('loading');
+  const auth = useAuth();
+  
+  useEffect(() => {
+    // التحقق من المستخدم
+    if (auth.user) {
+      setUserState('authenticated');
+    } else if (!auth.isLoading) {
+      setUserState('unauthenticated');
+    }
+  }, [auth.user, auth.isLoading]);
   
   useEffect(() => {
     const onboardingComplete = localStorage.getItem('onboardingComplete') === 'true';
     
     // تسريع وقت ظهور الشاشة المبدئية
-    const splashTimeout = isMobile ? 1500 : 2000;
+    const splashTimeout = isMobile ? 1300 : 1800;
 
     const timer = setTimeout(() => {
       setAnimationComplete(true);
       
       setTimeout(() => {
-        if (user) {
+        if (userState === 'authenticated') {
           navigate('/', { replace: true });
         } else if (onboardingComplete) {
           navigate('/login', { replace: true });
         } else {
           navigate('/onboarding', { replace: true });
         }
-      }, 200); // تسريع وقت الانتقال
+      }, 100); // تسريع وقت الانتقال أكثر
     }, splashTimeout);
 
     return () => clearTimeout(timer);
-  }, [navigate, user, isMobile]);
+  }, [navigate, userState, isMobile]);
 
   // تبسيط المكونات لتحسين الأداء
   return (
@@ -42,13 +54,13 @@ const SplashScreen: React.FC = () => {
           className="mb-12"
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
         >
           <motion.div
-            className={`${isMobile ? 'w-32 h-32' : 'w-40 h-40'} rounded-full bg-white flex items-center justify-center shadow-lg`}
+            className={`${isMobile ? 'w-28 h-28' : 'w-36 h-36'} rounded-full bg-white flex items-center justify-center shadow-lg`}
           >
             <motion.h1
-              className={`${isMobile ? 'text-6xl' : 'text-7xl'} font-bold bg-gradient-to-br from-orange-400 to-orange-600 bg-clip-text text-transparent`}
+              className={`${isMobile ? 'text-5xl' : 'text-6xl'} font-bold bg-gradient-to-br from-orange-400 to-orange-600 bg-clip-text text-transparent`}
             >
               دام
             </motion.h1>
@@ -59,10 +71,10 @@ const SplashScreen: React.FC = () => {
           className="text-center"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.6 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
         >
           <motion.p
-            className={`text-white ${isMobile ? 'text-lg' : 'text-xl'} font-medium tracking-wide`}
+            className={`text-white ${isMobile ? 'text-base' : 'text-lg'} font-medium tracking-wide`}
           >
             مع دام كل حاجه بقت سهله
           </motion.p>
