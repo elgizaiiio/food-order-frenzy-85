@@ -1,7 +1,7 @@
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Star, Clock, Filter, ArrowLeft, MapPin, ChevronDown, Search } from 'lucide-react';
+import { Star, Clock, Filter, ArrowLeft, MapPin, ChevronDown, Search, ShoppingBag } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -9,11 +9,12 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Input } from '@/components/ui/input';
 import { useRestaurants } from '@/hooks/useRestaurantData';
 import { Skeleton } from '@/components/ui/skeleton';
-import { toast } from 'sonner';
+import { useToast } from '@/hooks/use-toast';
 
 const Restaurants: React.FC = () => {
   const navigate = useNavigate();
   const { data: restaurantsData, isLoading, error } = useRestaurants();
+  const { toast } = useToast();
 
   // للعناوين
   const [address, setAddress] = useState('شارع الملك فهد');
@@ -25,8 +26,10 @@ const Restaurants: React.FC = () => {
   const [displayedRestaurants, setDisplayedRestaurants] = useState(restaurantsData || []);
   const [isFiltering, setIsFiltering] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
-  // فئات الطعام بألوان برتقالية متدرجة (طلبات)
+  // فئات الطعام بألوان برتقالية متدرجة
   const foodCategories = [
     { id: 1, name: "حلويات", color: "bg-gradient-to-br from-orange-100 to-amber-200 text-orange-800" },
     { id: 2, name: "شاورما", color: "bg-gradient-to-br from-orange-200 to-amber-300 text-orange-900" },
@@ -37,12 +40,12 @@ const Restaurants: React.FC = () => {
     { id: 7, name: "دجاج", color: "bg-gradient-to-br from-orange-50 to-amber-100 text-orange-600" },
     { id: 8, name: "عصائر", color: "bg-gradient-to-br from-amber-200 to-orange-300 text-amber-900" },
     { id: 9, name: "كريب", color: "bg-gradient-to-br from-orange-200 to-amber-300 text-orange-900" },
-    { id: 10, name: "دجاج مقلي", color: "bg-gradient-to-br from-amber-200 to-orange-200 text-amber-900" },
-    { id: 11, name: "إفطار", color: "bg-gradient-to-br from-orange-400 to-amber-500 text-white" },
+    { id: 10, name: "فطور", color: "bg-gradient-to-br from-amber-200 to-orange-200 text-amber-900" },
+    { id: 11, name: "مأكولات بحرية", color: "bg-gradient-to-br from-orange-400 to-amber-500 text-white" },
     { id: 12, name: "أخرى", color: "bg-gradient-to-br from-slate-200 to-slate-300 text-slate-800" }
   ];
 
-  // خيارات الفلتر بألوان طلبات
+  // خيارات الفلتر بألوان
   const filters = [
     { id: 1, name: "العروض", active: true },
     { id: 2, name: "الأعلى تقييمًا", active: false },
@@ -50,19 +53,43 @@ const Restaurants: React.FC = () => {
     { id: 4, name: "الأقرب لك", active: false }
   ];
 
+  // تتبع التمرير لإخفاء/إظهار الرأس
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        // إخفاء الرأس عند التمرير للأسفل
+        setIsHeaderVisible(false);
+      } else {
+        // إظهاره عند التمرير للأعلى
+        setIsHeaderVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
+
   // تحديث المطاعم المعروضة عند تغير البيانات
-  React.useEffect(() => {
+  useEffect(() => {
     if (restaurantsData) {
       setDisplayedRestaurants(restaurantsData);
     }
   }, [restaurantsData]);
 
   // عرض رسالة خطأ إذا كانت هناك مشكلة
-  React.useEffect(() => {
+  useEffect(() => {
     if (error) {
-      toast.error("حدثت مشكلة في تحميل المطاعم، يرجى المحاولة لاحقًا");
+      toast({
+        variant: "destructive",
+        title: "خطأ في تحميل المطاعم",
+        description: "حدثت مشكلة في تحميل المطاعم، يرجى المحاولة لاحقًا"
+      });
     }
-  }, [error]);
+  }, [error, toast]);
 
   // تبديل فلتر الفئة
   const toggleCategoryFilter = useCallback((categoryId: number) => {
@@ -118,7 +145,11 @@ const Restaurants: React.FC = () => {
   // اختيار العنوان
   const handleAddressSelect = useCallback((addr: string) => {
     setAddress(addr);
-  }, []);
+    toast({
+      title: "تم تغيير العنوان",
+      description: `سيتم التوصيل إلى: ${addr}`
+    });
+  }, [toast]);
 
   // للبحث
   const handleSearch = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -146,13 +177,35 @@ const Restaurants: React.FC = () => {
     setDisplayedRestaurants(restaurantsData || []);
     setIsFiltering(false);
     setActiveSortFilter(1);
-  }, [restaurantsData]);
+    
+    toast({
+      title: "تم إعادة تعيين الفلاتر",
+      description: "تم عرض جميع المطاعم"
+    });
+  }, [restaurantsData, toast]);
+
+  // معالج الطلب السريع
+  const handleQuickOrder = useCallback((restaurantId: string, restaurantName: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    navigate(`/restaurant/${restaurantId}`);
+    
+    toast({
+      title: `طلب سريع من ${restaurantName}`,
+      description: "تم الانتقال إلى صفحة المطعم"
+    });
+  }, [navigate, toast]);
 
   return (
     <div className="min-h-screen bg-gray-50" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-24">
-        {/* الهيدر مع زر الرجوع والعنوان */}
-        <div className="flex flex-col shadow-md sticky top-0 z-10 bg-white">
+        {/* الهيدر مع زر الرجوع والعنوان - يختفي عند التمرير للأسفل */}
+        <div 
+          className={`flex flex-col shadow-md sticky z-10 transition-transform duration-300 ${
+            isHeaderVisible ? 'top-0 translate-y-0' : '-translate-y-full'
+          }`}
+        >
           <div className="flex items-center justify-between p-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white">
             <button 
               onClick={() => navigate('/')} 
@@ -164,7 +217,7 @@ const Restaurants: React.FC = () => {
             <div className="w-10"></div>
           </div>
           
-          {/* اختيار عنوان التوصيل */}
+          {/* اختيار عنوان التوصيل - تصميم محسن */}
           <div className="px-4 py-2 flex items-center gap-2 border-b bg-orange-50">
             <MapPin className="text-orange-500 w-5 h-5 flex-shrink-0" />
             <Popover>
@@ -191,12 +244,22 @@ const Restaurants: React.FC = () => {
                       </div>
                     ))}
                   </div>
+                  <div className="p-2 border-t mt-1">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full text-xs mt-1 text-orange-700 border-orange-300 hover:bg-orange-50"
+                      onClick={() => navigate('/addresses/new')}
+                    >
+                      إضافة عنوان جديد
+                    </Button>
+                  </div>
                 </div>
               </PopoverContent>
             </Popover>
           </div>
           
-          {/* البحث */}
+          {/* البحث - تصميم محسن */}
           <div className="px-4 py-3 bg-orange-100">
             <div className="relative">
               <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-orange-400 w-5 h-5" />
@@ -210,14 +273,17 @@ const Restaurants: React.FC = () => {
           </div>
         </div>
 
-        {/* فئات الطعام بألوان برتقالية */}
-        <div className="px-4 py-3 border-b bg-white sticky top-[146px] z-[5] shadow-sm">
+        {/* فئات الطعام بألوان وتصميم محسن */}
+        <div className={`px-4 py-3 border-b bg-white sticky z-[5] shadow-sm transition-transform duration-300 ${
+          isHeaderVisible ? 'top-[146px]' : 'top-0'
+        }`}>
           <div className="flex overflow-x-auto gap-3 pb-3 no-scrollbar">
             {foodCategories.map(category => (
               <div 
                 key={category.id} 
-                className="flex-shrink-0 cursor-pointer transition-all" 
+                className="flex-shrink-0 cursor-pointer transition-all animate-fade-in" 
                 onClick={() => toggleCategoryFilter(category.id)}
+                style={{animationDelay: `${category.id * 50}ms`}}
               >
                 <div 
                   className={`px-4 py-2 rounded-lg ${category.color} transition-all shadow-sm ${
@@ -233,8 +299,10 @@ const Restaurants: React.FC = () => {
           </div>
         </div>
 
-        {/* الفلاتر بألوان طلبات */}
-        <div className="px-4 py-3 flex gap-2 overflow-x-auto no-scrollbar border-b bg-white sticky top-[213px] z-[5] shadow-sm">
+        {/* الفلاتر بألوان محسنة */}
+        <div className={`px-4 py-3 flex gap-2 overflow-x-auto no-scrollbar border-b bg-white sticky z-[5] shadow-sm transition-transform duration-300 ${
+          isHeaderVisible ? 'top-[213px]' : 'top-[67px]'
+        }`}>
           {filters.map(filter => (
             <Button 
               key={filter.id} 
@@ -255,7 +323,7 @@ const Restaurants: React.FC = () => {
         {/* قائمة المطاعم أو حالة عدم وجود نتائج */}
         <div className="px-4 py-3">
           {isLoading ? (
-            // سكيليتون للتحميل
+            // سكيليتون للتحميل محسن
             <div className="space-y-4">
               {Array(3).fill(0).map((_, index) => (
                 <Card key={index} className="overflow-hidden border-slate-100 shadow-md rounded-xl animate-pulse">
@@ -264,25 +332,28 @@ const Restaurants: React.FC = () => {
                     <div className="absolute top-2 right-2">
                       <Skeleton className="w-20 h-6 rounded-full" />
                     </div>
-                    <div className="absolute bottom-0 right-0 p-3 transform translate-y-1/2">
-                      <Skeleton className="w-16 h-16 rounded-full" />
-                    </div>
                   </div>
-                  <div className="p-4 pt-10 mt-2">
-                    <Skeleton className="h-6 w-3/4 mb-2" />
-                    <Skeleton className="h-4 w-1/2 mb-4" />
+                  <div className="p-4">
+                    <div className="flex items-center gap-2">
+                      <Skeleton className="w-14 h-14 rounded-full" />
+                      <div>
+                        <Skeleton className="h-6 w-32 mb-1" />
+                        <Skeleton className="h-4 w-40" />
+                      </div>
+                    </div>
                     <div className="flex items-center justify-between mt-4">
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
                         <Skeleton className="w-16 h-8 rounded-full" />
                         <Skeleton className="w-16 h-8 rounded-full" />
                       </div>
+                      <Skeleton className="w-24 h-9 rounded-full" />
                     </div>
                   </div>
                 </Card>
               ))}
             </div>
           ) : error ? (
-            <div className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="flex flex-col items-center justify-center py-16 text-center animate-fade-in">
               <div className="w-20 h-20 rounded-full bg-red-50 flex items-center justify-center mb-4">
                 <div className="text-4xl">⚠️</div>
               </div>
@@ -340,26 +411,24 @@ const Restaurants: React.FC = () => {
                     </div>
                     <div className="p-4">
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <img 
-                            src={restaurant.logo_url || "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=100&auto=format&fit=crop"} 
-                            alt="logo" 
-                            className="w-16 h-16 rounded-full object-cover border-2 border-white shadow-lg" 
-                            loading="lazy"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.src = "https://via.placeholder.com/100?text=شعار";
-                            }}
-                          />
-                          <div>
-                            <h3 className="font-bold text-lg text-gray-900">{restaurant.name}</h3>
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              {restaurant.description?.split(',').map((tag, idx) => (
-                                <span key={idx} className="text-xs text-gray-500">
-                                  {tag.trim()}{idx !== restaurant.description.split(',').length - 1 && ' • '}
-                                </span>
-                              ))}
-                            </div>
+                        <img 
+                          src={restaurant.logo_url || "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=100&auto=format&fit=crop"} 
+                          alt="logo" 
+                          className="w-16 h-16 rounded-full object-cover border-2 border-white shadow-lg -mt-8" 
+                          loading="lazy"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = "https://via.placeholder.com/100?text=شعار";
+                          }}
+                        />
+                        <div>
+                          <h3 className="font-bold text-lg text-gray-900">{restaurant.name}</h3>
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {restaurant.description?.split(',').map((tag, idx) => (
+                              <span key={idx} className="text-xs text-gray-500">
+                                {tag.trim()}{idx !== restaurant.description.split(',').length - 1 && ' • '}
+                              </span>
+                            ))}
                           </div>
                         </div>
                       </div>
@@ -374,6 +443,14 @@ const Restaurants: React.FC = () => {
                             <span className="text-sm text-gray-700">{restaurant.delivery_time || "25-35"} دقيقة</span>
                           </div>
                         </div>
+                        <Button
+                          size="sm"
+                          onClick={(e) => handleQuickOrder(restaurant.id, restaurant.name, e)}
+                          className="rounded-full bg-orange-500 hover:bg-orange-600 flex items-center gap-1.5"
+                        >
+                          <ShoppingBag className="w-4 h-4" />
+                          <span className="text-xs">اطلب الآن</span>
+                        </Button>
                       </div>
                     </div>
                   </Card>
