@@ -1,8 +1,7 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { UserProvider } from "@/context/UserContext";
 import { MarketCartProvider } from "@/context/MarketCartContext";
 import { PharmacyCartProvider } from "@/context/PharmacyCartContext";
@@ -179,7 +178,7 @@ const App = () => {
                 <Route path="/invite-friends" element={<AuthGuard><InviteFriends /></AuthGuard>} />
                 <Route path="/dam-bro" element={<AuthGuard><DamBro /></AuthGuard>} />
                 
-                {/* مسار التقاط الكل */}
+                {/* مسار التقاط ا��كل */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
             )}
