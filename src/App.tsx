@@ -9,14 +9,16 @@ import { FirebaseProvider } from "@/context/FirebaseContext";
 import BottomNav from "./components/BottomNav";
 import { Suspense, lazy, useState, useEffect } from "react";
 import LoadingFallback from "./components/LoadingFallback";
-import ProtectedRoutes from "./routes/ProtectedRoutes";
-import PublicRoutes from "./routes/PublicRoutes";
-import PharmacyRoutes from "./routes/PharmacyRoutes";
-import MarketRoutes from "./routes/MarketRoutes";
-import PersonalCareRoutes from "./routes/PersonalCareRoutes";
 
 // استخدام التحميل الكسول للصفحات لتحسين الأداء
 const SplashScreen = lazy(() => import("./components/SplashScreen"));
+
+// استيراد مكونات التوجيه
+const ProtectedRoutes = lazy(() => import("./routes/ProtectedRoutes"));
+const PublicRoutes = lazy(() => import("./routes/PublicRoutes"));
+const PharmacyRoutes = lazy(() => import("./routes/PharmacyRoutes"));
+const MarketRoutes = lazy(() => import("./routes/MarketRoutes"));
+const PersonalCareRoutes = lazy(() => import("./routes/PersonalCareRoutes"));
 
 // تبسيط مكون التطبيق الرئيسي
 const App = () => {
@@ -44,16 +46,16 @@ const App = () => {
               </Suspense>
             ) : (
               <Routes>
+                {/* المسارات العامة */}
+                <Route path="/onboarding/*" element={<PublicRoutes />} />
+                <Route path="/login/*" element={<PublicRoutes />} />
+                <Route path="/register/*" element={<PublicRoutes />} />
+                <Route path="/forgot-password/*" element={<PublicRoutes />} />
+                
                 {/* مسارات التطبيق المختلفة */}
                 <Route path="/pharmacy/*" element={<PharmacyRoutes />} />
                 <Route path="/market/*" element={<MarketRoutes />} />
                 <Route path="/personal-care/*" element={<PersonalCareRoutes />} />
-                
-                {/* مسارات عامة (تشمل المصادقة والصفحات العامة) */}
-                <Route path="/onboarding" element={<PublicRoutes />} />
-                <Route path="/login" element={<PublicRoutes />} />
-                <Route path="/register" element={<PublicRoutes />} />
-                <Route path="/forgot-password" element={<PublicRoutes />} />
                 
                 {/* المسارات المحمية الأخرى */}
                 <Route path="/*" element={<ProtectedRoutes />} />

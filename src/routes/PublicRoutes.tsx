@@ -1,13 +1,7 @@
 
 import React, { Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
-
-// مكون للتحميل للصفحات
-const LoadingFallback = () => (
-  <div className="flex items-center justify-center min-h-[80vh]">
-    <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
-  </div>
-);
+import LoadingFallback from "@/components/LoadingFallback";
 
 // تحميل كسول لصفحات المصادقة
 const OnboardingScreen = React.lazy(() => import("@/pages/OnboardingScreen"));
@@ -20,7 +14,7 @@ const PublicRoutes: React.FC = () => {
   return (
     <Routes>
       <Route
-        path="/onboarding"
+        path="/"
         element={
           <Suspense fallback={<LoadingFallback />}>
             <OnboardingScreen />
