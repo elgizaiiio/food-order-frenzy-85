@@ -29,20 +29,8 @@ const SplashScreen: React.FC = () => {
     return () => clearTimeout(timer);
   }, [navigate, user]);
 
-  // Array of motivational phrases in Egyptian dialect
-  const motivationalPhrases = [
-    "خليك جاهز للي جاي",
-    "هنوصلك لأبعد مكان",
-    "النجاح رحلة مش وجهة",
-    "كل يوم خطوة للأمام",
-    "معاك في كل مكان"
-  ];
-  
-  // Randomly select one phrase
-  const randomPhrase = motivationalPhrases[Math.floor(Math.random() * motivationalPhrases.length)];
-
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 flex items-center justify-center overflow-hidden">
+    <div className="fixed inset-0 bg-gradient-to-br from-orange-300 via-orange-400 to-orange-500 flex items-center justify-center overflow-hidden">
       {/* Subtle background pulse effect */}
       <motion.div
         className="absolute w-full h-full"
@@ -85,13 +73,13 @@ const SplashScreen: React.FC = () => {
             }}
           >
             <motion.h1
-              className="text-7xl font-bold bg-gradient-to-br from-purple-600 to-indigo-800 bg-clip-text text-transparent"
+              className="text-7xl font-bold bg-gradient-to-br from-orange-400 to-orange-600 bg-clip-text text-transparent"
               animate={{ 
                 scale: [1, 1.1, 1],
                 textShadow: [
-                  "0px 0px 0px rgba(79, 70, 229, 0)",
-                  "0px 0px 10px rgba(79, 70, 229, 0.7)",
-                  "0px 0px 0px rgba(79, 70, 229, 0)",
+                  "0px 0px 0px rgba(249, 115, 22, 0)",
+                  "0px 0px 10px rgba(249, 115, 22, 0.7)",
+                  "0px 0px 0px rgba(249, 115, 22, 0)",
                 ]
               }}
               transition={{
@@ -105,7 +93,7 @@ const SplashScreen: React.FC = () => {
           </motion.div>
         </motion.div>
         
-        {/* Motivational phrase with animation */}
+        {/* Fixed motivational phrase with animation */}
         <motion.div
           className="text-center px-6"
           initial={{ opacity: 0, y: 20 }}
@@ -123,7 +111,7 @@ const SplashScreen: React.FC = () => {
               ease: "easeInOut"
             }}
           >
-            {randomPhrase}
+            مع دام كل حاجه بقت سهله
           </motion.p>
         </motion.div>
       </div>
