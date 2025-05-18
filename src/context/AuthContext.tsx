@@ -1,5 +1,4 @@
-
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
 import { toast } from 'sonner';
@@ -26,56 +25,55 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // تحسين استرجاع جلسة المستخدم والاشتراك في التغييرات
   useEffect(() => {
-    console.log("AuthProvider: تهيئة جلسة المستخدم");
+    let mounted = true;
     
-    // إعداد الاستماع لتغييرات حالة المصادقة أولاً
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, currentSession) => {
-      console.log("تغيير حالة المصادقة:", _event, currentSession?.user?.email);
+    // إعداد الاستماع لتغييرات حالة المصادقة
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, currentSession) => {
+      if (!mounted) return;
       
       if (currentSession) {
         setSession(currentSession);
         setUser(currentSession.user);
-      } else if (_event === 'SIGNED_OUT') {
-        // تأكد من تحديث الحالة فقط عند تسجيل الخروج
+      } else if (event === 'SIGNED_OUT') {
         setSession(null);
         setUser(null);
       }
-      
-      // لا تغير isLoading هنا
     });
     
-    // ثم التحقق من وجود جلسة حالية
-    const initSession = async () => {
+    // تحسين استرجاع الجلسة الحالية بشكل أكثر كفاءة
+    const getInitialSession = async () => {
       try {
-        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+        const { data, error } = await supabase.auth.getSession();
         
-        if (sessionError) {
-          console.error('خطأ في جلب بيانات الجلسة', sessionError);
-          throw sessionError;
+        if (!mounted) return;
+        
+        if (error) {
+          console.error('خطأ في استرجاع الجلسة:', error.message);
         }
         
-        console.log("جلسة المستخدم الحالية:", sessionData?.session?.user?.email);
-        
-        if (sessionData?.session) {
-          setSession(sessionData.session);
-          setUser(sessionData.session.user);
+        if (data?.session) {
+          setSession(data.session);
+          setUser(data.session.user);
         }
       } catch (error) {
-        console.error('خطأ في تهيئة الجلسة', error);
+        console.error('خطأ غير متوقع:', error);
       } finally {
-        setIsLoading(false);
-        setAuthInitialized(true);
+        if (mounted) {
+          setIsLoading(false);
+          setAuthInitialized(true);
+        }
       }
     };
     
-    initSession();
+    getInitialSession();
     
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, []);
 
-  // تسجيل الدخول
+  // تسجيل الدخول بأداء محسن
   const signIn = async (email: string, password: string) => {
     try {
       setIsLoading(true);
@@ -87,7 +85,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       setSession(data.session);
       setUser(data.user);
-      console.log("تم تسجيل الدخول بنجاح:", data.user?.email);
       return;
     } catch (error: any) {
       console.error('خطأ في تسجيل الدخول', error);
@@ -97,28 +94,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // إنشاء حساب جديد
+  // إنشاء حساب جديد بفحوصات أكثر كفاءة
   const signUp = async (email: string, password: string, userData?: any) => {
     try {
       setIsLoading(true);
       
-      // Check password strength before registration
+      // التحقق من قوة كلمة المرور
       if (password.length < 8) {
         throw new Error('كلمة المرور يجب أن تتكون من 8 أحرف على الأقل');
       }
       
-      if (!/\d/.test(password)) {
-        throw new Error('كلمة المرور يجب أن تحتوي على رقم واحد على الأقل');
-      }
-      
-      if (!/[a-zA-Z]/.test(password)) {
-        throw new Error('كلمة المرور يجب أن تحتوي على حرف واحد على الأقل');
-      }
-      
-      // Common password check (simplified version)
-      const commonPasswords = ['password', '12345678', 'qwerty123', '123456789'];
-      if (commonPasswords.includes(password.toLowerCase())) {
-        throw new Error('كلمة المرور غير آمنة وقابلة للتخمين بسهولة');
+      if (!/\d/.test(password) || !/[a-zA-Z]/.test(password)) {
+        throw new Error('كلمة المرور يجب أن تحتوي على رقم وحرف واحد على الأقل');
       }
       
       const { data, error } = await supabase.auth.signUp({ 
@@ -138,7 +125,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (data.session) {
         setSession(data.session);
         setUser(data.user);
-        console.log("تم إنشاء الحساب وتسجيل الدخول:", data.user?.email);
       }
     } catch (error: any) {
       console.error('خطأ في إنشاء الحساب', error);
@@ -148,7 +134,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // تسجيل الخروج
+  // تسجيل الخروج بشكل أكثر كفاءة
   const signOut = async () => {
     try {
       setIsLoading(true);
@@ -254,7 +240,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const value: AuthContextType = {
+  // استخدام useMemo لتحسين الأداء وتقليل إعادة التقييم
+  const value = useMemo(() => ({
     user,
     session,
     isLoading,
@@ -264,13 +251,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     resetPassword,
     setupMFA,
     verifyMFA,
-  };
+  }), [user, session, isLoading]);
   
-  // إذا لم تكتمل التهيئة بعد، نعرض placeholder لتجنب الأخطاء
+  // تحسين العرض المبدئي
   if (!authInitialized && isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }

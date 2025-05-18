@@ -8,59 +8,47 @@ import { UserProvider } from './context/UserContext';
 import App from './App.tsx'
 import './index.css'
 
-// تحسين أداء تحميل الصفحة - إعداد عميل استعلام محسن لـ React Query
+// تحسين إعداد React Query للأداء
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
       refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 5, // 5 دقائق
-      gcTime: 1000 * 60 * 30, // 30 دقيقة - تم تغيير cacheTime إلى gcTime
-      refetchOnMount: false, // تحسين الأداء من خلال تجنب إعادة الاستعلام عند تركيب المكون
-      refetchInterval: false,
-      networkMode: 'offlineFirst', // تحسين أداء الشبكة
+      staleTime: 1000 * 60 * 5,
+      gcTime: 1000 * 60 * 30,
+      refetchOnMount: false,
+      networkMode: 'offlineFirst',
     },
     mutations: {
       networkMode: 'offlineFirst',
-      retry: 1, // تقليل محاولات إعادة المحاولة
+      retry: 1,
     }
   },
 });
 
-// تحسين أداء التحميل الأولي
+// تسريع تحميل التطبيق باستخدام requestIdleCallback
 document.addEventListener('DOMContentLoaded', () => {
-  // استخدام requestIdleCallback لإعطاء الأولوية لعرض الصفحة
-  const runWhenIdle = window.requestIdleCallback || ((cb) => setTimeout(cb, 1));
+  const idleCallback = window.requestIdleCallback || ((cb) => setTimeout(cb, 1));
   
-  // إخفاء شاشة التحميل الأولية وإظهار التطبيق
+  // تحسين إخفاء شاشة التحميل الأولية
   const splashLoader = document.querySelector('.loading-container');
   if (splashLoader && splashLoader.parentNode) {
-    runWhenIdle(() => {
+    idleCallback(() => {
       splashLoader.classList.add('fade-out');
       setTimeout(() => {
         if (splashLoader.parentNode) {
           splashLoader.parentNode.removeChild(splashLoader);
         }
-      }, 200);
+      }, 100); // تسريع وقت الإزالة
     });
   }
-  
-  // تحميل مسبق للموارد المهمة
-  runWhenIdle(() => {
-    // تحميل مسبق للصور المهمة
-    const preloadImages = ['/dam-logo.png'];
-    preloadImages.forEach(src => {
-      const img = new Image();
-      img.fetchPriority = 'low';
-      img.loading = 'lazy';
-      img.src = src;
-    });
-  });
 });
 
-// تسريع تحميل الصفحة من خلال إنشاء الجذر وتأجيل التحديثات غير الأساسية
+// تحسين تهيئة الجذر
 const container = document.getElementById("root")!;
 const root = createRoot(container);
+
+// تعزيز أداء التصيير الأولي
 root.render(
   <BrowserRouter>
     <QueryClientProvider client={queryClient}>
@@ -71,10 +59,10 @@ root.render(
             position="top-center" 
             richColors 
             closeButton 
-            duration={3000}
+            duration={2500} // تقليل مدة عرض الإشعارات
             toastOptions={{
               style: { 
-                maxWidth: '420px',
+                maxWidth: '400px',
               }
             }} 
           />
@@ -84,35 +72,12 @@ root.render(
   </BrowserRouter>
 );
 
-// تحسين الأداء من خلال تسجيل Service Worker وتفعيل التخزين المؤقت
+// تبسيط تسجيل Service Worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
-      .then(registration => {
-        console.log('تم تسجيل Service Worker بنجاح:', registration.scope);
-      })
       .catch(error => {
         console.log('خطأ في تسجيل Service Worker:', error);
       });
   });
 }
-
-// تحسين أداء تحميل الصور بشكل كسول
-if ('loading' in HTMLImageElement.prototype) {
-  // استخدام التحميل الكسول المدمج في المتصفح
-  const lazyImages = document.querySelectorAll('img[loading="lazy"]');
-  lazyImages.forEach(img => {
-    if (img instanceof HTMLImageElement && img.dataset.src) {
-      img.src = img.dataset.src;
-    }
-  });
-} else {
-  // تحميل البديل للمتصفحات التي لا تدعم التحميل الكسول
-  const script = document.createElement('script');
-  script.src = '/lazy-loading-fallback.js';
-  script.defer = true;
-  document.body.appendChild(script);
-}
-
-// تسريع عملية التحميل من خلال استخدام تقنية تقسيم الرموز (Code Splitting)
-// هذا سيعمل مع وجود React.lazy و Suspense في App.tsx

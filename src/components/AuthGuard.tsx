@@ -14,44 +14,45 @@ const AuthGuard = ({ children, requireMFA = false }: AuthGuardProps) => {
   const location = useLocation();
 
   useEffect(() => {
-    console.log("AuthGuard: المستخدم:", user?.email, "جاري التحميل:", isLoading, "المسار:", location.pathname);
+    // تحسين سجلات التصحيح مع تقليل عدد السجلات لتحسين الأداء
+    if (process.env.NODE_ENV === 'development') {
+      console.log("AuthGuard: المستخدم:", user?.email, "التحميل:", isLoading, "المسار:", location.pathname);
+    }
     
-    // Check if MFA is required but not enabled
+    // التحقق من المصادقة الثنائية فقط عند الحاجة
     if (requireMFA && user && !user.factors) {
       toast.warning("المصادقة الثنائية مطلوبة لهذه الصفحة. يرجى إعدادها في صفحة الإعدادات.");
     }
   }, [user, isLoading, location, requireMFA]);
 
-  // إذا كان المسار هو صفحة الترحيب أو تسجيل الدخول، فلا حاجة للتحقق من المصادقة
+  // المسارات العامة التي لا تتطلب مصادقة
   if (location.pathname === '/onboarding' || location.pathname === '/login' || location.pathname === '/register' || location.pathname === '/forgot-password') {
     return <>{children}</>;
   }
 
-  // إضافة حالة معالجة للتحميل المستمر
+  // تحسين شاشة التحميل لتكون أسرع وأكثر سلاسة
   if (isLoading) {
-    // إظهار شاشة تحميل أكثر وضوحًا مع معلومات إضافية
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-white">
-        <div className="w-16 h-16 border-4 border-orange-400 border-t-transparent rounded-full animate-spin"></div>
-        <p className="mt-4 text-orange-600 font-medium">جاري التحقق من بيانات المستخدم...</p>
-        <p className="text-gray-500 text-sm mt-2">إذا استمرت هذه الشاشة، يرجى تحديث الصفحة</p>
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="w-10 h-10 border-3 border-orange-400 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
-  // إذا لم يكن المستخدم مصادقًا، إعادة التوجيه إلى تسجيل الدخول
+  // إعادة التوجيه للمستخدمين غير المصادقين
   if (!user) {
-    console.log("AuthGuard: جاري التوجيه إلى صفحة تسجيل الدخول. لم يتم العثور على مستخدم. المسار الحالي:", location.pathname);
+    if (process.env.NODE_ENV === 'development') {
+      console.log("AuthGuard: جاري التوجيه إلى صفحة تسجيل الدخول. المسار:", location.pathname);
+    }
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // If MFA is required for this route but not enabled, redirect to MFA setup
+  // التحقق من المصادقة الثنائية
   if (requireMFA && (!user.factors || Object.keys(user.factors).length === 0)) {
-    console.log("AuthGuard: جاري التوجيه إلى صفحة إعداد المصادقة الثنائية");
     return <Navigate to="/settings/security" state={{ from: location }} replace />;
   }
 
-  // إذا وصلنا هنا، فالمستخدم مصادق ويمكننا عرض المحتوى المحمي
+  // المستخدم مصادق ويمكنه الوصول للمحتوى
   return <>{children}</>;
 };
 

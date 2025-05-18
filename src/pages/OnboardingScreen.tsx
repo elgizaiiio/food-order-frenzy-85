@@ -1,12 +1,12 @@
 
-// Make sure to properly import React and useState from react
+// Import React and useState from react
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Heart, ShieldCheck, Rocket, Smartphone } from 'lucide-react';
 
-// بيانات مميزات التطبيق
+// تحسين بيانات المميزات للتحميل الأسرع
 const features = [
   {
     title: "توصيل سريع",
@@ -34,13 +34,13 @@ const features = [
   }
 ];
 
-// Main component
+// تحسين المكون الرئيسي مع أداء أفضل
 const OnboardingScreen = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [exitDirection, setExitDirection] = useState<"left" | "right">("left");
   const navigate = useNavigate();
 
-  // التحرك للشريحة التالية
+  // تبسيط وظائف التنقل
   const nextSlide = () => {
     if (currentSlide < features.length - 1) {
       setExitDirection("left");
@@ -50,7 +50,6 @@ const OnboardingScreen = () => {
     }
   };
 
-  // التحرك للشريحة السابقة
   const prevSlide = () => {
     if (currentSlide > 0) {
       setExitDirection("right");
@@ -58,17 +57,16 @@ const OnboardingScreen = () => {
     }
   };
 
-  // إكمال عملية التعريف والانتقال لصفحة تسجيل الدخول
+  // تحسين إكمال عملية التعريف
   const completeOnboarding = () => {
-    // تخزين معلومة أن المستخدم قد شاهد الشاشة التعريفية
     localStorage.setItem('onboardingComplete', 'true');
-    navigate('/login');
+    navigate('/login', { replace: true });
   };
 
-  // حركات الانتقال للشرائح
+  // تبسيط حركات الانتقال للشرائح
   const slideVariants = {
     enter: (direction: string) => ({
-      x: direction === "right" ? -500 : 500,
+      x: direction === "right" ? -300 : 300,
       opacity: 0
     }),
     center: {
@@ -76,7 +74,7 @@ const OnboardingScreen = () => {
       opacity: 1
     },
     exit: (direction: string) => ({
-      x: direction === "right" ? 500 : -500,
+      x: direction === "right" ? 300 : -300,
       opacity: 0
     })
   };
@@ -84,34 +82,36 @@ const OnboardingScreen = () => {
   const currentFeature = features[currentSlide];
   const isLastSlide = currentSlide === features.length - 1;
 
+  // تحسين الأداء عن طريق تبسيط الرسومات المتحركة
   return (
     <div className="fixed inset-0 bg-gradient-to-b from-[#ea580c] to-orange-800 flex flex-col items-center justify-center text-center p-6">
       {/* شعار التطبيق */}
       <motion.div 
-        initial={{ y: -20, opacity: 0 }}
+        initial={{ y: -10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.4 }}
         className="mb-6"
       >
         <img 
           src="/lovable-uploads/38d086d7-420f-49f9-9212-a4196a8e1f6d.png" 
           alt="دام" 
-          className="w-24 h-24 rounded-md shadow-lg"
+          className="w-20 h-20 rounded-md shadow-lg"
+          loading="eager"
         />
       </motion.div>
 
       {/* عنوان التطبيق */}
       <motion.h1 
-        initial={{ y: -10, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.2, duration: 0.5 }}
-        className="text-3xl font-bold text-white mb-12"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.1, duration: 0.3 }}
+        className="text-2xl font-bold text-white mb-10"
       >
         مرحباً بك في تطبيق دام
       </motion.h1>
 
       {/* عرض الميزات */}
-      <div className="relative w-full max-w-md h-64 mb-8 overflow-hidden">
+      <div className="relative w-full max-w-md h-60 mb-6 overflow-hidden">
         <AnimatePresence custom={exitDirection} initial={false}>
           <motion.div
             key={currentSlide}
@@ -121,19 +121,14 @@ const OnboardingScreen = () => {
             animate="center"
             exit="exit"
             transition={{
-              x: { type: "spring", stiffness: 300, damping: 30 },
-              opacity: { duration: 0.5 }
+              x: { type: "spring", stiffness: 250, damping: 25 },
+              opacity: { duration: 0.3 }
             }}
-            className={`absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br ${currentFeature.color} rounded-2xl p-6 shadow-lg`}
+            className={`absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br ${currentFeature.color} rounded-xl p-6 shadow-lg`}
           >
-            <motion.div 
-              initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ type: "spring", stiffness: 260, damping: 20 }}
-              className="mb-4 p-3 bg-white/10 rounded-full backdrop-blur-sm"
-            >
+            <div className="mb-4 p-3 bg-white/10 rounded-full">
               {currentFeature.icon}
-            </motion.div>
+            </div>
             <h2 className="text-xl font-bold text-white mb-2">{currentFeature.title}</h2>
             <p className="text-orange-100">{currentFeature.description}</p>
           </motion.div>
@@ -141,7 +136,7 @@ const OnboardingScreen = () => {
       </div>
 
       {/* مؤشرات الشرائح */}
-      <div className="flex justify-center space-x-2 mb-8 rtl:space-x-reverse">
+      <div className="flex justify-center space-x-2 mb-6 rtl:space-x-reverse">
         {features.map((_, index) => (
           <button
             key={index}
@@ -149,7 +144,7 @@ const OnboardingScreen = () => {
               setExitDirection(index < currentSlide ? "right" : "left");
               setCurrentSlide(index);
             }}
-            className={`w-2.5 h-2.5 rounded-full ${
+            className={`w-2 h-2 rounded-full ${
               index === currentSlide ? "bg-white" : "bg-white/30"
             }`}
             aria-label={`انتقال إلى الشريحة ${index + 1}`}
@@ -168,13 +163,13 @@ const OnboardingScreen = () => {
             السابق
           </Button>
         ) : (
-          <div></div> // مساحة فارغة للحفاظ على المحاذاة
+          <div></div>
         )}
         
         <Button 
           variant="default" 
           onClick={isLastSlide ? completeOnboarding : nextSlide}
-          className="bg-white text-[#ea580c] px-8 hover:bg-orange-50"
+          className="bg-white text-[#ea580c] px-6 hover:bg-orange-50"
         >
           {isLastSlide ? "ابدأ الآن" : "التالي"}
         </Button>
@@ -184,7 +179,7 @@ const OnboardingScreen = () => {
       {!isLastSlide && (
         <button
           onClick={completeOnboarding}
-          className="mt-8 text-sm text-orange-200 hover:text-white transition-colors"
+          className="mt-6 text-sm text-orange-200 hover:text-white transition-colors"
         >
           تخطي
         </button>
