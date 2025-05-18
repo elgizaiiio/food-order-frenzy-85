@@ -2,7 +2,6 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { BrowserRouter } from "react-router-dom";
 import { UserProvider } from "@/context/UserContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { FirebaseProvider } from "@/context/FirebaseContext";
@@ -34,22 +33,20 @@ const App = () => {
       <AuthProvider>
         <UserProvider>
           <TooltipProvider>
-            <BrowserRouter>
-              <Toaster />
-              <Sonner />
-              {showSplash ? (
-                <Suspense fallback={<LoadingFallback />}>
-                  <SplashScreen setShowSplash={setShowSplash} />
-                </Suspense>
-              ) : (
-                <Suspense fallback={<LoadingFallback />}>
-                  <AppRoutes />
-                </Suspense>
-              )}
-              <div className={showSplash ? 'hidden' : 'block'}>
-                <BottomNav />
-              </div>
-            </BrowserRouter>
+            <Toaster />
+            <Sonner />
+            {showSplash ? (
+              <Suspense fallback={<LoadingFallback />}>
+                <SplashScreen setShowSplash={setShowSplash} />
+              </Suspense>
+            ) : (
+              <Suspense fallback={<LoadingFallback />}>
+                <AppRoutes />
+              </Suspense>
+            )}
+            <div className={showSplash ? 'hidden' : 'block'}>
+              <BottomNav />
+            </div>
           </TooltipProvider>
         </UserProvider>
       </AuthProvider>
