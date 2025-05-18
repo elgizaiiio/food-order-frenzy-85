@@ -94,16 +94,17 @@ export function useViewport(): ViewportSize {
         resizeObserver.disconnect();
       };
     } else {
-      // التراجع للطريقة التقليدية
-      window.addEventListener('resize', updateViewport, { passive: true });
-      window.addEventListener('orientationchange', () => {
+      // التراجع للطريقة التقليدية - تأكد من أن window موجود بشكل صريح للمترجم
+      const win = window as Window;
+      win.addEventListener('resize', updateViewport, { passive: true });
+      win.addEventListener('orientationchange', () => {
         setTimeout(updateViewport, 100);
       });
       
       return () => {
-        if (timeoutId) window.clearTimeout(timeoutId);
-        window.removeEventListener('resize', updateViewport);
-        window.removeEventListener('orientationchange', updateViewport);
+        if (timeoutId) win.clearTimeout(timeoutId);
+        win.removeEventListener('resize', updateViewport);
+        win.removeEventListener('orientationchange', updateViewport);
       };
     }
   }, []);
