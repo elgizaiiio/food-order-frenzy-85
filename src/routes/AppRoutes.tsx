@@ -13,7 +13,7 @@ const PersonalCareRoutes = React.lazy(() => import("./PersonalCareRoutes"));
 const AppRoutes: React.FC = () => {
   return (
     <Routes>
-      {/* المسارات العامة */}
+      {/* المسارات العامة - catch root path and redirects appropriately */}
       <Route 
         path="/" 
         element={
@@ -22,6 +22,8 @@ const AppRoutes: React.FC = () => {
           </Suspense>
         } 
       />
+      
+      {/* Handle specific public routes */}
       <Route 
         path="/onboarding/*" 
         element={

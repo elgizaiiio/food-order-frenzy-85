@@ -1,14 +1,14 @@
 
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Home } from 'lucide-react';
 
+// We're removing the useNavigate dependency since this component might be rendered
+// outside of a router context in some error scenarios
 const NotFound: React.FC = () => {
-  const navigate = useNavigate();
-  
   const goToHome = () => {
-    navigate('/');
+    // Use standard navigation instead of router's navigate
+    window.location.href = '/';
   };
   
   return (

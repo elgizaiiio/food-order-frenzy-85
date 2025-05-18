@@ -18,14 +18,15 @@ const PublicRoutes: React.FC = () => {
   useEffect(() => {
     const onboardingComplete = localStorage.getItem('onboardingComplete') === 'true';
     
-    if (location.pathname === '/' || location.pathname === '') {
-      if (onboardingComplete) {
-        navigate('/login', { replace: true });
-      } else {
-        navigate('/onboarding', { replace: true });
-      }
+    // Only redirect if we're at the root path and not already redirecting
+    if ((location.pathname === '/' || location.pathname === '') && !location.state?.redirecting) {
+      const targetPath = onboardingComplete ? '/login' : '/onboarding';
+      navigate(targetPath, { 
+        replace: true,
+        state: { redirecting: true } 
+      });
     }
-  }, [navigate, location.pathname]);
+  }, [navigate, location.pathname, location.state]);
 
   return (
     <Routes>
