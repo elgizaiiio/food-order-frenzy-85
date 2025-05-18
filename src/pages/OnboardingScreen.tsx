@@ -1,12 +1,11 @@
 
-// Import React and useState from react
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Heart, ShieldCheck, Rocket, Smartphone } from 'lucide-react';
 
-// تحسين بيانات المميزات للتحميل الأسرع
+// تحسين بيانات المميزات 
 const features = [
   {
     title: "توصيل سريع",
@@ -34,13 +33,12 @@ const features = [
   }
 ];
 
-// تحسين المكون الرئيسي مع أداء أفضل
 const OnboardingScreen = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [exitDirection, setExitDirection] = useState<"left" | "right">("left");
   const navigate = useNavigate();
 
-  // تبسيط وظائف التنقل
+  // وظائف التنقل
   const nextSlide = () => {
     if (currentSlide < features.length - 1) {
       setExitDirection("left");
@@ -57,13 +55,13 @@ const OnboardingScreen = () => {
     }
   };
 
-  // تحسين إكمال عملية التعريف
+  // إكمال عملية التعريف
   const completeOnboarding = () => {
     localStorage.setItem('onboardingComplete', 'true');
     navigate('/login', { replace: true });
   };
 
-  // تبسيط حركات الانتقال للشرائح
+  // حركات الانتقال للشرائح
   const slideVariants = {
     enter: (direction: string) => ({
       x: direction === "right" ? -300 : 300,
@@ -82,9 +80,8 @@ const OnboardingScreen = () => {
   const currentFeature = features[currentSlide];
   const isLastSlide = currentSlide === features.length - 1;
 
-  // تحسين الأداء عن طريق تبسيط الرسومات المتحركة
   return (
-    <div className="fixed inset-0 bg-gradient-to-b from-[#ea580c] to-orange-800 flex flex-col items-center justify-center text-center p-6">
+    <div className="fixed inset-0 bg-gradient-to-b from-[#ea580c] to-orange-800 flex flex-col items-center justify-center text-center p-6 overflow-hidden">
       {/* شعار التطبيق */}
       <motion.div 
         initial={{ y: -10, opacity: 0 }}
@@ -92,12 +89,11 @@ const OnboardingScreen = () => {
         transition={{ duration: 0.4 }}
         className="mb-6"
       >
-        <img 
-          src="/lovable-uploads/38d086d7-420f-49f9-9212-a4196a8e1f6d.png" 
-          alt="دام" 
-          className="w-20 h-20 rounded-md shadow-lg"
-          loading="eager"
-        />
+        <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-lg">
+          <h1 className="text-4xl font-bold bg-gradient-to-br from-orange-400 to-orange-600 bg-clip-text text-transparent">
+            دام
+          </h1>
+        </div>
       </motion.div>
 
       {/* عنوان التطبيق */}

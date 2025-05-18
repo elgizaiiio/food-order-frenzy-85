@@ -17,6 +17,14 @@ const PublicRoutes: React.FC = () => {
         path="/"
         element={
           <Suspense fallback={<LoadingFallback />}>
+            <Login />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/onboarding"
+        element={
+          <Suspense fallback={<LoadingFallback />}>
             <OnboardingScreen />
           </Suspense>
         }

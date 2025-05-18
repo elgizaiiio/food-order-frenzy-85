@@ -11,14 +11,11 @@ interface SplashScreenProps {
 
 const SplashScreen: React.FC<SplashScreenProps> = ({ setShowSplash }) => {
   const navigate = useNavigate();
-  const [animationComplete, setAnimationComplete] = useState(false);
   const { isMobile } = useViewport();
-  
-  // استخدام useAuth مع التحقق من وجود AuthProvider
   const auth = useAuth();
   const [authState, setAuthState] = useState<'loading' | 'authenticated' | 'unauthenticated'>('loading');
   
-  // التحقق من حالة المستخدم
+  // تحديد حالة المصادقة
   useEffect(() => {
     if (auth.user) {
       setAuthState('authenticated');
@@ -28,35 +25,32 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ setShowSplash }) => {
   }, [auth.user, auth.isLoading]);
   
   useEffect(() => {
+    // تحقق مما إذا كان المستخدم قد أكمل عملية التعريف
     const onboardingComplete = localStorage.getItem('onboardingComplete') === 'true';
     
-    // تحسين وقت التحميل للشاشه الافتتاحيه
-    const splashTimeout = isMobile ? 1500 : 2000;
+    // ضبط مدة عرض شاشة البداية
+    const splashTimeout = isMobile ? 2000 : 2500;
 
     const timer = setTimeout(() => {
-      setAnimationComplete(true);
+      // إخفاء شاشة البداية
+      setShowSplash(false);
       
-      setTimeout(() => {
-        // تغيير طريقة التنقل لاستخدام setShowSplash أولاً
-        setShowSplash(false);
-        
-        // توجيه المستخدم للصفحة المناسبة بعد إخفاء شاشة البداية
-        if (authState === 'authenticated') {
-          navigate('/', { replace: true });
-        } else if (onboardingComplete) {
-          navigate('/login', { replace: true });
-        } else {
-          navigate('/onboarding', { replace: true });
-        }
-      }, 300);
+      // توجيه المستخدم إلى الصفحة المناسبة
+      if (authState === 'authenticated') {
+        navigate('/', { replace: true });
+      } else if (onboardingComplete) {
+        navigate('/login', { replace: true });
+      } else {
+        navigate('/onboarding', { replace: true });
+      }
     }, splashTimeout);
 
     return () => clearTimeout(timer);
-  }, [navigate, authState, isMobile, setShowSplash]);
+  }, [authState, navigate, isMobile, setShowSplash]);
 
   return (
     <div className="fixed inset-0 bg-gradient-to-br from-orange-300 via-orange-400 to-orange-500 flex items-center justify-center overflow-hidden z-50">
-      <div className="relative z-10 flex flex-col items-center justify-center px-6 animate-fade-in">
+      <div className="relative z-10 flex flex-col items-center justify-center px-6">
         <motion.div
           className="mb-12"
           initial={{ scale: 0.8, opacity: 0 }}

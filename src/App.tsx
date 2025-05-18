@@ -2,16 +2,17 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { UserProvider } from "@/context/UserContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { FirebaseProvider } from "@/context/FirebaseContext";
 import BottomNav from "./components/BottomNav";
-import { Suspense, lazy, useState, useEffect } from "react";
+import { Suspense, lazy, useState } from "react";
 import LoadingFallback from "./components/LoadingFallback";
 
 // استخدام التحميل الكسول للصفحات لتحسين الأداء
 const SplashScreen = lazy(() => import("./components/SplashScreen"));
+const OnboardingScreen = lazy(() => import("./pages/OnboardingScreen"));
 
 // استيراد مكونات التوجيه
 const ProtectedRoutes = lazy(() => import("./routes/ProtectedRoutes"));
@@ -23,17 +24,7 @@ const PersonalCareRoutes = lazy(() => import("./routes/PersonalCareRoutes"));
 // تبسيط مكون التطبيق الرئيسي
 const App = () => {
   const [showSplash, setShowSplash] = useState(true);
-  const location = useLocation();
   
-  // إخفاء شاشة البداية بعد مرور وقت معين
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowSplash(false);
-    }, 2500); // عرض شاشة البداية لمدة أطول قليلاً
-    
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
     <FirebaseProvider>
       <AuthProvider>
@@ -49,26 +40,24 @@ const App = () => {
               <div className="bg-gray-50 min-h-screen">
                 <Routes>
                   {/* المسارات العامة */}
-                  <Route path="/" element={
+                  <Route path="/onboarding" element={
                     <Suspense fallback={<LoadingFallback />}>
-                      <PublicRoutes />
+                      <OnboardingScreen />
                     </Suspense>
                   } />
-                  <Route path="/onboarding/*" element={
-                    <Suspense fallback={<LoadingFallback />}>
-                      <PublicRoutes />
-                    </Suspense>
-                  } />
+                  
                   <Route path="/login/*" element={
                     <Suspense fallback={<LoadingFallback />}>
                       <PublicRoutes />
                     </Suspense>
                   } />
+                  
                   <Route path="/register/*" element={
                     <Suspense fallback={<LoadingFallback />}>
                       <PublicRoutes />
                     </Suspense>
                   } />
+                  
                   <Route path="/forgot-password/*" element={
                     <Suspense fallback={<LoadingFallback />}>
                       <PublicRoutes />
@@ -81,11 +70,13 @@ const App = () => {
                       <PharmacyRoutes />
                     </Suspense>
                   } />
+                  
                   <Route path="/market/*" element={
                     <Suspense fallback={<LoadingFallback />}>
                       <MarketRoutes />
                     </Suspense>
                   } />
+                  
                   <Route path="/personal-care/*" element={
                     <Suspense fallback={<LoadingFallback />}>
                       <PersonalCareRoutes />
