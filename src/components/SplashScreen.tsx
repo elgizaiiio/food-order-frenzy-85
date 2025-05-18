@@ -30,8 +30,8 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ setShowSplash }) => {
   useEffect(() => {
     const onboardingComplete = localStorage.getItem('onboardingComplete') === 'true';
     
-    // تسريع وقت ظهور الشاشة المبدئية
-    const splashTimeout = isMobile ? 1000 : 1500;
+    // تحسين وقت التحميل للشاشه الافتتاحيه
+    const splashTimeout = isMobile ? 1500 : 2000;
 
     const timer = setTimeout(() => {
       setAnimationComplete(true);
@@ -40,7 +40,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ setShowSplash }) => {
         // تغيير طريقة التنقل لاستخدام setShowSplash أولاً
         setShowSplash(false);
         
-        // ثم بعد إخفاء شاشة البداية، التوجيه إلى الصفحة المناسبة
+        // توجيه المستخدم للصفحة المناسبة بعد إخفاء شاشة البداية
         if (authState === 'authenticated') {
           navigate('/', { replace: true });
         } else if (onboardingComplete) {
@@ -48,15 +48,15 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ setShowSplash }) => {
         } else {
           navigate('/onboarding', { replace: true });
         }
-      }, 100);
+      }, 300);
     }, splashTimeout);
 
     return () => clearTimeout(timer);
   }, [navigate, authState, isMobile, setShowSplash]);
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-orange-300 via-orange-400 to-orange-500 flex items-center justify-center overflow-hidden">
-      <div className="relative z-10 flex flex-col items-center justify-center px-6">
+    <div className="fixed inset-0 bg-gradient-to-br from-orange-300 via-orange-400 to-orange-500 flex items-center justify-center overflow-hidden z-50">
+      <div className="relative z-10 flex flex-col items-center justify-center px-6 animate-fade-in">
         <motion.div
           className="mb-12"
           initial={{ scale: 0.8, opacity: 0 }}
@@ -64,7 +64,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ setShowSplash }) => {
           transition={{ duration: 0.7, ease: "easeOut" }}
         >
           <motion.div
-            className={`${isMobile ? 'w-28 h-28' : 'w-36 h-36'} rounded-full bg-white flex items-center justify-center shadow-lg`}
+            className={`${isMobile ? 'w-32 h-32' : 'w-40 h-40'} rounded-full bg-white flex items-center justify-center shadow-lg`}
           >
             <motion.h1
               className={`${isMobile ? 'text-5xl' : 'text-6xl'} font-bold bg-gradient-to-br from-orange-400 to-orange-600 bg-clip-text text-transparent`}
@@ -83,7 +83,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ setShowSplash }) => {
           <motion.p
             className={`text-white ${isMobile ? 'text-base' : 'text-lg'} font-medium tracking-wide`}
           >
-            مع دام كل حاجه بقت سهله
+            مع دام كل حاجة بقت سهلة
           </motion.p>
         </motion.div>
       </div>

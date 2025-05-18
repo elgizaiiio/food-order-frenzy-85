@@ -13,6 +13,16 @@ export interface Restaurant {
   created_at: string;
 }
 
+export interface MenuItem {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  image_url: string;
+  category: string;
+  restaurant_id: string;
+}
+
 // جلب جميع المطاعم من قاعدة البيانات
 export const fetchRestaurants = async (): Promise<Restaurant[]> => {
   try {
@@ -50,9 +60,9 @@ export const fetchRestaurantById = async (id: string): Promise<Restaurant> => {
 };
 
 // جلب قائمة الطعام للمطعم
-export const fetchRestaurantMenu = async (restaurantId: string) => {
+export const fetchRestaurantMenu = async (restaurantId: string): Promise<MenuItem[]> => {
   const { data, error } = await supabase
-    .from('menu_items')
+    .from('restaurant_menu')
     .select('*')
     .eq('restaurant_id', restaurantId);
     

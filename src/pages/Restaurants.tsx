@@ -60,9 +60,10 @@ const Restaurants: React.FC = () => {
     
     return restaurants.filter(restaurant => {
       const matchesSearch = restaurant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            restaurant.description.toLowerCase().includes(searchQuery.toLowerCase());
+                            (restaurant.description || "").toLowerCase().includes(searchQuery.toLowerCase());
+      
       const matchesCategory = selectedCategory === "الكل" || 
-                             restaurant.description.includes(selectedCategory);
+                             (restaurant.description || "").includes(selectedCategory);
       
       return matchesSearch && matchesCategory;
     });
@@ -231,11 +232,12 @@ const Restaurants: React.FC = () => {
                       src={restaurant.logo_url || "https://picsum.photos/400/200"}
                       alt={restaurant.name}
                       className="w-full h-full object-cover"
+                      loading="lazy"
                     />
                     <div className="absolute top-3 left-3">
                       <Badge className="bg-orange-500 text-white shadow-sm border-0">
                         <Clock className="w-3 h-3 ml-1" />
-                        {restaurant.delivery_time}
+                        {restaurant.delivery_time || "25-35 دقيقة"}
                       </Badge>
                     </div>
                     <div className="absolute bottom-0 right-0 left-0 bg-gradient-to-t from-black/70 to-transparent p-3">
@@ -278,7 +280,7 @@ const Restaurants: React.FC = () => {
                         <span>2.5 كم</span>
                       </div>
                       <div className="text-xs text-gray-500">
-                        {restaurant.delivery_time}
+                        {restaurant.delivery_time || "25-35 دقيقة"}
                       </div>
                     </div>
 

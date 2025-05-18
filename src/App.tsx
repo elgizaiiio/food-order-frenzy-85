@@ -29,7 +29,7 @@ const App = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowSplash(false);
-    }, 1500); // عرض شاشة البداية لوقت أقصر
+    }, 2500); // عرض شاشة البداية لمدة أطول قليلاً
     
     return () => clearTimeout(timer);
   }, []);
@@ -46,22 +46,60 @@ const App = () => {
                 <SplashScreen setShowSplash={setShowSplash} />
               </Suspense>
             ) : (
-              <Routes>
-                {/* المسارات العامة */}
-                <Route path="/" element={<PublicRoutes />} />
-                <Route path="/onboarding/*" element={<PublicRoutes />} />
-                <Route path="/login/*" element={<PublicRoutes />} />
-                <Route path="/register/*" element={<PublicRoutes />} />
-                <Route path="/forgot-password/*" element={<PublicRoutes />} />
-                
-                {/* مسارات التطبيق المختلفة */}
-                <Route path="/pharmacy/*" element={<PharmacyRoutes />} />
-                <Route path="/market/*" element={<MarketRoutes />} />
-                <Route path="/personal-care/*" element={<PersonalCareRoutes />} />
-                
-                {/* المسارات المحمية الأخرى */}
-                <Route path="/*" element={<ProtectedRoutes />} />
-              </Routes>
+              <div className="bg-gray-50 min-h-screen">
+                <Routes>
+                  {/* المسارات العامة */}
+                  <Route path="/" element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <PublicRoutes />
+                    </Suspense>
+                  } />
+                  <Route path="/onboarding/*" element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <PublicRoutes />
+                    </Suspense>
+                  } />
+                  <Route path="/login/*" element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <PublicRoutes />
+                    </Suspense>
+                  } />
+                  <Route path="/register/*" element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <PublicRoutes />
+                    </Suspense>
+                  } />
+                  <Route path="/forgot-password/*" element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <PublicRoutes />
+                    </Suspense>
+                  } />
+                  
+                  {/* مسارات التطبيق المختلفة */}
+                  <Route path="/pharmacy/*" element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <PharmacyRoutes />
+                    </Suspense>
+                  } />
+                  <Route path="/market/*" element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <MarketRoutes />
+                    </Suspense>
+                  } />
+                  <Route path="/personal-care/*" element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <PersonalCareRoutes />
+                    </Suspense>
+                  } />
+                  
+                  {/* المسارات المحمية الأخرى */}
+                  <Route path="/*" element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <ProtectedRoutes />
+                    </Suspense>
+                  } />
+                </Routes>
+              </div>
             )}
             <div className={showSplash ? 'hidden' : 'block'}>
               <BottomNav />
