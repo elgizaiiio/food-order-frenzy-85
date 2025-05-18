@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
@@ -29,22 +28,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       
       try {
-        // التحقق من وجود جلسة حالية أولاً
-        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError) {
-          console.error('خطأ في جلب بيانات الجلسة', sessionError);
-          throw sessionError;
-        }
-        
-        console.log("جلسة المستخدم الحالية:", sessionData?.session?.user?.email);
-        
-        if (sessionData?.session) {
-          setSession(sessionData.session);
-          setUser(sessionData.session.user);
-        }
-        
-        // إعداد الاستماع لتغييرات حالة المصادقة
+        // إعداد الاستماع لتغييرات حالة المصادقة أولاً
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, currentSession) => {
           console.log("تغيير حالة المصادقة:", _event, currentSession?.user?.email);
           
@@ -59,7 +43,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setIsLoading(false);
         });
         
-        // إذا لم يكن هناك تغيير في حالة المصادقة، نحدّث حالة التحميل
+        // ثم التحقق من وجود جلسة حالية
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error('خطأ في جلب بيانات الجلسة', sessionError);
+          throw sessionError;
+        }
+        
+        console.log("جلسة المستخدم الحالية:", sessionData?.session?.user?.email);
+        
+        if (sessionData?.session) {
+          setSession(sessionData.session);
+          setUser(sessionData.session.user);
+        }
+        
+        // إذا لم يكن هناك جلسة، نحدّث حالة التحميل
         if (!sessionData?.session) {
           setIsLoading(false);
         }

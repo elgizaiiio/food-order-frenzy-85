@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Mail, Lock, EyeOff, Eye, UserCheck } from 'lucide-react';
@@ -20,10 +19,17 @@ const Login: React.FC = () => {
   
   const from = location.state?.from?.pathname || '/';
   
+  // تعديل منطق إعادة التوجيه لمنع الحلقة اللانهائية
   useEffect(() => {
+    // فقط إذا كان المستخدم موجودًا والتحميل اكتمل، قم بإعادة التوجيه
     if (!isLoading && user) {
       console.log("تم تسجيل الدخول بالفعل، جاري التوجيه إلى:", from);
-      navigate(from, { replace: true });
+      // استخدام setTimeout لتأخير إعادة التوجيه وتجنب حلقات التحديث اللانهائية
+      const redirectTimer = setTimeout(() => {
+        navigate(from, { replace: true });
+      }, 100);
+      
+      return () => clearTimeout(redirectTimer);
     }
   }, [user, navigate, from, isLoading]);
 
@@ -40,6 +46,7 @@ const Login: React.FC = () => {
     try {
       await signIn(email, password);
       toast.success('تم تسجيل الدخول بنجاح');
+      // لا داعي لإعادة التوجيه هنا، useEffect سيقوم بذلك تلقائيًا
     } catch (error: any) {
       console.error('خطأ في تسجيل الدخول:', error);
       
@@ -96,6 +103,26 @@ const Login: React.FC = () => {
     hover: { scale: 1.05 },
     tap: { scale: 0.95 }
   };
+  
+  // الآن يمكننا إضافة رسالة تحميل بينما نقوم بالتحقق من حالة المستخدم
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-orange-50">
+        <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+        <p className="mt-4 text-orange-600 font-medium">جاري التحقق من بيانات الدخول...</p>
+      </div>
+    );
+  }
+  
+  // إذا كان المستخدم مسجل دخوله بالفعل، يجب عدم عرض نموذج تسجيل الدخول
+  if (user) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-orange-50">
+        <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+        <p className="mt-4 text-orange-600 font-medium">أنت مسجل دخول بالفعل، جاري إعادة التوجيه...</p>
+      </div>
+    );
+  }
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 via-white to-orange-100 overflow-hidden relative" dir="rtl">
