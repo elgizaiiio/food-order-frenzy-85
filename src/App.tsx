@@ -2,7 +2,7 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { UserProvider } from "@/context/UserContext";
 import { MarketCartProvider } from "@/context/MarketCartContext";
 import { PharmacyCartProvider } from "@/context/PharmacyCartContext";
@@ -86,7 +86,6 @@ const LoadingFallback = () => (
 
 // إنشاء كائن QueryClient داخل دالة المكون لتفادي مشكلة القراءة من null
 const App = () => {
-  // تأكد من إنشاء queryClient داخل المكون مع إعدادات تحسين الأداء
   const [showSplash, setShowSplash] = useState(true);
   
   // إخفاء شاشة البداية بعد مرور وقت معين
@@ -100,21 +99,25 @@ const App = () => {
 
   return (
     <FirebaseProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        {showSplash ? (
-          <Routes>
-            <Route path="*" element={
-              <Suspense fallback={<LoadingFallback />}>
-                <SplashScreen setShowSplash={setShowSplash} />
-              </Suspense>
-            } />
-          </Routes>
-        ) : (
-          <AppContent />
-        )}
-      </TooltipProvider>
+      <AuthProvider>
+        <UserProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            {showSplash ? (
+              <Routes>
+                <Route path="*" element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <SplashScreen setShowSplash={setShowSplash} />
+                  </Suspense>
+                } />
+              </Routes>
+            ) : (
+              <AppContent />
+            )}
+          </TooltipProvider>
+        </UserProvider>
+      </AuthProvider>
     </FirebaseProvider>
   );
 };
