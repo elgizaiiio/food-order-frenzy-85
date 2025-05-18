@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 const SplashScreen: React.FC = () => {
   const navigate = useNavigate();
@@ -25,106 +24,57 @@ const SplashScreen: React.FC = () => {
           navigate('/onboarding');
         }
       }, 500);
-    }, 3500); // Extended animation time to allow for the new effects
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, [navigate, user]);
 
+  // Array of motivational phrases in Egyptian dialect
+  const motivationalPhrases = [
+    "خليك جاهز للي جاي",
+    "هنوصلك لأبعد مكان",
+    "النجاح رحلة مش وجهة",
+    "كل يوم خطوة للأمام",
+    "معاك في كل مكان"
+  ];
+  
+  // Randomly select one phrase
+  const randomPhrase = motivationalPhrases[Math.floor(Math.random() * motivationalPhrases.length)];
+
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-orange-500 via-orange-600 to-orange-800 flex items-center justify-center overflow-hidden">
-      {/* Background animated particles with subtle effect */}
-      {Array.from({ length: 12 }).map((_, index) => (
-        <motion.div
-          key={`particle-${index}`}
-          className="absolute rounded-full bg-white/20"
-          style={{
-            width: Math.random() * 60 + 15,
-            height: Math.random() * 60 + 15,
-            top: `${Math.random() * 100}%`,
-            left: `${Math.random() * 100}%`,
-          }}
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{
-            scale: [0, 1.2, 0.8],
-            opacity: [0, 0.4, 0],
-            x: [0, Math.random() * 100 - 50],
-            y: [0, Math.random() * 100 - 50],
-          }}
-          transition={{
-            duration: Math.random() * 6 + 3,
-            repeat: Infinity,
-            repeatType: "loop",
-            ease: "easeInOut",
-            delay: Math.random() * 2
-          }}
-        />
-      ))}
+    <div className="fixed inset-0 bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 flex items-center justify-center overflow-hidden">
+      {/* Subtle background pulse effect */}
+      <motion.div
+        className="absolute w-full h-full"
+        initial={{ opacity: 0.5 }}
+        animate={{ 
+          opacity: [0.5, 0.7, 0.5],
+          scale: [1, 1.05, 1],
+        }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      >
+        <div className="absolute w-full h-full bg-[radial-gradient(circle,rgba(255,255,255,0.1)_0%,transparent_70%)] bg-center" />
+      </motion.div>
       
-      {/* Main animated text container */}
+      {/* Main content container */}
       <div className="relative z-10 flex flex-col items-center justify-center">
-        {/* Outer expanding circles */}
+        {/* Main Dam text with slow zoom out effect */}
         <motion.div
-          className="absolute rounded-full border-2 border-white/40"
-          initial={{ width: 180, height: 180, opacity: 0.7 }}
-          animate={{
-            width: 500,
-            height: 500,
-            opacity: 0,
-            x: '-50%',
-            y: '-50%',
-          }}
-          style={{
-            top: '50%',
-            left: '50%',
-          }}
-          transition={{
-            duration: 3,
-            ease: "easeOut",
-            repeat: Infinity,
-            repeatDelay: 0.5
-          }}
-        />
-        
-        <motion.div
-          className="absolute rounded-full border-2 border-white/30"
-          initial={{ width: 180, height: 180, opacity: 0.6 }}
-          animate={{
-            width: 400,
-            height: 400,
-            opacity: 0,
-            x: '-50%',
-            y: '-50%',
-          }}
-          style={{
-            top: '50%',
-            left: '50%',
-          }}
-          transition={{
-            duration: 3,
-            ease: "easeOut",
-            repeat: Infinity,
-            delay: 0.6,
-            repeatDelay: 0.5
-          }}
-        />
-        
-        {/* Central Dam text with expanding effect */}
-        <motion.div
-          className="relative flex items-center justify-center"
-          initial={{ scale: 0.6 }}
-          animate={{ scale: 1 }}
-          transition={{
-            duration: 1,
-            ease: "easeOut"
-          }}
+          className="mb-16"
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 1.5, ease: "easeOut" }}
         >
           <motion.div
-            className="w-44 h-44 rounded-full bg-gradient-to-br from-white to-orange-50 flex items-center justify-center shadow-lg"
-            initial={{ boxShadow: "0 0 20px rgba(255, 255, 255, 0.4)" }}
+            className="w-44 h-44 rounded-full bg-white flex items-center justify-center shadow-lg"
             animate={{ 
               boxShadow: [
                 "0 0 20px rgba(255, 255, 255, 0.4)",
-                "0 0 60px rgba(255, 255, 255, 0.7)",
+                "0 0 50px rgba(255, 255, 255, 0.7)",
                 "0 0 20px rgba(255, 255, 255, 0.4)",
               ]
             }}
@@ -135,14 +85,13 @@ const SplashScreen: React.FC = () => {
             }}
           >
             <motion.h1
-              className="text-7xl font-bold bg-gradient-to-br from-orange-600 to-orange-800 bg-clip-text text-transparent"
-              initial={{ scale: 0.7 }}
+              className="text-7xl font-bold bg-gradient-to-br from-purple-600 to-indigo-800 bg-clip-text text-transparent"
               animate={{ 
-                scale: [0.7, 1, 0.7],
+                scale: [1, 1.1, 1],
                 textShadow: [
-                  "0px 0px 0px rgba(236, 117, 0, 0)",
-                  "0px 0px 15px rgba(236, 117, 0, 0.7)",
-                  "0px 0px 0px rgba(236, 117, 0, 0)",
+                  "0px 0px 0px rgba(79, 70, 229, 0)",
+                  "0px 0px 10px rgba(79, 70, 229, 0.7)",
+                  "0px 0px 0px rgba(79, 70, 229, 0)",
                 ]
               }}
               transition={{
@@ -155,63 +104,29 @@ const SplashScreen: React.FC = () => {
             </motion.h1>
           </motion.div>
         </motion.div>
-      </div>
-      
-      {/* Egyptian dialect loading indicator */}
-      <div className="absolute bottom-28">
-        <div className="flex flex-col items-center">
-          <motion.div
-            className="relative w-52 h-2 bg-white/20 rounded-full overflow-hidden mb-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1 }}
+        
+        {/* Motivational phrase with animation */}
+        <motion.div
+          className="text-center px-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8, duration: 1 }}
+        >
+          <motion.p
+            className="text-white text-xl font-medium tracking-wide"
+            animate={{ 
+              opacity: [0.8, 1, 0.8],
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
           >
-            <motion.div
-              className="h-full bg-gradient-to-r from-white/50 via-white to-white/50 rounded-full"
-              initial={{ x: "-100%" }}
-              animate={{ x: "100%" }}
-              transition={{
-                repeat: Infinity,
-                duration: 2,
-                ease: "easeInOut",
-              }}
-            />
-          </motion.div>
-          
-          <motion.div className="flex items-center justify-center">
-            <motion.p
-              className="text-white/90 text-sm font-light tracking-wider"
-              initial={{ opacity: 0 }}
-              animate={{ 
-                opacity: [0, 1, 0],
-                y: [0, -2, 0]
-              }}
-              transition={{
-                repeat: Infinity,
-                duration: 1.5,
-                times: [0, 0.5, 1]
-              }}
-            >
-              استنى شوية بنحمل التطبيق
-            </motion.p>
-          </motion.div>
-        </div>
+            {randomPhrase}
+          </motion.p>
+        </motion.div>
       </div>
-      
-      {/* App name at the bottom in Egyptian dialect */}
-      <motion.div
-        className="absolute bottom-10 left-0 right-0 text-center"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.5 }}
-      >
-        <h2 className="text-xl text-white/90 font-medium tracking-wide">
-          دام - هنوصلك كل حاجة لحد عندك
-        </h2>
-        <p className="text-white/70 text-sm mt-2 italic">
-          أسرع خدمة توصيل في مصر
-        </p>
-      </motion.div>
     </div>
   );
 };
