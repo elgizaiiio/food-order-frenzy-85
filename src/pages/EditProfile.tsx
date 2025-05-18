@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ChevronLeft, Camera } from 'lucide-react';
@@ -59,7 +60,12 @@ const EditProfile: React.FC = () => {
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      console.log('No file selected');
+      return;
+    }
+    
+    console.log('File selected:', file.name, file.type, file.size);
     
     // التحقق من نوع الملف
     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
@@ -83,8 +89,17 @@ const EditProfile: React.FC = () => {
       };
       reader.readAsDataURL(file);
       
+      console.log('Starting image upload process');
+      
       // عرض رسالة التحميل
       const uploadToast = toast.loading("جاري رفع الصورة...");
+      
+      if (!user?.id) {
+        toast.dismiss(uploadToast);
+        toast.error("لم يتم العثور على معرف المستخدم");
+        console.error('User ID is not available for upload');
+        return;
+      }
       
       // رفع الصورة إلى السيرفر
       const result = await uploadImage.mutateAsync(file);
@@ -162,35 +177,10 @@ const EditProfile: React.FC = () => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center" dir="rtl">
-        <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
-        <p className="mt-4 text-orange-600 font-medium">جاري التحميل...</p>
-      </div>
-    );
-  }
-
-  if (profileError) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center" dir="rtl">
-        <div className="text-red-500 text-xl mb-4">حدث خطأ أثناء تحميل الملف الشخصي</div>
-        <p className="text-gray-600 mb-6">يرجى التأكد من تسجيل الدخول والمحاولة مرة أخرى</p>
-        <div className="flex gap-4">
-          <Button onClick={() => window.location.reload()} className="bg-orange-500 hover:bg-orange-600">
-            إعادة المحاولة
-          </Button>
-          <Button onClick={() => navigate('/profile')} variant="outline">
-            العودة للصفحة الرئيسية
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
+  // تحسين طريقة عرض الشاشة لدعم التمرير بشكل أفضل
   return (
-    <div className="min-h-screen bg-gray-100" dir="rtl">
-      <div className="max-w-md mx-auto bg-white pb-20">
+    <div className="min-h-screen bg-gray-100 overflow-y-auto" dir="rtl">
+      <div className="max-w-md mx-auto bg-white">
         {/* Header */}
         <div className="sticky top-0 flex items-center justify-between p-4 bg-white shadow-sm z-10">
           <Link to="/profile" className="text-gray-700">
@@ -200,78 +190,78 @@ const EditProfile: React.FC = () => {
           <div className="w-6"></div>
         </div>
 
-        <form onSubmit={handleSubmit} className="px-4 py-6">
-            {/* Profile Picture Upload */}
-            <div className="flex flex-col items-center mb-8">
-              <div className="relative mb-4">
-                <Avatar className="w-24 h-24 border-4 border-white shadow-lg">
-                  {imagePreview ? (
-                    <AvatarImage 
-                      src={imagePreview} 
-                      alt={formData.name} 
-                      loading="eager"
-                      fetchPriority="high"
-                    />
-                  ) : (
-                    <AvatarFallback className="bg-orange-100 text-orange-800 text-2xl">
-                      {formData.name?.charAt(0) || user?.email?.charAt(0)?.toUpperCase() || '؟'}
-                    </AvatarFallback>
-                  )}
-                </Avatar>
-                <label htmlFor="profile-picture" className={`absolute bottom-0 right-0 rounded-full p-2 cursor-pointer shadow-md transition-colors ${uploadImage.isPending ? 'bg-gray-400' : 'bg-orange-500 hover:bg-orange-600'}`}>
-                  {uploadImage.isPending ? (
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  ) : (
-                    <Camera className="w-4 h-4 text-white" />
-                  )}
-                </label>
-                <input 
-                  type="file" 
-                  id="profile-picture" 
-                  className="hidden" 
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  disabled={uploadImage.isPending}
-                />
-              </div>
-              <p className="text-sm text-orange-600">{uploadImage.isPending ? 'جاري رفع الصورة...' : 'اضغط على الأيقونة لتغيير الصورة الشخصية'}</p>
-            </div>
-
-            {/* Name Input */}
-            <div className="mb-6">
-              <Label htmlFor="name" className="block mb-2 text-gray-800">الاسم</Label>
-              <Input
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                className="w-full border-gray-200 focus:border-orange-400 focus:ring-orange-300"
+        <form onSubmit={handleSubmit} className="px-4 py-6 pb-24">
+          {/* Profile Picture Upload */}
+          <div className="flex flex-col items-center mb-8">
+            <div className="relative mb-4">
+              <Avatar className="w-24 h-24 border-4 border-white shadow-lg">
+                {imagePreview ? (
+                  <AvatarImage 
+                    src={imagePreview} 
+                    alt={formData.name} 
+                    loading="eager"
+                    fetchPriority="high"
+                  />
+                ) : (
+                  <AvatarFallback className="bg-orange-100 text-orange-800 text-2xl">
+                    {formData.name?.charAt(0) || user?.email?.charAt(0)?.toUpperCase() || '؟'}
+                  </AvatarFallback>
+                )}
+              </Avatar>
+              <label htmlFor="profile-picture" className={`absolute bottom-0 right-0 rounded-full p-2 cursor-pointer shadow-md transition-colors ${uploadImage.isPending ? 'bg-gray-400' : 'bg-orange-500 hover:bg-orange-600'}`}>
+                {uploadImage.isPending ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  <Camera className="w-4 h-4 text-white" />
+                )}
+              </label>
+              <input 
+                type="file" 
+                id="profile-picture" 
+                className="hidden" 
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={uploadImage.isPending}
               />
             </div>
+            <p className="text-sm text-orange-600">{uploadImage.isPending ? 'جاري رفع الصورة...' : 'اضغط على الأيقونة لتغيير الصورة الشخصية'}</p>
+          </div>
 
-            {/* Phone Input */}
-            <div className="mb-8">
-              <Label htmlFor="phone" className="block mb-2 text-gray-800">رقم الهاتف</Label>
-              <Input
-                id="phone"
-                name="phone"
-                value={formData.phone}
-                onChange={handleInputChange}
-                placeholder="+966 5xxxxxxxx"
-                className="w-full border-gray-200 focus:border-orange-400 focus:ring-orange-300"
-              />
-              <p className="text-xs text-orange-500 mt-1">سيتم استخدام رقم الهاتف للتواصل بخصوص طلباتك</p>
-            </div>
+          {/* Name Input */}
+          <div className="mb-6">
+            <Label htmlFor="name" className="block mb-2 text-gray-800">الاسم</Label>
+            <Input
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              className="w-full border-gray-200 focus:border-orange-400 focus:ring-orange-300"
+            />
+          </div>
 
-            {/* Submit Button */}
-            <Button 
-              type="submit" 
-              className={`w-full text-white font-medium py-3 rounded-xl shadow-md ${isSubmitting || updateProfile.isPending ? 'bg-gray-400 hover:bg-gray-400' : 'bg-orange-500 hover:bg-orange-600'}`}
-              disabled={updateProfile.isPending || isSubmitting || uploadImage.isPending}
-            >
-              {updateProfile.isPending || isSubmitting ? 'جاري الحفظ...' : 'حفظ التغييرات'}
-            </Button>
-          </form>
+          {/* Phone Input */}
+          <div className="mb-8">
+            <Label htmlFor="phone" className="block mb-2 text-gray-800">رقم الهاتف</Label>
+            <Input
+              id="phone"
+              name="phone"
+              value={formData.phone}
+              onChange={handleInputChange}
+              placeholder="+966 5xxxxxxxx"
+              className="w-full border-gray-200 focus:border-orange-400 focus:ring-orange-300"
+            />
+            <p className="text-xs text-orange-500 mt-1">سيتم استخدام رقم الهاتف للتواصل بخصوص طلباتك</p>
+          </div>
+
+          {/* Submit Button */}
+          <Button 
+            type="submit" 
+            className={`w-full text-white font-medium py-3 rounded-xl shadow-md ${isSubmitting || updateProfile.isPending ? 'bg-gray-400 hover:bg-gray-400' : 'bg-orange-500 hover:bg-orange-600'}`}
+            disabled={updateProfile.isPending || isSubmitting || uploadImage.isPending}
+          >
+            {updateProfile.isPending || isSubmitting ? 'جاري الحفظ...' : 'حفظ التغييرات'}
+          </Button>
+        </form>
       </div>
     </div>
   );

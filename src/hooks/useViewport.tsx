@@ -31,6 +31,21 @@ export function useViewport(): ViewportSize {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
+    // إضافة meta tag للتحكم في viewport
+    const setCorrectViewport = () => {
+      let viewportMetaTag = document.querySelector('meta[name="viewport"]');
+      if (!viewportMetaTag) {
+        viewportMetaTag = document.createElement('meta');
+        viewportMetaTag.setAttribute('name', 'viewport');
+        document.head.appendChild(viewportMetaTag);
+      }
+      viewportMetaTag.setAttribute('content', 
+        'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
+    };
+
+    // تطبيق إعدادات viewport
+    setCorrectViewport();
+
     // تحقق من وجود notch (مثل iPhone X وما بعده)
     const detectNotch = () => {
       // تحقق من دعم env() CSS

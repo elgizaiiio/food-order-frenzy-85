@@ -8,6 +8,7 @@ export interface PersonalCareProduct {
   image_url: string;
   stock: number;
   inStock: boolean;
+  gender?: string;
 }
 
 export interface PersonalCareCategory {

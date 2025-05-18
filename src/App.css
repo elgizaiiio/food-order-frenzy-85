@@ -1,8 +1,20 @@
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
   text-align: center;
+}
+
+body {
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .logo {
@@ -39,4 +51,15 @@
 
 .read-the-docs {
   color: #888;
+}
+
+/* تحسين دعم التمرير للأجهزة المحمولة */
+.overflow-scroll-fix {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+}
+
+/* إلغاء تأثيرات الانزياح المحتملة للتمرير في العناصر القابلة للسحب */
+* {
+  touch-action: pan-y;
 }
