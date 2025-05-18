@@ -32,7 +32,7 @@ export function useViewport(): ViewportSize {
     const isMobile = width < MOBILE_BREAKPOINT;
     const isTablet = width >= MOBILE_BREAKPOINT && width < TABLET_BREAKPOINT;
     const isDesktop = width >= TABLET_BREAKPOINT;
-    const orientation = width > height ? 'landscape' : 'portrait';
+    const orientation: 'landscape' | 'portrait' = width > height ? 'landscape' : 'portrait';
     
     // تحسين عملية اكتشاف notch
     const hasNotch = detectNotch();
@@ -52,13 +52,6 @@ export function useViewport(): ViewportSize {
     if (typeof window === 'undefined') return;
 
     // تحسين استدعاء كشف تغير الأبعاد
-    const detectNotch = () => {
-      const hasEnv = CSS.supports('padding-top: env(safe-area-inset-top)');
-      const isIOSWithNotch = /iPhone/.test(navigator.userAgent) && window.screen.height >= 812;
-      return hasEnv || isIOSWithNotch;
-    };
-
-    // إضافة meta tag للتحكم في viewport بشكل أكثر دقة
     const setCorrectViewport = () => {
       let viewportMetaTag = document.querySelector('meta[name="viewport"]');
       if (!viewportMetaTag) {

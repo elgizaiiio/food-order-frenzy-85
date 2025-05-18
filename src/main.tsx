@@ -15,7 +15,7 @@ const queryClient = new QueryClient({
       retry: 1,
       refetchOnWindowFocus: false,
       staleTime: 1000 * 60 * 5, // 5 دقائق
-      gcTime: 1000 * 60 * 30, // 30 دقيقة
+      gcTime: 1000 * 60 * 30, // 30 دقيقة - تم تغيير cacheTime إلى gcTime
       refetchOnMount: false, // تحسين الأداء من خلال تجنب إعادة الاستعلام عند تركيب المكون
       refetchInterval: false,
       networkMode: 'offlineFirst', // تحسين أداء الشبكة
@@ -102,7 +102,9 @@ if ('loading' in HTMLImageElement.prototype) {
   // استخدام التحميل الكسول المدمج في المتصفح
   const lazyImages = document.querySelectorAll('img[loading="lazy"]');
   lazyImages.forEach(img => {
-    img.src = img.dataset.src || '';
+    if (img instanceof HTMLImageElement && img.dataset.src) {
+      img.src = img.dataset.src;
+    }
   });
 } else {
   // تحميل البديل للمتصفحات التي لا تدعم التحميل الكسول

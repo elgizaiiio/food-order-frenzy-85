@@ -94,7 +94,7 @@ const App = () => {
       queries: {
         staleTime: 5 * 60 * 1000, // 5 دقائق
         refetchOnWindowFocus: false,
-        cacheTime: 10 * 60 * 1000, // 10 دقائق
+        gcTime: 10 * 60 * 1000, // 10 دقائق - تم تغيير cacheTime إلى gcTime
         retry: 1, // تقليل محاولات إعادة المحاولة
         refetchOnMount: false, // منع إعادة الاستعلام عند تركيب المكون
         networkMode: 'offlineFirst', // تحسين أداء الشبكة
