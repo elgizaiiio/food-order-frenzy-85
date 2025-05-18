@@ -56,6 +56,19 @@ const SplashScreen: React.FC = () => {
     }
   };
 
+  const textVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: 0.3,
+        duration: 0.8,
+        ease: "easeOut"
+      }
+    }
+  };
+
   const backgroundVariants = {
     hidden: { opacity: 0 },
     visible: { 
@@ -69,7 +82,7 @@ const SplashScreen: React.FC = () => {
   };
 
   // تكوين الفقاعات المتحركة في الخلفية
-  const bubbles = Array.from({ length: 10 }, (_, i) => ({
+  const bubbles = Array.from({ length: 15 }, (_, i) => ({
     id: i,
     size: Math.random() * 100 + 50,
     x: Math.random() * 100,
@@ -118,23 +131,36 @@ const SplashScreen: React.FC = () => {
         exit={{ opacity: 0 }}
         transition={{ duration: 0.8 }}
       >
-        {/* لوجو التطبيق مع تأثير انبثاق */}
+        {/* اسم التطبيق مع تأثيرات جذابة بدلاً من اللوجو */}
         <motion.div
-          className="relative mb-6 mx-auto"
+          className="relative mb-10 mx-auto"
           variants={logoVariants}
           initial="hidden"
           animate="visible"
           exit="exit"
         >
-          <div className="w-40 h-40 rounded-full bg-white/10 backdrop-blur-xl flex items-center justify-center mx-auto mb-2">
-            <img 
-              src="/lovable-uploads/38d086d7-420f-49f9-9212-a4196a8e1f6d.png" 
-              alt="دام" 
-              className="w-32 h-32 object-contain"
-            />
+          <div className="flex flex-col items-center justify-center">
+            <div className="w-40 h-40 rounded-full bg-gradient-to-br from-orange-300 to-orange-600 flex items-center justify-center mx-auto mb-2 shadow-lg shadow-orange-500/50">
+              <motion.h1 
+                className="text-6xl font-black text-white"
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ 
+                  opacity: 1, 
+                  scale: [0.5, 1.2, 1],
+                  rotate: [0, 10, -10, 5, 0]
+                }}
+                transition={{ 
+                  duration: 1.5,
+                  ease: "easeOut",
+                  times: [0, 0.3, 0.6, 0.9, 1]
+                }}
+              >
+                DAM
+              </motion.h1>
+            </div>
           </div>
           
-          {/* تأثير توهج حول الشعار */}
+          {/* تأثيرات إضافية لاسم التطبيق */}
           <motion.div 
             className="absolute inset-0 rounded-full bg-orange-300 -z-10 blur-xl"
             animate={{
@@ -148,7 +174,7 @@ const SplashScreen: React.FC = () => {
             }}
           />
           
-          {/* نبضة حول الشعار */}
+          {/* دوائر نابضة حول الاسم */}
           {[1, 2, 3].map((_, index) => (
             <motion.div 
               key={index}
@@ -167,17 +193,17 @@ const SplashScreen: React.FC = () => {
           ))}
         </motion.div>
         
-        {/* اسم التطبيق */}
-        <motion.h1 
+        {/* شعار التطبيق */}
+        <motion.h2 
           className="text-4xl font-bold text-white mb-6"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
+          variants={textVariants}
+          initial="hidden"
+          animate="visible"
         >
           دام
-        </motion.h1>
+        </motion.h2>
         
-        {/* شعار التطبيق */}
+        {/* وصف التطبيق */}
         <motion.p 
           className="text-lg text-orange-50 mb-8"
           initial={{ opacity: 0, y: 20 }}

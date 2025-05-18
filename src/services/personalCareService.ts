@@ -61,18 +61,23 @@ export async function fetchProductsByGender(gender: string): Promise<PersonalCar
     
     if (error) throw error;
     
-    // Fix the recursive type issue by explicitly defining the return type
-    const products: PersonalCareProduct[] = (data || []).map(item => ({
-      id: item.id,
-      name: item.name,
-      price: item.price,
-      description: item.description,
-      image_url: item.image_url,
-      gender: item.gender,
-      stock: item.stock,
-      inStock: item.stock > 0,
-      category: item.category_id || ''
-    }));
+    // Fix the recursive type issue by explicitly defining each property
+    const products: PersonalCareProduct[] = (data || []).map(item => {
+      // Safely handle the item properties to prevent undefined errors
+      return {
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        description: item.description,
+        image_url: item.image_url,
+        stock: item.stock,
+        category_id: item.category_id,
+        inStock: item.stock > 0,
+        category: item.category_id || '',
+        // Only add gender if it exists
+        ...(item.gender !== undefined ? { gender: item.gender } : {})
+      };
+    });
     
     return products;
   } catch (error) {
