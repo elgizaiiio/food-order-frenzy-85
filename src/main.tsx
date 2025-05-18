@@ -3,10 +3,9 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'sonner'
-import { AuthProvider } from './context/AuthContext';
-import { UserProvider } from './context/UserContext';
 import App from './App.tsx'
 import './index.css'
+import React from 'react'; // Add React import explicitly
 
 // تحسين إعداد React Query للأداء
 const queryClient = new QueryClient({
@@ -50,26 +49,24 @@ const root = createRoot(container);
 
 // تعزيز أداء التصيير الأولي - تم تحسين هيكل التعابير المتداخلة
 root.render(
-  <BrowserRouter>
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <UserProvider>
-          <App />
-          <Toaster 
-            position="top-center" 
-            richColors 
-            closeButton 
-            duration={2000}
-            toastOptions={{
-              style: { 
-                maxWidth: '400px',
-              }
-            }} 
-          />
-        </UserProvider>
-      </AuthProvider>
-    </QueryClientProvider>
-  </BrowserRouter>
+  <React.StrictMode>
+    <BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <App />
+        <Toaster 
+          position="top-center" 
+          richColors 
+          closeButton 
+          duration={2000}
+          toastOptions={{
+            style: { 
+              maxWidth: '400px',
+            }
+          }} 
+        />
+      </QueryClientProvider>
+    </BrowserRouter>
+  </React.StrictMode>
 );
 
 // تبسيط تسجيل Service Worker
