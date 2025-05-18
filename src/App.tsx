@@ -105,84 +105,91 @@ const App = () => {
             <Toaster />
             <Sonner />
             {showSplash ? (
+              <Suspense fallback={<LoadingFallback />}>
+                <SplashScreen setShowSplash={setShowSplash} />
+              </Suspense>
+            ) : (
               <Routes>
-                <Route path="*" element={
+                {/* صفحة الترحيب يمكن الوصول إليها بدون مصادقة */}
+                <Route path="/onboarding" element={
                   <Suspense fallback={<LoadingFallback />}>
-                    <SplashScreen setShowSplash={setShowSplash} />
+                    <OnboardingScreen />
                   </Suspense>
                 } />
+                
+                {/* مسارات المصادقة - لا تتطلب مصادقة */}
+                <Route path="/login" element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <Login />
+                  </Suspense>
+                } />
+                <Route path="/register" element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <Register />
+                  </Suspense>
+                } />
+                <Route path="/forgot-password" element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <ForgotPassword />
+                  </Suspense>
+                } />
+                
+                {/* المسارات المحمية */}
+                <Route path="/" element={
+                  <AuthGuard>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <Index />
+                    </Suspense>
+                  </AuthGuard>
+                } />
+                
+                {/* مسارات التوصيل */}
+                <Route path="/delivery-request" element={<AuthGuard><DeliveryRequest /></AuthGuard>} />
+                <Route path="/delivery-tracking" element={<AuthGuard><DeliveryTracking /></AuthGuard>} />
+                <Route path="/delivery-tracking/:id" element={<AuthGuard><DeliveryDetails /></AuthGuard>} />
+                <Route path="/delivery-help" element={<AuthGuard><DeliveryHelp /></AuthGuard>} />
+                
+                {/* Nested Route Sections */}
+                <Route path="/pharmacy/*" element={<PharmacyRoutes />} />
+                <Route path="/market/*" element={<MarketRoutes />} />
+                <Route path="/personal-care/*" element={<PersonalCareRoutes />} />
+                
+                {/* Gym Routes */}
+                <Route path="/gym" element={<AuthGuard><Gym /></AuthGuard>} />
+                <Route path="/gym/:id/subscribe" element={<AuthGuard><GymSubscription /></AuthGuard>} />
+                <Route path="/gym/payment" element={<AuthGuard><GymPayment /></AuthGuard>} />
+                <Route path="/gym/success" element={<AuthGuard><GymSuccess /></AuthGuard>} />
+                <Route path="/gym/subscriptions" element={<AuthGuard><GymSubscriptions /></AuthGuard>} />
+                
+                {/* مسارات الملف الشخصي */}
+                <Route path="/profile" element={<AuthGuard><Profile /></AuthGuard>} />
+                <Route path="/edit-profile" element={<AuthGuard><EditProfile /></AuthGuard>} />
+                <Route path="/settings" element={<AuthGuard><Settings /></AuthGuard>} />
+                <Route path="/edit-contact-info" element={<AuthGuard><EditContactInfo /></AuthGuard>} />
+                <Route path="/change-password" element={<AuthGuard><ChangePassword /></AuthGuard>} />
+                <Route path="/notification-settings" element={<AuthGuard><NotificationSettings /></AuthGuard>} />
+                <Route path="/addresses" element={<AuthGuard><Addresses /></AuthGuard>} />
+                <Route path="/add-address" element={<AuthGuard><AddAddress /></AuthGuard>} />
+                <Route path="/edit-address/:addressId" element={<AuthGuard><EditAddress /></AuthGuard>} />
+                <Route path="/payment-methods" element={<AuthGuard><PaymentMethods /></AuthGuard>} />
+                <Route path="/add-payment-method" element={<AuthGuard><AddPaymentMethod /></AuthGuard>} />
+                <Route path="/orders" element={<AuthGuard><Orders /></AuthGuard>} />
+                <Route path="/coupons" element={<AuthGuard><Coupons /></AuthGuard>} />
+                <Route path="/chat-support" element={<AuthGuard><ChatSupport /></AuthGuard>} />
+                <Route path="/invite-friends" element={<AuthGuard><InviteFriends /></AuthGuard>} />
+                <Route path="/dam-bro" element={<AuthGuard><DamBro /></AuthGuard>} />
+                
+                {/* مسار التقاط الكل */}
+                <Route path="*" element={<NotFound />} />
               </Routes>
-            ) : (
-              <AppContent />
             )}
+            <div className={showSplash ? 'hidden' : 'block'}>
+              <BottomNav />
+            </div>
           </TooltipProvider>
         </UserProvider>
       </AuthProvider>
     </FirebaseProvider>
-  );
-};
-
-// إنشاء مكون AppContent لتنظيم الشيفرة وفصل المكونات
-const AppContent = () => {
-  return (
-    <>
-      <div className="pb-24">
-        <Suspense fallback={<LoadingFallback />}>
-          <Routes>
-            {/* صفحة الترحيب يمكن الوصول إليها بدون مصادقة */}
-            <Route path="/onboarding" element={<OnboardingScreen />} />
-            
-            {/* مسارات المصادقة - لا تتطلب مصادقة */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            
-            {/* المسارات المحمية */}
-            <Route path="/" element={<AuthGuard><Index /></AuthGuard>} />
-            
-            {/* مسارات التوصيل */}
-            <Route path="/delivery-request" element={<AuthGuard><DeliveryRequest /></AuthGuard>} />
-            <Route path="/delivery-tracking" element={<AuthGuard><DeliveryTracking /></AuthGuard>} />
-            <Route path="/delivery-tracking/:id" element={<AuthGuard><DeliveryDetails /></AuthGuard>} />
-            <Route path="/delivery-help" element={<AuthGuard><DeliveryHelp /></AuthGuard>} />
-            
-            {/* Nested Route Sections */}
-            <Route path="/pharmacy/*" element={<PharmacyRoutes />} />
-            <Route path="/market/*" element={<MarketRoutes />} />
-            <Route path="/personal-care/*" element={<PersonalCareRoutes />} />
-            
-            {/* Gym Routes */}
-            <Route path="/gym" element={<AuthGuard><Gym /></AuthGuard>} />
-            <Route path="/gym/:id/subscribe" element={<AuthGuard><GymSubscription /></AuthGuard>} />
-            <Route path="/gym/payment" element={<AuthGuard><GymPayment /></AuthGuard>} />
-            <Route path="/gym/success" element={<AuthGuard><GymSuccess /></AuthGuard>} />
-            <Route path="/gym/subscriptions" element={<AuthGuard><GymSubscriptions /></AuthGuard>} />
-            
-            {/* مسارات الملف الشخصي */}
-            <Route path="/profile" element={<AuthGuard><Profile /></AuthGuard>} />
-            <Route path="/edit-profile" element={<AuthGuard><EditProfile /></AuthGuard>} />
-            <Route path="/settings" element={<AuthGuard><Settings /></AuthGuard>} />
-            <Route path="/edit-contact-info" element={<AuthGuard><EditContactInfo /></AuthGuard>} />
-            <Route path="/change-password" element={<AuthGuard><ChangePassword /></AuthGuard>} />
-            <Route path="/notification-settings" element={<AuthGuard><NotificationSettings /></AuthGuard>} />
-            <Route path="/addresses" element={<AuthGuard><Addresses /></AuthGuard>} />
-            <Route path="/add-address" element={<AuthGuard><AddAddress /></AuthGuard>} />
-            <Route path="/edit-address/:addressId" element={<AuthGuard><EditAddress /></AuthGuard>} />
-            <Route path="/payment-methods" element={<AuthGuard><PaymentMethods /></AuthGuard>} />
-            <Route path="/add-payment-method" element={<AuthGuard><AddPaymentMethod /></AuthGuard>} />
-            <Route path="/orders" element={<AuthGuard><Orders /></AuthGuard>} />
-            <Route path="/coupons" element={<AuthGuard><Coupons /></AuthGuard>} />
-            <Route path="/chat-support" element={<AuthGuard><ChatSupport /></AuthGuard>} />
-            <Route path="/invite-friends" element={<AuthGuard><InviteFriends /></AuthGuard>} />
-            <Route path="/dam-bro" element={<AuthGuard><DamBro /></AuthGuard>} />
-            
-            {/* مسار التقاط الكل */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
-      </div>
-      <BottomNav />
-    </>
   );
 };
 
