@@ -8,47 +8,60 @@ import { UserProvider } from './context/UserContext';
 import App from './App.tsx'
 import './index.css'
 
-// إنشاء عميل استعلام لـ React Query مع تحسينات أداء
+// تحسين أداء تحميل الصفحة - إعداد عميل استعلام محسن لـ React Query
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
       refetchOnWindowFocus: false,
-      // تحسينات ذاكرة التخزين المؤقت لتقليل طلبات الشبكة
       staleTime: 1000 * 60 * 5, // 5 دقائق
-      gcTime: 1000 * 60 * 30, // 30 دقيقة (بديل عن cacheTime)
-      // تحسين استجابة واجهة المستخدم
-      refetchOnMount: true,
-      // منع الإعادة المفرطة للطلبات
+      gcTime: 1000 * 60 * 30, // 30 دقيقة
+      refetchOnMount: false, // تحسين الأداء من خلال تجنب إعادة الاستعلام عند تركيب المكون
       refetchInterval: false,
-      // تجنب تأثير طلبات الواجهة المتعددة في وقت واحد
-      networkMode: 'offlineFirst',
+      networkMode: 'offlineFirst', // تحسين أداء الشبكة
     },
     mutations: {
-      // تسريع تحديثات واجهة المستخدم
       networkMode: 'offlineFirst',
+      retry: 1, // تقليل محاولات إعادة المحاولة
     }
   },
 });
 
-// معالجة التحميل الأولي وإزالة شاشة التحميل المؤقتة في HTML
+// تحسين أداء التحميل الأولي
 document.addEventListener('DOMContentLoaded', () => {
+  // استخدام requestIdleCallback لإعطاء الأولوية لعرض الصفحة
+  const runWhenIdle = window.requestIdleCallback || ((cb) => setTimeout(cb, 1));
+  
   // إخفاء شاشة التحميل الأولية وإظهار التطبيق
   const splashLoader = document.querySelector('.loading-container');
   if (splashLoader && splashLoader.parentNode) {
-    setTimeout(() => {
+    runWhenIdle(() => {
       splashLoader.classList.add('fade-out');
       setTimeout(() => {
         if (splashLoader.parentNode) {
           splashLoader.parentNode.removeChild(splashLoader);
         }
-      }, 300);
-    }, 200);
+      }, 200);
+    });
   }
+  
+  // تحميل مسبق للموارد المهمة
+  runWhenIdle(() => {
+    // تحميل مسبق للصور المهمة
+    const preloadImages = ['/dam-logo.png'];
+    preloadImages.forEach(src => {
+      const img = new Image();
+      img.fetchPriority = 'low';
+      img.loading = 'lazy';
+      img.src = src;
+    });
+  });
 });
 
-// استخدام createRoot بدلاً من ReactDOM.render للأداء الأفضل
-createRoot(document.getElementById("root")!).render(
+// تسريع تحميل الصفحة من خلال إنشاء الجذر وتأجيل التحديثات غير الأساسية
+const container = document.getElementById("root")!;
+const root = createRoot(container);
+root.render(
   <BrowserRouter>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
@@ -58,9 +71,7 @@ createRoot(document.getElementById("root")!).render(
             position="top-center" 
             richColors 
             closeButton 
-            // تحسين الأداء عن طريق جعل الرسائل تظهر فقط لمدة 3 ثوانٍ
             duration={3000}
-            // تحسين أداء الرسوم المتحركة
             toastOptions={{
               style: { 
                 maxWidth: '420px',
@@ -73,11 +84,33 @@ createRoot(document.getElementById("root")!).render(
   </BrowserRouter>
 );
 
-// تحسين الأداء من خلال تسجيل Service Worker (اختياري)
+// تحسين الأداء من خلال تسجيل Service Worker وتفعيل التخزين المؤقت
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(error => {
-      console.log('خطأ في تسجيل Service Worker:', error);
-    });
+    navigator.serviceWorker.register('/sw.js')
+      .then(registration => {
+        console.log('تم تسجيل Service Worker بنجاح:', registration.scope);
+      })
+      .catch(error => {
+        console.log('خطأ في تسجيل Service Worker:', error);
+      });
   });
 }
+
+// تحسين أداء تحميل الصور بشكل كسول
+if ('loading' in HTMLImageElement.prototype) {
+  // استخدام التحميل الكسول المدمج في المتصفح
+  const lazyImages = document.querySelectorAll('img[loading="lazy"]');
+  lazyImages.forEach(img => {
+    img.src = img.dataset.src || '';
+  });
+} else {
+  // تحميل البديل للمتصفحات التي لا تدعم التحميل الكسول
+  const script = document.createElement('script');
+  script.src = '/lazy-loading-fallback.js';
+  script.defer = true;
+  document.body.appendChild(script);
+}
+
+// تسريع عملية التحميل من خلال استخدام تقنية تقسيم الرموز (Code Splitting)
+// هذا سيعمل مع وجود React.lazy و Suspense في App.tsx

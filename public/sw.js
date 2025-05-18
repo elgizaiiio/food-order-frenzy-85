@@ -1,6 +1,6 @@
 
 // Service Worker مُحسّن لتسريع الأداء
-const CACHE_NAME = 'dam-delivery-cache-v2';
+const CACHE_NAME = 'dam-delivery-cache-v3';
 
 // الملفات التي سيتم تخزينها مؤقتًا للوصول السريع
 const urlsToCache = [
@@ -16,7 +16,8 @@ const urlsToCache = [
 const blacklist = [
   /\/api\//,
   /supabase/,
-  /firebase/
+  /firebase/,
+  /analytics/
 ];
 
 // تثبيت Service Worker وتخزين الملفات الأساسية
@@ -33,7 +34,7 @@ self.addEventListener('install', event => {
   );
 });
 
-// تحسين استراتيجية التخزين المؤقت: الذاكرة المؤقتة أولاً ثم الشبكة للتحميل السريع
+// تحديث السلوك لفتح الصفحة مباشرة، ثم تحديث الذاكرة المؤقتة
 self.addEventListener('fetch', event => {
   // تجاوز طلبات API وأي طلبات في القائمة السوداء
   if (blacklist.some(pattern => pattern.test(event.request.url))) {
@@ -45,95 +46,105 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // استراتيجية الذاكرة المؤقتة أولاً ثم الشبكة للتسريع
+  // استراتيجية "Stale While Revalidate" للتسريع
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // إرجاع النسخة المخزنة مؤقتًا إذا كانت موجودة
-        if (response) {
-          // تحديث الذاكرة المؤقتة في الخلفية
-          fetch(event.request)
-            .then(newResponse => {
-              if (newResponse && newResponse.ok) {
-                caches.open(CACHE_NAME)
-                  .then(cache => cache.put(event.request, newResponse));
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.match(event.request)
+        .then(cachedResponse => {
+          const fetchPromise = fetch(event.request)
+            .then(networkResponse => {
+              // يتم تخزين استجابات الشبكة الناجحة فقط
+              if (networkResponse && networkResponse.status === 200) {
+                const clonedResponse = networkResponse.clone();
+                cache.put(event.request, clonedResponse);
               }
+              return networkResponse;
             })
-            .catch(() => {});
-            
-          return response;
-        }
-
-        // طلب من الشبكة إذا لم يكن مخزنًا مؤقتًا
-        return fetch(event.request)
-          .then(newResponse => {
-            // لا نخزن الاستجابات الخاطئة
-            if (!newResponse || !newResponse.ok) {
-              return newResponse;
-            }
-
-            // تخزين نسخة من الاستجابة في الذاكرة المؤقتة
-            const responseToCache = newResponse.clone();
-            caches.open(CACHE_NAME)
-              .then(cache => {
-                cache.put(event.request, responseToCache);
-              });
-
-            return newResponse;
-          });
-      })
+            .catch(() => {
+              // استخدام صورة أو ملف احتياطي في حالة فشل الطلب
+              if (event.request.url.match(/\.(jpg|jpeg|png|gif|svg)$/)) {
+                return caches.match('/placeholder.svg');
+              }
+            });
+          
+          // الاستجابة من الذاكرة المؤقتة إذا كانت موجودة، وإلا من الشبكة
+          return cachedResponse || fetchPromise;
+        });
+    })
   );
 });
 
 // تنظيف ذاكرة التخزين المؤقت القديمة وتسريع الأداء
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    }).then(() => {
-      // تأكيد التنشيط المباشر للخدمة دون انتظار تحديث الصفحة
-      return self.clients.claim();
-    })
+    caches.keys()
+      .then(cacheNames => {
+        return Promise.all(
+          cacheNames.map(cacheName => {
+            if (cacheName !== CACHE_NAME) {
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      })
+      .then(() => {
+        // تأكيد التنشيط المباشر للخدمة دون انتظار تحديث الصفحة
+        return self.clients.claim();
+      })
   );
 });
 
-// تحسين شبكة الاتصال الضعيفة
+// تحسين استراتيجية التخزين المؤقت للموارد الثابتة
 self.addEventListener('fetch', event => {
-  // استراتيجية البديل للصور
-  if (event.request.destination === 'image') {
+  // استراتيجية تخزين مؤقت مختلفة لملفات JS و CSS
+  if (event.request.url.match(/\.(js|css)$/)) {
     event.respondWith(
-      fetch(event.request)
-        .catch(() => {
-          // استخدام صورة احتياطية للصور التي فشل تحميلها
-          return new Response(
-            '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100%" height="100%" fill="#eee"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#999">صورة غير متوفرة</text></svg>',
-            { headers: { 'Content-Type': 'image/svg+xml' } }
-          );
-        })
+      caches.open(`${CACHE_NAME}-assets`).then(cache => {
+        return fetch(event.request)
+          .then(response => {
+            // تخزين ناجح فقط
+            if (response.status === 200) {
+              cache.put(event.request, response.clone());
+            }
+            return response;
+          })
+          .catch(() => {
+            return cache.match(event.request);
+          });
+      })
     );
   }
 });
 
-// تسريع التحميل المسبق للصفحات
+// تحسين تحميل مسبق للصفحات
 self.addEventListener('message', event => {
   if (event.data && event.data.type === 'PREFETCH') {
     const urls = event.data.urls;
     if (urls && Array.isArray(urls)) {
       caches.open(CACHE_NAME).then(cache => {
         urls.forEach(url => {
-          fetch(url).then(response => {
-            if (response.ok) {
-              cache.put(url, response);
-            }
-          }).catch(() => {});
+          fetch(url, { credentials: 'same-origin' })
+            .then(response => {
+              if (response.ok) {
+                cache.put(url, response);
+              }
+            })
+            .catch(() => {});
         });
       });
     }
+  }
+});
+
+// إضافة دعم لوضع عدم الاتصال
+self.addEventListener('fetch', event => {
+  // التعامل مع الصفحات المخزنة مؤقتًا في وضع عدم الاتصال
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .catch(() => {
+          return caches.match('/index.html');
+        })
+    );
   }
 });

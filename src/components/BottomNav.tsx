@@ -1,5 +1,5 @@
 
-import React, { memo, useEffect } from 'react';
+import React, { memo, useEffect, useCallback, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Home, ClipboardList, UserRound } from 'lucide-react';
 import { useTouch } from "@/hooks/use-touch";
@@ -12,43 +12,56 @@ const BottomNav: React.FC = () => {
   const path = location.pathname;
   const { isMobile } = useViewport();
   const { isLoading } = useAuth();
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   // التحقق إذا كانت الصفحة الحالية هي صفحة دفع أو صفحات تسجيل الدخول/التسجيل
   const isAuthPage = path === '/login' || path === '/register' || path === '/forgot-password';
 
-  // إعداد حركات التمرير للتنقل
+  // إعداد حركات التمرير للتنقل - تحسين الأداء من خلال استخدام useCallback
+  const handleSwipeLeft = useCallback(() => {
+    // التنقل للأمام عند التمرير لليسار
+    if (path === '/') navigate('/orders');
+    else if (path === '/orders' || path.includes('/order')) navigate('/profile');
+  }, [path, navigate]);
+
+  const handleSwipeRight = useCallback(() => {
+    // التنقل للخلف عند التمرير لليمين
+    if (path === '/profile' || path.includes('/edit-profile')) navigate('/orders');
+    else if (path === '/orders' || path.includes('/order')) navigate('/');
+  }, [path, navigate]);
+
+  // استخدام useCallback لتحسين الأداء
   const { handlers } = useTouch({
-    onSwipeLeft: () => {
-      // التنقل للأمام عند التمرير لليسار
-      if (path === '/') navigate('/orders');
-      else if (path === '/orders' || path.includes('/order')) navigate('/profile');
-    },
-    onSwipeRight: () => {
-      // التنقل للخلف عند التمرير لليمين
-      if (path === '/profile' || path.includes('/edit-profile')) navigate('/orders');
-      else if (path === '/orders' || path.includes('/order')) navigate('/');
-    }
+    onSwipeLeft: handleSwipeLeft,
+    onSwipeRight: handleSwipeRight
   }, 75);
 
-  // إضافة استماع لأحداث الشاشة لإخفاء شريط العنوان عند التمرير للأسفل
+  // تحسين أداء معالجة حدث التمرير باستخدام throttle
   useEffect(() => {
     if (!isMobile) return;
     
-    let lastScrollY = window.scrollY;
-    const nav = document.getElementById('mobile-bottom-nav');
+    let ticking = false;
     
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      
-      if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        // التمرير للأسفل - إخفاء الشريط
-        nav?.classList.add('nav-hidden');
-      } else {
-        // التمرير للأعلى - إظهار الشريط
-        nav?.classList.remove('nav-hidden');
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
+          
+          if (currentScrollY > lastScrollY && currentScrollY > 100) {
+            // التمرير للأسفل - إخفاء الشريط
+            setIsVisible(false);
+          } else {
+            // التمرير للأعلى - إظهار الشريط
+            setIsVisible(true);
+          }
+          
+          setLastScrollY(currentScrollY);
+          ticking = false;
+        });
+        
+        ticking = true;
       }
-      
-      lastScrollY = currentScrollY;
     };
     
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -56,7 +69,7 @@ const BottomNav: React.FC = () => {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [isMobile]);
+  }, [isMobile, lastScrollY]);
 
   // عدم إظهار الشريط في صفحات المصادقة أو أثناء التحميل
   if (isAuthPage || isLoading) {
@@ -91,7 +104,7 @@ const BottomNav: React.FC = () => {
     >
       <nav 
         id="mobile-bottom-nav"
-        className="bg-white shadow-[0_-4px_12px_rgba(0,0,0,0.08)] border-t border-gray-100 max-w-md mx-auto transition-transform duration-300 safe-area-insets"
+        className={`bg-white shadow-[0_-4px_12px_rgba(0,0,0,0.08)] border-t border-gray-100 max-w-md mx-auto transition-transform duration-300 safe-area-insets will-change-transform ${!isVisible ? 'nav-hidden' : ''}`}
         style={{ 
           paddingBottom: 'env(safe-area-inset-bottom, 0px)',
           borderTopLeftRadius: '20px',

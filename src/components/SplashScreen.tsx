@@ -14,83 +14,81 @@ const SplashScreen: React.FC = () => {
   useEffect(() => {
     const onboardingComplete = localStorage.getItem('onboardingComplete') === 'true';
 
-    // تعديل وقت ظهور الشاشة ليكون أقصر على الهواتف المحمولة لتحسين تجربة المستخدم
-    const splashTimeout = isMobile ? 2500 : 3000;
+    // تحسين وقت ظهور الشاشة ليكون أقصر للحصول على أداء أفضل
+    const splashTimeout = isMobile ? 2000 : 2500;
 
     const timer = setTimeout(() => {
       setAnimationComplete(true);
       
+      // تخفيض وقت الانتظار للانتقال إلى الصفحة التالية
       setTimeout(() => {
         if (user) {
-          navigate('/');
+          navigate('/', { replace: true });
         } else if (onboardingComplete) {
-          navigate('/login');
+          navigate('/login', { replace: true });
         } else {
-          navigate('/onboarding');
+          navigate('/onboarding', { replace: true });
         }
-      }, 500);
+      }, 300); // تحسين وقت الانتقال
     }, splashTimeout);
 
     return () => clearTimeout(timer);
   }, [navigate, user, isMobile]);
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-orange-300 via-orange-400 to-orange-500 flex items-center justify-center overflow-hidden">
-      {/* Subtle background pulse effect */}
+    <div className="fixed inset-0 bg-gradient-to-br from-orange-300 via-orange-400 to-orange-500 flex items-center justify-center overflow-hidden will-change-transform">
+      {/* تحسين أداء الرسوم المتحركة */}
       <motion.div
         className="absolute w-full h-full"
         initial={{ opacity: 0.5 }}
         animate={{ 
           opacity: [0.5, 0.7, 0.5],
-          scale: [1, 1.05, 1],
         }}
         transition={{
-          duration: 4,
+          duration: 3,
           repeat: Infinity,
-          ease: "easeInOut"
+          ease: "easeInOut",
+          repeatType: "reverse"
         }}
       >
         <div className="absolute w-full h-full bg-[radial-gradient(circle,rgba(255,255,255,0.1)_0%,transparent_70%)] bg-center" />
       </motion.div>
       
-      {/* Main content container */}
+      {/* تحسين أداء محتوى الشاشة الرئيسي */}
       <div className="relative z-10 flex flex-col items-center justify-center px-6">
-        {/* Main Dam text with slow zoom out effect */}
+        {/* تحسين أداء رسوم الشعار */}
         <motion.div
           className="mb-16"
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 1.5, ease: "easeOut" }}
+          transition={{ duration: 1, ease: "easeOut" }}
         >
           <motion.div
-            className={`${isMobile ? 'w-36 h-36' : 'w-44 h-44'} rounded-full bg-white flex items-center justify-center shadow-lg`}
+            className={`${isMobile ? 'w-36 h-36' : 'w-44 h-44'} rounded-full bg-white flex items-center justify-center shadow-lg will-change-transform`}
             animate={{ 
               boxShadow: [
                 "0 0 20px rgba(255, 255, 255, 0.4)",
-                "0 0 50px rgba(255, 255, 255, 0.7)",
+                "0 0 40px rgba(255, 255, 255, 0.6)",
                 "0 0 20px rgba(255, 255, 255, 0.4)",
               ]
             }}
             transition={{
-              duration: 3,
+              duration: 2.5,
               repeat: Infinity,
-              ease: "easeInOut"
+              ease: "easeInOut",
+              repeatType: "reverse"
             }}
           >
             <motion.h1
               className={`${isMobile ? 'text-6xl' : 'text-7xl'} font-bold bg-gradient-to-br from-orange-400 to-orange-600 bg-clip-text text-transparent`}
               animate={{ 
-                scale: [1, 1.1, 1],
-                textShadow: [
-                  "0px 0px 0px rgba(249, 115, 22, 0)",
-                  "0px 0px 10px rgba(249, 115, 22, 0.7)",
-                  "0px 0px 0px rgba(249, 115, 22, 0)",
-                ]
+                scale: [1, 1.05, 1],
               }}
               transition={{
-                duration: 3,
+                duration: 2.5,
                 repeat: Infinity,
-                ease: "easeInOut"
+                ease: "easeInOut",
+                repeatType: "reverse"
               }}
             >
               دام
@@ -98,22 +96,23 @@ const SplashScreen: React.FC = () => {
           </motion.div>
         </motion.div>
         
-        {/* Fixed motivational phrase with animation */}
+        {/* تحسين أداء رسوم الجملة التحفيزية */}
         <motion.div
           className="text-center px-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8, duration: 1 }}
+          transition={{ delay: 0.6, duration: 0.8 }}
         >
           <motion.p
-            className={`text-white ${isMobile ? 'text-lg' : 'text-xl'} font-medium tracking-wide`}
+            className={`text-white ${isMobile ? 'text-lg' : 'text-xl'} font-medium tracking-wide will-change-opacity`}
             animate={{ 
               opacity: [0.8, 1, 0.8],
             }}
             transition={{
-              duration: 3,
+              duration: 2.5,
               repeat: Infinity,
-              ease: "easeInOut"
+              ease: "easeInOut",
+              repeatType: "reverse"
             }}
           >
             مع دام كل حاجه بقت سهله
@@ -124,4 +123,4 @@ const SplashScreen: React.FC = () => {
   );
 };
 
-export default SplashScreen;
+export default React.memo(SplashScreen);

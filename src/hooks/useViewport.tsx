@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 type ViewportSize = {
   width: number;
@@ -15,23 +15,50 @@ const MOBILE_BREAKPOINT = 768;
 const TABLET_BREAKPOINT = 1024;
 
 /**
- * هوك مخصص لمراقبة حجم الشاشة واتجاهها مع دعم خصائص الهواتف المحمولة
+ * هوك مُحسّن لمراقبة حجم الشاشة واتجاهها مع دعم خصائص الهواتف المحمولة
  */
 export function useViewport(): ViewportSize {
-  const [viewport, setViewport] = useState<ViewportSize>({
+  // تحسين الأداء من خلال استخدام قيم افتراضية أكثر دقة
+  const getInitialDimensions = () => ({
     width: typeof window !== 'undefined' ? window.innerWidth : 0,
     height: typeof window !== 'undefined' ? window.innerHeight : 0,
-    isMobile: false,
-    isTablet: false,
-    isDesktop: false,
-    orientation: 'portrait',
-    hasNotch: false
   });
+
+  const [dimensions, setDimensions] = useState(getInitialDimensions);
+
+  // استخدام useMemo لتقليل عمليات إعادة الحساب
+  const viewport = useMemo(() => {
+    const { width, height } = dimensions;
+    const isMobile = width < MOBILE_BREAKPOINT;
+    const isTablet = width >= MOBILE_BREAKPOINT && width < TABLET_BREAKPOINT;
+    const isDesktop = width >= TABLET_BREAKPOINT;
+    const orientation = width > height ? 'landscape' : 'portrait';
+    
+    // تحسين عملية اكتشاف notch
+    const hasNotch = detectNotch();
+
+    return {
+      width,
+      height,
+      isMobile,
+      isTablet,
+      isDesktop,
+      orientation,
+      hasNotch
+    };
+  }, [dimensions]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    // إضافة meta tag للتحكم في viewport
+    // تحسين استدعاء كشف تغير الأبعاد
+    const detectNotch = () => {
+      const hasEnv = CSS.supports('padding-top: env(safe-area-inset-top)');
+      const isIOSWithNotch = /iPhone/.test(navigator.userAgent) && window.screen.height >= 812;
+      return hasEnv || isIOSWithNotch;
+    };
+
+    // إضافة meta tag للتحكم في viewport بشكل أكثر دقة
     const setCorrectViewport = () => {
       let viewportMetaTag = document.querySelector('meta[name="viewport"]');
       if (!viewportMetaTag) {
@@ -46,59 +73,61 @@ export function useViewport(): ViewportSize {
     // تطبيق إعدادات viewport
     setCorrectViewport();
 
-    // تحقق من وجود notch (مثل iPhone X وما بعده)
-    const detectNotch = () => {
-      // تحقق من دعم env() CSS
-      const hasEnv = CSS.supports('padding-top: env(safe-area-inset-top)');
-      // تحقق مما إذا كان الجهاز يبدو أنه iPhone X وما بعده
-      const isIOSWithNotch = /iPhone/.test(navigator.userAgent) && 
-                            window.screen.height >= 812;
-
-      return hasEnv || isIOSWithNotch;
-    };
-
+    // استخدام debounce لتحسين أداء أحداث تغيير الحجم
+    let timeoutId: number | null = null;
     const updateViewport = () => {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      const isMobile = width < MOBILE_BREAKPOINT;
-      const isTablet = width >= MOBILE_BREAKPOINT && width < TABLET_BREAKPOINT;
-      const isDesktop = width >= TABLET_BREAKPOINT;
-      const orientation = width > height ? 'landscape' : 'portrait';
-      const hasNotch = detectNotch();
-
-      setViewport({
-        width,
-        height,
-        isMobile,
-        isTablet,
-        isDesktop,
-        orientation,
-        hasNotch
-      });
+      if (timeoutId) {
+        window.clearTimeout(timeoutId);
+      }
+      
+      timeoutId = window.setTimeout(() => {
+        setDimensions({
+          width: window.innerWidth,
+          height: window.innerHeight
+        });
+      }, 100);
     };
 
     // تحديث عند تحميل الصفحة
     updateViewport();
 
-    // تحديث عند تغيير حجم النافذة
-    window.addEventListener('resize', updateViewport);
-    
-    // تحديث عند تغيير اتجاه الجهاز
-    window.addEventListener('orientationchange', () => {
-      // إضافة تأخير صغير للسماح للمتصفح بإكمال تغيير الاتجاه
-      setTimeout(updateViewport, 100);
-    });
-
-    return () => {
-      window.removeEventListener('resize', updateViewport);
-      window.removeEventListener('orientationchange', updateViewport);
-    };
+    // تحسين أداء أحداث تغيير الحجم عبر استخدام ResizeObserver إذا كان مدعوما
+    if ('ResizeObserver' in window) {
+      const resizeObserver = new ResizeObserver(updateViewport);
+      resizeObserver.observe(document.documentElement);
+      
+      return () => {
+        if (timeoutId) window.clearTimeout(timeoutId);
+        resizeObserver.disconnect();
+      };
+    } else {
+      // التراجع للطريقة التقليدية
+      window.addEventListener('resize', updateViewport, { passive: true });
+      window.addEventListener('orientationchange', () => {
+        setTimeout(updateViewport, 100);
+      });
+      
+      return () => {
+        if (timeoutId) window.clearTimeout(timeoutId);
+        window.removeEventListener('resize', updateViewport);
+        window.removeEventListener('orientationchange', updateViewport);
+      };
+    }
   }, []);
 
   return viewport;
 }
 
-// إضافة طريقة مختصرة للوصول إلى isMobile فقط
+// تحسين وظيفة اكتشاف notch
+function detectNotch() {
+  if (typeof window === 'undefined') return false;
+  
+  const hasEnv = CSS.supports('padding-top: env(safe-area-inset-top)');
+  const isIOSWithNotch = /iPhone/.test(navigator.userAgent) && window.screen.height >= 812;
+  return hasEnv || isIOSWithNotch;
+}
+
+// إضافة طريقة مختصرة محسنة للوصول إلى isMobile فقط
 export function useIsMobile(): boolean {
   const { isMobile } = useViewport();
   return isMobile;
