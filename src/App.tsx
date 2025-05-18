@@ -2,7 +2,7 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { UserProvider } from "@/context/UserContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { FirebaseProvider } from "@/context/FirebaseContext";
@@ -23,12 +23,13 @@ const PersonalCareRoutes = lazy(() => import("./routes/PersonalCareRoutes"));
 // تبسيط مكون التطبيق الرئيسي
 const App = () => {
   const [showSplash, setShowSplash] = useState(true);
+  const location = useLocation();
   
   // إخفاء شاشة البداية بعد مرور وقت معين
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowSplash(false);
-    }, 1800); // عرض شاشة البداية لوقت أقصر
+    }, 1500); // عرض شاشة البداية لوقت أقصر
     
     return () => clearTimeout(timer);
   }, []);
@@ -47,6 +48,7 @@ const App = () => {
             ) : (
               <Routes>
                 {/* المسارات العامة */}
+                <Route path="/" element={<PublicRoutes />} />
                 <Route path="/onboarding/*" element={<PublicRoutes />} />
                 <Route path="/login/*" element={<PublicRoutes />} />
                 <Route path="/register/*" element={<PublicRoutes />} />
