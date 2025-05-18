@@ -1,19 +1,43 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, User, Mail, Phone, Lock, Bell, Languages } from 'lucide-react';
+import { ArrowLeft, User, Mail, Phone, Lock, Bell, Languages, ShieldCheck } from 'lucide-react';
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from '@/context/AuthContext';
+import MFASetup from '@/components/MFASetup';
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+
 const Settings: React.FC = () => {
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
+  const { user, signOut } = useAuth();
+  const [showMFADialog, setShowMFADialog] = useState(false);
+  
   const handleNotificationToggle = (checked: boolean) => {
     toast({
       title: checked ? "تم تفعيل الإشعارات" : "تم إلغاء الإشعارات",
       description: "تم حفظ التفضيلات بنجاح"
     });
   };
-  return <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white" dir="rtl">
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast({
+        title: "تم تسجيل الخروج",
+        description: "نتمنى رؤيتك مرة أخرى قريباً"
+      });
+    } catch (error) {
+      toast({
+        title: "خطأ في تسجيل الخروج",
+        description: "حدث خطأ أثناء تسجيل الخروج. يرجى المحاولة مرة أخرى.",
+        variant: "destructive"
+      });
+    }
+  };
+  
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white" dir="rtl">
       <div className="max-w-md mx-auto bg-white pb-20">
         {/* Header */}
         <div className="sticky top-0 flex items-center justify-between p-4 bg-white shadow-sm z-10">
@@ -74,6 +98,21 @@ const Settings: React.FC = () => {
               </div>
             </div>
           </Link>
+
+          {/* New MFA Security Section */}
+          <div onClick={() => setShowMFADialog(true)} className="cursor-pointer">
+            <div className="flex items-center justify-between p-4 border-b border-blue-100 rounded-lg mb-2 hover:bg-blue-50 transition-colors">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+                  <ShieldCheck className="w-5 h-5 text-orange-600" />
+                </div>
+                <span className="font-medium">المصادقة الثنائية</span>
+              </div>
+              <span className="text-sm text-green-500">
+                {user?.factors ? "مفعّل" : "غير مفعّل"}
+              </span>
+            </div>
+          </div>
         </div>
 
         {/* App Settings */}
@@ -116,17 +155,24 @@ const Settings: React.FC = () => {
           </Link>
           
           <div className="p-4 text-center">
-            <button className="text-red-500 font-medium" onClick={() => {
-            toast({
-              title: "تم تسجيل الخروج",
-              description: "نتمنى رؤيتك مرة أخرى قريباً"
-            });
-          }}>
+            <button 
+              className="text-red-500 font-medium" 
+              onClick={handleSignOut}
+            >
               تسجيل الخروج
             </button>
           </div>
         </div>
       </div>
-    </div>;
+
+      {/* MFA Setup Dialog */}
+      <Dialog open={showMFADialog} onOpenChange={setShowMFADialog}>
+        <DialogContent className="sm:max-w-md">
+          <MFASetup onComplete={() => setShowMFADialog(false)} />
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
 };
+
 export default Settings;

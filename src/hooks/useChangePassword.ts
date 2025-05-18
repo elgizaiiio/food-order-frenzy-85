@@ -2,54 +2,52 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
 
 export function useChangePassword() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
 
   const changePassword = async (currentPassword: string, newPassword: string) => {
-    if (newPassword.length < 6) {
-      setError('كلمة المرور يجب أن تكون على الأقل 6 أحرف');
-      return false;
-    }
-
-    setIsLoading(true);
-    setError(null);
-
     try {
-      // الحصول على المستخدم الحالي
-      const { data: { user } } = await supabase.auth.getUser();
+      setIsLoading(true);
+      setError(null);
       
-      if (!user) {
-        throw new Error('يجب تسجيل الدخول أولاً');
+      // تسجيل الدخول مرة أخرى للتحقق من كلمة المرور الحالية
+      const { data: { user: currentUser }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError || !currentUser?.email) {
+        throw new Error('لم يتم العثور على المستخدم. يرجى تسجيل الدخول وإعادة المحاولة.');
       }
-
-      // تغيير كلمة المرور
-      const { error } = await supabase.auth.updateUser({ password: newPassword });
-
-      if (error) throw error;
-
+      
+      // التحقق من صحة كلمة المرور الحالية
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: currentUser.email,
+        password: currentPassword
+      });
+      
+      if (signInError) {
+        throw new Error('كلمة المرور الحالية غير صحيحة');
+      }
+      
+      // تحديث كلمة المرور
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+      
+      if (updateError) {
+        throw updateError;
+      }
+      
       toast.success('تم تغيير كلمة المرور بنجاح');
       return true;
     } catch (err: any) {
-      console.error('خطأ في تغيير كلمة المرور:', err);
-      
-      if (err.message && err.message.includes('auth')) {
-        setError('كلمة المرور الحالية غير صحيحة');
-      } else {
-        setError(err.message || 'حدث خطأ أثناء تغيير كلمة المرور');
-      }
+      setError(err.message || 'حدث خطأ أثناء تغيير كلمة المرور');
+      toast.error(err.message || 'حدث خطأ أثناء تغيير كلمة المرور');
       return false;
     } finally {
       setIsLoading(false);
     }
   };
-
-  return {
-    changePassword,
-    isLoading,
-    error,
-  };
+  
+  return { changePassword, isLoading, error };
 }
