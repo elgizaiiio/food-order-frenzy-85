@@ -1,11 +1,12 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { UserProvider } from "@/context/UserContext";
 import { MarketCartProvider } from "@/context/MarketCartContext";
-import { PharmacyCartProvider } from "@/context/PharmacyCartProvider";
-import { PersonalCareCartProvider } from "@/context/PersonalCareCartProvider";
+import { PharmacyCartProvider } from "@/context/PharmacyCartContext";
+import { PersonalCareCartProvider } from "@/context/PersonalCareCartContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { FirebaseProvider } from "@/context/FirebaseContext";
 import BottomNav from "./components/BottomNav";
@@ -56,7 +57,7 @@ const ChatSupport = lazy(() => import("./pages/ChatSupport"));
 const InviteFriends = lazy(() => import("./pages/InviteFriends"));
 const DamBro = lazy(() => import("./pages/DamBro"));
 
-// تحميل كسول لصفحات المصادقة
+// تحميل كسول لصفحات المصادقة والتطبيق الرئيسي
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
@@ -305,17 +306,5 @@ const PersonalCareRoutes = () => (
     </Routes>
   </PersonalCareCartProvider>
 );
-
-// تصحيح استيراد المكونات الناقصة
-const Login = lazy(() => import("./pages/Login"));
-const Register = lazy(() => import("./pages/Register"));
-const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
-const Index = lazy(() => import("./pages/Index"));
-const Profile = lazy(() => import("./pages/Profile"));
-const EditProfile = lazy(() => import("./pages/EditProfile"));
-const Settings = lazy(() => import("./pages/Settings"));
-const EditContactInfo = lazy(() => import("./pages/EditContactInfo"));
-const ChangePassword = lazy(() => import("./pages/ChangePassword"));
-const NotFound = lazy(() => import("./pages/NotFound"));
 
 export default App;
