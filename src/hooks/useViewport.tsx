@@ -97,3 +97,9 @@ export function useViewport(): ViewportSize {
 
   return viewport;
 }
+
+// إضافة طريقة مختصرة للوصول إلى isMobile فقط
+export function useIsMobile(): boolean {
+  const { isMobile } = useViewport();
+  return isMobile;
+}

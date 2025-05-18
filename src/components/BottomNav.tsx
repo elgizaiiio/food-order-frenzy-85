@@ -3,14 +3,14 @@ import React, { memo, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Home, ClipboardList, UserRound } from 'lucide-react';
 import { useTouch } from "@/hooks/use-touch";
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useViewport } from '@/hooks/useViewport';
 import { useAuth } from '@/context/AuthContext';
 
 const BottomNav: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const path = location.pathname;
-  const isMobile = useIsMobile();
+  const { isMobile } = useViewport();
   const { isLoading } = useAuth();
 
   // التحقق إذا كانت الصفحة الحالية هي صفحة دفع أو صفحات تسجيل الدخول/التسجيل
@@ -91,7 +91,7 @@ const BottomNav: React.FC = () => {
     >
       <nav 
         id="mobile-bottom-nav"
-        className="bg-white shadow-[0_-4px_12px_rgba(0,0,0,0.08)] border-t border-gray-100 max-w-md mx-auto transition-transform duration-300"
+        className="bg-white shadow-[0_-4px_12px_rgba(0,0,0,0.08)] border-t border-gray-100 max-w-md mx-auto transition-transform duration-300 safe-area-insets"
         style={{ 
           paddingBottom: 'env(safe-area-inset-bottom, 0px)',
           borderTopLeftRadius: '20px',
@@ -106,6 +106,7 @@ const BottomNav: React.FC = () => {
               className={`flex flex-col items-center justify-center py-2 px-5 relative transition-all duration-300 ${
                 item.active ? 'text-orange-600' : 'text-gray-500'
               }`}
+              style={{ minHeight: '44px' }}
               aria-label={item.name}
             >
               {item.active && (

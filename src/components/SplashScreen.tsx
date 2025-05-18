@@ -3,14 +3,19 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { useViewport } from '@/hooks/useViewport';
 
 const SplashScreen: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [animationComplete, setAnimationComplete] = useState(false);
+  const { isMobile } = useViewport();
   
   useEffect(() => {
     const onboardingComplete = localStorage.getItem('onboardingComplete') === 'true';
+
+    // تعديل وقت ظهور الشاشة ليكون أقصر على الهواتف المحمولة لتحسين تجربة المستخدم
+    const splashTimeout = isMobile ? 2500 : 3000;
 
     const timer = setTimeout(() => {
       setAnimationComplete(true);
@@ -24,10 +29,10 @@ const SplashScreen: React.FC = () => {
           navigate('/onboarding');
         }
       }, 500);
-    }, 3000);
+    }, splashTimeout);
 
     return () => clearTimeout(timer);
-  }, [navigate, user]);
+  }, [navigate, user, isMobile]);
 
   return (
     <div className="fixed inset-0 bg-gradient-to-br from-orange-300 via-orange-400 to-orange-500 flex items-center justify-center overflow-hidden">
@@ -49,7 +54,7 @@ const SplashScreen: React.FC = () => {
       </motion.div>
       
       {/* Main content container */}
-      <div className="relative z-10 flex flex-col items-center justify-center">
+      <div className="relative z-10 flex flex-col items-center justify-center px-6">
         {/* Main Dam text with slow zoom out effect */}
         <motion.div
           className="mb-16"
@@ -58,7 +63,7 @@ const SplashScreen: React.FC = () => {
           transition={{ duration: 1.5, ease: "easeOut" }}
         >
           <motion.div
-            className="w-44 h-44 rounded-full bg-white flex items-center justify-center shadow-lg"
+            className={`${isMobile ? 'w-36 h-36' : 'w-44 h-44'} rounded-full bg-white flex items-center justify-center shadow-lg`}
             animate={{ 
               boxShadow: [
                 "0 0 20px rgba(255, 255, 255, 0.4)",
@@ -73,7 +78,7 @@ const SplashScreen: React.FC = () => {
             }}
           >
             <motion.h1
-              className="text-7xl font-bold bg-gradient-to-br from-orange-400 to-orange-600 bg-clip-text text-transparent"
+              className={`${isMobile ? 'text-6xl' : 'text-7xl'} font-bold bg-gradient-to-br from-orange-400 to-orange-600 bg-clip-text text-transparent`}
               animate={{ 
                 scale: [1, 1.1, 1],
                 textShadow: [
@@ -101,7 +106,7 @@ const SplashScreen: React.FC = () => {
           transition={{ delay: 0.8, duration: 1 }}
         >
           <motion.p
-            className="text-white text-xl font-medium tracking-wide"
+            className={`text-white ${isMobile ? 'text-lg' : 'text-xl'} font-medium tracking-wide`}
             animate={{ 
               opacity: [0.8, 1, 0.8],
             }}
