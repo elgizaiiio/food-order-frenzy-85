@@ -31,30 +31,30 @@ const SplashScreen: React.FC = () => {
   }, [navigate, user]);
 
   // Particle count for the background effect
-  const particleCount = 15;
+  const particleCount = 18;
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center overflow-hidden">
-      {/* Background animated particles */}
+    <div className="fixed inset-0 bg-gradient-to-br from-orange-500 via-orange-600 to-orange-800 flex items-center justify-center overflow-hidden">
+      {/* Background animated particles with improved animation */}
       {Array.from({ length: particleCount }).map((_, index) => (
         <motion.div
           key={`particle-${index}`}
           className="absolute rounded-full bg-white/20"
           style={{
-            width: Math.random() * 40 + 10,
-            height: Math.random() * 40 + 10,
+            width: Math.random() * 60 + 15,
+            height: Math.random() * 60 + 15,
             top: `${Math.random() * 100}%`,
             left: `${Math.random() * 100}%`,
           }}
           initial={{ scale: 0, opacity: 0 }}
           animate={{
-            scale: [0, 1, 0.8],
-            opacity: [0, 0.7, 0],
-            x: [0, Math.random() * 100 - 50],
-            y: [0, Math.random() * 100 - 50],
+            scale: [0, 1.2, 0.8],
+            opacity: [0, 0.8, 0],
+            x: [0, Math.random() * 150 - 75],
+            y: [0, Math.random() * 150 - 75],
           }}
           transition={{
-            duration: Math.random() * 3 + 2,
+            duration: Math.random() * 4 + 2,
             repeat: Infinity,
             repeatType: "loop",
             ease: "easeInOut",
@@ -65,62 +65,62 @@ const SplashScreen: React.FC = () => {
       
       {/* Container for the animated logo */}
       <div className="relative z-10">
-        {/* Outer animated rings */}
-        {Array.from({ length: 4 }).map((_, index) => (
+        {/* Outer animated rings with improved aesthetics */}
+        {Array.from({ length: 5 }).map((_, index) => (
           <motion.div
             key={`circle-large-${index}`}
             className="absolute rounded-full border border-white/30"
             style={{
-              width: 200 + index * 40,
-              height: 200 + index * 40,
+              width: 220 + index * 45,
+              height: 220 + index * 45,
               top: '50%',
               left: '50%',
               x: '-50%',
               y: '-50%',
             }}
             animate={{
-              scale: [1, 1.1, 1],
-              opacity: [0.2, 0.4, 0.2],
+              scale: [1, 1.05, 1],
+              opacity: [0.2, 0.5, 0.2],
               rotate: [0, 360],
             }}
             transition={{
               repeat: Infinity,
-              duration: 8 + index * 2,
+              duration: 9 + index * 2,
               ease: "easeInOut",
-              delay: index * 0.5
+              delay: index * 0.6
             }}
           />
         ))}
         
-        {/* Animated circles around the text */}
+        {/* Animated circles around the text with improved animation */}
         {Array.from({ length: 3 }).map((_, index) => (
           <motion.div
             key={`circle-${index}`}
             className="absolute rounded-full border-2 border-white/70"
             style={{
-              width: 150 + index * 30,
-              height: 150 + index * 30,
+              width: 160 + index * 35,
+              height: 160 + index * 35,
               top: '50%',
               left: '50%',
               x: '-50%',
               y: '-50%',
             }}
             animate={{
-              scale: [1, 1.1, 1],
+              scale: [1, 1.15, 1],
               opacity: [0.3, 0.7, 0.3],
               rotate: [0, 180],
             }}
             transition={{
               repeat: Infinity,
-              duration: 3 + index * 0.5,
+              duration: 3.5 + index * 0.7,
               ease: "easeInOut"
             }}
           />
         ))}
         
-        {/* Main circle background with gradient and shadow effect */}
+        {/* Main circle background with enhanced gradient and shadow effect */}
         <motion.div
-          className="relative w-40 h-40 rounded-full bg-gradient-to-br from-white to-orange-50 flex items-center justify-center shadow-lg"
+          className="relative w-44 h-44 rounded-full bg-gradient-to-br from-white to-orange-50 flex items-center justify-center shadow-lg"
           initial={{ scale: 0, opacity: 0, rotate: -180 }}
           animate={{ 
             scale: 1, 
@@ -128,8 +128,8 @@ const SplashScreen: React.FC = () => {
             rotate: 0,
             boxShadow: [
               '0px 0px 0px rgba(255,255,255,0.3)',
-              '0px 0px 50px rgba(255,255,255,0.8)',
-              '0px 0px 20px rgba(255,255,255,0.5)'
+              '0px 0px 60px rgba(255,255,255,0.8)',
+              '0px 0px 25px rgba(255,255,255,0.5)'
             ]
           }}
           transition={{
@@ -141,16 +141,16 @@ const SplashScreen: React.FC = () => {
             }
           }}
         >
-          {/* Logo text "dam" */}
+          {/* Logo text "dam" with enhanced styling */}
           <motion.h1
-            className="text-6xl font-bold bg-gradient-to-br from-orange-600 to-orange-800 bg-clip-text text-transparent"
+            className="text-7xl font-bold bg-gradient-to-br from-orange-600 to-orange-800 bg-clip-text text-transparent"
             initial={{ opacity: 0 }}
             animate={{
               opacity: 1,
               scale: [0.9, 1.1, 0.9],
               textShadow: [
                 '0px 0px 0px rgba(236,117,0,0)',
-                '0px 0px 10px rgba(236,117,0,0.5)',
+                '0px 0px 12px rgba(236,117,0,0.6)',
                 '0px 0px 0px rgba(236,117,0,0)'
               ]
             }}
@@ -167,16 +167,16 @@ const SplashScreen: React.FC = () => {
               }
             }}
           >
-            dam
+            دام
           </motion.h1>
         </motion.div>
       </div>
       
-      {/* Advanced loading indicator */}
-      <div className="absolute bottom-24">
+      {/* Egyptian dialect loading indicator */}
+      <div className="absolute bottom-28">
         <div className="flex flex-col items-center">
           <motion.div
-            className="relative w-48 h-2 bg-white/20 rounded-full overflow-hidden mb-4"
+            className="relative w-52 h-2 bg-white/20 rounded-full overflow-hidden mb-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
@@ -193,31 +193,62 @@ const SplashScreen: React.FC = () => {
             />
           </motion.div>
           
-          <motion.p
-            className="text-white/80 text-sm font-light tracking-wider"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: [0, 1, 0] }}
-            transition={{
-              repeat: Infinity,
-              duration: 2,
-              times: [0, 0.5, 1]
-            }}
-          >
-            جاري التحميل
-          </motion.p>
+          <motion.div className="flex items-center justify-center space-x-1">
+            <motion.p
+              className="text-white/90 text-sm font-light tracking-wider"
+              initial={{ opacity: 0 }}
+              animate={{ 
+                opacity: [0, 1, 0],
+                y: [0, -2, 0]
+              }}
+              transition={{
+                repeat: Infinity,
+                duration: 1.5,
+                times: [0, 0.5, 1]
+              }}
+            >
+              استنى شوية بنحمل التطبيق
+            </motion.p>
+            <motion.span
+              className="text-white/90"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 1, 0] }}
+              transition={{
+                repeat: Infinity,
+                duration: 1.5,
+                delay: 0.3
+              }}
+            >
+              ⁎
+            </motion.span>
+          </motion.div>
         </div>
       </div>
       
-      {/* Animated app name at the bottom */}
+      {/* Enhanced animated app name at the bottom in Egyptian dialect */}
       <motion.div
-        className="absolute bottom-8 left-0 right-0 text-center"
+        className="absolute bottom-10 left-0 right-0 text-center"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1, duration: 0.8 }}
       >
-        <h2 className="text-lg text-white/90 font-medium tracking-wide">
-          تطبيق دام - توصيل كل شيء
-        </h2>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.3, duration: 0.5 }}
+        >
+          <h2 className="text-xl text-white/90 font-medium tracking-wide">
+            دام - هنوصلك كل حاجة لحد عندك
+          </h2>
+        </motion.div>
+        <motion.p 
+          className="text-white/70 text-sm mt-2 italic"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.6, duration: 0.5 }}
+        >
+          أسرع خدمة توصيل في مصر
+        </motion.p>
       </motion.div>
     </div>
   );
